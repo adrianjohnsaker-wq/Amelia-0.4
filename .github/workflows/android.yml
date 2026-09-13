@@ -35,6 +35,9 @@ jobs:
         # Move your loose Kotlin files into the standard app source path
         mv *.kt app/src/main/java/com/amelia/app/ || true
         
+        # Enable AndroidX support explicitly in gradle.properties
+        echo "android.useAndroidX=true" > gradle.properties
+        
         # Create minimal Android settings file
         echo "pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }" > settings.gradle.kts
         echo "dependencyResolutionManagement { repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS); repositories { google(); mavenCentral() } }" >> settings.gradle.kts
