@@ -1,4 +1,4 @@
-name: Android CI
+name: Generate Android APK
 
 on:
   push:
@@ -11,22 +11,77 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # 1. Fetch code using the latest runner version
+    # 1. Fetch your Kotlin and Python source code
     - name: Checkout Code
       uses: actions/checkout@v4
 
-    # 2. Set up Java using v5 (which natively supports Node 24)
-    - name: Set up JDK 11
+    # 2. Setup Java 17 (Required for modern Android builds)
+    - name: Set up JDK 17
       uses: actions/setup-java@v5
       with:
-        java-version: '11'
+        java-version: '17'
         distribution: 'temurin'
-        cache: 'gradle'
+        # Gradle caching is turned off since the scaffolding is generated dynamically
 
-    # 3. Verify location and make the Gradle wrapper executable
+    # 3. Dynamically build a standard Android structure
+    - name: Bootstrap Android App Structure
+      run: |
+        # Initialize an empty gradle project wrapper
+        gradle init --type basic --dsl kotlin --project-name AmeliaApp
+        
+        # Create standard Android app directories
+        mkdir -p app/src/main/java/com/amelia/app
+        mkdir -p app/src/main/res/values
+        
+        # Move your loose Kotlin files into the standard app source path
+        mv *.kt app/src/main/java/com/amelia/app/ || true
+        
+        # Create minimal Android settings file
+        echo "pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }" > settings.gradle.kts
+        echo "dependencyResolutionManagement { repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS); repositories { google(); mavenCentral() } }" >> settings.gradle.kts
+        echo "include(\":app\")" >> settings.gradle.kts
+        
+        # Create root build configuration
+        echo "plugins { id(\"com.android.application\") version \"8.2.2\" apply false; id(\"org.jetbrains.kotlin.android\") version \"1.9.22\" apply false }" > build.gradle.kts
+        
+        # Create the App module configuration
+        cat << 'EOF' > app/build.gradle.kts
+        plugins {
+            id("com.android.application")
+            id("org.jetbrains.kotlin.android")
+        }
+        android {
+            namespace = "com.amelia.app"
+            compileSdk = 34
+            defaultConfig {
+                applicationId = "com.amelia.app"
+                minSdk = 24
+                targetSdk = 34
+                versionCode = 1
+                versionName = "1.0"
+            }
+        }
+        dependencies {
+            implementation("androidx.core:core-ktx:1.12.0")
+            implementation("androidx.appcompat:appcompat:1.6.1")
+        }
+        EOF
+        
+        # Generate essential minimal Android resources (Manifest, Strings, Styles)
+        echo '<manifest xmlns:android="http://android.com"></manifest>' > app/src/main/AndroidManifest.xml
+        echo '<resources><string name="app_name">Amelia</string></resources>' > app/src/main/res/values/strings.xml
+
+    # 4. Make execution permissions certain
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
-    # 4. Build the application (assembleDebug is standard for Android CI)
-    - name: Build with Gradle
-      run: ./gradlew assembleDebug
+    # 5. Compile the standalone Kotlin files into an Android package 
+    - name: Build Debug APK
+      run: ./gradlew :app:assembleDebug
+
+    # 6. Output the compiled package to your GitHub Actions panel for download
+    - name: Upload Downloadable APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: Amelia-App-Download
+        path: app/build/outputs/apk/debug/app-debug.apk
