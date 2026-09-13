@@ -22,15 +22,9 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
-    # 3. Dynamically build a standard Android structure with a fixed Gradle version
+    # 3. Dynamically build a standard Android structure
     - name: Bootstrap Android App Structure
       run: |
-        # Initialize an empty gradle project wrapper and explicitly force it to use a stable 8.x release
-        gradle init --type basic --dsl kotlin --project-name AmeliaApp --overwrite
-        
-        # Force the Gradle wrapper to downscale from 9.7 to a highly stable 8.2.2 to match AGP
-        gradle wrapper --gradle-version 8.2.2
-        
         # Create standard Android app directories
         mkdir -p app/src/main/java/com/amelia/app
         mkdir -p app/src/main/res/values
@@ -76,15 +70,14 @@ jobs:
         echo '<manifest xmlns:android="http://android.com"></manifest>' > app/src/main/AndroidManifest.xml
         echo '<resources><string name="app_name">Amelia</string></resources>' > app/src/main/res/values/strings.xml
 
-    # 4. Make execution permissions certain
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
+    # 4. Use the official Gradle Action to execute the build cleanly using Gradle 8.2.2
+    - name: Setup and Execute Gradle Build
+      uses: gradle/actions/setup-gradle@v4
+      with:
+        gradle-version: '8.2.2'
+        arguments: :app:assembleDebug
 
-    # 5. Compile the app using the downscaled local gradlew wrapper script
-    - name: Build Debug APK
-      run: ./gradlew :app:assembleDebug
-
-    # 6. Output the compiled package to your GitHub Actions panel for download
+    # 5. Output the compiled package to your GitHub Actions panel for download
     - name: Upload Downloadable APK
       uses: actions/upload-artifact@v4
       with:
