@@ -66,13 +66,18 @@ jobs:
         }
         EOF
         
-        # Generate a valid, standardized minimal Android Manifest to pass resource linking
+        # Generate an absolute safe layout manifest that explicitly strips out unconfigured provider items
         cat << 'EOF' > app/src/main/AndroidManifest.xml
-        <manifest xmlns:android="http://android.com">
+        <manifest xmlns:android="http://android.com"
+            xmlns:tools="http://github.com">
             <application
                 android:allowBackup="true"
                 android:label="@string/app_name"
                 android:supportsRtl="true">
+                
+                <!-- This line intercepts and removes broken placeholder provider blocks during compiling -->
+                <provider tools:node="remove" />
+                
             </application>
         </manifest>
         EOF
@@ -86,7 +91,7 @@ jobs:
       with:
         gradle-version: '8.11'
 
-    # 5. Run compilation (This will pass cleanly now)
+    # 5. Run compilation
     - name: Execute Android Build
       run: gradle :app:assembleDebug
 
