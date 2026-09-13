@@ -74,9 +74,9 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
-    # 5. Compile the standalone Kotlin files into an Android package 
+    # 5. Compile the app safely by explicitly disabling the Configuration Cache
     - name: Build Debug APK
-      run: ./gradlew :app:assembleDebug
+      run: ./gradlew :app:assembleDebug --no-configuration-cache
 
     # 6. Output the compiled package to your GitHub Actions panel for download
     - name: Upload Downloadable APK
