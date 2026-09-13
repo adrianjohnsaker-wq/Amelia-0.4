@@ -70,14 +70,17 @@ jobs:
         echo '<manifest xmlns:android="http://android.com"></manifest>' > app/src/main/AndroidManifest.xml
         echo '<resources><string name="app_name">Amelia</string></resources>' > app/src/main/res/values/strings.xml
 
-    # 4. Use the official Gradle Action to execute the build cleanly using Gradle 8.2.2
-    - name: Setup and Execute Gradle Build
+    # 4. Initialize Gradle environment cleanly with an available version target
+    - name: Setup Gradle Environment
       uses: gradle/actions/setup-gradle@v4
       with:
-        gradle-version: '8.2.2'
-        arguments: :app:assembleDebug
+        gradle-version: '8.11' # Using verified distribution stream target
 
-    # 5. Output the compiled package to your GitHub Actions panel for download
+    # 5. Run compilation as a standalone step
+    - name: Execute Android Build
+      run: gradle :app:assembleDebug
+
+    # 6. Output the compiled package to your GitHub Actions panel for download
     - name: Upload Downloadable APK
       uses: actions/upload-artifact@v4
       with:
