@@ -66,7 +66,7 @@ jobs:
         }
         EOF
         
-        # Generate an absolute safe layout manifest that explicitly strips out unconfigured provider items
+        # Generate an absolute safe layout manifest containing a fully qualified placeholder string name target
         cat << 'EOF' > app/src/main/AndroidManifest.xml
         <manifest xmlns:android="http://android.com"
             xmlns:tools="http://github.com">
@@ -75,8 +75,11 @@ jobs:
                 android:label="@string/app_name"
                 android:supportsRtl="true">
                 
-                <!-- This line intercepts and removes broken placeholder provider blocks during compiling -->
-                <provider tools:node="remove" />
+                <!-- Explicit dummy configuration value satisfies AAPT asset checker while removing empty providers -->
+                <provider 
+                    android:name="androidx.startup.InitializationProvider"
+                    android:authorities="com.amelia.app.androidx-startup"
+                    tools:node="remove" />
                 
             </application>
         </manifest>
@@ -91,7 +94,7 @@ jobs:
       with:
         gradle-version: '8.11'
 
-    # 5. Run compilation
+    # 5. Run compilation (Will now link resources seamlessly)
     - name: Execute Android Build
       run: gradle :app:assembleDebug
 
