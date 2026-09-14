@@ -1,98 +1,256 @@
-name: Generate Android APK
+name: Build Amelia APK
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    # 1. Fetch your Kotlin and Python source code
-    - name: Checkout Code
-      uses: actions/checkout@v4
+      - name: Check out source
+        uses: actions/checkout@v5
 
-    # 2. Setup Java 17 (Required for modern Android builds)
-    - name: Set up JDK 17
-      uses: actions/setup-java@v5
-      with:
-        java-version: '17'
-        distribution: 'temurin'
+      - name: Set up Java 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
 
-    # 3. Dynamically build a standard Android structure
-    - name: Bootstrap Android App Structure
-      run: |
-        # Create standard Android app directories
-        mkdir -p app/src/main/java/com/amelia/app
-        mkdir -p app/src/main/res/values
-        
-        # Move your loose Kotlin files into the standard app source path
-        mv *.kt app/src/main/java/com/amelia/app/ || true
-        
-        # Enable AndroidX support explicitly in gradle.properties
-        echo "android.useAndroidX=true" > gradle.properties
-        
-        # Create minimal Android settings file
-        echo "pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }" > settings.gradle.kts
-        echo "dependencyResolutionManagement { repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS); repositories { google(); mavenCentral() } }" >> settings.gradle.kts
-        echo "include(\":app\")" >> settings.gradle.kts
-        
-        # Create root build configuration
-        echo "plugins { id(\"com.android.application\") version \"8.2.2\" apply false; id(\"org.jetbrains.kotlin.android\") version \"1.9.22\" apply false }" > build.gradle.kts
-        
-        # Create the App module configuration (Stripped out visual appcompat layout dependencies to prevent provider injections)
-        cat << 'EOF' > app/build.gradle.kts
-        plugins {
-            id("com.android.application")
-            id("org.jetbrains.kotlin.android")
-        }
-        android {
-            namespace = "com.amelia.app"
-            compileSdk = 34
-            defaultConfig {
-                applicationId = "com.amelia.app"
-                minSdk = 24
-                targetSdk = 34
-                versionCode = 1
-                versionName = "1.0"
-            }
-        }
-        dependencies {
-            // Using pure raw stdlib core components completely eliminates hidden provider errors during compile
-            implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.22")
-        }
-        EOF
-        
-        # Generate an entirely plain application container layout
-        cat << 'EOF' > app/src/main/AndroidManifest.xml
-        <manifest xmlns:android="http://android.com">
-            <application
-                android:allowBackup="true"
-                android:label="@string/app_name"
-                android:supportsRtl="true">
-            </application>
-        </manifest>
-        EOF
-        
-        # Generate essential minimal Android resources (Strings)
-        echo '<resources><string name="app_name">Amelia</string></resources>' > app/src/main/res/values/strings.xml
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.9"
 
-    # 4. Initialize Gradle environment cleanly using verified v4 action defaults
-    - name: Setup Gradle Environment
-      uses: gradle/actions/setup-gradle@v4
-      with:
-        gradle-version: '8.11'
+      - name: Create Amelia Android shell
+        shell: bash
+        run: |
+          set -euo pipefail
 
-    # 5. Run compilation (Without layout dependencies, the linking loop runs flawlessly)
-    - name: Execute Android Build
-      run: gradle :app:assembleDebug
+          test -f amelia_symbolic_core.py
 
-    # 6. Output the compiled package to your GitHub Actions panel for download
-    - name: Upload Downloadable APK
-      uses: actions/upload-artifact@v4
-      with:
-        name: Amelia-App-Download
-        path: app/build/outputs/apk/debug/app-debug.apk
+          mkdir -p app/src/main/java/com/amelia/app
+          mkdir -p app/src/main/python
+          mkdir -p app/src/main/res/values
+
+          # Copy only the verified symbolic core. Legacy Kotlin files remain untouched.
+          cp amelia_symbolic_core.py app/src/main/python/amelia_symbolic_core.py
+
+          cat > settings.gradle.kts <<'EOF'
+          pluginManagement {
+              repositories {
+                  google()
+                  mavenCentral()
+                  gradlePluginPortal()
+              }
+          }
+
+          dependencyResolutionManagement {
+              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+              repositories {
+                  google()
+                  mavenCentral()
+              }
+          }
+
+          rootProject.name = "Amelia"
+          include(":app")
+          EOF
+
+          cat > build.gradle.kts <<'EOF'
+          plugins {
+              id("com.android.application") version "8.7.3" apply false
+              id("org.jetbrains.kotlin.android") version "1.9.24" apply false
+              id("com.chaquo.python") version "17.0.0" apply false
+          }
+          EOF
+
+          cat > gradle.properties <<'EOF'
+          org.gradle.jvmargs=-Xmx2g -Dfile.encoding=UTF-8
+          EOF
+
+          cat > app/build.gradle.kts <<'EOF'
+          plugins {
+              id("com.android.application")
+              id("org.jetbrains.kotlin.android")
+              id("com.chaquo.python")
+          }
+
+          android {
+              namespace = "com.amelia.app"
+              compileSdk = 34
+
+              defaultConfig {
+                  applicationId = "com.amelia.app"
+                  minSdk = 24
+                  targetSdk = 34
+                  versionCode = 1
+                  versionName = "1.0"
+
+                  ndk {
+                      abiFilters += listOf("armeabi-v7a", "arm64-v8a")
+                  }
+              }
+
+              compileOptions {
+                  sourceCompatibility = JavaVersion.VERSION_17
+                  targetCompatibility = JavaVersion.VERSION_17
+              }
+          }
+
+          kotlin {
+              jvmToolchain(17)
+          }
+
+          chaquopy {
+              defaultConfig {
+                  version = "3.11"
+              }
+          }
+          EOF
+
+          cat > app/src/main/AndroidManifest.xml <<'EOF'
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+              <application
+                  android:name="com.chaquo.python.android.PyApplication"
+                  android:allowBackup="true"
+                  android:label="@string/app_name"
+                  android:theme="@android:style/Theme.Material.Light.NoActionBar">
+
+                  <activity
+                      android:name=".MainActivity"
+                      android:exported="true">
+                      <intent-filter>
+                          <action android:name="android.intent.action.MAIN" />
+                          <category android:name="android.intent.category.LAUNCHER" />
+                      </intent-filter>
+                  </activity>
+              </application>
+          </manifest>
+          EOF
+
+          cat > app/src/main/res/values/strings.xml <<'EOF'
+          <resources>
+              <string name="app_name">Amelia</string>
+          </resources>
+          EOF
+
+          cat > app/src/main/python/amelia_android_entry.py <<'EOF'
+          import amelia_symbolic_core
+
+
+          def reply(text):
+              result = amelia_symbolic_core.process(text)
+              return result.get("final_response", "Amelia returned no response.")
+          EOF
+
+          cat > app/src/main/java/com/amelia/app/MainActivity.kt <<'EOF'
+          package com.amelia.app
+
+          import android.app.Activity
+          import android.os.Bundle
+          import android.text.InputType
+          import android.view.Gravity
+          import android.widget.Button
+          import android.widget.EditText
+          import android.widget.LinearLayout
+          import android.widget.ScrollView
+          import android.widget.TextView
+          import com.chaquo.python.Python
+
+          class MainActivity : Activity() {
+              private lateinit var input: EditText
+              private lateinit var output: TextView
+              private lateinit var send: Button
+
+              override fun onCreate(savedInstanceState: Bundle?) {
+                  super.onCreate(savedInstanceState)
+
+                  val root = LinearLayout(this).apply {
+                      orientation = LinearLayout.VERTICAL
+                      setPadding(dp(20), dp(20), dp(20), dp(20))
+                  }
+
+                  root.addView(TextView(this).apply {
+                      text = "AMELIA"
+                      textSize = 24f
+                      gravity = Gravity.CENTER_HORIZONTAL
+                  })
+
+                  output = TextView(this).apply {
+                      text = "Amelia is ready. Send a thought to the local symbolic core."
+                      textSize = 16f
+                      setPadding(0, dp(18), 0, dp(18))
+                  }
+
+                  root.addView(
+                      ScrollView(this).apply { addView(output) },
+                      LinearLayout.LayoutParams(
+                          LinearLayout.LayoutParams.MATCH_PARENT,
+                          0,
+                          1f
+                      )
+                  )
+
+                  input = EditText(this).apply {
+                      hint = "Write to Amelia"
+                      inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_MULTI_LINE
+                      minLines = 2
+                      maxLines = 5
+                  }
+                  root.addView(input)
+
+                  send = Button(this).apply {
+                      text = "Send"
+                      setOnClickListener { submit() }
+                  }
+                  root.addView(send)
+
+                  setContentView(root)
+              }
+
+              private fun submit() {
+                  val text = input.text.toString().trim()
+                  if (text.isEmpty()) return
+
+                  send.isEnabled = false
+                  output.text = "Amelia is processing..."
+
+                  Thread {
+                      val response = runPython(text)
+                      runOnUiThread {
+                          output.text = response
+                          input.setText("")
+                          send.isEnabled = true
+                      }
+                  }.start()
+              }
+
+              private fun runPython(text: String): String = try {
+                  Python.getInstance()
+                      .getModule("amelia_android_entry")
+                      .callAttr("reply", text)
+                      .toString()
+              } catch (error: Exception) {
+                  "Amelia could not process that input: ${error.message ?: "unknown error"}"
+              }
+
+              private fun dp(value: Int): Int =
+                  (value * resources.displayMetrics.density).toInt()
+          }
+          EOF
+
+      - name: Build debug APK
+        run: gradle --no-daemon :app:assembleDebug --stacktrace
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Amelia-App-Download
+          path: app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 7
