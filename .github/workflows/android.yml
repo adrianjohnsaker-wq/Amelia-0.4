@@ -1,4 +1,4 @@
-     name: Generate Android APK
+name: Generate Android APK
 
 on:
   push:
@@ -96,4 +96,3 @@ jobs:
       with:
         name: Amelia-App-Download
         path: app/build/outputs/apk/debug/app-debug.apk
-       
