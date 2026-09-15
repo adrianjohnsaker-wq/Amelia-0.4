@@ -1,4 +1,4 @@
-name: Build Amelia Android-P1 APK
+name: Build Amelia Android-P2 Fork Assay APK
 
 on:
   push:
@@ -23,19 +23,19 @@ jobs:
         with:
           gradle-version: "8.9"
 
-      - name: Create Android-P1 ProcessFieldMemory substrate
+      - name: Create Android-P2 sealed matched-state fork assay
         shell: bash
         run: |
           set -euo pipefail
           test -f amelia_symbolic_core.py
-          mkdir -p app/src/main/java/com/amelia/p1 app/src/main/python app/src/main/res/values
-          # Legacy asset only: P1 never imports this symbolic text routine.
+          mkdir -p app/src/main/java/com/amelia/p2 app/src/main/python app/src/main/res/values
+          # Preserved for provenance only. P2 never imports this symbolic text routine.
           cp amelia_symbolic_core.py app/src/main/python/amelia_symbolic_core.py
 
           cat > settings.gradle.kts <<'EOF'
           pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }
           dependencyResolutionManagement { repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS); repositories { google(); mavenCentral() } }
-          rootProject.name = "AmeliaAndroidP1"
+          rootProject.name = "AmeliaAndroidP2"
           include(":app")
           EOF
 
@@ -54,14 +54,14 @@ jobs:
           cat > app/build.gradle.kts <<'EOF'
           plugins { id("com.android.application"); id("org.jetbrains.kotlin.android"); id("com.chaquo.python") }
           android {
-              namespace = "com.amelia.p1"
+              namespace = "com.amelia.p2"
               compileSdk = 34
               defaultConfig {
-                  applicationId = "com.amelia.p1"
+                  applicationId = "com.amelia.p2"
                   minSdk = 24
                   targetSdk = 34
                   versionCode = 1
-                  versionName = "0.3-android-p1"
+                  versionName = "0.4-android-p2-fork"
                   ndk { abiFilters += listOf("armeabi-v7a", "arm64-v8a") }
               }
               compileOptions { sourceCompatibility = JavaVersion.VERSION_17; targetCompatibility = JavaVersion.VERSION_17 }
@@ -79,24 +79,25 @@ jobs:
             </application>
           </manifest>
           EOF
-          echo '<resources><string name="app_name">Amelia P1</string></resources>' > app/src/main/res/values/strings.xml
+          echo '<resources><string name="app_name">Amelia P2 Fork Assay</string></resources>' > app/src/main/res/values/strings.xml
 
-          cat > app/src/main/python/p1_runtime.py <<'EOF'
-          """Local Amelia P1: ProcessFieldMemory, directed routing and controls."""
+          cat > app/src/main/python/p2_fork_assay.py <<'EOF'
+          """Android-P2: local sealed, matched-state, non-mutating fork assay."""
           from __future__ import annotations
 
           import hashlib
           import json
           import math
           import threading
+          import time
           from pathlib import Path
           from typing import Any, Dict, List, Sequence
 
-          Z = 10
-          SCHEMA = "amelia-android-p1-process-field-v1"
-          ZERO = [round(1 / Z, 12) for _ in range(Z)]
+          ZONES = 10
+          SCHEMA = "amelia-android-p2-fork-assay-v1"
+          ZERO = [round(1.0 / ZONES, 12) for _ in range(ZONES)]
           LOCK = threading.RLock()
-          RUNTIMES: Dict[str, "Runtime"] = {}
+          RUNTIMES: Dict[str, "ForkAssay"] = {}
 
           def canonical(value: Any) -> str:
               return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
@@ -104,162 +105,366 @@ jobs:
           def digest(value: Any) -> str:
               return hashlib.sha256(canonical(value).encode("utf-8")).hexdigest()
 
-          def norm(values: Sequence[float]) -> List[float]:
-              values = [max(0.0, float(v)) for v in values]
+          def clone(value: Any) -> Any:
+              return json.loads(canonical(value))
+
+          def normalise(values: Sequence[float]) -> List[float]:
+              values = [max(0.0, float(value)) for value in values]
               total = sum(values)
-              if total <= 0:
+              if total <= 0.0:
                   return list(ZERO)
-              answer = [round(v / total, 12) for v in values]
-              answer[-1] = round(1 - sum(answer[:-1]), 12)
-              return answer
+              result = [round(value / total, 12) for value in values]
+              result[-1] = round(1.0 - sum(result[:-1]), 12)
+              return result
 
-          def tensor() -> List[List[float]]:
-              return [[0.0 for _ in range(Z)] for _ in range(Z)]
-
-          def tn(value: Sequence[Sequence[float]]) -> float:
-              return round(math.sqrt(sum(float(x) ** 2 for row in value for x in row)), 12)
+          def zeros() -> List[List[float]]:
+              return [[0.0 for _ in range(ZONES)] for _ in range(ZONES)]
 
           def l1(left: Sequence[float], right: Sequence[float]) -> float:
               return round(sum(abs(float(a) - float(b)) for a, b in zip(left, right)), 12)
 
-          def input_drive(question: str) -> Dict[str, Any]:
-              cleaned = " ".join(question.casefold().split())
-              bins = [0.0] * Z
-              for position, char in enumerate(cleaned):
-                  if "a" <= char <= "z": weight = ord(char) - 96
-                  elif char.isdigit(): weight = int(char) + 1
-                  else: continue
-                  bins[(position + weight) % Z] += weight
-              if not any(bins): bins[0] = 1.0
-              return {"digest": hashlib.sha256(cleaned.encode("utf-8")).hexdigest(), "length": len(cleaned), "drive": norm(bins)}
+          def tensor_norm(tensor: Sequence[Sequence[float]]) -> float:
+              return round(math.sqrt(sum(float(value) ** 2 for row in tensor for value in row)), 12)
 
-          class Runtime:
-              def __init__(self, root: str) -> None:
-                  self.root = Path(root); self.root.mkdir(parents=True, exist_ok=True)
-                  self.memory_path = self.root / "process_field_memory.json"
-                  self.ledger_path = self.root / "p1-ledger.jsonl"
-                  self.head_path = self.root / "p1-ledger-head.txt"
-                  self.data = self.load()
-                  self.head = self.head_path.read_text(encoding="utf-8").strip() if self.head_path.exists() else "0" * 64
-                  self.config_digest = digest({"schema": SCHEMA, "conditions": ["FULL", "ABLATED", "NEUTRAL_RESET"], "language": "display-only; no LLM in causal loop"})
-
-              def fresh(self) -> Dict[str, Any]:
-                  return {"schema": SCHEMA, "sequence": 0, "fieldState": list(ZERO), "fieldHistory": [], "activeAttractors": [], "recentTransitions": [], "lastStability": 1.0, "deformationTensor": tensor(), "lastReplay": None}
-
-              def load(self) -> Dict[str, Any]:
-                  if not self.memory_path.exists():
-                      value = self.fresh(); self.write(value); return value
-                  value = json.loads(self.memory_path.read_text(encoding="utf-8"))
-                  if value.get("schema") != SCHEMA or len(value.get("fieldState", [])) != Z or len(value.get("deformationTensor", [])) != Z:
-                      raise ValueError("Invalid ProcessFieldMemory state")
-                  return value
-
-              def write(self, value: Dict[str, Any]) -> None:
-                  temporary = self.memory_path.with_suffix(".tmp")
-                  temporary.write_text(canonical(value), encoding="utf-8"); temporary.replace(self.memory_path)
-
-              def ledger(self, kind: str, payload: Dict[str, Any]) -> str:
-                  record = {"schema": "amelia-android-p1-ledger-v1", "kind": kind, "previous": self.head, "payload": payload}
-                  record["recordDigest"] = digest(record); record["chainDigest"] = digest({"previous": self.head, "record": record["recordDigest"]})
-                  with self.ledger_path.open("a", encoding="utf-8") as file: file.write(canonical(record) + "\n")
-                  self.head = record["chainDigest"]
-                  temporary = self.head_path.with_suffix(".tmp"); temporary.write_text(self.head, encoding="utf-8"); temporary.replace(self.head_path)
-                  return self.head
-
-              def snapshot(self, condition: str) -> Dict[str, Any]:
-                  if condition == "FULL":
-                      return {"condition": condition, "sequence": self.data["sequence"], "fieldState": list(self.data["fieldState"]), "deformationTensor": [list(row) for row in self.data["deformationTensor"]], "historyCount": len(self.data["fieldHistory"]), "lastStability": self.data["lastStability"], "memoryEnabled": True}
-                  if condition == "ABLATED":
-                      return {"condition": condition, "sequence": self.data["sequence"], "fieldState": list(self.data["fieldState"]), "deformationTensor": tensor(), "historyCount": len(self.data["fieldHistory"]), "lastStability": self.data["lastStability"], "memoryEnabled": False}
-                  if condition == "NEUTRAL_RESET":
-                      return {"condition": condition, "sequence": 0, "fieldState": list(ZERO), "deformationTensor": tensor(), "historyCount": 0, "lastStability": 1.0, "memoryEnabled": False}
-                  raise ValueError("Choose FULL, ABLATED or NEUTRAL_RESET")
-
-              def bias(self, value: Sequence[Sequence[float]]) -> List[float]:
-                  weights = [sum(abs(float(x)) for x in row) for row in value]
-                  return norm(weights if any(weights) else [1.0] * Z)
-
-              def calculate(self, question: str, snap: Dict[str, Any]) -> Dict[str, Any]:
-                  encoded = input_drive(question); pre = list(snap["fieldState"]); old_tensor = snap["deformationTensor"]; memory = self.bias(old_tensor)
-                  kernel = []
-                  for zone in range(Z):
-                      ring = 0.5 * (pre[(zone - 1) % Z] + pre[(zone + 1) % Z])
-                      kernel.append(0.42 * pre[zone] + 0.32 * encoded["drive"][zone] + 0.18 * memory[zone] + 0.05 * ring + 0.03 * pre[9-zone])
-                  kernel = norm(kernel)
-                  first = max(range(Z), key=lambda z: (kernel[z], -z))
-                  def edges(z: int) -> List[Dict[str, Any]]: return [{"to": (z+1)%Z, "kind": "ring"}, {"to": 9-z, "kind": "syzygy"}, {"to": (z+3)%Z, "kind": "diagonal"}]
-                  e1 = max(edges(first), key=lambda e: (kernel[e["to"]], -e["to"])); second = e1["to"]
-                  e2 = max([e for e in edges(second) if e["to"] != first], key=lambda e: (kernel[e["to"]], -e["to"])); third = e2["to"]
-                  flux = round(sum(abs(kernel[z] - kernel[9-z]) for z in range(5)) / 5, 12)
-                  field = list(kernel); modules = []
-                  if flux >= 0.025:
-                      field = norm([0.88 * field[z] + 0.12 * field[9-z] for z in range(Z)]); modules.append({"module": "syzygetic_coupling", "effect": "complement-weighted update"})
-                  field = norm([0.92 * field[z] + 0.04 * (field[(z-1)%Z] + field[(z+1)%Z]) for z in range(Z)]); modules.append({"module": "rhizomatic_recombination", "effect": "ring-neighbour diffusion"})
-                  field[first] += 0.035 + 0.015 * memory[first]; field = norm(field); modules.append({"module": "attractor_consolidation", "effect": "route-dominant bounded reinforcement"})
-                  new_tensor = tensor()
-                  if snap["memoryEnabled"]:
-                      for row in range(Z):
-                          for col in range(Z):
-                              syzygy = field[row] - field[col] if row + col == 9 else 0.0
-                              new_tensor[row][col] = round(0.988 * old_tensor[row][col] + 0.055 * field[row] * pre[col] + 0.016 * syzygy, 12)
-                  else: new_tensor = old_tensor
-                  top = max(field); attractors = [z for z, value in enumerate(field) if value >= top * 0.92]
-                  entropy = round(-sum(value * math.log(value) for value in kernel if value > 0) / math.log(Z), 12)
-                  trace = {"schema": "amelia-android-p1-trace-v1", "condition": snap["condition"], "sequence": int(snap["sequence"]) + 1, "inputDigest": encoded["digest"], "inputLength": encoded["length"], "preSnapshot": snap, "kernelState": kernel, "fieldState": field, "nextTensor": new_tensor, "route": [first, second, third], "routeEdges": [{"from": first, "to": second, "kind": e1["kind"]}, {"from": second, "to": third, "kind": e2["kind"]}], "modules": modules, "kernelDeltaL1": l1(pre, kernel), "fieldEntropy": entropy, "syzygyFlux": flux, "preStability": snap["lastStability"], "postStability": round(max(0.0, 1.0 - l1(pre, field)/2), 12), "preTensorNorm": tn(old_tensor), "postTensorNorm": tn(new_tensor), "activeAttractors": attractors, "configDigest": self.config_digest}
-                  trace["causalDigest"] = digest(trace); return trace
-
-              def turn(self, question: str, condition: str) -> Dict[str, Any]:
-                  if not question or not question.strip(): raise ValueError("A non-empty input is required")
-                  trace = self.calculate(question, self.snapshot(condition)); prepared = self.ledger("prepared_turn", {"rawInput": question, "trace": trace})
-                  if condition == "FULL":
-                      event = {"sequence": trace["sequence"], "inputDigest": trace["inputDigest"], "route": trace["route"], "causalDigest": trace["causalDigest"], "stability": trace["postStability"]}
-                      self.data["sequence"] = trace["sequence"]; self.data["fieldState"] = trace["fieldState"]; self.data["deformationTensor"] = trace["nextTensor"]; self.data["activeAttractors"] = trace["activeAttractors"]; self.data["lastStability"] = trace["postStability"]
-                      self.data["fieldHistory"] = (self.data["fieldHistory"] + [event])[-200:]; self.data["recentTransitions"] = (self.data["recentTransitions"] + [event])[-50:]
-                      self.data["lastReplay"] = {"question": question, "snapshot": trace["preSnapshot"], "expected": trace["causalDigest"]}; self.write(self.data)
-                      trace["persistence"] = {"mutated": True, "historyCount": len(self.data["fieldHistory"]), "memoryDigest": digest(self.data)}; head = self.ledger("committed_full_turn", {"causalDigest": trace["causalDigest"], "memoryDigest": trace["persistence"]["memoryDigest"]})
+          def input_record(raw_input: str) -> Dict[str, Any]:
+              canonical_input = " ".join(raw_input.casefold().split())
+              bins = [0.0] * ZONES
+              for position, character in enumerate(canonical_input):
+                  if "a" <= character <= "z":
+                      weight = ord(character) - 96
+                  elif character.isdigit():
+                      weight = int(character) + 1
                   else:
-                      trace["persistence"] = {"mutated": False, "historyCount": len(self.data["fieldHistory"]), "memoryDigest": digest(self.snapshot(condition))}; head = self.ledger("non_mutating_control_probe", {"condition": condition, "causalDigest": trace["causalDigest"]})
-                  trace["ledger"] = {"prepared": prepared, "head": head}; return {"ok": True, "kind": "turn", "trace": trace}
+                      continue
+                  bins[(position + weight) % ZONES] += weight
+              if not any(bins):
+                  bins[0] = 1.0
+              return {
+                  "rawInput": raw_input,
+                  "canonicalInput": canonical_input,
+                  "inputDigest": hashlib.sha256(canonical_input.encode("utf-8")).hexdigest(),
+                  "inputLength": len(canonical_input),
+                  "drive": normalise(bins),
+              }
 
-              def replay(self) -> Dict[str, Any]:
-                  saved = self.data.get("lastReplay")
-                  if not saved: raise ValueError("Run one FULL condition before replay")
-                  observed = self.calculate(saved["question"], saved["snapshot"]); match = observed["causalDigest"] == saved["expected"]
-                  head = self.ledger("deterministic_replay", {"expected": saved["expected"], "observed": observed["causalDigest"], "match": match})
-                  return {"ok": True, "kind": "replay", "match": match, "route": observed["route"], "expected": saved["expected"], "observed": observed["causalDigest"], "ledgerHead": head}
+          class ForkAssay:
+              def __init__(self, storage_dir: str) -> None:
+                  self.root = Path(storage_dir)
+                  self.root.mkdir(parents=True, exist_ok=True)
+                  self.memory_path = self.root / "process_field_memory.json"
+                  self.ledger_path = self.root / "p2-ledger.jsonl"
+                  self.head_path = self.root / "p2-ledger-head.txt"
+                  self.data = self._load()
+                  self.head = self.head_path.read_text(encoding="utf-8").strip() if self.head_path.exists() else "0" * 64
+                  self.config = {
+                      "schema": SCHEMA,
+                      "conditions": ["FULL", "ABLATED", "NEUTRAL_RESET"],
+                      "stochasticity": "none; deterministic paired stream p2-deterministic-0",
+                      "observationWindow": {"steps": 1, "selection": "declared single transition"},
+                      "rawBeforeScoring": True,
+                      "languageLayer": "display-only; no LLM or Governor in causal loop",
+                      "measures": ["fieldDeltaL1", "fullBranchDeltaL1", "route", "stability", "tensorNorm", "activeAttractors"],
+                  }
+                  self.config_digest = digest(self.config)
+
+              def _fresh(self) -> Dict[str, Any]:
+                  return {
+                      "schema": SCHEMA,
+                      "sequence": 0,
+                      "fieldState": list(ZERO),
+                      "deformationTensor": zeros(),
+                      "fieldHistory": [],
+                      "recentTransitions": [],
+                      "activeAttractors": [],
+                      "lastStability": 1.0,
+                      "forkCounter": 0,
+                      "lastFork": None,
+                  }
+
+              def _load(self) -> Dict[str, Any]:
+                  if not self.memory_path.exists():
+                      fresh = self._fresh()
+                      self._write(fresh)
+                      return fresh
+                  data = json.loads(self.memory_path.read_text(encoding="utf-8"))
+                  if data.get("schema") != SCHEMA or len(data.get("fieldState", [])) != ZONES:
+                      raise ValueError("Invalid Android-P2 ProcessFieldMemory")
+                  if len(data.get("deformationTensor", [])) != ZONES:
+                      raise ValueError("Invalid Android-P2 deformation tensor")
+                  return data
+
+              def _write(self, data: Dict[str, Any]) -> None:
+                  temporary = self.memory_path.with_suffix(".tmp")
+                  temporary.write_text(canonical(data), encoding="utf-8")
+                  temporary.replace(self.memory_path)
+
+              def _field_digest(self) -> str:
+                  return digest({
+                      "sequence": self.data["sequence"],
+                      "fieldState": self.data["fieldState"],
+                      "deformationTensor": self.data["deformationTensor"],
+                      "fieldHistory": self.data["fieldHistory"],
+                      "recentTransitions": self.data["recentTransitions"],
+                      "activeAttractors": self.data["activeAttractors"],
+                      "lastStability": self.data["lastStability"],
+                  })
+
+              def _append(self, kind: str, payload: Dict[str, Any]) -> Dict[str, str]:
+                  record = {"schema": "amelia-android-p2-ledger-v1", "kind": kind, "previous": self.head, "payload": payload}
+                  record["recordDigest"] = digest(record)
+                  record["chainDigest"] = digest({"previous": self.head, "record": record["recordDigest"]})
+                  with self.ledger_path.open("a", encoding="utf-8") as stream:
+                      stream.write(canonical(record) + "\n")
+                  self.head = record["chainDigest"]
+                  temporary = self.head_path.with_suffix(".tmp")
+                  temporary.write_text(self.head, encoding="utf-8")
+                  temporary.replace(self.head_path)
+                  return {"recordDigest": record["recordDigest"], "chainDigest": self.head}
+
+              def _source_snapshot(self) -> Dict[str, Any]:
+                  return {
+                      "sequence": int(self.data["sequence"]),
+                      "fieldState": clone(self.data["fieldState"]),
+                      "deformationTensor": clone(self.data["deformationTensor"]),
+                      "fieldHistory": clone(self.data["fieldHistory"]),
+                      "recentTransitions": clone(self.data["recentTransitions"]),
+                      "activeAttractors": clone(self.data["activeAttractors"]),
+                      "lastStability": float(self.data["lastStability"]),
+                      "sourceFieldDigest": self._field_digest(),
+                  }
+
+              def _memory_bias(self, tensor: Sequence[Sequence[float]]) -> List[float]:
+                  weights = [sum(abs(float(value)) for value in row) for row in tensor]
+                  return normalise(weights if any(weights) else [1.0] * ZONES)
+
+              def _branch_snapshot(self, source: Dict[str, Any], condition: str, seal_digest: str) -> Dict[str, Any]:
+                  if condition == "FULL":
+                      return {**clone(source), "condition": condition, "memoryEnabled": True, "branchParentSeal": seal_digest}
+                  if condition == "ABLATED":
+                      return {
+                          **clone(source),
+                          "condition": condition,
+                          "deformationTensor": zeros(),
+                          "memoryEnabled": False,
+                          "branchParentSeal": seal_digest,
+                      }
+                  if condition == "NEUTRAL_RESET":
+                      return {
+                          "condition": condition,
+                          "sequence": 0,
+                          "fieldState": list(ZERO),
+                          "deformationTensor": zeros(),
+                          "fieldHistory": [],
+                          "recentTransitions": [],
+                          "activeAttractors": [],
+                          "lastStability": 1.0,
+                          "sourceFieldDigest": source["sourceFieldDigest"],
+                          "memoryEnabled": False,
+                          "branchParentSeal": seal_digest,
+                      }
+                  raise ValueError("Unknown fork condition")
+
+              def _transition(self, request: Dict[str, Any], snap: Dict[str, Any]) -> Dict[str, Any]:
+                  pre = snap["fieldState"]
+                  memory = self._memory_bias(snap["deformationTensor"])
+                  kernel = []
+                  for zone in range(ZONES):
+                      ring = 0.5 * (pre[(zone - 1) % ZONES] + pre[(zone + 1) % ZONES])
+                      kernel.append(0.42 * pre[zone] + 0.32 * request["drive"][zone] + 0.18 * memory[zone] + 0.05 * ring + 0.03 * pre[9 - zone])
+                  kernel = normalise(kernel)
+                  first = max(range(ZONES), key=lambda zone: (kernel[zone], -zone))
+                  def edges(zone: int) -> List[Dict[str, Any]]:
+                      return [{"to": (zone + 1) % ZONES, "kind": "ring"}, {"to": 9 - zone, "kind": "syzygy"}, {"to": (zone + 3) % ZONES, "kind": "diagonal"}]
+                  edge_one = max(edges(first), key=lambda edge: (kernel[edge["to"]], -edge["to"]))
+                  second = edge_one["to"]
+                  edge_two = max([edge for edge in edges(second) if edge["to"] != first], key=lambda edge: (kernel[edge["to"]], -edge["to"]))
+                  third = edge_two["to"]
+                  flux = round(sum(abs(kernel[zone] - kernel[9 - zone]) for zone in range(5)) / 5.0, 12)
+                  field = list(kernel)
+                  modules: List[Dict[str, str]] = []
+                  if flux >= 0.025:
+                      field = normalise([0.88 * field[zone] + 0.12 * field[9 - zone] for zone in range(ZONES)])
+                      modules.append({"module": "syzygetic_coupling", "effect": "complement-weighted update"})
+                  field = normalise([0.92 * field[zone] + 0.04 * (field[(zone - 1) % ZONES] + field[(zone + 1) % ZONES]) for zone in range(ZONES)])
+                  modules.append({"module": "rhizomatic_recombination", "effect": "ring-neighbour diffusion"})
+                  field[first] += 0.035 + 0.015 * memory[first]
+                  field = normalise(field)
+                  modules.append({"module": "attractor_consolidation", "effect": "route-dominant bounded reinforcement"})
+                  new_tensor = zeros()
+                  if snap["memoryEnabled"]:
+                      for row in range(ZONES):
+                          for column in range(ZONES):
+                              syzygy = field[row] - field[column] if row + column == 9 else 0.0
+                              new_tensor[row][column] = round(0.988 * snap["deformationTensor"][row][column] + 0.055 * field[row] * pre[column] + 0.016 * syzygy, 12)
+                  else:
+                      new_tensor = clone(snap["deformationTensor"])
+                  entropy = round(-sum(value * math.log(value) for value in kernel if value > 0.0) / math.log(ZONES), 12)
+                  top = max(field)
+                  trace = {
+                      "schema": "amelia-android-p2-raw-transition-v1",
+                      "condition": snap["condition"],
+                      "branchParentSeal": snap["branchParentSeal"],
+                      "sourceFieldDigest": snap["sourceFieldDigest"],
+                      "sequence": int(snap["sequence"]) + 1,
+                      "inputDigest": request["inputDigest"],
+                      "preState": clone(pre),
+                      "preTensorNorm": tensor_norm(snap["deformationTensor"]),
+                      "kernelState": kernel,
+                      "fieldState": field,
+                      "nextTensor": new_tensor,
+                      "postTensorNorm": tensor_norm(new_tensor),
+                      "route": [first, second, third],
+                      "routeEdges": [{"from": first, "to": second, "kind": edge_one["kind"]}, {"from": second, "to": third, "kind": edge_two["kind"]}],
+                      "modules": modules,
+                      "kernelDeltaL1": l1(pre, kernel),
+                      "fieldEntropy": entropy,
+                      "syzygyFlux": flux,
+                      "postStability": round(max(0.0, 1.0 - l1(pre, field) / 2.0), 12),
+                      "activeAttractors": [zone for zone, value in enumerate(field) if value >= top * 0.92],
+                      "memoryEnabled": bool(snap["memoryEnabled"]),
+                      "configDigest": self.config_digest,
+                  }
+                  trace["causalDigest"] = digest(trace)
+                  return trace
+
+              def develop(self, raw_input: str) -> Dict[str, Any]:
+                  if not raw_input.strip():
+                      raise ValueError("A non-empty developmental input is required")
+                  request = input_record(raw_input)
+                  source = self._source_snapshot()
+                  snap = self._branch_snapshot(source, "FULL", "developmental-turn")
+                  trace = self._transition(request, snap)
+                  event = {"sequence": trace["sequence"], "inputDigest": trace["inputDigest"], "route": trace["route"], "causalDigest": trace["causalDigest"], "stability": trace["postStability"]}
+                  self.data["sequence"] = trace["sequence"]
+                  self.data["fieldState"] = trace["fieldState"]
+                  self.data["deformationTensor"] = trace["nextTensor"]
+                  self.data["activeAttractors"] = trace["activeAttractors"]
+                  self.data["lastStability"] = trace["postStability"]
+                  self.data["fieldHistory"] = (self.data["fieldHistory"] + [event])[-200:]
+                  self.data["recentTransitions"] = (self.data["recentTransitions"] + [event])[-50:]
+                  self._write(self.data)
+                  ledger = self._append("developmental_full_turn", {"rawInput": raw_input, "trace": trace, "fieldDigest": self._field_digest()})
+                  return {"ok": True, "kind": "development", "trace": trace, "history": len(self.data["fieldHistory"]), "fieldDigest": self._field_digest(), "ledgerHead": ledger["chainDigest"]}
+
+              def fork(self, raw_input: str) -> Dict[str, Any]:
+                  if not raw_input.strip():
+                      raise ValueError("A non-empty fork input is required")
+                  before_field_digest = self._field_digest()
+                  source = self._source_snapshot()
+                  request = input_record(raw_input)
+                  self.data["forkCounter"] = int(self.data.get("forkCounter", 0)) + 1
+                  created = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+                  identity = {"counter": self.data["forkCounter"], "source": source["sourceFieldDigest"], "input": request["inputDigest"], "createdUtc": created}
+                  fork_id = "P2-FORK-" + digest(identity)[:16]
+                  capsule = {
+                      "schema": "amelia-android-p2-sealed-fork-v1",
+                      "studyId": "AMELIA-ANDROID-P2-MATCHED-FORK",
+                      "executionId": fork_id,
+                      "createdUtc": created,
+                      "sourceSnapshot": source,
+                      "sourceFieldDigest": source["sourceFieldDigest"],
+                      "request": request,
+                      "conditions": {
+                          "FULL": "exact source state and full deformation tensor",
+                          "ABLATED": "exact source present state with zero deformation tensor and memory disabled",
+                          "NEUTRAL_RESET": "same sealed request with zero field/tensor/history reset baseline",
+                      },
+                      "pairedStream": "p2-deterministic-0; no PRNG",
+                      "observationWindow": self.config["observationWindow"],
+                      "predeclaredMeasures": self.config["measures"],
+                      "effectFormula": "fieldDeltaL1 = L1(branch.fieldState, source.fieldState); fullBranchDeltaL1 = L1(branch.fieldState, FULL.fieldState)",
+                      "thresholds": "none; descriptive raw assay only",
+                      "configDigest": self.config_digest,
+                  }
+                  seal_digest = digest(capsule)
+                  capsule["sealDigest"] = seal_digest
+                  seal = self._append("fork_sealed_before_execution", capsule)
+                  try:
+                      branches = {condition: self._transition(request, self._branch_snapshot(source, condition, seal_digest)) for condition in ("FULL", "ABLATED", "NEUTRAL_RESET")}
+                  except Exception as error:
+                      self._append("fork_failure", {"executionId": fork_id, "sealDigest": seal_digest, "errorType": type(error).__name__, "error": str(error)})
+                      raise
+                  raw = self._append("fork_raw_transitions_before_scoring", {"executionId": fork_id, "sealDigest": seal_digest, "branches": branches})
+                  summary = {}
+                  full_state = branches["FULL"]["fieldState"]
+                  for condition, branch in branches.items():
+                      summary[condition] = {
+                          "route": branch["route"],
+                          "fieldDeltaL1": l1(branch["fieldState"], source["fieldState"]),
+                          "fullBranchDeltaL1": l1(branch["fieldState"], full_state),
+                          "stability": branch["postStability"],
+                          "tensorNorm": branch["postTensorNorm"],
+                          "activeAttractors": branch["activeAttractors"],
+                          "causalDigest": branch["causalDigest"],
+                      }
+                  after_field_digest = self._field_digest()
+                  invariants = {
+                      "fullAndAblatedSamePreState": branches["FULL"]["preState"] == branches["ABLATED"]["preState"],
+                      "fullAndAblatedSameSourceDigest": branches["FULL"]["sourceFieldDigest"] == branches["ABLATED"]["sourceFieldDigest"],
+                      "neutralExplicitResetBaseline": branches["NEUTRAL_RESET"]["preState"] == ZERO and not branches["NEUTRAL_RESET"]["memoryEnabled"],
+                      "sourceFieldUnmutated": before_field_digest == after_field_digest,
+                      "rawLedgerHead": raw["chainDigest"],
+                  }
+                  scored = self._append("fork_descriptive_measurement", {"executionId": fork_id, "sealDigest": seal_digest, "summary": summary, "invariants": invariants})
+                  self.data["lastFork"] = {"capsule": capsule, "expected": {condition: branch["causalDigest"] for condition, branch in branches.items()}, "summary": summary, "invariants": invariants}
+                  self._write(self.data)
+                  return {"ok": True, "kind": "fork", "capsule": capsule, "branches": branches, "summary": summary, "invariants": invariants, "ledger": {"seal": seal["chainDigest"], "raw": raw["chainDigest"], "measurement": scored["chainDigest"]}}
+
+              def verify(self) -> Dict[str, Any]:
+                  last = self.data.get("lastFork")
+                  if not last:
+                      raise ValueError("Seal and run one fork before verification")
+                  capsule = last["capsule"]
+                  source = capsule["sourceSnapshot"]
+                  request = capsule["request"]
+                  observed = {condition: self._transition(request, self._branch_snapshot(source, condition, capsule["sealDigest"])) for condition in ("FULL", "ABLATED", "NEUTRAL_RESET")}
+                  matches = {condition: observed[condition]["causalDigest"] == last["expected"][condition] for condition in observed}
+                  record = self._append("fork_deterministic_verification", {"executionId": capsule["executionId"], "sealDigest": capsule["sealDigest"], "matches": matches, "observed": {condition: observed[condition]["causalDigest"] for condition in observed}})
+                  return {"ok": True, "kind": "verify", "executionId": capsule["executionId"], "matches": matches, "allMatch": all(matches.values()), "ledgerHead": record["chainDigest"]}
 
               def reset(self) -> Dict[str, Any]:
-                  self.data = self.fresh(); self.write(self.data); head = self.ledger("explicit_memory_reset", {"sequence": 0})
-                  return {"ok": True, "kind": "reset", "sequence": 0, "ledgerHead": head}
+                  self.data = self._fresh()
+                  self._write(self.data)
+                  record = self._append("explicit_p2_memory_reset", {"sequence": 0})
+                  return {"ok": True, "kind": "reset", "sequence": 0, "ledgerHead": record["chainDigest"]}
 
-          def runtime(root: str) -> Runtime:
-              key = str(Path(root))
-              if key not in RUNTIMES: RUNTIMES[key] = Runtime(key)
+          def instance(storage_dir: str) -> ForkAssay:
+              key = str(Path(storage_dir))
+              if key not in RUNTIMES:
+                  RUNTIMES[key] = ForkAssay(key)
               return RUNTIMES[key]
 
-          def call(operation):
+          def guarded(action):
               try:
-                  with LOCK: return json.dumps(operation(), ensure_ascii=False, sort_keys=True)
-              except Exception as error: return json.dumps({"ok": False, "error": str(error), "errorType": type(error).__name__}, ensure_ascii=False, sort_keys=True)
+                  with LOCK:
+                      return json.dumps(action(), ensure_ascii=False, sort_keys=True)
+              except Exception as error:
+                  return json.dumps({"ok": False, "errorType": type(error).__name__, "error": str(error)}, ensure_ascii=False, sort_keys=True)
 
-          def process_turn(question: str, storage_dir: str, condition: str) -> str: return call(lambda: runtime(storage_dir).turn(question, condition))
-          def verify_last_replay(storage_dir: str) -> str: return call(lambda: runtime(storage_dir).replay())
-          def reset_experiment(storage_dir: str) -> str: return call(lambda: runtime(storage_dir).reset())
+          def develop_memory(raw_input: str, storage_dir: str) -> str:
+              return guarded(lambda: instance(storage_dir).develop(raw_input))
+
+          def seal_and_run_fork(raw_input: str, storage_dir: str) -> str:
+              return guarded(lambda: instance(storage_dir).fork(raw_input))
+
+          def verify_last_fork(storage_dir: str) -> str:
+              return guarded(lambda: instance(storage_dir).verify())
+
+          def reset_p2(storage_dir: str) -> str:
+              return guarded(lambda: instance(storage_dir).reset())
           EOF
 
-          cat > app/src/main/java/com/amelia/p1/MainActivity.kt <<'EOF'
-          package com.amelia.p1
+          cat > app/src/main/java/com/amelia/p2/MainActivity.kt <<'EOF'
+          package com.amelia.p2
 
           import android.app.Activity
           import android.os.Bundle
           import android.text.InputType
           import android.view.Gravity
-          import android.widget.ArrayAdapter
           import android.widget.Button
           import android.widget.EditText
           import android.widget.LinearLayout
           import android.widget.ScrollView
-          import android.widget.Spinner
           import android.widget.TextView
           import com.chaquo.python.Python
           import org.json.JSONArray
@@ -271,81 +476,91 @@ jobs:
               private lateinit var input: EditText
               private lateinit var output: TextView
               private lateinit var telemetry: TextView
-              private lateinit var condition: Spinner
-              private lateinit var run: Button
-              private val storageDir by lazy { File(filesDir, "amelia_p1").apply { mkdirs() }.absolutePath }
+              private lateinit var develop: Button
+              private val storageDir by lazy { File(filesDir, "amelia_p2").apply { mkdirs() }.absolutePath }
 
               override fun onCreate(savedInstanceState: Bundle?) {
                   super.onCreate(savedInstanceState)
                   val root = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(dp(16), dp(16), dp(16), dp(16)) }
-                  root.addView(TextView(this).apply { text = "AMELIA · ANDROID-P1"; textSize = 23f; gravity = Gravity.CENTER_HORIZONTAL })
-                  root.addView(TextView(this).apply { text = "ProcessFieldMemory · directed routing · no language model in causal loop"; textSize = 12f; gravity = Gravity.CENTER_HORIZONTAL; setPadding(0, dp(5), 0, dp(8)) })
-                  condition = Spinner(this).apply { adapter = ArrayAdapter(this@MainActivity, android.R.layout.simple_spinner_dropdown_item, arrayOf("FULL", "ABLATED", "NEUTRAL_RESET")) }
-                  root.addView(condition)
+                  root.addView(TextView(this).apply { text = "AMELIA · ANDROID-P2"; textSize = 23f; gravity = Gravity.CENTER_HORIZONTAL })
+                  root.addView(TextView(this).apply { text = "Sealed matched-state fork · local only · no language model in causal loop"; textSize = 12f; gravity = Gravity.CENTER_HORIZONTAL; setPadding(0, dp(5), 0, dp(8)) })
                   val readout = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
-                  output = TextView(this).apply { text = "P1 ready. FULL commits ProcessFieldMemory; controls are non-mutating probes."; textSize = 15f; setPadding(0, dp(10), 0, dp(8)) }
-                  telemetry = TextView(this).apply { text = "TELEMETRY · awaiting run"; textSize = 13f; setPadding(dp(8), dp(8), dp(8), dp(8)) }
+                  output = TextView(this).apply { text = "Develop P2 ProcessFieldMemory, then seal one three-branch fork. Fork branches never mutate the source field."; textSize = 15f; setPadding(0, dp(8), 0, dp(8)) }
+                  telemetry = TextView(this).apply { text = "TELEMETRY · no sealed fork yet"; textSize = 13f; setPadding(dp(8), dp(8), dp(8), dp(8)) }
                   readout.addView(output); readout.addView(telemetry)
                   root.addView(ScrollView(this).apply { addView(readout) }, LinearLayout.LayoutParams(-1, 0, 1f))
-                  input = EditText(this).apply { hint = "Input for local substrate"; inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_MULTI_LINE; minLines = 2; maxLines = 4 }
+                  input = EditText(this).apply { hint = "Declared local input"; inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_MULTI_LINE; minLines = 2; maxLines = 4 }
                   root.addView(input)
-                  run = Button(this).apply { text = "RUN P1 TURN"; setOnClickListener { val q = input.text.toString().trim(); if (q.isNotEmpty()) invoke("process_turn", q) } }
-                  root.addView(run)
-                  root.addView(Button(this).apply { text = "VERIFY LAST FULL REPLAY"; setOnClickListener { invoke("verify_last_replay", null) } })
-                  root.addView(Button(this).apply { text = "RESET P1 MEMORY"; setOnClickListener { invoke("reset_experiment", null) } })
+                  develop = Button(this).apply { text = "DEVELOP FULL MEMORY"; setOnClickListener { submit("develop_memory") } }
+                  root.addView(develop)
+                  root.addView(Button(this).apply { text = "SEAL & RUN THREE-BRANCH FORK"; setOnClickListener { submit("seal_and_run_fork") } })
+                  root.addView(Button(this).apply { text = "VERIFY LAST SEALED FORK"; setOnClickListener { invoke("verify_last_fork", null) } })
+                  root.addView(Button(this).apply { text = "RESET P2 MEMORY"; setOnClickListener { invoke("reset_p2", null) } })
                   setContentView(root)
               }
 
-              private fun invoke(function: String, question: String?) {
-                  run.isEnabled = false; output.text = "P1 local process running..."
+              private fun submit(function: String) { val text = input.text.toString().trim(); if (text.isNotEmpty()) invoke(function, text) }
+
+              private fun invoke(function: String, rawInput: String?) {
+                  develop.isEnabled = false; output.text = "P2 local operation running..."
                   Thread {
-                      val text = try {
-                          val module = Python.getInstance().getModule("p1_runtime")
-                          if (function == "process_turn") module.callAttr(function, question, storageDir, condition.selectedItem.toString()).toString() else module.callAttr(function, storageDir).toString()
+                      val result = try {
+                          val module = Python.getInstance().getModule("p2_fork_assay")
+                          if (rawInput == null) module.callAttr(function, storageDir).toString() else module.callAttr(function, rawInput, storageDir).toString()
                       } catch (error: Exception) { JSONObject().put("ok", false).put("error", error.message ?: "Android/Python failure").toString() }
-                      runOnUiThread { render(text); input.setText(""); run.isEnabled = true }
+                      runOnUiThread { render(result); input.setText(""); develop.isEnabled = true }
                   }.start()
               }
 
-              private fun render(text: String) {
-                  val result = JSONObject(text)
-                  if (!result.optBoolean("ok", false)) { output.text = "P1 operation failed."; telemetry.text = "TELEMETRY · ERROR\n${result.optString("error")}"; return }
+              private fun render(raw: String) {
+                  val result = JSONObject(raw)
+                  if (!result.optBoolean("ok", false)) { output.text = "P2 operation failed."; telemetry.text = "TELEMETRY · ERROR\n${result.optString("error")}"; return }
                   when (result.optString("kind")) {
-                      "turn" -> turn(result.getJSONObject("trace"))
-                      "replay" -> { output.text = if (result.optBoolean("match")) "REPLAY VERIFIED · causal output reproduced without mutation." else "REPLAY MISMATCH · inspect ledger."; telemetry.text = "REPLAY\nRoute: ${zones(result.optJSONArray("route"))}\nExpected: ${short(result.optString("expected"))}\nObserved: ${short(result.optString("observed"))}\nLedger: ${short(result.optString("ledgerHead"))}" }
-                      else -> { output.text = "P1 memory reset."; telemetry.text = "RESET\nSequence: ${result.optInt("sequence")}\nLedger: ${short(result.optString("ledgerHead"))}" }
+                      "development" -> development(result)
+                      "fork" -> fork(result)
+                      "verify" -> verification(result)
+                      else -> { output.text = "P2 memory reset."; telemetry.text = "RESET\nSequence: ${result.optInt("sequence")}\nLedger: ${short(result.optString("ledgerHead"))}" }
                   }
               }
 
-              private fun turn(trace: JSONObject) {
-                  val modules = trace.optJSONArray("modules") ?: JSONArray()
-                  val names = (0 until modules.length()).joinToString(", ") { modules.optJSONObject(it)?.optString("module") ?: "" }
-                  val saved = trace.optJSONObject("persistence") ?: JSONObject(); val ledger = trace.optJSONObject("ledger") ?: JSONObject()
-                  output.text = "P1 SUBSTRATE READOUT\n\nCondition: ${trace.optString("condition")}\nRoute: ${zones(trace.optJSONArray("route"))}\nModules: $names\nCommitted memory: ${saved.optBoolean("mutated")}"
-                  telemetry.text = "TELEMETRY · PROCESSFIELDMEMORY\nTurn: ${trace.optInt("sequence")}\nEdges: ${edges(trace.optJSONArray("routeEdges"))}\nKernel ΔL1: ${number(trace.optDouble("kernelDeltaL1"))}\nEntropy: ${number(trace.optDouble("fieldEntropy"))}\nSyzygy flux: ${number(trace.optDouble("syzygyFlux"))}\nStability: ${number(trace.optDouble("preStability"))} → ${number(trace.optDouble("postStability"))}\nTensor: ${number(trace.optDouble("preTensorNorm"))} → ${number(trace.optDouble("postTensorNorm"))}\nAttractors: ${zones(trace.optJSONArray("activeAttractors"))}\nHistory: ${saved.optInt("historyCount")}\nCausal: ${short(trace.optString("causalDigest"))}\nLedger: ${short(ledger.optString("head"))}"
+              private fun development(result: JSONObject) {
+                  val trace = result.getJSONObject("trace")
+                  output.text = "P2 DEVELOPMENT TURN\n\nRoute: ${zones(trace.optJSONArray("route"))}\nHistory: ${result.optInt("history")}\nField: ${short(result.optString("fieldDigest"))}"
+                  telemetry.text = "DEVELOPMENT\nStability: ${n(trace.optDouble("postStability"))}\nTensor: ${n(trace.optDouble("postTensorNorm"))}\nCausal: ${short(trace.optString("causalDigest"))}\nLedger: ${short(result.optString("ledgerHead"))}"
               }
 
-              private fun zones(items: JSONArray?): String = if (items == null) "—" else (0 until items.length()).joinToString(" → ") { "Z${items.optInt(it)}" }
-              private fun edges(items: JSONArray?): String = if (items == null) "—" else (0 until items.length()).joinToString("; ") { i -> items.optJSONObject(i)?.let { "Z${it.optInt("from")}→Z${it.optInt("to")} (${it.optString("kind")})" } ?: "" }
-              private fun number(value: Double): String = String.format(Locale.US, "%.6f", value)
+              private fun fork(result: JSONObject) {
+                  val capsule = result.getJSONObject("capsule"); val branches = result.getJSONObject("branches"); val summary = result.getJSONObject("summary"); val check = result.getJSONObject("invariants"); val ledger = result.getJSONObject("ledger")
+                  output.text = "P2 SEALED MATCHED-STATE FORK\n\nExecution: ${capsule.optString("executionId")}\nSource: ${short(capsule.optString("sourceFieldDigest"))}\nSeal: ${short(capsule.optString("sealDigest"))}\n\nFULL: ${branchText(branches.getJSONObject("FULL"), summary.getJSONObject("FULL"))}\nABLATED: ${branchText(branches.getJSONObject("ABLATED"), summary.getJSONObject("ABLATED"))}\nNEUTRAL_RESET: ${branchText(branches.getJSONObject("NEUTRAL_RESET"), summary.getJSONObject("NEUTRAL_RESET"))}"
+                  telemetry.text = "FORK INVARIANTS\nFULL/ABLATED pre-state matched: ${check.optBoolean("fullAndAblatedSamePreState")}\nSource unmutated: ${check.optBoolean("sourceFieldUnmutated")}\nNeutral reset explicit: ${check.optBoolean("neutralExplicitResetBaseline")}\nRaw: ${short(ledger.optString("raw"))}\nMeasurement: ${short(ledger.optString("measurement"))}"
+              }
+
+              private fun verification(result: JSONObject) {
+                  val matches = result.getJSONObject("matches")
+                  output.text = if (result.optBoolean("allMatch")) "SEALED FORK VERIFIED · all three causal digests reproduced." else "SEALED FORK MISMATCH · inspect the ledger; do not interpret outcomes."
+                  telemetry.text = "FORK VERIFICATION\nFULL: ${matches.optBoolean("FULL")}\nABLATED: ${matches.optBoolean("ABLATED")}\nNEUTRAL_RESET: ${matches.optBoolean("NEUTRAL_RESET")}\nLedger: ${short(result.optString("ledgerHead"))}"
+              }
+
+              private fun branchText(branch: JSONObject, summary: JSONObject): String = "${zones(branch.optJSONArray("route"))}; Δ=${n(summary.optDouble("fieldDeltaL1"))}; FΔ=${n(summary.optDouble("fullBranchDeltaL1"))}"
+              private fun zones(values: JSONArray?): String = if (values == null) "—" else (0 until values.length()).joinToString(" → ") { "Z${values.optInt(it)}" }
+              private fun n(value: Double): String = String.format(Locale.US, "%.6f", value)
               private fun short(value: String): String = if (value.length <= 12) value else value.take(12)
               private fun dp(value: Int): Int = (value * resources.displayMetrics.density).toInt()
           }
           EOF
 
-      - name: Validate local P1 causal path
+      - name: Validate sealed fork invariants
         run: |
-          python3 -m py_compile app/src/main/python/amelia_symbolic_core.py app/src/main/python/p1_runtime.py
-          P1_TEST_DIR="$(mktemp -d)"
-          export P1_TEST_DIR
-          PYTHONPATH=app/src/main/python python3 -c 'import json, os; from p1_runtime import process_turn, verify_last_replay; root=os.environ["P1_TEST_DIR"]; full=json.loads(process_turn("field memory test", root, "FULL")); assert full["ok"] and full["trace"]["persistence"]["mutated"]; ablated=json.loads(process_turn("field memory test", root, "ABLATED")); assert ablated["ok"] and not ablated["trace"]["persistence"]["mutated"]; replay=json.loads(verify_last_replay(root)); assert replay["ok"] and replay["match"]'
+          python3 -m py_compile app/src/main/python/amelia_symbolic_core.py app/src/main/python/p2_fork_assay.py
+          P2_TEST_DIR="$(mktemp -d)"; export P2_TEST_DIR
+          PYTHONPATH=app/src/main/python python3 -c 'import json, os; from p2_fork_assay import develop_memory, seal_and_run_fork, verify_last_fork; root=os.environ["P2_TEST_DIR"]; first=json.loads(develop_memory("developmental field", root)); assert first["ok"]; assay=json.loads(seal_and_run_fork("paired test input", root)); assert assay["ok"] and assay["invariants"]["fullAndAblatedSamePreState"] and assay["invariants"]["sourceFieldUnmutated"]; verify=json.loads(verify_last_fork(root)); assert verify["ok"] and verify["allMatch"]'
 
-      - name: Build Android-P1 APK
+      - name: Build Android-P2 APK
         run: gradle --no-daemon :app:assembleDebug --stacktrace
 
-      - name: Upload Android-P1 APK
+      - name: Upload Android-P2 APK
         uses: actions/upload-artifact@v4
         with:
-          name: Amelia-Android-P1
+          name: Amelia-Android-P2-Fork-Assay
           path: app/build/outputs/apk/debug/app-debug.apk
           retention-days: 14
