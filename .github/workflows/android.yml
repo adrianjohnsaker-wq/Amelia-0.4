@@ -1,4 +1,4 @@
-name: Build Amelia Android-P0 APK
+name: Build Amelia Android-P1 APK
 
 on:
   push:
@@ -11,54 +11,31 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Check out source
-        uses: actions/checkout@v5
+      - uses: actions/checkout@v5
 
-      - name: Set up Java 17
-        uses: actions/setup-java@v5
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: "17"
 
-      - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v4
+      - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: "8.9"
 
-      - name: Create Amelia Android-P0 substrate
+      - name: Create Android-P1 ProcessFieldMemory substrate
         shell: bash
         run: |
           set -euo pipefail
-
           test -f amelia_symbolic_core.py
-
-          mkdir -p app/src/main/java/com/amelia/p0
-          mkdir -p app/src/main/python/amelia_p0
-          mkdir -p app/src/main/res/values
-
-          # Preserve the original working core in the APK.
+          mkdir -p app/src/main/java/com/amelia/p1 app/src/main/python app/src/main/res/values
+          # Legacy asset only: P1 never imports this symbolic text routine.
           cp amelia_symbolic_core.py app/src/main/python/amelia_symbolic_core.py
 
           cat > settings.gradle.kts <<'EOF'
-          pluginManagement {
-              repositories {
-                  google()
-                  mavenCentral()
-                  gradlePluginPortal()
-              }
-          }
-
-          dependencyResolutionManagement {
-              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-              repositories {
-                  google()
-                  mavenCentral()
-              }
-          }
-
-          rootProject.name = "AmeliaAndroidP0"
+          pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }
+          dependencyResolutionManagement { repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS); repositories { google(); mavenCentral() } }
+          rootProject.name = "AmeliaAndroidP1"
           include(":app")
           EOF
 
@@ -75,904 +52,214 @@ jobs:
           EOF
 
           cat > app/build.gradle.kts <<'EOF'
-          plugins {
-              id("com.android.application")
-              id("org.jetbrains.kotlin.android")
-              id("com.chaquo.python")
-          }
-
+          plugins { id("com.android.application"); id("org.jetbrains.kotlin.android"); id("com.chaquo.python") }
           android {
-              namespace = "com.amelia.p0"
+              namespace = "com.amelia.p1"
               compileSdk = 34
-
               defaultConfig {
-                  applicationId = "com.amelia.p0"
+                  applicationId = "com.amelia.p1"
                   minSdk = 24
                   targetSdk = 34
                   versionCode = 1
-                  versionName = "0.2-android-p0"
-
-                  ndk {
-                      abiFilters += listOf("armeabi-v7a", "arm64-v8a")
-                  }
+                  versionName = "0.3-android-p1"
+                  ndk { abiFilters += listOf("armeabi-v7a", "arm64-v8a") }
               }
-
-              compileOptions {
-                  sourceCompatibility = JavaVersion.VERSION_17
-                  targetCompatibility = JavaVersion.VERSION_17
-              }
+              compileOptions { sourceCompatibility = JavaVersion.VERSION_17; targetCompatibility = JavaVersion.VERSION_17 }
           }
-
-          kotlin {
-              jvmToolchain(17)
-          }
-
-          chaquopy {
-              defaultConfig {
-                  version = "3.11"
-              }
-          }
+          kotlin { jvmToolchain(17) }
+          chaquopy { defaultConfig { version = "3.11" } }
           EOF
 
           cat > app/src/main/AndroidManifest.xml <<'EOF'
           <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-              <application
-                  android:name="com.chaquo.python.android.PyApplication"
-                  android:allowBackup="true"
-                  android:label="@string/app_name"
-                  android:theme="@android:style/Theme.Material.Light.NoActionBar">
-
-                  <activity
-                      android:name=".MainActivity"
-                      android:exported="true">
-                      <intent-filter>
-                          <action android:name="android.intent.action.MAIN" />
-                          <category android:name="android.intent.category.LAUNCHER" />
-                      </intent-filter>
-                  </activity>
-              </application>
+            <application android:name="com.chaquo.python.android.PyApplication" android:allowBackup="true" android:label="@string/app_name" android:theme="@android:style/Theme.Material.Light.NoActionBar">
+              <activity android:name=".MainActivity" android:exported="true">
+                <intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter>
+              </activity>
+            </application>
           </manifest>
           EOF
+          echo '<resources><string name="app_name">Amelia P1</string></resources>' > app/src/main/res/values/strings.xml
 
-          cat > app/src/main/res/values/strings.xml <<'EOF'
-          <resources>
-              <string name="app_name">Amelia P0</string>
-          </resources>
-          EOF
-
-          cat > app/src/main/python/amelia_p0/__init__.py <<'EOF'
-          """Amelia Android-P0: local, inspectable Numogram substrate."""
-          EOF
-
-          cat > app/src/main/python/amelia_p0/numogram_kernel.py <<'EOF'
+          cat > app/src/main/python/p1_runtime.py <<'EOF'
+          """Local Amelia P1: ProcessFieldMemory, directed routing and controls."""
           from __future__ import annotations
 
           import hashlib
           import json
-          from typing import Any, Dict, List, Sequence, Tuple
-
-          ZONE_COUNT = 10
-          KERNEL_SCHEMA = "amelia-android-p0-kernel-v1"
-
-          PARAMETERS = {
-              "state_weight": 0.46,
-              "input_weight": 0.31,
-              "memory_weight": 0.15,
-              "ring_weight": 0.05,
-              "syzygy_weight": 0.03,
-          }
-
-
-          def canonical_json(value: Any) -> str:
-              return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
-
-
-          def digest(value: Any) -> str:
-              return hashlib.sha256(canonical_json(value).encode("utf-8")).hexdigest()
-
-
-          def normalise(values: Sequence[float]) -> List[float]:
-              if len(values) != ZONE_COUNT:
-                  raise ValueError("Expected a ten-zone vector")
-              clipped = [max(0.0, float(value)) for value in values]
-              total = sum(clipped)
-              if total <= 0.0:
-                  return [round(1.0 / ZONE_COUNT, 12) for _ in range(ZONE_COUNT)]
-
-              result = [round(value / total, 12) for value in clipped]
-              result[-1] = round(1.0 - sum(result[:-1]), 12)
-              return result
-
-
-          def canonicalise_question(text: str) -> str:
-              return " ".join(text.casefold().split())
-
-
-          def encode_question(text: str) -> Dict[str, Any]:
-              canonical = canonicalise_question(text)
-              bins = [0.0] * ZONE_COUNT
-
-              for position, character in enumerate(canonical):
-                  if "a" <= character <= "z":
-                      weight = ord(character) - 96
-                  elif character.isdigit():
-                      weight = int(character) + 1
-                  else:
-                      continue
-                  bins[(weight + position) % ZONE_COUNT] += weight
-
-              if sum(bins) == 0.0:
-                  bins[0] = 1.0
-
-              return {
-                  "input_digest": hashlib.sha256(canonical.encode("utf-8")).hexdigest(),
-                  "canonical_length": len(canonical),
-                  "drive": normalise(bins),
-              }
-
-
-          def initial_state() -> List[float]:
-              return [round(1.0 / ZONE_COUNT, 12) for _ in range(ZONE_COUNT)]
-
-
-          def _validate(name: str, vector: Sequence[float]) -> None:
-              if len(vector) != ZONE_COUNT:
-                  raise ValueError(f"{name} must contain ten values")
-
-
-          def _pick(state: Sequence[float], candidates: Sequence[int]) -> int:
-              return max(candidates, key=lambda index: (state[index], -index))
-
-
-          def _route(state: Sequence[float]) -> Tuple[List[int], List[int]]:
-              ranked = sorted(range(ZONE_COUNT), key=lambda index: (-state[index], index))
-              first = ranked[0]
-
-              second = _pick(
-                  state,
-                  [(first - 1) % ZONE_COUNT, (first + 1) % ZONE_COUNT, 9 - first],
-              )
-
-              third_pool = []
-              for candidate in (
-                  (second - 1) % ZONE_COUNT,
-                  (second + 1) % ZONE_COUNT,
-                  9 - second,
-                  (first - 1) % ZONE_COUNT,
-                  (first + 1) % ZONE_COUNT,
-              ):
-                  if candidate not in {first, second} and candidate not in third_pool:
-                      third_pool.append(candidate)
-
-              third = _pick(state, third_pool) if third_pool else ranked[2]
-              return [first, second, third], ranked
-
-
-          def kernel_step(
-              state: Sequence[float],
-              drive: Sequence[float],
-              memory_bias: Sequence[float],
-          ) -> Tuple[List[float], Dict[str, Any]]:
-              _validate("state", state)
-              _validate("drive", drive)
-              _validate("memory_bias", memory_bias)
-
-              next_values = []
-              for zone in range(ZONE_COUNT):
-                  ring_field = 0.5 * (
-                      float(state[(zone - 1) % ZONE_COUNT])
-                      + float(state[(zone + 1) % ZONE_COUNT])
-                  )
-                  syzygy_field = float(state[9 - zone])
-
-                  next_values.append(
-                      PARAMETERS["state_weight"] * float(state[zone])
-                      + PARAMETERS["input_weight"] * float(drive[zone])
-                      + PARAMETERS["memory_weight"] * float(memory_bias[zone])
-                      + PARAMETERS["ring_weight"] * ring_field
-                      + PARAMETERS["syzygy_weight"] * syzygy_field
-                  )
-
-              next_state = normalise(next_values)
-              route, ranked = _route(next_state)
-
-              return next_state, {
-                  "route": route,
-                  "ranked_zones": ranked,
-                  "state_delta_l1": round(
-                      sum(abs(next_state[index] - float(state[index])) for index in range(ZONE_COUNT)),
-                      12,
-                  ),
-                  "syzygy_flux": round(
-                      sum(abs(next_state[index] - next_state[9 - index]) for index in range(5)) / 5.0,
-                      12,
-                  ),
-              }
-
-
-          def configuration() -> Dict[str, Any]:
-              return {
-                  "schema": KERNEL_SCHEMA,
-                  "zone_count": ZONE_COUNT,
-                  "parameters": PARAMETERS,
-                  "ring_neighbours": {
-                      str(zone): [(zone - 1) % ZONE_COUNT, (zone + 1) % ZONE_COUNT]
-                      for zone in range(ZONE_COUNT)
-                  },
-                  "syzygy_map": {str(zone): 9 - zone for zone in range(ZONE_COUNT)},
-                  "input_encoding": "letter/digit-weighted ten-bin digital reduction",
-                  "stochasticity": "none",
-              }
-          EOF
-
-          cat > app/src/main/python/amelia_p0/process_memory.py <<'EOF'
-          from __future__ import annotations
-
-          import json
           import math
+          import threading
           from pathlib import Path
           from typing import Any, Dict, List, Sequence
 
-          from .numogram_kernel import ZONE_COUNT, canonical_json, digest, initial_state, normalise
+          Z = 10
+          SCHEMA = "amelia-android-p1-process-field-v1"
+          ZERO = [round(1 / Z, 12) for _ in range(Z)]
+          LOCK = threading.RLock()
+          RUNTIMES: Dict[str, "Runtime"] = {}
 
-          MEMORY_SCHEMA = "amelia-android-p0-process-memory-v1"
-          PARAMETERS = {
-              "history_limit": 200,
-              "decay": 0.012,
-              "learning_rate": 0.05,
-              "syzygy_gain": 0.02,
-          }
+          def canonical(value: Any) -> str:
+              return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
 
+          def digest(value: Any) -> str:
+              return hashlib.sha256(canonical(value).encode("utf-8")).hexdigest()
 
-          def _zero_tensor() -> List[List[float]]:
-              return [[0.0 for _ in range(ZONE_COUNT)] for _ in range(ZONE_COUNT)]
+          def norm(values: Sequence[float]) -> List[float]:
+              values = [max(0.0, float(v)) for v in values]
+              total = sum(values)
+              if total <= 0:
+                  return list(ZERO)
+              answer = [round(v / total, 12) for v in values]
+              answer[-1] = round(1 - sum(answer[:-1]), 12)
+              return answer
 
+          def tensor() -> List[List[float]]:
+              return [[0.0 for _ in range(Z)] for _ in range(Z)]
 
-          def _tensor_norm(tensor: Sequence[Sequence[float]]) -> float:
-              return round(
-                  math.sqrt(sum(float(value) ** 2 for row in tensor for value in row)),
-                  12,
-              )
+          def tn(value: Sequence[Sequence[float]]) -> float:
+              return round(math.sqrt(sum(float(x) ** 2 for row in value for x in row)), 12)
 
+          def l1(left: Sequence[float], right: Sequence[float]) -> float:
+              return round(sum(abs(float(a) - float(b)) for a, b in zip(left, right)), 12)
 
-          def _matrix_delta(
-              before: Sequence[Sequence[float]],
-              after: Sequence[Sequence[float]],
-          ) -> float:
-              return round(
-                  math.sqrt(
-                      sum(
-                          (float(after[row][column]) - float(before[row][column])) ** 2
-                          for row in range(ZONE_COUNT)
-                          for column in range(ZONE_COUNT)
-                      )
-                  ),
-                  12,
-              )
+          def input_drive(question: str) -> Dict[str, Any]:
+              cleaned = " ".join(question.casefold().split())
+              bins = [0.0] * Z
+              for position, char in enumerate(cleaned):
+                  if "a" <= char <= "z": weight = ord(char) - 96
+                  elif char.isdigit(): weight = int(char) + 1
+                  else: continue
+                  bins[(position + weight) % Z] += weight
+              if not any(bins): bins[0] = 1.0
+              return {"digest": hashlib.sha256(cleaned.encode("utf-8")).hexdigest(), "length": len(cleaned), "drive": norm(bins)}
 
+          class Runtime:
+              def __init__(self, root: str) -> None:
+                  self.root = Path(root); self.root.mkdir(parents=True, exist_ok=True)
+                  self.memory_path = self.root / "process_field_memory.json"
+                  self.ledger_path = self.root / "p1-ledger.jsonl"
+                  self.head_path = self.root / "p1-ledger-head.txt"
+                  self.data = self.load()
+                  self.head = self.head_path.read_text(encoding="utf-8").strip() if self.head_path.exists() else "0" * 64
+                  self.config_digest = digest({"schema": SCHEMA, "conditions": ["FULL", "ABLATED", "NEUTRAL_RESET"], "language": "display-only; no LLM in causal loop"})
 
-          class ProcessMemory:
-              def __init__(self, storage_dir: str) -> None:
-                  self.root = Path(storage_dir)
-                  self.root.mkdir(parents=True, exist_ok=True)
-                  self.path = self.root / "process_memory.json"
-                  self.state: List[float] = initial_state()
-                  self.tensor: List[List[float]] = _zero_tensor()
-                  self.sequence = 0
-                  self.events: List[Dict[str, Any]] = []
-                  self._load_or_create()
+              def fresh(self) -> Dict[str, Any]:
+                  return {"schema": SCHEMA, "sequence": 0, "fieldState": list(ZERO), "fieldHistory": [], "activeAttractors": [], "recentTransitions": [], "lastStability": 1.0, "deformationTensor": tensor(), "lastReplay": None}
 
-              def _validate(self, state: Any, tensor: Any) -> None:
-                  if not isinstance(state, list) or len(state) != ZONE_COUNT:
-                      raise ValueError("Persisted state is not a ten-zone vector")
-                  if (
-                      not isinstance(tensor, list)
-                      or len(tensor) != ZONE_COUNT
-                      or any(not isinstance(row, list) or len(row) != ZONE_COUNT for row in tensor)
-                  ):
-                      raise ValueError("Persisted deformation tensor is not 10x10")
+              def load(self) -> Dict[str, Any]:
+                  if not self.memory_path.exists():
+                      value = self.fresh(); self.write(value); return value
+                  value = json.loads(self.memory_path.read_text(encoding="utf-8"))
+                  if value.get("schema") != SCHEMA or len(value.get("fieldState", [])) != Z or len(value.get("deformationTensor", [])) != Z:
+                      raise ValueError("Invalid ProcessFieldMemory state")
+                  return value
 
-              def _load_or_create(self) -> None:
-                  if not self.path.exists():
-                      self._persist()
-                      return
+              def write(self, value: Dict[str, Any]) -> None:
+                  temporary = self.memory_path.with_suffix(".tmp")
+                  temporary.write_text(canonical(value), encoding="utf-8"); temporary.replace(self.memory_path)
 
-                  payload = json.loads(self.path.read_text(encoding="utf-8"))
-                  if payload.get("schema") != MEMORY_SCHEMA:
-                      raise ValueError("Unsupported Process Memory schema")
+              def ledger(self, kind: str, payload: Dict[str, Any]) -> str:
+                  record = {"schema": "amelia-android-p1-ledger-v1", "kind": kind, "previous": self.head, "payload": payload}
+                  record["recordDigest"] = digest(record); record["chainDigest"] = digest({"previous": self.head, "record": record["recordDigest"]})
+                  with self.ledger_path.open("a", encoding="utf-8") as file: file.write(canonical(record) + "\n")
+                  self.head = record["chainDigest"]
+                  temporary = self.head_path.with_suffix(".tmp"); temporary.write_text(self.head, encoding="utf-8"); temporary.replace(self.head_path)
+                  return self.head
 
-                  self._validate(payload.get("state"), payload.get("tensor"))
-                  self.state = [float(value) for value in payload["state"]]
-                  self.tensor = [
-                      [float(value) for value in row] for row in payload["tensor"]
-                  ]
-                  self.sequence = int(payload.get("sequence", 0))
-                  self.events = list(payload.get("events", []))
+              def snapshot(self, condition: str) -> Dict[str, Any]:
+                  if condition == "FULL":
+                      return {"condition": condition, "sequence": self.data["sequence"], "fieldState": list(self.data["fieldState"]), "deformationTensor": [list(row) for row in self.data["deformationTensor"]], "historyCount": len(self.data["fieldHistory"]), "lastStability": self.data["lastStability"], "memoryEnabled": True}
+                  if condition == "ABLATED":
+                      return {"condition": condition, "sequence": self.data["sequence"], "fieldState": list(self.data["fieldState"]), "deformationTensor": tensor(), "historyCount": len(self.data["fieldHistory"]), "lastStability": self.data["lastStability"], "memoryEnabled": False}
+                  if condition == "NEUTRAL_RESET":
+                      return {"condition": condition, "sequence": 0, "fieldState": list(ZERO), "deformationTensor": tensor(), "historyCount": 0, "lastStability": 1.0, "memoryEnabled": False}
+                  raise ValueError("Choose FULL, ABLATED or NEUTRAL_RESET")
 
-              def _persist(self) -> None:
-                  payload = {
-                      "schema": MEMORY_SCHEMA,
-                      "parameters": PARAMETERS,
-                      "state": self.state,
-                      "tensor": self.tensor,
-                      "sequence": self.sequence,
-                      "events": self.events,
-                  }
-                  temporary = self.path.with_suffix(".tmp")
-                  temporary.write_text(canonical_json(payload), encoding="utf-8")
-                  temporary.replace(self.path)
+              def bias(self, value: Sequence[Sequence[float]]) -> List[float]:
+                  weights = [sum(abs(float(x)) for x in row) for row in value]
+                  return norm(weights if any(weights) else [1.0] * Z)
 
-              def state_digest(self) -> str:
-                  return digest(
-                      {
-                          "state": self.state,
-                          "tensor": self.tensor,
-                          "sequence": self.sequence,
-                      }
-                  )
+              def calculate(self, question: str, snap: Dict[str, Any]) -> Dict[str, Any]:
+                  encoded = input_drive(question); pre = list(snap["fieldState"]); old_tensor = snap["deformationTensor"]; memory = self.bias(old_tensor)
+                  kernel = []
+                  for zone in range(Z):
+                      ring = 0.5 * (pre[(zone - 1) % Z] + pre[(zone + 1) % Z])
+                      kernel.append(0.42 * pre[zone] + 0.32 * encoded["drive"][zone] + 0.18 * memory[zone] + 0.05 * ring + 0.03 * pre[9-zone])
+                  kernel = norm(kernel)
+                  first = max(range(Z), key=lambda z: (kernel[z], -z))
+                  def edges(z: int) -> List[Dict[str, Any]]: return [{"to": (z+1)%Z, "kind": "ring"}, {"to": 9-z, "kind": "syzygy"}, {"to": (z+3)%Z, "kind": "diagonal"}]
+                  e1 = max(edges(first), key=lambda e: (kernel[e["to"]], -e["to"])); second = e1["to"]
+                  e2 = max([e for e in edges(second) if e["to"] != first], key=lambda e: (kernel[e["to"]], -e["to"])); third = e2["to"]
+                  flux = round(sum(abs(kernel[z] - kernel[9-z]) for z in range(5)) / 5, 12)
+                  field = list(kernel); modules = []
+                  if flux >= 0.025:
+                      field = norm([0.88 * field[z] + 0.12 * field[9-z] for z in range(Z)]); modules.append({"module": "syzygetic_coupling", "effect": "complement-weighted update"})
+                  field = norm([0.92 * field[z] + 0.04 * (field[(z-1)%Z] + field[(z+1)%Z]) for z in range(Z)]); modules.append({"module": "rhizomatic_recombination", "effect": "ring-neighbour diffusion"})
+                  field[first] += 0.035 + 0.015 * memory[first]; field = norm(field); modules.append({"module": "attractor_consolidation", "effect": "route-dominant bounded reinforcement"})
+                  new_tensor = tensor()
+                  if snap["memoryEnabled"]:
+                      for row in range(Z):
+                          for col in range(Z):
+                              syzygy = field[row] - field[col] if row + col == 9 else 0.0
+                              new_tensor[row][col] = round(0.988 * old_tensor[row][col] + 0.055 * field[row] * pre[col] + 0.016 * syzygy, 12)
+                  else: new_tensor = old_tensor
+                  top = max(field); attractors = [z for z, value in enumerate(field) if value >= top * 0.92]
+                  entropy = round(-sum(value * math.log(value) for value in kernel if value > 0) / math.log(Z), 12)
+                  trace = {"schema": "amelia-android-p1-trace-v1", "condition": snap["condition"], "sequence": int(snap["sequence"]) + 1, "inputDigest": encoded["digest"], "inputLength": encoded["length"], "preSnapshot": snap, "kernelState": kernel, "fieldState": field, "nextTensor": new_tensor, "route": [first, second, third], "routeEdges": [{"from": first, "to": second, "kind": e1["kind"]}, {"from": second, "to": third, "kind": e2["kind"]}], "modules": modules, "kernelDeltaL1": l1(pre, kernel), "fieldEntropy": entropy, "syzygyFlux": flux, "preStability": snap["lastStability"], "postStability": round(max(0.0, 1.0 - l1(pre, field)/2), 12), "preTensorNorm": tn(old_tensor), "postTensorNorm": tn(new_tensor), "activeAttractors": attractors, "configDigest": self.config_digest}
+                  trace["causalDigest"] = digest(trace); return trace
 
-              def memory_bias(self) -> List[float]:
-                  weights = [sum(abs(value) for value in row) for row in self.tensor]
-                  return normalise(weights if any(weights) else [1.0] * ZONE_COUNT)
-
-              def prepare_update(
-                  self,
-                  pre_state: Sequence[float],
-                  post_state: Sequence[float],
-                  drive: Sequence[float],
-                  route: Sequence[int],
-                  input_digest: str,
-              ) -> Dict[str, Any]:
-                  if list(pre_state) != self.state:
-                      raise RuntimeError("Process Memory changed before update preparation")
-
-                  next_state = normalise(post_state)
-                  next_tensor = _zero_tensor()
-
-                  for row in range(ZONE_COUNT):
-                      for column in range(ZONE_COUNT):
-                          coupling = next_state[row] * float(pre_state[column])
-                          syzygy_term = (
-                              next_state[row] - next_state[column]
-                              if row + column == 9
-                              else 0.0
-                          )
-                          next_tensor[row][column] = round(
-                              (1.0 - PARAMETERS["decay"]) * self.tensor[row][column]
-                              + PARAMETERS["learning_rate"] * coupling
-                              + PARAMETERS["syzygy_gain"] * syzygy_term,
-                              12,
-                          )
-
-                  next_sequence = self.sequence + 1
-                  post_digest = digest(
-                      {
-                          "state": next_state,
-                          "tensor": next_tensor,
-                          "sequence": next_sequence,
-                      }
-                  )
-
-                  return {
-                      "pre_state_digest": self.state_digest(),
-                      "post_state_digest": post_digest,
-                      "next_state": next_state,
-                      "next_tensor": next_tensor,
-                      "next_sequence": next_sequence,
-                      "event": {
-                          "sequence": next_sequence,
-                          "input_digest": input_digest,
-                          "route": list(route),
-                          "drive": list(drive),
-                          "tensor_norm": _tensor_norm(next_tensor),
-                      },
-                      "tensor_norm": _tensor_norm(next_tensor),
-                      "tensor_delta": _matrix_delta(self.tensor, next_tensor),
-                      "history_size": min(len(self.events) + 1, PARAMETERS["history_limit"]),
-                  }
-
-              def commit(self, prepared: Dict[str, Any], trace_digest: str) -> Dict[str, Any]:
-                  if prepared["pre_state_digest"] != self.state_digest():
-                      raise RuntimeError("Process Memory changed before commit")
-
-                  self.state = list(prepared["next_state"])
-                  self.tensor = [list(row) for row in prepared["next_tensor"]]
-                  self.sequence = int(prepared["next_sequence"])
-
-                  event = dict(prepared["event"])
-                  event["trace_digest"] = trace_digest
-                  event["state_digest"] = self.state_digest()
-                  self.events = (self.events + [event])[-PARAMETERS["history_limit"] :]
-                  self._persist()
-
-                  return {
-                      "sequence": self.sequence,
-                      "state_digest": self.state_digest(),
-                      "tensor_norm": prepared["tensor_norm"],
-                      "tensor_delta": prepared["tensor_delta"],
-                      "history_size": len(self.events),
-                  }
-
-
-          def configuration() -> Dict[str, Any]:
-              return {
-                  "schema": MEMORY_SCHEMA,
-                  "zone_count": ZONE_COUNT,
-                  "parameters": PARAMETERS,
-                  "persistence": "application filesDir / amelia_p0 / process_memory.json",
-              }
-          EOF
-
-          cat > app/src/main/python/amelia_p0/module_registry.py <<'EOF'
-          from __future__ import annotations
-
-          import math
-          from typing import Any, Dict, List, Sequence, Tuple
-
-          from .numogram_kernel import ZONE_COUNT
-
-          REGISTRY_SCHEMA = "amelia-android-p0-module-registry-v1"
-          THRESHOLDS = {
-              "temporal_shift": 0.07,
-              "syzygy_flux": 0.06,
-              "field_entropy": 0.86,
-          }
-
-          MODULES = {
-              "temporal_fold": "Blend the present field with retained process-memory bias.",
-              "syzygetic_coupling": "Reweight each zone through its stipulated complement.",
-              "rhizomatic_recombination": "Diffuse field intensity across ring-neighbour relations.",
-              "differential_tension": "Use the dominant route zone as a bounded fallback emphasis.",
-          }
-
-
-          def _entropy(vector: Sequence[float]) -> float:
-              entropy = -sum(
-                  value * math.log(value)
-                  for value in vector
-                  if value > 0.0
-              )
-              return round(entropy / math.log(ZONE_COUNT), 12)
-
-
-          def select_modules(
-              pre_state: Sequence[float],
-              kernel_state: Sequence[float],
-              memory_bias: Sequence[float],
-              syzygy_flux: float,
-          ) -> Tuple[List[str], Dict[str, float]]:
-              temporal_shift = 0.5 * sum(
-                  abs(float(kernel_state[index]) - float(pre_state[index]))
-                  for index in range(ZONE_COUNT)
-              )
-              entropy = _entropy(kernel_state)
-              memory_alignment = sum(
-                  float(kernel_state[index]) * float(memory_bias[index])
-                  for index in range(ZONE_COUNT)
-              )
-
-              selected: List[str] = []
-              if temporal_shift >= THRESHOLDS["temporal_shift"]:
-                  selected.append("temporal_fold")
-              if syzygy_flux >= THRESHOLDS["syzygy_flux"]:
-                  selected.append("syzygetic_coupling")
-              if entropy >= THRESHOLDS["field_entropy"]:
-                  selected.append("rhizomatic_recombination")
-              if not selected:
-                  selected.append("differential_tension")
-
-              return selected, {
-                  "temporal_shift": round(temporal_shift, 12),
-                  "syzygy_flux": round(float(syzygy_flux), 12),
-                  "field_entropy": entropy,
-                  "memory_alignment": round(memory_alignment, 12),
-              }
-
-
-          def configuration() -> Dict[str, Any]:
-              return {
-                  "schema": REGISTRY_SCHEMA,
-                  "thresholds": THRESHOLDS,
-                  "modules": MODULES,
-                  "selection_source": "pre-linguistic kernel and process-memory values only",
-              }
-          EOF
-
-          cat > app/src/main/python/amelia_p0/process_modules.py <<'EOF'
-          from __future__ import annotations
-
-          from typing import Any, Dict, List, Sequence, Tuple
-
-          from .numogram_kernel import ZONE_COUNT, normalise
-
-          MODULE_SCHEMA = "amelia-android-p0-process-modules-v1"
-          PARAMETERS = {
-              "temporal_fold_memory_weight": 0.28,
-              "syzygetic_coupling_weight": 0.32,
-              "rhizomatic_self_weight": 0.60,
-              "rhizomatic_ring_weight": 0.20,
-              "differential_tension_boost": 1.15,
-          }
-
-
-          def _peak(field: Sequence[float]) -> int:
-              return max(range(ZONE_COUNT), key=lambda index: (field[index], -index))
-
-
-          def _temporal_fold(
-              field: Sequence[float],
-              memory_bias: Sequence[float],
-          ) -> List[float]:
-              memory_weight = PARAMETERS["temporal_fold_memory_weight"]
-              return normalise(
-                  [
-                      (1.0 - memory_weight) * field[index]
-                      + memory_weight * memory_bias[index]
-                      for index in range(ZONE_COUNT)
-                  ]
-              )
-
-
-          def _syzygetic_coupling(field: Sequence[float]) -> List[float]:
-              coupling = PARAMETERS["syzygetic_coupling_weight"]
-              return normalise(
-                  [
-                      (1.0 - coupling) * field[index]
-                      + coupling * field[9 - index]
-                      for index in range(ZONE_COUNT)
-                  ]
-              )
-
-
-          def _rhizomatic_recombination(field: Sequence[float]) -> List[float]:
-              self_weight = PARAMETERS["rhizomatic_self_weight"]
-              ring_weight = PARAMETERS["rhizomatic_ring_weight"]
-              return normalise(
-                  [
-                      self_weight * field[index]
-                      + ring_weight * field[(index - 1) % ZONE_COUNT]
-                      + ring_weight * field[(index + 1) % ZONE_COUNT]
-                      for index in range(ZONE_COUNT)
-                  ]
-              )
-
-
-          def _differential_tension(field: Sequence[float], route: Sequence[int]) -> List[float]:
-              result = list(field)
-              result[int(route[0])] *= PARAMETERS["differential_tension_boost"]
-              return normalise(result)
-
-
-          def run_modules(
-              module_ids: Sequence[str],
-              kernel_state: Sequence[float],
-              memory_bias: Sequence[float],
-              route: Sequence[int],
-          ) -> Tuple[List[float], List[Dict[str, Any]]]:
-              field = list(kernel_state)
-              outcomes: List[Dict[str, Any]] = []
-
-              for module_id in module_ids:
-                  before = list(field)
-
-                  if module_id == "temporal_fold":
-                      field = _temporal_fold(field, memory_bias)
-                  elif module_id == "syzygetic_coupling":
-                      field = _syzygetic_coupling(field)
-                  elif module_id == "rhizomatic_recombination":
-                      field = _rhizomatic_recombination(field)
-                  elif module_id == "differential_tension":
-                      field = _differential_tension(field, route)
+              def turn(self, question: str, condition: str) -> Dict[str, Any]:
+                  if not question or not question.strip(): raise ValueError("A non-empty input is required")
+                  trace = self.calculate(question, self.snapshot(condition)); prepared = self.ledger("prepared_turn", {"rawInput": question, "trace": trace})
+                  if condition == "FULL":
+                      event = {"sequence": trace["sequence"], "inputDigest": trace["inputDigest"], "route": trace["route"], "causalDigest": trace["causalDigest"], "stability": trace["postStability"]}
+                      self.data["sequence"] = trace["sequence"]; self.data["fieldState"] = trace["fieldState"]; self.data["deformationTensor"] = trace["nextTensor"]; self.data["activeAttractors"] = trace["activeAttractors"]; self.data["lastStability"] = trace["postStability"]
+                      self.data["fieldHistory"] = (self.data["fieldHistory"] + [event])[-200:]; self.data["recentTransitions"] = (self.data["recentTransitions"] + [event])[-50:]
+                      self.data["lastReplay"] = {"question": question, "snapshot": trace["preSnapshot"], "expected": trace["causalDigest"]}; self.write(self.data)
+                      trace["persistence"] = {"mutated": True, "historyCount": len(self.data["fieldHistory"]), "memoryDigest": digest(self.data)}; head = self.ledger("committed_full_turn", {"causalDigest": trace["causalDigest"], "memoryDigest": trace["persistence"]["memoryDigest"]})
                   else:
-                      raise ValueError(f"Unknown process module: {module_id}")
+                      trace["persistence"] = {"mutated": False, "historyCount": len(self.data["fieldHistory"]), "memoryDigest": digest(self.snapshot(condition))}; head = self.ledger("non_mutating_control_probe", {"condition": condition, "causalDigest": trace["causalDigest"]})
+                  trace["ledger"] = {"prepared": prepared, "head": head}; return {"ok": True, "kind": "turn", "trace": trace}
 
-                  outcomes.append(
-                      {
-                          "id": module_id,
-                          "field_delta_l1": round(
-                              sum(
-                                  abs(field[index] - before[index])
-                                  for index in range(ZONE_COUNT)
-                              ),
-                              12,
-                          ),
-                          "field_peak": _peak(field),
-                          "field_peak_weight": round(field[_peak(field)], 12),
-                      }
-                  )
+              def replay(self) -> Dict[str, Any]:
+                  saved = self.data.get("lastReplay")
+                  if not saved: raise ValueError("Run one FULL condition before replay")
+                  observed = self.calculate(saved["question"], saved["snapshot"]); match = observed["causalDigest"] == saved["expected"]
+                  head = self.ledger("deterministic_replay", {"expected": saved["expected"], "observed": observed["causalDigest"], "match": match})
+                  return {"ok": True, "kind": "replay", "match": match, "route": observed["route"], "expected": saved["expected"], "observed": observed["causalDigest"], "ledgerHead": head}
 
-              return field, outcomes
+              def reset(self) -> Dict[str, Any]:
+                  self.data = self.fresh(); self.write(self.data); head = self.ledger("explicit_memory_reset", {"sequence": 0})
+                  return {"ok": True, "kind": "reset", "sequence": 0, "ledgerHead": head}
 
+          def runtime(root: str) -> Runtime:
+              key = str(Path(root))
+              if key not in RUNTIMES: RUNTIMES[key] = Runtime(key)
+              return RUNTIMES[key]
 
-          def configuration() -> Dict[str, Any]:
-              return {
-                  "schema": MODULE_SCHEMA,
-                  "parameters": PARAMETERS,
-                  "module_order": "registry order; each module receives the preceding field",
-              }
-          EOF
-
-          cat > app/src/main/python/amelia_p0/ledger.py <<'EOF'
-          from __future__ import annotations
-
-          import hashlib
-          import json
-          from pathlib import Path
-          from typing import Any, Dict
-
-          from .numogram_kernel import canonical_json
-
-          LEDGER_SCHEMA = "amelia-android-p0-ledger-v1"
-          ZERO_HEAD = "0" * 64
-
-
-          def _hash(text: str) -> str:
-              return hashlib.sha256(text.encode("utf-8")).hexdigest()
-
-
-          class EvidenceLedger:
-              def __init__(self, storage_dir: str) -> None:
-                  self.root = Path(storage_dir) / "evidence"
-                  self.root.mkdir(parents=True, exist_ok=True)
-                  self.ledger_path = self.root / "trace-chain.jsonl"
-                  self.head_path = self.root / "head.txt"
-                  self.head = self._recover_head()
-
-              def _recover_head(self) -> str:
-                  if self.ledger_path.exists():
-                      latest = ""
-                      for line in self.ledger_path.read_text(encoding="utf-8").splitlines():
-                          if line.strip():
-                              latest = line
-                      if latest:
-                          return str(json.loads(latest)["chain_digest"])
-
-                  if self.head_path.exists():
-                      return self.head_path.read_text(encoding="utf-8").strip() or ZERO_HEAD
-                  return ZERO_HEAD
-
-              def append(self, kind: str, payload: Dict[str, Any]) -> Dict[str, str]:
-                  record = {
-                      "schema": LEDGER_SCHEMA,
-                      "kind": kind,
-                      "previous_chain_digest": self.head,
-                      "payload": payload,
-                  }
-                  record_digest = _hash(canonical_json(record))
-                  chain_digest = _hash(f"{self.head}|{record_digest}")
-
-                  record["record_digest"] = record_digest
-                  record["chain_digest"] = chain_digest
-
-                  with self.ledger_path.open("a", encoding="utf-8") as stream:
-                      stream.write(canonical_json(record) + "\n")
-
-                  temporary = self.head_path.with_suffix(".tmp")
-                  temporary.write_text(chain_digest, encoding="utf-8")
-                  temporary.replace(self.head_path)
-                  self.head = chain_digest
-
-                  return {
-                      "record_digest": record_digest,
-                      "chain_digest": chain_digest,
-                      "previous_chain_digest": record["previous_chain_digest"],
-                  }
-
-
-          def configuration() -> Dict[str, Any]:
-              return {
-                  "schema": LEDGER_SCHEMA,
-                  "storage": "application filesDir / amelia_p0 / evidence",
-                  "recording": "append-only JSONL hash chain",
-                  "raw_input": "stored locally in prepared-turn records",
-              }
-          EOF
-
-          cat > app/src/main/python/amelia_p0/android_entry.py <<'EOF'
-          from __future__ import annotations
-
-          import json
-          import threading
-          from pathlib import Path
-          from typing import Any, Dict
-
-          from .ledger import EvidenceLedger, configuration as ledger_configuration
-          from .module_registry import configuration as registry_configuration
-          from .module_registry import select_modules
-          from .numogram_kernel import (
-              configuration as kernel_configuration,
-              digest,
-              encode_question,
-              kernel_step,
-          )
-          from .process_memory import ProcessMemory, configuration as memory_configuration
-          from .process_modules import configuration as module_configuration
-          from .process_modules import run_modules
-
-          RUNTIME_SCHEMA = "amelia-android-p0-runtime-v1"
-          _LOCK = threading.RLock()
-          _RUNTIMES: Dict[str, "AndroidP0Runtime"] = {}
-
-
-          class AndroidP0Runtime:
-              def __init__(self, storage_dir: str) -> None:
-                  self.storage_dir = str(Path(storage_dir))
-                  self.memory = ProcessMemory(self.storage_dir)
-                  self.ledger = EvidenceLedger(self.storage_dir)
-                  self.config = {
-                      "schema": RUNTIME_SCHEMA,
-                      "kernel": kernel_configuration(),
-                      "process_memory": memory_configuration(),
-                      "module_registry": registry_configuration(),
-                      "process_modules": module_configuration(),
-                      "ledger": ledger_configuration(),
-                      "language_layer": "deterministic local trace relay; no LLM in Android-P0",
-                  }
-                  self.config_digest = digest(self.config)
-
-              def _render(self, trace: Dict[str, Any]) -> str:
-                  route = " → ".join(f"Z{zone}" for zone in trace["route"])
-                  modules = ", ".join(trace["selected_modules"])
-                  memory = trace["memory"]
-
-                  return (
-                      "Android-P0 local substrate trace\n\n"
-                      f"Route: {route}\n"
-                      f"Selected process modules: {modules}\n"
-                      f"Turn: {trace['sequence']}\n"
-                      f"Process-memory tensor norm: {memory['tensor_norm']:.6f}\n\n"
-                      "The question was reduced into a declared ten-zone drive, "
-                      "processed through the Numogram kernel and retained process-memory, "
-                      "then rendered here as a read-only trace. This text is not evidence "
-                      "of consciousness or a claim beyond the logged Android-P0 run."
-                  )
-
-              def turn(self, question: str) -> Dict[str, Any]:
-                  if not isinstance(question, str) or not question.strip():
-                      raise ValueError("A non-empty question is required")
-
-                  encoded = encode_question(question)
-                  pre_state = list(self.memory.state)
-                  memory_bias = self.memory.memory_bias()
-
-                  kernel_state, kernel = kernel_step(
-                      pre_state,
-                      encoded["drive"],
-                      memory_bias,
-                  )
-                  selected_modules, selection = select_modules(
-                      pre_state,
-                      kernel_state,
-                      memory_bias,
-                      kernel["syzygy_flux"],
-                  )
-                  field_state, module_outcomes = run_modules(
-                      selected_modules,
-                      kernel_state,
-                      memory_bias,
-                      kernel["route"],
-                  )
-
-                  prepared = self.memory.prepare_update(
-                      pre_state,
-                      field_state,
-                      encoded["drive"],
-                      kernel["route"],
-                      encoded["input_digest"],
-                  )
-
-                  trace = {
-                      "schema": "amelia-android-p0-trace-v1",
-                      "sequence": prepared["next_sequence"],
-                      "input_digest": encoded["input_digest"],
-                      "input_length": encoded["canonical_length"],
-                      "pre_state": pre_state,
-                      "kernel_state": kernel_state,
-                      "field_state": field_state,
-                      "route": kernel["route"],
-                      "ranked_zones": kernel["ranked_zones"],
-                      "kernel": {
-                          "state_delta_l1": kernel["state_delta_l1"],
-                          "syzygy_flux": kernel["syzygy_flux"],
-                      },
-                      "selected_modules": selected_modules,
-                      "selection_metrics": selection,
-                      "module_outcomes": module_outcomes,
-                      "memory": {
-                          "pre_state_digest": prepared["pre_state_digest"],
-                          "post_state_digest": prepared["post_state_digest"],
-                          "tensor_norm": prepared["tensor_norm"],
-                          "tensor_delta": prepared["tensor_delta"],
-                          "history_size": prepared["history_size"],
-                      },
-                      "config_digest": self.config_digest,
-                  }
-                  trace["trace_digest"] = digest(trace)
-
-                  prepared_event = self.ledger.append(
-                      "prepared_turn",
-                      {
-                          "raw_input": question,
-                          "trace": trace,
-                      },
-                  )
-
-                  try:
-                      committed_memory = self.memory.commit(
-                          prepared,
-                          trace["trace_digest"],
-                      )
-                  except Exception as error:
-                      self.ledger.append(
-                          "commit_failure",
-                          {
-                              "trace_digest": trace["trace_digest"],
-                              "error_type": type(error).__name__,
-                              "error": str(error),
-                          },
-                      )
-                      raise
-
-                  committed_event = self.ledger.append(
-                      "committed_turn",
-                      {
-                          "trace_digest": trace["trace_digest"],
-                          "sequence": committed_memory["sequence"],
-                          "state_digest": committed_memory["state_digest"],
-                      },
-                  )
-
-                  trace["ledger"] = {
-                      "prepared_chain_digest": prepared_event["chain_digest"],
-                      "committed_chain_digest": committed_event["chain_digest"],
-                  }
-                  trace["memory"]["committed_state_digest"] = committed_memory["state_digest"]
-
-                  return {
-                      "reply": self._render(trace),
-                      "trace": trace,
-                  }
-
-
-          def _runtime(storage_dir: str) -> AndroidP0Runtime:
-              key = str(Path(storage_dir))
-              if key not in _RUNTIMES:
-                  _RUNTIMES[key] = AndroidP0Runtime(key)
-              return _RUNTIMES[key]
-
-
-          def process_turn(question: str, storage_dir: str) -> str:
+          def call(operation):
               try:
-                  with _LOCK:
-                      result = _runtime(storage_dir).turn(question)
-                  return json.dumps(
-                      {"ok": True, **result},
-                      ensure_ascii=False,
-                      sort_keys=True,
-                  )
-              except Exception as error:
-                  return json.dumps(
-                      {
-                          "ok": False,
-                          "error_type": type(error).__name__,
-                          "error": str(error),
-                      },
-                      ensure_ascii=False,
-                      sort_keys=True,
-                  )
+                  with LOCK: return json.dumps(operation(), ensure_ascii=False, sort_keys=True)
+              except Exception as error: return json.dumps({"ok": False, "error": str(error), "errorType": type(error).__name__}, ensure_ascii=False, sort_keys=True)
+
+          def process_turn(question: str, storage_dir: str, condition: str) -> str: return call(lambda: runtime(storage_dir).turn(question, condition))
+          def verify_last_replay(storage_dir: str) -> str: return call(lambda: runtime(storage_dir).replay())
+          def reset_experiment(storage_dir: str) -> str: return call(lambda: runtime(storage_dir).reset())
           EOF
 
-          cat > app/src/main/java/com/amelia/p0/MainActivity.kt <<'EOF'
-          package com.amelia.p0
+          cat > app/src/main/java/com/amelia/p1/MainActivity.kt <<'EOF'
+          package com.amelia.p1
 
           import android.app.Activity
           import android.os.Bundle
           import android.text.InputType
           import android.view.Gravity
+          import android.widget.ArrayAdapter
           import android.widget.Button
           import android.widget.EditText
           import android.widget.LinearLayout
           import android.widget.ScrollView
+          import android.widget.Spinner
           import android.widget.TextView
           import com.chaquo.python.Python
           import org.json.JSONArray
@@ -984,191 +271,81 @@ jobs:
               private lateinit var input: EditText
               private lateinit var output: TextView
               private lateinit var telemetry: TextView
-              private lateinit var send: Button
-
-              private val storageDir: String by lazy {
-                  File(filesDir, "amelia_p0").apply { mkdirs() }.absolutePath
-              }
+              private lateinit var condition: Spinner
+              private lateinit var run: Button
+              private val storageDir by lazy { File(filesDir, "amelia_p1").apply { mkdirs() }.absolutePath }
 
               override fun onCreate(savedInstanceState: Bundle?) {
                   super.onCreate(savedInstanceState)
-
-                  val root = LinearLayout(this).apply {
-                      orientation = LinearLayout.VERTICAL
-                      setPadding(dp(18), dp(18), dp(18), dp(18))
-                  }
-
-                  root.addView(TextView(this).apply {
-                      text = "AMELIA · ANDROID-P0"
-                      textSize = 23f
-                      gravity = Gravity.CENTER_HORIZONTAL
-                  })
-
-                  root.addView(TextView(this).apply {
-                      text = "Local Numogram substrate · no language model in the causal loop"
-                      textSize = 13f
-                      gravity = Gravity.CENTER_HORIZONTAL
-                      setPadding(0, dp(6), 0, dp(12))
-                  })
-
-                  val readout = LinearLayout(this).apply {
-                      orientation = LinearLayout.VERTICAL
-                  }
-
-                  output = TextView(this).apply {
-                      text = "Android-P0 is ready. Send one question to generate the first sealed trace."
-                      textSize = 16f
-                      setPadding(0, dp(8), 0, dp(16))
-                  }
-                  readout.addView(output)
-
-                  telemetry = TextView(this).apply {
-                      text = "TELEMETRY\nAwaiting first substrate trace."
-                      textSize = 13f
-                      setPadding(dp(10), dp(10), dp(10), dp(10))
-                  }
-                  readout.addView(telemetry)
-
-                  root.addView(
-                      ScrollView(this).apply { addView(readout) },
-                      LinearLayout.LayoutParams(
-                          LinearLayout.LayoutParams.MATCH_PARENT,
-                          0,
-                          1f
-                      )
-                  )
-
-                  input = EditText(this).apply {
-                      hint = "Write to Amelia P0"
-                      inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_MULTI_LINE
-                      minLines = 2
-                      maxLines = 5
-                  }
+                  val root = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(dp(16), dp(16), dp(16), dp(16)) }
+                  root.addView(TextView(this).apply { text = "AMELIA · ANDROID-P1"; textSize = 23f; gravity = Gravity.CENTER_HORIZONTAL })
+                  root.addView(TextView(this).apply { text = "ProcessFieldMemory · directed routing · no language model in causal loop"; textSize = 12f; gravity = Gravity.CENTER_HORIZONTAL; setPadding(0, dp(5), 0, dp(8)) })
+                  condition = Spinner(this).apply { adapter = ArrayAdapter(this@MainActivity, android.R.layout.simple_spinner_dropdown_item, arrayOf("FULL", "ABLATED", "NEUTRAL_RESET")) }
+                  root.addView(condition)
+                  val readout = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+                  output = TextView(this).apply { text = "P1 ready. FULL commits ProcessFieldMemory; controls are non-mutating probes."; textSize = 15f; setPadding(0, dp(10), 0, dp(8)) }
+                  telemetry = TextView(this).apply { text = "TELEMETRY · awaiting run"; textSize = 13f; setPadding(dp(8), dp(8), dp(8), dp(8)) }
+                  readout.addView(output); readout.addView(telemetry)
+                  root.addView(ScrollView(this).apply { addView(readout) }, LinearLayout.LayoutParams(-1, 0, 1f))
+                  input = EditText(this).apply { hint = "Input for local substrate"; inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_MULTI_LINE; minLines = 2; maxLines = 4 }
                   root.addView(input)
-
-                  send = Button(this).apply {
-                      text = "RUN NUMOGRAM TURN"
-                      setOnClickListener { submit() }
-                  }
-                  root.addView(send)
-
+                  run = Button(this).apply { text = "RUN P1 TURN"; setOnClickListener { val q = input.text.toString().trim(); if (q.isNotEmpty()) invoke("process_turn", q) } }
+                  root.addView(run)
+                  root.addView(Button(this).apply { text = "VERIFY LAST FULL REPLAY"; setOnClickListener { invoke("verify_last_replay", null) } })
+                  root.addView(Button(this).apply { text = "RESET P1 MEMORY"; setOnClickListener { invoke("reset_experiment", null) } })
                   setContentView(root)
               }
 
-              private fun submit() {
-                  val question = input.text.toString().trim()
-                  if (question.isEmpty()) return
-
-                  send.isEnabled = false
-                  output.text = "Android-P0 is processing a local substrate turn..."
-                  telemetry.text = "TELEMETRY\nPreparing trace."
-
+              private fun invoke(function: String, question: String?) {
+                  run.isEnabled = false; output.text = "P1 local process running..."
                   Thread {
-                      val payload = runPython(question)
-                      runOnUiThread {
-                          render(payload)
-                          input.setText("")
-                          send.isEnabled = true
-                      }
+                      val text = try {
+                          val module = Python.getInstance().getModule("p1_runtime")
+                          if (function == "process_turn") module.callAttr(function, question, storageDir, condition.selectedItem.toString()).toString() else module.callAttr(function, storageDir).toString()
+                      } catch (error: Exception) { JSONObject().put("ok", false).put("error", error.message ?: "Android/Python failure").toString() }
+                      runOnUiThread { render(text); input.setText(""); run.isEnabled = true }
                   }.start()
               }
 
-              private fun runPython(question: String): String = try {
-                  Python.getInstance()
-                      .getModule("amelia_p0.android_entry")
-                      .callAttr("process_turn", question, storageDir)
-                      .toString()
-              } catch (error: Exception) {
-                  JSONObject()
-                      .put("ok", false)
-                      .put("error_type", error.javaClass.simpleName)
-                      .put("error", error.message ?: "Unknown Android/Python error")
-                      .toString()
-              }
-
-              private fun render(payload: String) {
-                  val result = JSONObject(payload)
-                  if (!result.optBoolean("ok", false)) {
-                      output.text = "Android-P0 could not complete this turn."
-                      telemetry.text = "TELEMETRY\nERROR: ${result.optString("error")}"
-                      return
-                  }
-
-                  output.text = result.optString("reply")
-                  telemetry.text = formatTelemetry(result.optJSONObject("trace") ?: JSONObject())
-              }
-
-              private fun formatTelemetry(trace: JSONObject): String {
-                  val memory = trace.optJSONObject("memory") ?: JSONObject()
-                  val kernel = trace.optJSONObject("kernel") ?: JSONObject()
-                  val ledger = trace.optJSONObject("ledger") ?: JSONObject()
-
-                  return buildString {
-                      append("TELEMETRY · ANDROID-P0\n")
-                      append("Turn: ${trace.optInt("sequence")}\n")
-                      append("Route: ${arrayText(trace.optJSONArray("route"), " → ")}\n")
-                      append("Modules: ${arrayText(trace.optJSONArray("selected_modules"), ", ")}\n")
-                      append(
-                          "Kernel ΔL1: ${
-                              String.format(
-                                  Locale.US,
-                                  "%.6f",
-                                  kernel.optDouble("state_delta_l1")
-                              )
-                          }\n"
-                      )
-                      append(
-                          "Syzygy flux: ${
-                              String.format(
-                                  Locale.US,
-                                  "%.6f",
-                                  kernel.optDouble("syzygy_flux")
-                              )
-                          }\n"
-                      )
-                      append(
-                          "Tensor norm: ${
-                              String.format(
-                                  Locale.US,
-                                  "%.6f",
-                                  memory.optDouble("tensor_norm")
-                              )
-                          }\n"
-                      )
-                      append("History events: ${memory.optInt("history_size")}\n")
-                      append("Trace: ${shortHash(trace.optString("trace_digest"))}\n")
-                      append("Config: ${shortHash(trace.optString("config_digest"))}\n")
-                      append("Ledger head: ${shortHash(ledger.optString("committed_chain_digest"))}")
+              private fun render(text: String) {
+                  val result = JSONObject(text)
+                  if (!result.optBoolean("ok", false)) { output.text = "P1 operation failed."; telemetry.text = "TELEMETRY · ERROR\n${result.optString("error")}"; return }
+                  when (result.optString("kind")) {
+                      "turn" -> turn(result.getJSONObject("trace"))
+                      "replay" -> { output.text = if (result.optBoolean("match")) "REPLAY VERIFIED · causal output reproduced without mutation." else "REPLAY MISMATCH · inspect ledger."; telemetry.text = "REPLAY\nRoute: ${zones(result.optJSONArray("route"))}\nExpected: ${short(result.optString("expected"))}\nObserved: ${short(result.optString("observed"))}\nLedger: ${short(result.optString("ledgerHead"))}" }
+                      else -> { output.text = "P1 memory reset."; telemetry.text = "RESET\nSequence: ${result.optInt("sequence")}\nLedger: ${short(result.optString("ledgerHead"))}" }
                   }
               }
 
-              private fun arrayText(values: JSONArray?, separator: String): String {
-                  if (values == null) return "—"
-                  return (0 until values.length()).joinToString(separator) {
-                      values.optString(it)
-                  }
+              private fun turn(trace: JSONObject) {
+                  val modules = trace.optJSONArray("modules") ?: JSONArray()
+                  val names = (0 until modules.length()).joinToString(", ") { modules.optJSONObject(it)?.optString("module") ?: "" }
+                  val saved = trace.optJSONObject("persistence") ?: JSONObject(); val ledger = trace.optJSONObject("ledger") ?: JSONObject()
+                  output.text = "P1 SUBSTRATE READOUT\n\nCondition: ${trace.optString("condition")}\nRoute: ${zones(trace.optJSONArray("route"))}\nModules: $names\nCommitted memory: ${saved.optBoolean("mutated")}"
+                  telemetry.text = "TELEMETRY · PROCESSFIELDMEMORY\nTurn: ${trace.optInt("sequence")}\nEdges: ${edges(trace.optJSONArray("routeEdges"))}\nKernel ΔL1: ${number(trace.optDouble("kernelDeltaL1"))}\nEntropy: ${number(trace.optDouble("fieldEntropy"))}\nSyzygy flux: ${number(trace.optDouble("syzygyFlux"))}\nStability: ${number(trace.optDouble("preStability"))} → ${number(trace.optDouble("postStability"))}\nTensor: ${number(trace.optDouble("preTensorNorm"))} → ${number(trace.optDouble("postTensorNorm"))}\nAttractors: ${zones(trace.optJSONArray("activeAttractors"))}\nHistory: ${saved.optInt("historyCount")}\nCausal: ${short(trace.optString("causalDigest"))}\nLedger: ${short(ledger.optString("head"))}"
               }
 
-              private fun shortHash(value: String): String =
-                  if (value.length <= 12) value else value.take(12)
-
-              private fun dp(value: Int): Int =
-                  (value * resources.displayMetrics.density).toInt()
+              private fun zones(items: JSONArray?): String = if (items == null) "—" else (0 until items.length()).joinToString(" → ") { "Z${items.optInt(it)}" }
+              private fun edges(items: JSONArray?): String = if (items == null) "—" else (0 until items.length()).joinToString("; ") { i -> items.optJSONObject(i)?.let { "Z${it.optInt("from")}→Z${it.optInt("to")} (${it.optString("kind")})" } ?: "" }
+              private fun number(value: Double): String = String.format(Locale.US, "%.6f", value)
+              private fun short(value: String): String = if (value.length <= 12) value else value.take(12)
+              private fun dp(value: Int): Int = (value * resources.displayMetrics.density).toInt()
           }
           EOF
 
-      - name: Verify selected Python source
+      - name: Validate local P1 causal path
         run: |
-          python3 -m py_compile \
-            app/src/main/python/amelia_symbolic_core.py \
-            app/src/main/python/amelia_p0/*.py
+          python3 -m py_compile app/src/main/python/amelia_symbolic_core.py app/src/main/python/p1_runtime.py
+          P1_TEST_DIR="$(mktemp -d)"
+          export P1_TEST_DIR
+          PYTHONPATH=app/src/main/python python3 -c 'import json, os; from p1_runtime import process_turn, verify_last_replay; root=os.environ["P1_TEST_DIR"]; full=json.loads(process_turn("field memory test", root, "FULL")); assert full["ok"] and full["trace"]["persistence"]["mutated"]; ablated=json.loads(process_turn("field memory test", root, "ABLATED")); assert ablated["ok"] and not ablated["trace"]["persistence"]["mutated"]; replay=json.loads(verify_last_replay(root)); assert replay["ok"] and replay["match"]'
 
-      - name: Build Android-P0 APK
+      - name: Build Android-P1 APK
         run: gradle --no-daemon :app:assembleDebug --stacktrace
 
-      - name: Upload Android-P0 APK
+      - name: Upload Android-P1 APK
         uses: actions/upload-artifact@v4
         with:
-          name: Amelia-Android-P0
+          name: Amelia-Android-P1
           path: app/build/outputs/apk/debug/app-debug.apk
           retention-days: 14
