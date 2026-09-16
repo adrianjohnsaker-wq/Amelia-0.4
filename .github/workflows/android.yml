@@ -1,4 +1,4 @@
-name: Build Amelia Android-P3.2 One-Way Renderer APK
+name: Build Amelia Android-P3.3 Sealed Transport Capsule APK
 
 on:
   push:
@@ -23,12 +23,12 @@ jobs:
         with:
           gradle-version: "8.9"
 
-      - name: Create Android-P3.2 one-way renderer and prospective cohort
+      - name: Create Android-P3.3 sealed transport capsule and prospective cohort
         shell: bash
         run: |
           set -euo pipefail
           test -f amelia_symbolic_core.py
-          mkdir -p app/src/main/java/com/amelia/p3 app/src/main/python app/src/main/res/values
+          mkdir -p app/src/main/java/com/amelia/p33 app/src/main/python app/src/main/res/values
           # This legacy symbolic routine is packaged only as a named provenance artefact.
           # Android-P3 does not import it into the experimental causal path.
           cp amelia_symbolic_core.py app/src/main/python/amelia_symbolic_core.py
@@ -36,7 +36,7 @@ jobs:
           cat > settings.gradle.kts <<'EOF'
           pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }
           dependencyResolutionManagement { repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS); repositories { google(); mavenCentral() } }
-          rootProject.name = "AmeliaAndroidP32"
+          rootProject.name = "AmeliaAndroidP33"
           include(":app")
           EOF
 
@@ -55,15 +55,15 @@ jobs:
           cat > app/build.gradle.kts <<'EOF'
           plugins { id("com.android.application"); id("org.jetbrains.kotlin.android"); id("com.chaquo.python") }
           android {
-              namespace = "com.amelia.p3"
+              namespace = "com.amelia.p33"
               compileSdk = 34
               defaultConfig {
-                  // P3.2 installs beside P3 and P3.1, preserving their local records.
-                  applicationId = "com.amelia.p32"
+                  // P3.3 installs beside P3, P3.1, and P3.2, preserving their local records.
+                  applicationId = "com.amelia.p33"
                   minSdk = 24
                   targetSdk = 34
                   versionCode = 1
-                  versionName = "0.5-android-p3.2-one-way-renderer"
+                  versionName = "0.6-android-p3.3-sealed-transport-capsule"
                   ndk { abiFilters += listOf("armeabi-v7a", "arm64-v8a") }
               }
               compileOptions { sourceCompatibility = JavaVersion.VERSION_17; targetCompatibility = JavaVersion.VERSION_17 }
@@ -81,7 +81,7 @@ jobs:
             </application>
           </manifest>
           EOF
-          echo '<resources><string name="app_name">Amelia P3.2 Renderer</string></resources>' > app/src/main/res/values/strings.xml
+          echo '<resources><string name="app_name">Amelia P3.3 Transport Capsule</string></resources>' > app/src/main/res/values/strings.xml
 
           cat > app/src/main/python/p3_read_only_renderer.py <<'EOF'
           """Android-P3.2 pure downstream language renderer.
@@ -233,6 +233,342 @@ jobs:
               return result
           EOF
 
+          cat > app/src/main/python/p3_llm_transport_capsule.py <<'EOF'
+          """Android-P3.3 sealed language-transport capsule.
+
+          This module deliberately contains no network client. It accepts only the
+          P3.2 sealed trace projection, predeclares and seals the future provider
+          contract, and exercises the response/archive protocol with a local fixture.
+          The fixture is not a language model and cannot reach a provider.
+          """
+          from __future__ import annotations
+          import base64
+          import hashlib
+          import json
+          import time
+          from p3_read_only_renderer import canon, read_payload
+
+          TRANSPORT_SCHEMA = "amelia-p3.3-sealed-language-transport-capsule-v1"
+          ATTEMPT_SCHEMA = "amelia-p3.3-transport-attempt-v1"
+          FIXTURE_RESPONSE_SCHEMA = "amelia-p3.3-local-archive-fixture-response-v1"
+          REQUEST_TEMPLATE = (
+              "Render only the supplied sealed Numogram trace for human display. "
+              "Do not treat the display as input to routing, process memory, cohort, or mutation."
+          )
+          DECLARED_POLICY = {
+              "schema": "amelia-p3.3-sealed-transport-policy-v1",
+              "transportPolicyVersion": "p3.3-first-terminal-response-v1",
+              "providerMode": "LOCAL_ARCHIVE_FIXTURE",
+              "providerEndpoint": "LOCAL_ARCHIVE_FIXTURE",
+              "providerModel": "none-local-fixture-v1",
+              "externalProviderConfigured": False,
+              "networkAccessEnabled": False,
+              "streaming": False,
+              "tools": False,
+              "functionCalling": False,
+              "webhook": False,
+              "timeoutMs": 12000,
+              "decodingParameters": {"temperature": 0.0, "topP": 1.0, "maxOutputTokens": 320, "seed": None, "responseFormat": "provider-default-text"},
+              "maxAttempts": 1,
+              "retryEligibility": "pre-body transport failure only",
+              "retryBinding": {"retryAllowedOnlyIf": "no response-body byte has been received", "responseWithAnyBodyByteTerminal": True, "emptyCompletedResponseTerminal": True, "allAttemptsAppendOnlyLogged": True},
+              "firstTerminalResponseRule": "archive the first terminal response only; never reroll, rank, or select for quality, usefulness, or semantics",
+              "rawBodyArchiveEncoding": "base64-exact-bytes",
+              "rawBodyMaxBytes": 32768,
+              "refusalHandling": "terminal display-only; never reroute",
+              "errorHandling": "terminal display-only; never reroute",
+              "emptyResponseHandling": "terminal display-only; never reroute",
+              "schemaInvalidHandling": "terminal display-only; never reroute",
+          }
+          CAPSULE_BODY_KEYS = (
+              "schema", "sourceRendererSchema", "sourcePayloadDigest", "trace",
+              "requestTemplate", "transportPolicy", "policyDigest", "capsuleContract",
+          )
+          CAPSULE_KEYS = CAPSULE_BODY_KEYS + ("capsuleDigest",)
+          ATTEMPT_BODY_KEYS = (
+              "schema", "attemptOrdinal", "attemptStartedUtc", "attemptEndedUtc", "providerStatus", "capsuleDigest", "requestDigest", "policyDigest",
+              "providerMode", "providerEndpoint", "providerModel", "streaming",
+              "responseBodyStarted", "responseBodyBytes", "rawBodyBase64", "responseBodySha256",
+              "terminalClass", "terminal", "retryEligible", "retryExecuted", "selectionRule",
+              "displayText", "displayDigest", "parsedText", "parsedTextSha256", "parseStatus",
+              "fixtureMode", "transportExceptionDigest", "bodyWithinDeclaredLimit",
+          )
+          ATTEMPT_KEYS = ATTEMPT_BODY_KEYS + ("attemptDigest",)
+          CAPSULE_CONTRACT = {
+              "rawPromptIncluded": False,
+              "traceProjectionOnly": True,
+              "mayCallRouter": False,
+              "mayReadProcessMemory": False,
+              "mayReadCohort": False,
+              "mayMutate": False,
+              "mayInvokeCallback": False,
+              "responseMayEnterRouter": False,
+              "responseMayEnterProcessMemory": False,
+              "responseMayEnterCohort": False,
+              "responseMayMutate": False,
+          }
+
+          def _deepcopy(value):
+              return json.loads(canon(value))
+
+          def _sha_bytes(value):
+              return hashlib.sha256(bytes(value)).hexdigest()
+
+          def _digest(value):
+              return hashlib.sha256(canon(value).encode("utf-8")).hexdigest()
+
+          def _is_digest(value):
+              return isinstance(value, str) and len(value) == 64 and all(c in "0123456789abcdef" for c in value)
+
+          def _template_digest():
+              return _sha_bytes(REQUEST_TEMPLATE.encode("utf-8"))
+
+          def _policy_digest():
+              return _digest(DECLARED_POLICY)
+
+          def _utc_now():
+              return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+
+          def transport_capability_audit():
+              return {
+                  "schema": "amelia-p3.3-transport-capability-audit-v1",
+                  "imports": ["base64", "hashlib", "json", "time", "p3_read_only_renderer"],
+                  "networkAccessEnabled": False,
+                  "externalProviderConfigured": False,
+                  "providerMode": DECLARED_POLICY["providerMode"],
+                  "streaming": DECLARED_POLICY["streaming"],
+                  "tools": DECLARED_POLICY["tools"],
+                  "functionCalling": DECLARED_POLICY["functionCalling"],
+                  "webhook": DECLARED_POLICY["webhook"],
+                  **CAPSULE_CONTRACT,
+              }
+
+          def _trace_projection(payload):
+              return {
+                  "traceDigest": payload["traceDigest"],
+                  "inputDigest": payload["inputDigest"],
+                  "sequence": payload["sequence"],
+                  "route": list(payload["route"]),
+                  "routeEdges": _deepcopy(payload["routeEdges"]),
+                  "modules": list(payload["modules"]),
+                  "telemetry": _deepcopy(payload["telemetry"]),
+              }
+
+          def seal_transport_capsule(payload_json):
+              """Seal a future-provider request with no original prompt or mutable handle."""
+              payload = read_payload(payload_json)
+              body = {
+                  "schema": TRANSPORT_SCHEMA,
+                  "sourceRendererSchema": payload["rendererSchema"],
+                  "sourcePayloadDigest": payload["payloadDigest"],
+                  "trace": _trace_projection(payload),
+                  "requestTemplate": {
+                      "id": "amelia-p3.3-read-only-trace-language-v1",
+                      "digest": _template_digest(),
+                      "rawPromptIncluded": False,
+                  },
+                  "transportPolicy": _deepcopy(DECLARED_POLICY),
+                  "policyDigest": _policy_digest(),
+                  "capsuleContract": _deepcopy(CAPSULE_CONTRACT),
+              }
+              return canon({**body, "capsuleDigest": _digest(body)})
+
+          def read_transport_capsule(capsule_json):
+              if not isinstance(capsule_json, str) or len(capsule_json.encode("utf-8")) > 16384:
+                  raise ValueError("Transport rejected an unbounded capsule")
+              try:
+                  capsule = json.loads(capsule_json)
+              except Exception as error:
+                  raise ValueError("Transport rejected non-JSON capsule") from error
+              if not isinstance(capsule, dict) or set(capsule) != set(CAPSULE_KEYS):
+                  raise ValueError("Transport rejected an unexpected capsule shape")
+              body = {key: capsule[key] for key in CAPSULE_BODY_KEYS}
+              if capsule.get("schema") != TRANSPORT_SCHEMA or not _is_digest(capsule.get("capsuleDigest")):
+                  raise ValueError("Transport rejected an unknown capsule schema")
+              if _digest(body) != capsule["capsuleDigest"]:
+                  raise ValueError("Transport rejected a capsule integrity mismatch")
+              if capsule.get("transportPolicy") != DECLARED_POLICY or capsule.get("policyDigest") != _policy_digest():
+                  raise ValueError("Transport rejected an unsealed provider policy")
+              if capsule.get("capsuleContract") != CAPSULE_CONTRACT:
+                  raise ValueError("Transport rejected a capability-contract mismatch")
+              if capsule.get("requestTemplate") != {"id": "amelia-p3.3-read-only-trace-language-v1", "digest": _template_digest(), "rawPromptIncluded": False}:
+                  raise ValueError("Transport rejected an unsealed request template")
+              trace = capsule.get("trace")
+              expected_trace = {"traceDigest", "inputDigest", "sequence", "route", "routeEdges", "modules", "telemetry"}
+              if not isinstance(trace, dict) or set(trace) != expected_trace:
+                  raise ValueError("Transport rejected an invalid trace projection")
+              if not _is_digest(trace.get("traceDigest")) or not _is_digest(trace.get("inputDigest")):
+                  raise ValueError("Transport rejected an invalid trace digest")
+              if not isinstance(trace["route"], list) or len(trace["route"]) != 3 or not all(isinstance(z, int) and 0 <= z <= 9 for z in trace["route"]):
+                  raise ValueError("Transport rejected an invalid route projection")
+              return capsule
+
+          def _fixture_body(capsule, fixture_mode):
+              route = " → ".join("Z" + str(zone) for zone in capsule["trace"]["route"])
+              if fixture_mode == "SUCCESS_TEXT":
+                  return canon({
+                      "schema": FIXTURE_RESPONSE_SCHEMA,
+                      "outcome": "SUCCESS_TEXT",
+                      "text": "LOCAL ARCHIVE FIXTURE ONLY — no external language model was called. Sealed trace " + capsule["trace"]["traceDigest"][:12] + " follows " + route + ".",
+                  }).encode("utf-8")
+              if fixture_mode == "REFUSAL":
+                  return canon({"schema": FIXTURE_RESPONSE_SCHEMA, "outcome": "REFUSAL", "reason": "Fixture refusal: terminal display-only outcome."}).encode("utf-8")
+              if fixture_mode == "PROVIDER_ERROR":
+                  return canon({"schema": FIXTURE_RESPONSE_SCHEMA, "outcome": "PROVIDER_ERROR", "error": "Fixture provider error: terminal display-only outcome."}).encode("utf-8")
+              if fixture_mode == "SCHEMA_INVALID":
+                  return b'{"fixture":"invalid-without-declared-schema"}'
+              if fixture_mode == "EMPTY_RESPONSE":
+                  return b""
+              if fixture_mode == "TRANSPORT_PREBODY_FAILURE":
+                  return None
+              raise ValueError("Unknown local transport fixture mode")
+
+          def _fixture_status(fixture_mode):
+              return {"SUCCESS_TEXT": 200, "REFUSAL": 200, "PROVIDER_ERROR": 503, "SCHEMA_INVALID": 200, "EMPTY_RESPONSE": 204, "TRANSPORT_PREBODY_FAILURE": None}[fixture_mode]
+
+          def _parse_response(raw_body, fixture_mode):
+              """Classify only after the exact raw bytes have been archived and digested."""
+              if raw_body == b"":
+                  return "EMPTY_RESPONSE", "EMPTY_RESPONSE", None, None, "empty-body"
+              try:
+                  decoded = raw_body.decode("utf-8")
+                  parsed = json.loads(decoded)
+              except Exception:
+                  return "SCHEMA_INVALID", raw_body.decode("utf-8", errors="replace"), None, None, "json-parse-failed"
+              if not isinstance(parsed, dict) or parsed.get("schema") != FIXTURE_RESPONSE_SCHEMA:
+                  return "SCHEMA_INVALID", decoded, None, None, "unexpected-schema"
+              outcome = parsed.get("outcome")
+              if outcome == "SUCCESS_TEXT" and isinstance(parsed.get("text"), str) and parsed["text"]:
+                  text = parsed["text"]
+                  return "SUCCESS_TEXT", text, text, _sha_bytes(text.encode("utf-8")), "text-extracted"
+              if outcome == "REFUSAL":
+                  return "REFUSAL", decoded, None, None, "refusal-display-verbatim"
+              if outcome == "PROVIDER_ERROR":
+                  return "PROVIDER_ERROR", decoded, None, None, "error-display-verbatim"
+              return "SCHEMA_INVALID", decoded, None, None, "unexpected-outcome"
+
+          def archive_first_terminal_attempt(capsule_json, fixture_mode="SUCCESS_TEXT"):
+              """Produce one appendable terminal-attempt record from a non-network fixture.
+
+              The policy has maxAttempts=1. A pre-body failure is therefore logged but
+              cannot be retried here; every response body (including refusal, error,
+              empty, and malformed bodies) is terminal and never rerouted.
+              """
+              capsule = read_transport_capsule(capsule_json)
+              if DECLARED_POLICY["maxAttempts"] != 1 or DECLARED_POLICY["streaming"] is not False:
+                  raise ValueError("P3.3 transport policy is not the sealed fail-closed policy")
+              started_utc = _utc_now()
+              raw_body = _fixture_body(capsule, fixture_mode)
+              base = {
+                  "schema": ATTEMPT_SCHEMA,
+                  "attemptOrdinal": 1,
+                  "attemptStartedUtc": started_utc,
+                  "capsuleDigest": capsule["capsuleDigest"],
+                  "requestDigest": capsule["capsuleDigest"],
+                  "policyDigest": capsule["policyDigest"],
+                  "providerMode": DECLARED_POLICY["providerMode"],
+                  "providerEndpoint": DECLARED_POLICY["providerEndpoint"],
+                  "providerModel": DECLARED_POLICY["providerModel"],
+                  "streaming": False,
+                  "fixtureMode": fixture_mode,
+                  "retryExecuted": False,
+                  "selectionRule": DECLARED_POLICY["firstTerminalResponseRule"],
+              }
+              if raw_body is None:
+                  body = {
+                      **base,
+                      "attemptEndedUtc": _utc_now(),
+                      "providerStatus": None,
+                      "responseBodyStarted": False,
+                      "responseBodyBytes": 0,
+                      "rawBodyBase64": None,
+                      "responseBodySha256": None,
+                      "terminalClass": "TRANSPORT_PREBODY_FAILURE",
+                      "terminal": True,
+                      "retryEligible": True,
+                      "displayText": "TRANSPORT_PREBODY_FAILURE",
+                      "displayDigest": _sha_bytes(b"TRANSPORT_PREBODY_FAILURE"),
+                      "parsedText": None,
+                      "parsedTextSha256": None,
+                      "parseStatus": "no-body-received",
+                      "transportExceptionDigest": _sha_bytes(b"local fixture pre-body transport failure"),
+                      "bodyWithinDeclaredLimit": True,
+                  }
+              else:
+                  raw_body = bytes(raw_body)
+                  # These two fields are created before decoding, parsing, or text extraction.
+                  raw_body_b64 = base64.b64encode(raw_body).decode("ascii")
+                  raw_body_sha256 = _sha_bytes(raw_body)
+                  terminal_class, display_text, parsed_text, parsed_text_sha256, parse_status = _parse_response(raw_body, fixture_mode)
+                  body = {
+                      **base,
+                      "attemptEndedUtc": _utc_now(),
+                      "providerStatus": _fixture_status(fixture_mode),
+                      "responseBodyStarted": True,
+                      "responseBodyBytes": len(raw_body),
+                      "rawBodyBase64": raw_body_b64,
+                      "responseBodySha256": raw_body_sha256,
+                      "terminalClass": terminal_class,
+                      "terminal": True,
+                      "retryEligible": False,
+                      "displayText": display_text,
+                      "displayDigest": _sha_bytes(display_text.encode("utf-8")),
+                      "parsedText": parsed_text,
+                      "parsedTextSha256": parsed_text_sha256,
+                      "parseStatus": parse_status,
+                      "transportExceptionDigest": None,
+                      "bodyWithinDeclaredLimit": len(raw_body) <= DECLARED_POLICY["rawBodyMaxBytes"],
+                  }
+              if set(body) != set(ATTEMPT_BODY_KEYS):
+                  raise ValueError("Transport produced a non-canonical attempt archive")
+              return {**body, "attemptDigest": _digest(body)}
+
+          def verify_attempt_archive(capsule_json, attempt):
+              capsule = read_transport_capsule(capsule_json)
+              if not isinstance(attempt, dict) or set(attempt) != set(ATTEMPT_KEYS):
+                  raise ValueError("Transport verification rejected an unexpected attempt archive")
+              body = {key: attempt[key] for key in ATTEMPT_BODY_KEYS}
+              if attempt.get("schema") != ATTEMPT_SCHEMA or _digest(body) != attempt.get("attemptDigest"):
+                  raise ValueError("Transport verification rejected an attempt integrity mismatch")
+              if attempt["attemptOrdinal"] != 1 or attempt["capsuleDigest"] != capsule["capsuleDigest"] or attempt["requestDigest"] != capsule["capsuleDigest"]:
+                  raise ValueError("Transport verification rejected an attempt/capsule mismatch")
+              if attempt["policyDigest"] != capsule["policyDigest"] or attempt["streaming"] is not False or attempt["retryExecuted"] is not False:
+                  raise ValueError("Transport verification rejected a policy mismatch")
+              if attempt["selectionRule"] != DECLARED_POLICY["firstTerminalResponseRule"] or attempt["terminal"] is not True:
+                  raise ValueError("Transport verification rejected the first-terminal-response rule")
+              checks = {
+                  "capsuleIntegrity": True,
+                  "policyPredeclared": True,
+                  "streamingDisabled": True,
+                  "singleAttemptBudget": DECLARED_POLICY["maxAttempts"] == 1,
+                  "firstTerminalResponse": attempt["attemptOrdinal"] == 1 and attempt["terminal"] and not attempt["retryExecuted"],
+                  "attemptMetadata": isinstance(attempt["attemptStartedUtc"], str) and isinstance(attempt["attemptEndedUtc"], str) and (attempt["providerStatus"] is None or isinstance(attempt["providerStatus"], int)),
+                  "rawResponseArchivedBeforeParse": True,
+                  "responseOnlyDisplay": CAPSULE_CONTRACT["responseMayEnterRouter"] is False and CAPSULE_CONTRACT["responseMayEnterProcessMemory"] is False and CAPSULE_CONTRACT["responseMayEnterCohort"] is False and CAPSULE_CONTRACT["responseMayMutate"] is False,
+                  "externalNetworkDisabled": DECLARED_POLICY["networkAccessEnabled"] is False and DECLARED_POLICY["externalProviderConfigured"] is False,
+              }
+              if attempt["responseBodyStarted"]:
+                  try:
+                      raw = base64.b64decode(attempt["rawBodyBase64"].encode("ascii"), validate=True)
+                  except Exception as error:
+                      raise ValueError("Transport verification could not recover raw response bytes") from error
+                  checks["rawResponseDigest"] = _sha_bytes(raw) == attempt["responseBodySha256"] and len(raw) == attempt["responseBodyBytes"]
+                  checks["rawResponseWithinDeclaredLimit"] = attempt["bodyWithinDeclaredLimit"] and len(raw) <= DECLARED_POLICY["rawBodyMaxBytes"]
+                  terminal_class, display_text, parsed_text, parsed_text_sha256, parse_status = _parse_response(raw, attempt["fixtureMode"])
+                  checks["terminalClassification"] = terminal_class == attempt["terminalClass"] and parse_status == attempt["parseStatus"]
+                  checks["displayIntegrity"] = _sha_bytes(display_text.encode("utf-8")) == attempt["displayDigest"] and display_text == attempt["displayText"]
+                  checks["parsedTextIntegrity"] = parsed_text == attempt["parsedText"] and parsed_text_sha256 == attempt["parsedTextSha256"]
+              else:
+                  checks["rawResponseDigest"] = attempt["rawBodyBase64"] is None and attempt["responseBodySha256"] is None
+                  checks["rawResponseWithinDeclaredLimit"] = attempt["bodyWithinDeclaredLimit"] is True
+                  checks["terminalClassification"] = attempt["terminalClass"] == "TRANSPORT_PREBODY_FAILURE" and attempt["retryEligible"] is True
+                  checks["displayIntegrity"] = attempt["displayText"] == "TRANSPORT_PREBODY_FAILURE"
+                  checks["parsedTextIntegrity"] = attempt["parsedText"] is None and attempt["parsedTextSha256"] is None
+              if not all(checks.values()):
+                  raise ValueError("Fail closed: transport archive verification mismatch")
+              return {"checks": checks, "capsule": capsule, "attempt": attempt, "capabilityAudit": transport_capability_audit()}
+          EOF
+
           cat > app/src/main/python/p3_cohort_assay.py <<'EOF'
           """Android-P3: sealed prospective ProcessFieldMemory matched-state cohort.
 
@@ -243,6 +579,10 @@ jobs:
           import hashlib, json, math, threading, time
           from pathlib import Path
           from p3_read_only_renderer import capability_audit, read_payload, render_payload, seal_trace
+          from p3_llm_transport_capsule import (
+              archive_first_terminal_attempt, read_transport_capsule, seal_transport_capsule,
+              transport_capability_audit, verify_attempt_archive,
+          )
 
           try:
               from p3_build_provenance import BUILD_PROVENANCE
@@ -371,9 +711,11 @@ jobs:
                   self.state_path=self.root/"p3-state.json"; self.ledger_path=self.root/"p3-ledger.jsonl"; self.head_path=self.root/"p3-ledger-head.txt"
                   self.dialogue_path=self.root/"p3-dialogue-memory.json"; self.dialogue_ledger_path=self.root/"p3-dialogue-ledger.jsonl"; self.dialogue_head_path=self.root/"p3-dialogue-ledger-head.txt"
                   self.renderer_state_path=self.root/"p3-renderer-state.json"; self.renderer_ledger_path=self.root/"p3-renderer-ledger.jsonl"; self.renderer_head_path=self.root/"p3-renderer-ledger-head.txt"
+                  self.transport_state_path=self.root/"p3-transport-state.json"; self.transport_ledger_path=self.root/"p3-transport-ledger.jsonl"; self.transport_head_path=self.root/"p3-transport-ledger-head.txt"
                   self.data=self.load(); self.head=self.head_path.read_text().strip() if self.head_path.exists() else "0"*64
                   self.dialogue=self.load_dialogue(); self.dialogue_head=self.dialogue_head_path.read_text().strip() if self.dialogue_head_path.exists() else "0"*64
                   self.renderer_state=self.load_renderer_state(); self.renderer_head=self.renderer_head_path.read_text().strip() if self.renderer_head_path.exists() else "0"*64
+                  self.transport_state=self.load_transport_state(); self.transport_head=self.transport_head_path.read_text().strip() if self.transport_head_path.exists() else "0"*64
                   self.ch=chassis(); self.proj=projection(self.ch)
                   self.regime={"name":"SYZYGETIC_GRID","operator":"native-return-v1","eta":ETA,"kappa":KAPPA,"externalSteering":False,"targetVector":None,"outcomeBlueprint":None,"relaySteering":False,"languageModelInCausalLoop":False}
                   self.config={"schema":SCHEMA,"parentSeeds":list(PARENTS),"depths":list(DEPTHS),"replicatesPerDepth":REPS,"conditions":list(CONDITIONS),"observationWindow":{"steps":W,"indices":list(range(W)),"earlyStop":False,"mode":"unguided-native"},"childSeedDerivation":"sha256-first-32bits-v1(parentSeed,depth,replicate)","matchedChassis":self.ch,"observationProjection":self.proj,"commonRegime":self.regime,"controls":{"HISTORY_RETAINED":"actual donor tensor","ABLATED":"zero tensor","NEUTRAL_RESET":"same non-zero canonical M0","TENSOR_PERMUTED":"cyclic donor-tensor transfer across recipient labels"},"rawBeforeScoring":True,"compactRawTupleLayout":{"conditioning":["step","route0","route1","route2","fluxX1e12","postTensorNormX1e12"],"return":["step","route0","route1","route2","fluxX1e12","tensionX1e12","admissibilityX1e12","stabilityX1e12"]},"measurement":{"projection":"regular-decagon open disk","distance":"hyperbolic Poincare D20","triadSummary":"mean of three within-triad pairwise distances","depthSummary":"mean of ten triad summaries; descriptive only"},"claimsBoundary":"bounded Android implementation; no consciousness, autopoiesis, biological, or population inference; its numeric D20 values are not a reproduction claim for a separately sealed external result","sourceProvenance":BUILD_PROVENANCE}; self.config_digest=dig(self.config)
@@ -401,6 +743,15 @@ jobs:
                   return value
               def save_renderer_state(self):
                   tmp=self.renderer_state_path.with_suffix(".tmp"); tmp.write_text(canon(self.renderer_state)); tmp.replace(self.renderer_state_path)
+              def fresh_transport_state(self):
+                  return {"schema":"amelia-p3.3-transport-state-v1","capsuleCounter":0,"last":None}
+              def load_transport_state(self):
+                  if not self.transport_state_path.exists(): return self.fresh_transport_state()
+                  value=json.loads(self.transport_state_path.read_text())
+                  if value.get("schema")!="amelia-p3.3-transport-state-v1": raise ValueError("Invalid Android-P3.3 transport state")
+                  return value
+              def save_transport_state(self):
+                  tmp=self.transport_state_path.with_suffix(".tmp"); tmp.write_text(canon(self.transport_state)); tmp.replace(self.transport_state_path)
               def append(self, kind, payload):
                   record={"schema":LEDGER_SCHEMA,"kind":kind,"previous":self.head,"payload":payload}; record["recordDigest"]=dig(record); record["chainDigest"]=dig({"previous":self.head,"record":record["recordDigest"]})
                   with self.ledger_path.open("a",encoding="utf-8") as f: f.write(canon(record)+"\n")
@@ -413,6 +764,10 @@ jobs:
                   record={"schema":"amelia-p3.2-renderer-ledger-v1","kind":kind,"previous":self.renderer_head,"payload":payload}; record["recordDigest"]=dig(record); record["chainDigest"]=dig({"previous":self.renderer_head,"record":record["recordDigest"]})
                   with self.renderer_ledger_path.open("a",encoding="utf-8") as f: f.write(canon(record)+"\n")
                   self.renderer_head=record["chainDigest"]; tmp=self.renderer_head_path.with_suffix(".tmp"); tmp.write_text(self.renderer_head); tmp.replace(self.renderer_head_path); return self.renderer_head
+              def append_transport(self, kind, payload):
+                  record={"schema":"amelia-p3.3-transport-ledger-v1","kind":kind,"previous":self.transport_head,"payload":payload}; record["recordDigest"]=dig(record); record["chainDigest"]=dig({"previous":self.transport_head,"record":record["recordDigest"]})
+                  with self.transport_ledger_path.open("a",encoding="utf-8") as f: f.write(canon(record)+"\n")
+                  self.transport_head=record["chainDigest"]; tmp=self.transport_head_path.with_suffix(".tmp"); tmp.write_text(self.transport_head); tmp.replace(self.transport_head_path); return self.transport_head
               def manifest(self, eid, created):
                   cond=sum(DEPTHS)*REPS*len(PARENTS); ret=len(DEPTHS)*REPS*len(PARENTS)*len(CONDITIONS)*W
                   return {"schema":"amelia-p3-prospective-manifest-v1","studyId":"AMELIA-ANDROID-P3-PROSPECTIVE-COHORT","executionId":eid,"createdUtc":created,"schedule":{"depths":list(DEPTHS),"parentSeeds":list(PARENTS),"replicatesPerDepth":REPS,"triads":len(DEPTHS)*REPS,"donorSources":len(DEPTHS)*REPS*len(PARENTS),"forkBranches":len(DEPTHS)*REPS*len(PARENTS)*len(CONDITIONS),"conditioningSteps":cond,"returnSteps":ret,"totalRawSteps":cond+ret},"configDigest":self.config_digest,"matchedChassisDigest":dig(self.ch),"matchedChassisUtf8Bytes":len(canon(self.ch).encode()),"observationProjectionDigest":dig(self.proj),"commonRegimeDigest":dig(self.regime),"canonicalBaselineTensorDigest":td(M0),"zeroTensorDigest":td(zero()),"rawBeforeScoring":True,"scoringGate":"No descriptive measurement until all donor and return raw records are append-only logged.","protocol":self.config}
@@ -502,7 +857,17 @@ jobs:
                   self.renderer_state["last"]={"schema":"amelia-p3.2-renderer-record-v1","payloadJson":payload_json,"payloadDigest":payload["payloadDigest"],"traceDigest":payload["traceDigest"],"renderDigest":rendered["renderDigest"],"displayDigest":rendered["displayDigest"],"dialogueMemoryDigest":dialogue_memory_digest,"cohortRecordDigest":after_cohort}
                   self.save_renderer_state()
                   renderer_head=self.append_renderer("sealed_trace_read_only_rendered",{"payload":payload,"render":{"schema":rendered["schema"],"renderDigest":rendered["renderDigest"],"displayDigest":rendered["displayDigest"],"capabilityAudit":rendered["capabilityAudit"]},"dialogueMemoryDigest":dialogue_memory_digest,"cohortRecordDigest":after_cohort})
-                  return {"ok":True,"kind":"dialogue","trace":trace,"renderer":rendered,"renderingPayload":payload,"cohortRecordUnchanged":unchanged,"dialogueMemoryDigest":dialogue_memory_digest,"dialogueLedgerHead":dialogue_head,"renderLedgerHead":renderer_head}
+                  # P3.3 seals a provider-neutral capsule after the local trace is complete.
+                  # It receives the P3.2 projection only, never request/rawInput or state handles.
+                  before_capsule_dialogue, before_capsule_cohort=dig(self.dialogue),dig(self.data.get("last"))
+                  capsule_json=seal_transport_capsule(payload_json); capsule=read_transport_capsule(capsule_json)
+                  if dig(self.dialogue)!=before_capsule_dialogue or dig(self.data.get("last"))!=before_capsule_cohort:
+                      raise ValueError("Fail closed: transport capsule changed local substrate or cohort record")
+                  self.transport_state["capsuleCounter"]+=1
+                  self.transport_state["last"]={"schema":"amelia-p3.3-transport-record-v1","capsuleJson":capsule_json,"capsuleDigest":capsule["capsuleDigest"],"traceDigest":capsule["trace"]["traceDigest"],"sourcePayloadDigest":capsule["sourcePayloadDigest"],"policyDigest":capsule["policyDigest"],"dialogueMemoryDigestAtSeal":before_capsule_dialogue,"cohortRecordDigestAtSeal":before_capsule_cohort,"attemptStarted":False,"attempt":None}
+                  self.save_transport_state()
+                  transport_head=self.append_transport("transport_capsule_sealed_before_attempt",{"capsuleDigest":capsule["capsuleDigest"],"traceDigest":capsule["trace"]["traceDigest"],"sourcePayloadDigest":capsule["sourcePayloadDigest"],"policyDigest":capsule["policyDigest"],"capabilityAudit":transport_capability_audit(),"dialogueMemoryDigest":before_capsule_dialogue,"cohortRecordDigest":before_capsule_cohort})
+                  return {"ok":True,"kind":"dialogue","trace":trace,"renderer":rendered,"renderingPayload":payload,"transportCapsule":capsule,"transportCapabilityAudit":transport_capability_audit(),"cohortRecordUnchanged":unchanged,"dialogueMemoryDigest":dialogue_memory_digest,"dialogueLedgerHead":dialogue_head,"renderLedgerHead":renderer_head,"transportLedgerHead":transport_head}
               def verify_renderer(self):
                   last=self.renderer_state.get("last")
                   if not last: raise ValueError("Send a local dialogue trace before renderer verification")
@@ -511,6 +876,43 @@ jobs:
                   if not all(checks.values()): raise ValueError("Fail closed: read-only renderer verification mismatch")
                   renderer_head=self.append_renderer("read_only_renderer_replay_verification",{"payloadDigest":payload["payloadDigest"],"traceDigest":payload["traceDigest"],"renderDigest":rendered["renderDigest"],"checks":checks})
                   return {"ok":True,"kind":"render_verify","checks":checks,"payloadDigest":payload["payloadDigest"],"traceDigest":payload["traceDigest"],"renderDigest":rendered["renderDigest"],"renderLedgerHead":renderer_head}
+              def run_local_transport_fixture(self):
+                  last=self.transport_state.get("last")
+                  if not last: raise ValueError("Send a local dialogue trace before sealing a P3.3 transport capsule")
+                  if last.get("attemptStarted") or last.get("attempt") is not None: raise ValueError("The current capsule has already entered its one-attempt terminal protocol; create a new capsule rather than rerolling")
+                  before_dialogue,before_cohort,before_renderer=dig(self.dialogue),dig(self.data.get("last")),dig(self.renderer_state)
+                  capsule=read_transport_capsule(last["capsuleJson"])
+                  # Persist the irreversible attempt reservation before any response is produced.
+                  # A process interruption therefore fails closed rather than enabling a reroll.
+                  last["attemptStarted"]=True; self.transport_state["last"]=last; self.save_transport_state()
+                  # This is deliberately a local non-network fixture. It exercises raw-body
+                  # archiving and terminal handling without pretending that an LLM was called.
+                  attempt=archive_first_terminal_attempt(last["capsuleJson"],"SUCCESS_TEXT")
+                  after_dialogue,after_cohort,after_renderer=dig(self.dialogue),dig(self.data.get("last")),dig(self.renderer_state)
+                  run_checks={"dialogueMemoryUnchanged":before_dialogue==after_dialogue,"cohortRecordUnchanged":before_cohort==after_cohort,"templateRendererRecordUnchanged":before_renderer==after_renderer,"externalNetworkDisabled":transport_capability_audit()["networkAccessEnabled"] is False,"providerUnconfigured":transport_capability_audit()["externalProviderConfigured"] is False}
+                  if not all(run_checks.values()): raise ValueError("Fail closed: local transport fixture changed a protected record")
+                  head=self.append_transport("local_fixture_first_terminal_attempt_archived",{"capsuleDigest":capsule["capsuleDigest"],"traceDigest":capsule["trace"]["traceDigest"],"attempt":attempt,"runChecks":run_checks,"dialogueMemoryDigest":after_dialogue,"cohortRecordDigest":after_cohort,"templateRendererDigest":after_renderer})
+                  last["attempt"]=attempt; last["runChecks"]=run_checks; last["dialogueMemoryDigestBeforeAttempt"]=before_dialogue; last["dialogueMemoryDigestAfterAttempt"]=after_dialogue; last["cohortRecordDigestBeforeAttempt"]=before_cohort; last["cohortRecordDigestAfterAttempt"]=after_cohort; last["templateRendererDigestBeforeAttempt"]=before_renderer; last["templateRendererDigestAfterAttempt"]=after_renderer
+                  self.transport_state["last"]=last; self.save_transport_state()
+                  return {"ok":True,"kind":"transport_fixture","capsule":capsule,"attempt":attempt,"runChecks":run_checks,"transportLedgerHead":head}
+              def verify_transport_archive(self):
+                  last=self.transport_state.get("last")
+                  if not last or last.get("attempt") is None: raise ValueError("Run the local transport fixture before transport verification")
+                  before_dialogue,before_cohort,before_renderer=dig(self.dialogue),dig(self.data.get("last")),dig(self.renderer_state)
+                  verified=verify_attempt_archive(last["capsuleJson"],last["attempt"])
+                  after_dialogue,after_cohort,after_renderer=dig(self.dialogue),dig(self.data.get("last")),dig(self.renderer_state)
+                  checks=dict(verified["checks"])
+                  checks.update({"capabilityContract":verified["capabilityAudit"]==transport_capability_audit(),"atAttemptDialogueMemoryUnchanged":last.get("dialogueMemoryDigestBeforeAttempt")==last.get("dialogueMemoryDigestAfterAttempt"),"atAttemptCohortRecordUnchanged":last.get("cohortRecordDigestBeforeAttempt")==last.get("cohortRecordDigestAfterAttempt"),"atAttemptTemplateRendererUnchanged":last.get("templateRendererDigestBeforeAttempt")==last.get("templateRendererDigestAfterAttempt"),"verificationDialogueMemoryUnchanged":before_dialogue==after_dialogue,"verificationCohortRecordUnchanged":before_cohort==after_cohort,"verificationTemplateRendererUnchanged":before_renderer==after_renderer})
+                  if not all(checks.values()): raise ValueError("Fail closed: P3.3 transport verification mismatch")
+                  head=self.append_transport("transport_archive_integrity_and_no_feedback_verification",{"capsuleDigest":last["capsuleDigest"],"attemptDigest":last["attempt"]["attemptDigest"],"checks":checks})
+                  return {"ok":True,"kind":"transport_verify","checks":checks,"capsuleDigest":last["capsuleDigest"],"traceDigest":last["traceDigest"],"attemptDigest":last["attempt"]["attemptDigest"],"transportLedgerHead":head}
+              def reset_transport(self):
+                  before_dialogue,before_cohort,before_renderer=dig(self.dialogue),dig(self.data.get("last")),dig(self.renderer_state)
+                  self.transport_state["last"]=None; self.save_transport_state()
+                  checks={"dialogueMemoryUnchanged":before_dialogue==dig(self.dialogue),"cohortRecordUnchanged":before_cohort==dig(self.data.get("last")),"templateRendererRecordUnchanged":before_renderer==dig(self.renderer_state)}
+                  if not all(checks.values()): raise ValueError("Fail closed: transport reset changed a protected record")
+                  head=self.append_transport("explicit_transport_record_reset",{"capsuleCounter":self.transport_state["capsuleCounter"],"checks":checks,"attemptArchiveRetained":True})
+                  return {"ok":True,"kind":"transport_reset","capsuleCounter":self.transport_state["capsuleCounter"],"checks":checks,"transportLedgerHead":head}
               def reset_dialogue(self):
                   self.dialogue=self.fresh_dialogue(); self.save_dialogue(); head=self.append_dialogue("explicit_dialogue_memory_reset",{"sequence":0,"cohortRecordUnchanged":True}); return {"ok":True,"kind":"dialogue_reset","sequence":0,"dialogueLedgerHead":head}
               def reset(self):
@@ -528,26 +930,31 @@ jobs:
           def verify_last_cohort(storage_dir): return guarded(lambda:instance(storage_dir).verify())
           def run_dialogue_turn(raw_input, storage_dir): return guarded(lambda:instance(storage_dir).dialogue_turn(raw_input))
           def verify_last_renderer(storage_dir): return guarded(lambda:instance(storage_dir).verify_renderer())
+          def run_local_transport_fixture(storage_dir): return guarded(lambda:instance(storage_dir).run_local_transport_fixture())
+          def verify_last_transport_archive(storage_dir): return guarded(lambda:instance(storage_dir).verify_transport_archive())
+          def reset_transport_record(storage_dir): return guarded(lambda:instance(storage_dir).reset_transport())
           def reset_dialogue_memory(storage_dir): return guarded(lambda:instance(storage_dir).reset_dialogue())
           def reset_p3(storage_dir): return guarded(lambda:instance(storage_dir).reset())
           EOF
 
           P3_SOURCE_SHA="$(sha256sum app/src/main/python/p3_cohort_assay.py | awk '{print $1}')"
           RENDERER_SOURCE_SHA="$(sha256sum app/src/main/python/p3_read_only_renderer.py | awk '{print $1}')"
+          TRANSPORT_SOURCE_SHA="$(sha256sum app/src/main/python/p3_llm_transport_capsule.py | awk '{print $1}')"
           CORE_SOURCE_SHA="$(sha256sum app/src/main/python/amelia_symbolic_core.py | awk '{print $1}')"
           BUILD_REVISION="${GITHUB_SHA:-local}"
           cat > app/src/main/python/p3_build_provenance.py <<EOF
           BUILD_PROVENANCE = {
-              "workflow": "android-p3.2-one-way-renderer",
+              "workflow": "android-p3.3-sealed-transport-capsule",
               "p3CohortAssaySha256": "${P3_SOURCE_SHA}",
               "p3ReadOnlyRendererSha256": "${RENDERER_SOURCE_SHA}",
+              "p3TransportCapsuleSha256": "${TRANSPORT_SOURCE_SHA}",
               "symbolicCoreSha256": "${CORE_SOURCE_SHA}",
               "revision": "${BUILD_REVISION}",
           }
           EOF
 
-          cat > app/src/main/java/com/amelia/p3/MainActivity.kt <<'EOF'
-          package com.amelia.p3
+          cat > app/src/main/java/com/amelia/p33/MainActivity.kt <<'EOF'
+          package com.amelia.p33
 
           import android.app.Activity
           import android.os.Bundle
@@ -569,18 +976,18 @@ jobs:
               private lateinit var telemetry: TextView
               private lateinit var prompt: EditText
               private val controls = mutableListOf<Button>()
-              private val storageDir by lazy { File(filesDir, "amelia_p3").apply { mkdirs() }.absolutePath }
+              private val storageDir by lazy { File(filesDir, "amelia_p33").apply { mkdirs() }.absolutePath }
 
               override fun onCreate(savedInstanceState: Bundle?) {
                   super.onCreate(savedInstanceState)
                   val surface = ScrollView(this)
                   val root = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(dp(16), dp(16), dp(16), dp(16)) }
-                  root.addView(TextView(this).apply { text = "AMELIA · ANDROID-P3.2"; textSize = 23f; gravity = Gravity.CENTER_HORIZONTAL })
-                  root.addView(TextView(this).apply { text = "Sealed trace → read-only language renderer · no language model in causal loop"; textSize = 12f; gravity = Gravity.CENTER_HORIZONTAL; setPadding(0, dp(5), 0, dp(6)) })
+                  root.addView(TextView(this).apply { text = "AMELIA · ANDROID-P3.3"; textSize = 23f; gravity = Gravity.CENTER_HORIZONTAL })
+                  root.addView(TextView(this).apply { text = "Sealed trace → transport capsule → local archive fixture · no external model call"; textSize = 12f; gravity = Gravity.CENTER_HORIZONTAL; setPadding(0, dp(5), 0, dp(6)) })
                   root.addView(TextView(this).apply { text = "D=128, 256, 384, 432, 480, 512 · 10 triads/depth · W=20"; textSize = 12f; gravity = Gravity.CENTER_HORIZONTAL; setPadding(0, 0, 0, dp(8)) })
                   val readout = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
-                  output = TextView(this).apply { text = "A local prompt first commits an Amelia trace. A separate renderer then receives only a sealed trace payload and produces language for display. It cannot call routing, read ProcessFieldMemory or cohort data, or mutate any substrate record."; textSize = 15f; setPadding(0, dp(8), 0, dp(8)) }
-                  telemetry = TextView(this).apply { text = "TELEMETRY · local dialogue, renderer, and sealed cohort records are separate."; textSize = 13f; setPadding(dp(8), dp(8), dp(8), dp(8)) }
+                  output = TextView(this).apply { text = "A local prompt first commits an Amelia trace. P3.2 remains the deterministic template-display baseline. P3.3 separately seals a future provider capsule and tests its append-only raw-response protocol with a local fixture. External provider networking is disabled."; textSize = 15f; setPadding(0, dp(8), 0, dp(8)) }
+                  telemetry = TextView(this).apply { text = "TELEMETRY · dialogue, template renderer, transport archive, and sealed cohort records are separate."; textSize = 13f; setPadding(dp(8), dp(8), dp(8), dp(8)) }
                   readout.addView(output); readout.addView(telemetry)
                   root.addView(ScrollView(this).apply { addView(readout) }, LinearLayout.LayoutParams(-1, dp(280)))
                   root.addView(TextView(this).apply { text = "LOCAL AMELIA DIALOGUE → SEALED TRACE → LANGUAGE DISPLAY · NOT A P3 COHORT INPUT"; textSize = 12f; setPadding(0, dp(4), 0, 0) })
@@ -589,6 +996,10 @@ jobs:
                   root.addView(action("SEND TO AMELIA", "run_dialogue_turn", true))
                   root.addView(action("VERIFY LAST RENDERER BOUNDARY", "verify_last_renderer"))
                   root.addView(action("RESET DIALOGUE MEMORY", "reset_dialogue_memory"))
+                  root.addView(TextView(this).apply { text = "SEALED P3.3 TRANSPORT · LOCAL FIXTURE ONLY · EXTERNAL PROVIDER DISABLED"; textSize = 12f; setPadding(0, dp(5), 0, 0) })
+                  root.addView(action("RUN LOCAL TRANSPORT FIXTURE", "run_local_transport_fixture"))
+                  root.addView(action("VERIFY LAST TRANSPORT ARCHIVE", "verify_last_transport_archive"))
+                  root.addView(action("RESET TRANSPORT RECORD", "reset_transport_record"))
                   root.addView(TextView(this).apply { text = "SEALED P3 COHORT · NOT AFFECTED BY DIALOGUE"; textSize = 12f; setPadding(0, dp(5), 0, 0) })
                   root.addView(action("SEAL & RUN PREDECLARED P3 COHORT", "run_predeclared_cohort"))
                   root.addView(action("VERIFY LAST COHORT REPLAY", "verify_last_cohort"))
@@ -605,7 +1016,14 @@ jobs:
               }
               private fun invoke(fn: String, input: String? = null) {
                   controls.forEach { it.isEnabled = false }
-                  output.text = when (fn) { "run_predeclared_cohort" -> "P3 constructing the sealed cohort. All raw records are written before a descriptive summary..."; "run_dialogue_turn" -> "Amelia is committing a local trace, sealing a rendering payload, then producing read-only language..."; "verify_last_renderer" -> "P3.2 replaying the sealed rendering payload without touching local memory or the cohort..."; else -> "P3 provenance operation running..." }
+                  output.text = when (fn) {
+                      "run_predeclared_cohort" -> "P3 constructing the sealed cohort. All raw records are written before a descriptive summary..."
+                      "run_dialogue_turn" -> "Amelia is committing a local trace, producing the P3.2 template baseline, and sealing a P3.3 provider-neutral capsule..."
+                      "verify_last_renderer" -> "P3.2 replaying the sealed template payload without touching local memory or the cohort..."
+                      "run_local_transport_fixture" -> "P3.3 is archiving one terminal response from a local non-network fixture. It will not call an external model..."
+                      "verify_last_transport_archive" -> "P3.3 is checking raw-byte archive integrity and no-feedback invariants..."
+                      else -> "P3 provenance operation running..."
+                  }
                   Thread {
                       val raw = try { val module = Python.getInstance().getModule("p3_cohort_assay"); if (input == null) module.callAttr(fn, storageDir).toString() else module.callAttr(fn, input, storageDir).toString() } catch (e: Exception) { JSONObject().put("ok", false).put("error", e.message ?: "Android/Python failure").toString() }
                       runOnUiThread { render(raw); if (input != null) prompt.setText(""); controls.forEach { it.isEnabled = true } }
@@ -613,23 +1031,45 @@ jobs:
               }
               private fun render(raw: String) {
                   val r = JSONObject(raw)
-                  if (!r.optBoolean("ok", false)) { output.text = "P3.2 FAIL-CLOSED · do not interpret an outcome."; telemetry.text = "TELEMETRY · ERROR\n${r.optString("error")}"; return }
-                  when (r.optString("kind")) { "dialogue" -> dialogue(r); "render_verify" -> rendererVerify(r); "dialogue_reset" -> dialogueReset(r); "cohort" -> cohort(r); "verify" -> verify(r); else -> reset(r) }
+                  if (!r.optBoolean("ok", false)) { output.text = "P3.3 FAIL-CLOSED · do not interpret an outcome."; telemetry.text = "TELEMETRY · ERROR\n${r.optString("error")}"; return }
+                  when (r.optString("kind")) {
+                      "dialogue" -> dialogue(r)
+                      "render_verify" -> rendererVerify(r)
+                      "transport_fixture" -> transportFixture(r)
+                      "transport_verify" -> transportVerify(r)
+                      "transport_reset" -> transportReset(r)
+                      "dialogue_reset" -> dialogueReset(r)
+                      "cohort" -> cohort(r)
+                      "verify" -> verify(r)
+                      else -> reset(r)
+                  }
               }
               private fun dialogue(r: JSONObject) {
-                  val t=r.getJSONObject("trace"); val rendered=r.getJSONObject("renderer"); val payload=r.getJSONObject("renderingPayload"); val audit=rendered.getJSONObject("capabilityAudit")
-                  output.text="AMELIA ONE-WAY LANGUAGE DISPLAY\n\n${rendered.optString("displayText")}\n\nSEALED TRACE\nTrace: ${short(rendered.optString("traceDigest"))}\nPayload: ${short(rendered.optString("payloadDigest"))}\nRoute: ${zones(t.getJSONArray("route"))}\nModules: ${t.getJSONArray("modules").joinText()}"
-                  telemetry.text="RENDERER BOUNDARY TELEMETRY\nTurn: ${t.optInt("sequence")}\nInput digest: ${short(t.optString("inputDigest"))}\nTensor: ${n(t.optDouble("preTensorNorm"))} → ${n(t.optDouble("postTensorNorm"))}\nFlux: ${n(t.optDouble("syzygyFlux"))}\nPayload verified: ${rendered.optBoolean("payloadVerified")}\nRaw prompt included: ${audit.optBoolean("rawPromptIncluded")}\nRouter callable: ${audit.optBoolean("mayCallRouter")}\nPFM readable: ${audit.optBoolean("mayReadProcessMemory")}\nCohort readable: ${audit.optBoolean("mayReadCohort")}\nMutator callable: ${audit.optBoolean("mayMutate")}\nCohort record unchanged: ${r.optBoolean("cohortRecordUnchanged")}\nRenderer ledger: ${short(r.optString("renderLedgerHead"))}"
+                  val t=r.getJSONObject("trace"); val rendered=r.getJSONObject("renderer"); val audit=rendered.getJSONObject("capabilityAudit")
+                  val capsule=r.getJSONObject("transportCapsule"); val policy=capsule.getJSONObject("transportPolicy"); val transportAudit=r.getJSONObject("transportCapabilityAudit")
+                  output.text="AMELIA LOCAL TEMPLATE DISPLAY\n\n${rendered.optString("displayText")}\n\nP3.3 SEALED TRANSPORT CAPSULE\nCapsule: ${short(capsule.optString("capsuleDigest"))}\nTrace: ${short(capsule.getJSONObject("trace").optString("traceDigest"))}\nEndpoint: ${policy.optString("providerEndpoint")}\nModel: ${policy.optString("providerModel")}\n\nThe template display above is deterministic P3.2 baseline output. The P3.3 capsule is sealed for one later transport attempt; no external provider has been called."
+                  telemetry.text="BOUNDARY & CAPSULE TELEMETRY\nTurn: ${t.optInt("sequence")}\nInput digest: ${short(t.optString("inputDigest"))}\nRoute: ${zones(t.getJSONArray("route"))}\nTensor: ${n(t.optDouble("preTensorNorm"))} → ${n(t.optDouble("postTensorNorm"))}\nFlux: ${n(t.optDouble("syzygyFlux"))}\n\nTemplate payload verified: ${rendered.optBoolean("payloadVerified")}\nTemplate raw prompt included: ${audit.optBoolean("rawPromptIncluded")}\n\nExternal provider configured: ${transportAudit.optBoolean("externalProviderConfigured")}\nNetwork enabled: ${transportAudit.optBoolean("networkAccessEnabled")}\nStreaming: ${policy.optBoolean("streaming")}\nMax attempts: ${policy.optInt("maxAttempts")}\nFirst terminal response rule: sealed\nResponse can route: ${transportAudit.optBoolean("responseMayEnterRouter")}\nResponse can mutate: ${transportAudit.optBoolean("responseMayMutate")}\nCohort record unchanged: ${r.optBoolean("cohortRecordUnchanged")}\nTransport ledger: ${short(r.optString("transportLedgerHead"))}"
               }
               private fun rendererVerify(r: JSONObject) {
                   val c=r.getJSONObject("checks")
-                  output.text="P3.2 RENDERER VERIFIED · the language display was reproduced solely from its sealed, read-only payload."
-                  telemetry.text="RENDERER REPLAY\nPayload integrity: ${c.optBoolean("payloadDigest")}\nTrace binding: ${c.optBoolean("traceDigest")}\nDisplay reproduced: ${c.optBoolean("displayDigest")}\nCapability contract: ${c.optBoolean("capabilityContract")}\nDialogue memory unchanged: ${c.optBoolean("dialogueMemoryUnchanged")}\nCohort record unchanged: ${c.optBoolean("cohortRecordUnchanged")}\nPayload: ${short(r.optString("payloadDigest"))}\nRenderer ledger: ${short(r.optString("renderLedgerHead"))}"
+                  output.text="P3.2 TEMPLATE RENDERER VERIFIED · the deterministic template display was reproduced solely from its sealed, read-only payload."
+                  telemetry.text="TEMPLATE RENDERER REPLAY\nPayload integrity: ${c.optBoolean("payloadDigest")}\nTrace binding: ${c.optBoolean("traceDigest")}\nTemplate display reproduced: ${c.optBoolean("displayDigest")}\nCapability contract: ${c.optBoolean("capabilityContract")}\nDialogue memory unchanged: ${c.optBoolean("dialogueMemoryUnchanged")}\nCohort record unchanged: ${c.optBoolean("cohortRecordUnchanged")}\nPayload: ${short(r.optString("payloadDigest"))}\nRenderer ledger: ${short(r.optString("renderLedgerHead"))}"
               }
+              private fun transportFixture(r: JSONObject) {
+                  val capsule=r.getJSONObject("capsule"); val attempt=r.getJSONObject("attempt"); val checks=r.getJSONObject("runChecks")
+                  output.text="P3.3 LOCAL TRANSPORT FIXTURE ARCHIVED\n\n${attempt.optString("displayText")}\n\nThis is a local, non-network fixture response — not an external LLM response. Its exact raw bytes were archived before parsing; this terminal result cannot route, alter ProcessFieldMemory, alter the template renderer record, or alter the cohort."
+                  telemetry.text="TRANSPORT ATTEMPT\nCapsule: ${short(capsule.optString("capsuleDigest"))}\nTrace: ${short(capsule.getJSONObject("trace").optString("traceDigest"))}\nClass: ${attempt.optString("terminalClass")}\nAttempt: ${attempt.optInt("attemptOrdinal")}\nStatus: ${attempt.optString("providerStatus", "none")}\nTerminal: ${attempt.optBoolean("terminal")}\nRetry eligible: ${attempt.optBoolean("retryEligible")}\nRetry executed: ${attempt.optBoolean("retryExecuted")}\nRaw bytes: ${attempt.optInt("responseBodyBytes")}\nRaw SHA-256: ${short(attempt.optString("responseBodySha256"))}\nParsed text SHA-256: ${short(attempt.optString("parsedTextSha256"))}\nRaw within declared limit: ${attempt.optBoolean("bodyWithinDeclaredLimit")}\nRaw archived before parse: true\nDialogue unchanged: ${checks.optBoolean("dialogueMemoryUnchanged")}\nCohort unchanged: ${checks.optBoolean("cohortRecordUnchanged")}\nTemplate record unchanged: ${checks.optBoolean("templateRendererRecordUnchanged")}\nNetwork enabled: ${!checks.optBoolean("externalNetworkDisabled")}\nTransport ledger: ${short(r.optString("transportLedgerHead"))}"
+              }
+              private fun transportVerify(r: JSONObject) {
+                  val c=r.getJSONObject("checks")
+                  output.text="P3.3 TRANSPORT ARCHIVE VERIFIED · the sealed capsule, exact raw archive, terminal classification, and no-feedback boundary held. This verifies archive integrity, not LLM reproducibility; no external provider was called."
+                  telemetry.text="TRANSPORT ARCHIVE VERIFICATION\nCapsule integrity: ${c.optBoolean("capsuleIntegrity")}\nPolicy predeclared: ${c.optBoolean("policyPredeclared")}\nStreaming disabled: ${c.optBoolean("streamingDisabled")}\nSingle attempt budget: ${c.optBoolean("singleAttemptBudget")}\nFirst terminal response: ${c.optBoolean("firstTerminalResponse")}\nAttempt metadata: ${c.optBoolean("attemptMetadata")}\nRaw response digest: ${c.optBoolean("rawResponseDigest")}\nRaw within declared limit: ${c.optBoolean("rawResponseWithinDeclaredLimit")}\nRaw response archived before parse: ${c.optBoolean("rawResponseArchivedBeforeParse")}\nParsed text integrity: ${c.optBoolean("parsedTextIntegrity")}\nDisplay integrity: ${c.optBoolean("displayIntegrity")}\nResponse display-only: ${c.optBoolean("responseOnlyDisplay")}\nExternal network disabled: ${c.optBoolean("externalNetworkDisabled")}\nCapability contract: ${c.optBoolean("capabilityContract")}\nDialogue unchanged at attempt: ${c.optBoolean("atAttemptDialogueMemoryUnchanged")}\nCohort unchanged at attempt: ${c.optBoolean("atAttemptCohortRecordUnchanged")}\nVerification non-mutating: ${c.optBoolean("verificationDialogueMemoryUnchanged") && c.optBoolean("verificationCohortRecordUnchanged")}\nAttempt: ${short(r.optString("attemptDigest"))}\nTransport ledger: ${short(r.optString("transportLedgerHead"))}"
+              }
+              private fun transportReset(r: JSONObject) { output.text="P3.3 active transport record reset. Append-only capsule and response archives are retained; dialogue, template renderer, and P3 cohort records were untouched."; val c=r.getJSONObject("checks"); telemetry.text="TRANSPORT RESET\nCapsules sealed: ${r.optInt("capsuleCounter")}\nDialogue unchanged: ${c.optBoolean("dialogueMemoryUnchanged")}\nCohort unchanged: ${c.optBoolean("cohortRecordUnchanged")}\nTemplate record unchanged: ${c.optBoolean("templateRendererRecordUnchanged")}\nTransport ledger: ${short(r.optString("transportLedgerHead"))}" }
               private fun dialogueReset(r: JSONObject) { output.text="Amelia dialogue memory reset. Earlier renderer records remain separately archived; the P3 cohort record is unchanged."; telemetry.text="DIALOGUE RESET\nSequence: ${r.optInt("sequence")}\nDialogue ledger: ${short(r.optString("dialogueLedgerHead"))}" }
               private fun cohort(r: JSONObject) {
                   val m=r.getJSONObject("manifest"); val s=m.getJSONObject("schedule"); val g=r.getJSONObject("gates"); val l=r.getJSONObject("ledger")
-                  output.text = "P3 SEALED PROSPECTIVE COHORT\n\nExecution: ${m.optString("executionId")}\nSeal: ${short(m.optString("sealDigest"))}\n\n${s.optInt("triads")} triads · ${s.optInt("donorSources")} donor sources · ${s.optInt("forkBranches")} return branches\n${s.optInt("conditioningSteps")} conditioning + ${s.optInt("returnSteps")} return = ${s.optInt("totalRawSteps")} raw steps\n\nAndroid-P3.2 implementation readout only; its renderer remains outside this causal record.\n\n${depths(r.getJSONArray("depthSummaries"))}"
+                  output.text = "P3 SEALED PROSPECTIVE COHORT\n\nExecution: ${m.optString("executionId")}\nSeal: ${short(m.optString("sealDigest"))}\n\n${s.optInt("triads")} triads · ${s.optInt("donorSources")} donor sources · ${s.optInt("forkBranches")} return branches\n${s.optInt("conditioningSteps")} conditioning + ${s.optInt("returnSteps")} return = ${s.optInt("totalRawSteps")} raw steps\n\nAndroid-P3.3 implementation readout only; template rendering and transport records remain outside this causal record.\n\n${depths(r.getJSONArray("depthSummaries"))}"
                   telemetry.text = "PROVENANCE GATES\nRaw before scoring: ${g.optBoolean("rawRecordedBeforeScoring")}\nMatched non-PFM chassis: ${g.optBoolean("matchedNonPfmState")}\nProjection identity: ${g.optBoolean("observationProjection")}\nDistinct donor tensors: ${g.optBoolean("distinctDonorTensors")}\nSame-tensor transfer: ${g.optBoolean("sameTensorReturnIdentity")}\nNull-control collapse: ${g.optBoolean("nullControlCollapse")}\nRetained D20 positive: ${g.optBoolean("historyRetainedPositive")}\n\nRaw: ${short(l.optString("returns"))}\nSummary: ${short(l.optString("measurement"))}"
               }
               private fun verify(r: JSONObject) { output.text=if(r.optBoolean("allMatch")) "P3 COHORT VERIFIED · every sealed source and return branch reproduced." else "P3 COHORT MISMATCH · do not interpret outcomes."; telemetry.text="DETERMINISTIC REPLAY\nSources: ${r.optInt("sourcesMatched")}/${r.optInt("sourcesExpected")}\nBranches: ${r.optInt("branchesMatched")}/${r.optInt("branchesExpected")}\nLedger: ${short(r.optString("ledgerHead"))}" }
@@ -643,21 +1083,27 @@ jobs:
           }
           EOF
 
-      - name: Validate P3.2 one-way renderer, dialogue isolation, and cohort provenance
+      - name: Validate P3.3 transport capsule, dialogue isolation, and cohort provenance
         run: |
-          python3 -m py_compile app/src/main/python/amelia_symbolic_core.py app/src/main/python/p3_read_only_renderer.py app/src/main/python/p3_cohort_assay.py app/src/main/python/p3_build_provenance.py
+          python3 -m py_compile app/src/main/python/amelia_symbolic_core.py app/src/main/python/p3_read_only_renderer.py app/src/main/python/p3_llm_transport_capsule.py app/src/main/python/p3_cohort_assay.py app/src/main/python/p3_build_provenance.py
           P3_TEST_DIR="$(mktemp -d)"; export P3_TEST_DIR
           PYTHONPATH=app/src/main/python python3 - <<'PY'
-          import inspect, json, os
+          import base64, hashlib, inspect, json, os
           import p3_read_only_renderer as renderer
-          from p3_cohort_assay import run_dialogue_turn, run_predeclared_cohort, verify_last_cohort, verify_last_renderer
+          import p3_llm_transport_capsule as transport
+          from p3_cohort_assay import (
+              reset_transport_record, run_dialogue_turn, run_local_transport_fixture,
+              run_predeclared_cohort, verify_last_cohort, verify_last_renderer,
+              verify_last_transport_archive,
+          )
           root = os.environ["P3_TEST_DIR"]
           dialogue = json.loads(run_dialogue_turn("A declared local dialogue probe", root))
           assert dialogue["ok"] and dialogue["kind"] == "dialogue", dialogue
           assert dialogue["trace"]["sequence"] == 1 and dialogue["cohortRecordUnchanged"], dialogue
           assert "response" not in dialogue, dialogue
-          payload, rendered = dialogue["renderingPayload"], dialogue["renderer"]
+          payload, rendered, capsule = dialogue["renderingPayload"], dialogue["renderer"], dialogue["transportCapsule"]
           assert "A declared local dialogue probe" not in json.dumps(payload, sort_keys=True), payload
+          assert "A declared local dialogue probe" not in json.dumps(capsule, sort_keys=True), capsule
           assert payload["payloadContract"]["rawPromptIncluded"] is False, payload
           assert payload["payloadContract"]["mayCallRouter"] is False, payload
           assert payload["payloadContract"]["mayReadProcessMemory"] is False, payload
@@ -674,8 +1120,51 @@ jobs:
           renderer_source = inspect.getsource(renderer)
           for forbidden in ("p3_cohort_assay", "pathlib", "open(", "os.", "socket", "subprocess", "threading", "requests"):
               assert forbidden not in renderer_source, forbidden
+          policy, capsule_contract = capsule["transportPolicy"], capsule["capsuleContract"]
+          assert policy["providerMode"] == "LOCAL_ARCHIVE_FIXTURE" and policy["providerEndpoint"] == "LOCAL_ARCHIVE_FIXTURE", policy
+          assert policy["externalProviderConfigured"] is False and policy["networkAccessEnabled"] is False, policy
+          assert policy["streaming"] is False and policy["tools"] is False and policy["functionCalling"] is False and policy["webhook"] is False, policy
+          assert policy["maxAttempts"] == 1 and "first terminal response" in policy["firstTerminalResponseRule"], policy
+          assert policy["decodingParameters"] == {"temperature": 0.0, "topP": 1.0, "maxOutputTokens": 320, "seed": None, "responseFormat": "provider-default-text"}, policy
+          assert policy["retryBinding"]["responseWithAnyBodyByteTerminal"] and policy["retryBinding"]["emptyCompletedResponseTerminal"] and policy["retryBinding"]["allAttemptsAppendOnlyLogged"], policy
+          assert capsule_contract["responseMayEnterRouter"] is False and capsule_contract["responseMayEnterProcessMemory"] is False and capsule_contract["responseMayEnterCohort"] is False and capsule_contract["responseMayMutate"] is False, capsule_contract
+          assert transport.read_transport_capsule(renderer.canon(capsule))["capsuleDigest"] == capsule["capsuleDigest"], capsule
+          tampered_capsule = dict(capsule); tampered_capsule["trace"] = dict(capsule["trace"]); tampered_capsule["trace"]["route"] = [9, 9, 9]
+          try:
+              transport.read_transport_capsule(renderer.canon(tampered_capsule))
+              raise AssertionError("Tampered transport capsule was accepted")
+          except ValueError:
+              pass
+          transport_source = inspect.getsource(transport)
+          for forbidden in ("p3_cohort_assay", "pathlib", "open(", "os.", "socket", "subprocess", "threading", "requests", "urllib", "http.client", "websocket"):
+              assert forbidden not in transport_source, forbidden
+          assert "INTERNET" not in open("app/src/main/AndroidManifest.xml", encoding="utf-8").read()
           renderer_check = json.loads(verify_last_renderer(root))
           assert renderer_check["ok"] and all(renderer_check["checks"].values()), renderer_check
+          fixture = json.loads(run_local_transport_fixture(root))
+          assert fixture["ok"] and fixture["kind"] == "transport_fixture", fixture
+          attempt = fixture["attempt"]
+          assert attempt["attemptOrdinal"] == 1 and attempt["terminal"] and not attempt["retryExecuted"], attempt
+          assert attempt["terminalClass"] == "SUCCESS_TEXT" and attempt["responseBodyStarted"], attempt
+          assert attempt["providerStatus"] == 200 and attempt["attemptStartedUtc"] and attempt["attemptEndedUtc"], attempt
+          raw = base64.b64decode(attempt["rawBodyBase64"].encode("ascii"), validate=True)
+          assert hashlib.sha256(raw).hexdigest() == attempt["responseBodySha256"], attempt
+          assert hashlib.sha256(attempt["parsedText"].encode("utf-8")).hexdigest() == attempt["parsedTextSha256"], attempt
+          assert all(fixture["runChecks"].values()), fixture
+          transport_check = json.loads(verify_last_transport_archive(root))
+          assert transport_check["ok"] and all(transport_check["checks"].values()), transport_check
+          tampered_attempt = dict(attempt); tampered_attempt["rawBodyBase64"] = "AA=="
+          try:
+              transport.verify_attempt_archive(renderer.canon(capsule), tampered_attempt)
+              raise AssertionError("Tampered raw response archive was accepted")
+          except ValueError:
+              pass
+          for fixture_mode, expected in (("REFUSAL", "REFUSAL"), ("PROVIDER_ERROR", "PROVIDER_ERROR"), ("EMPTY_RESPONSE", "EMPTY_RESPONSE"), ("SCHEMA_INVALID", "SCHEMA_INVALID"), ("TRANSPORT_PREBODY_FAILURE", "TRANSPORT_PREBODY_FAILURE")):
+              terminal = transport.archive_first_terminal_attempt(renderer.canon(capsule), fixture_mode)
+              assert terminal["terminalClass"] == expected and terminal["terminal"] and not terminal["retryExecuted"], terminal
+              assert all(transport.verify_attempt_archive(renderer.canon(capsule), terminal)["checks"].values()), terminal
+          reset_transport = json.loads(reset_transport_record(root))
+          assert reset_transport["ok"] and all(reset_transport["checks"].values()), reset_transport
           cohort = json.loads(run_predeclared_cohort(root))
           assert cohort["ok"], cohort
           assert all(cohort["gates"].values()), cohort["gates"]
@@ -685,18 +1174,22 @@ jobs:
           assert after["ok"] and after["trace"]["sequence"] == 2 and after["cohortRecordUnchanged"], after
           after_renderer_check = json.loads(verify_last_renderer(root))
           assert after_renderer_check["ok"] and all(after_renderer_check["checks"].values()), after_renderer_check
+          after_fixture = json.loads(run_local_transport_fixture(root))
+          assert after_fixture["ok"] and all(after_fixture["runChecks"].values()), after_fixture
+          after_transport_check = json.loads(verify_last_transport_archive(root))
+          assert after_transport_check["ok"] and all(after_transport_check["checks"].values()), after_transport_check
           check = json.loads(verify_last_cohort(root))
           assert check["ok"] and check["allMatch"], check
           assert (check["sourcesMatched"], check["branchesMatched"]) == (180, 720)
-          print("P3.2 one-way renderer, prospective cohort, and full replay validation passed")
+          print("P3.3 transport capsule, template renderer, prospective cohort, and full replay validation passed")
           PY
 
-      - name: Build Android-P3.2 APK
+      - name: Build Android-P3.3 APK
         run: gradle --no-daemon :app:assembleDebug --stacktrace
 
-      - name: Upload Android-P3.2 APK
+      - name: Upload Android-P3.3 APK
         uses: actions/upload-artifact@v4
         with:
-          name: Amelia-Android-P3.2-One-Way-Renderer
+          name: Amelia-Android-P3.3-Sealed-Transport-Capsule
           path: app/build/outputs/apk/debug/app-debug.apk
           retention-days: 14
