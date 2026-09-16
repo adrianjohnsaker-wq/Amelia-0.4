@@ -1,4 +1,4 @@
-name: Build Amelia Android-P3 Prospective Cohort APK
+name: Build Amelia Android-P3.2 One-Way Renderer APK
 
 on:
   push:
@@ -23,7 +23,7 @@ jobs:
         with:
           gradle-version: "8.9"
 
-      - name: Create Android-P3 prospective matched-state cohort
+      - name: Create Android-P3.2 one-way renderer and prospective cohort
         shell: bash
         run: |
           set -euo pipefail
@@ -36,7 +36,7 @@ jobs:
           cat > settings.gradle.kts <<'EOF'
           pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }
           dependencyResolutionManagement { repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS); repositories { google(); mavenCentral() } }
-          rootProject.name = "AmeliaAndroidP3"
+          rootProject.name = "AmeliaAndroidP32"
           include(":app")
           EOF
 
@@ -58,12 +58,12 @@ jobs:
               namespace = "com.amelia.p3"
               compileSdk = 34
               defaultConfig {
-                  // P3.1 installs beside the sealed P3 app, preserving its local record.
-                  applicationId = "com.amelia.p31"
+                  // P3.2 installs beside P3 and P3.1, preserving their local records.
+                  applicationId = "com.amelia.p32"
                   minSdk = 24
                   targetSdk = 34
                   versionCode = 1
-                  versionName = "0.4-android-p3-cohort"
+                  versionName = "0.5-android-p3.2-one-way-renderer"
                   ndk { abiFilters += listOf("armeabi-v7a", "arm64-v8a") }
               }
               compileOptions { sourceCompatibility = JavaVersion.VERSION_17; targetCompatibility = JavaVersion.VERSION_17 }
@@ -81,7 +81,157 @@ jobs:
             </application>
           </manifest>
           EOF
-          echo '<resources><string name="app_name">Amelia P3 Cohort</string></resources>' > app/src/main/res/values/strings.xml
+          echo '<resources><string name="app_name">Amelia P3.2 Renderer</string></resources>' > app/src/main/res/values/strings.xml
+
+          cat > app/src/main/python/p3_read_only_renderer.py <<'EOF'
+          """Android-P3.2 pure downstream language renderer.
+
+          The module accepts one canonical JSON string containing a whitelisted
+          trace projection. It keeps no state, opens no files, imports no runtime
+          component, and exposes no callback, router, memory, cohort, or mutation API.
+          """
+          from __future__ import annotations
+          import hashlib
+          import json
+
+          RENDERER_SCHEMA = "amelia-p3.2-read-only-language-renderer-v1"
+          PAYLOAD_SCHEMA = "amelia-p3.2-sealed-render-payload-v1"
+          TRACE_SCHEMA = "amelia-p3-dialogue-trace-v1"
+          TRACE_KEYS = (
+              "schema", "sequence", "inputDigest", "route", "routeEdges", "modules",
+              "kernelDeltaL1", "syzygyFlux", "preTensorNorm", "postTensorNorm",
+              "stability", "activeAttractors", "causalDigest",
+          )
+          BODY_KEYS = (
+              "schema", "rendererSchema", "traceDigest", "sequence", "inputDigest",
+              "route", "routeEdges", "modules", "telemetry", "payloadContract",
+          )
+          PAYLOAD_KEYS = BODY_KEYS + ("payloadDigest",)
+          CONTRACT = {
+              "canonicalJsonOnly": True,
+              "rawPromptIncluded": False,
+              "routeResultIncluded": True,
+              "mayCallRouter": False,
+              "mayReadProcessMemory": False,
+              "mayReadCohort": False,
+              "mayMutate": False,
+              "mayInvokeCallback": False,
+          }
+
+          def canon(value):
+              return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+
+          def digest(value):
+              return hashlib.sha256(canon(value).encode("utf-8")).hexdigest()
+
+          def _is_digest(value):
+              return isinstance(value, str) and len(value) == 64 and all(c in "0123456789abcdef" for c in value)
+
+          def _require_trace(trace):
+              if not isinstance(trace, dict) or set(trace) != set(TRACE_KEYS):
+                  raise ValueError("Renderer rejected a non-canonical dialogue trace")
+              if trace.get("schema") != TRACE_SCHEMA:
+                  raise ValueError("Renderer rejected an unknown dialogue trace schema")
+              trace_body = {key: trace[key] for key in TRACE_KEYS if key != "causalDigest"}
+              if not _is_digest(trace.get("causalDigest")) or digest(trace_body) != trace["causalDigest"]:
+                  raise ValueError("Renderer rejected an unsealed dialogue trace")
+              if not isinstance(trace["route"], list) or len(trace["route"]) != 3 or not all(isinstance(z, int) and 0 <= z <= 9 for z in trace["route"]):
+                  raise ValueError("Renderer rejected an invalid route projection")
+              if not isinstance(trace["modules"], list) or not all(isinstance(item, str) for item in trace["modules"]):
+                  raise ValueError("Renderer rejected invalid module labels")
+
+          def seal_trace(trace):
+              """Return an immutable canonical JSON payload; no original prompt is included."""
+              _require_trace(trace)
+              body = {
+                  "schema": PAYLOAD_SCHEMA,
+                  "rendererSchema": RENDERER_SCHEMA,
+                  "traceDigest": trace["causalDigest"],
+                  "sequence": trace["sequence"],
+                  "inputDigest": trace["inputDigest"],
+                  "route": list(trace["route"]),
+                  "routeEdges": [{"from": edge["from"], "to": edge["to"], "kind": edge["kind"]} for edge in trace["routeEdges"]],
+                  "modules": list(trace["modules"]),
+                  "telemetry": {
+                      "kernelDeltaL1": trace["kernelDeltaL1"],
+                      "syzygyFlux": trace["syzygyFlux"],
+                      "preTensorNorm": trace["preTensorNorm"],
+                      "postTensorNorm": trace["postTensorNorm"],
+                      "stability": trace["stability"],
+                      "activeAttractors": list(trace["activeAttractors"]),
+                  },
+                  "payloadContract": dict(CONTRACT),
+              }
+              return canon({**body, "payloadDigest": digest(body)})
+
+          def read_payload(payload_json):
+              if not isinstance(payload_json, str) or len(payload_json.encode("utf-8")) > 8192:
+                  raise ValueError("Renderer accepts only a bounded canonical JSON payload string")
+              try:
+                  payload = json.loads(payload_json)
+              except Exception as error:
+                  raise ValueError("Renderer rejected non-JSON payload") from error
+              if not isinstance(payload, dict) or set(payload) != set(PAYLOAD_KEYS):
+                  raise ValueError("Renderer rejected an unexpected payload shape")
+              body = {key: payload[key] for key in BODY_KEYS}
+              if payload.get("schema") != PAYLOAD_SCHEMA or payload.get("rendererSchema") != RENDERER_SCHEMA:
+                  raise ValueError("Renderer rejected an unknown payload schema")
+              if not _is_digest(payload.get("traceDigest")) or not _is_digest(payload.get("inputDigest")):
+                  raise ValueError("Renderer rejected an invalid digest field")
+              if not _is_digest(payload.get("payloadDigest")) or digest(body) != payload["payloadDigest"]:
+                  raise ValueError("Renderer rejected a payload integrity mismatch")
+              if payload.get("payloadContract") != CONTRACT:
+                  raise ValueError("Renderer rejected a capability-contract mismatch")
+              if not isinstance(payload["route"], list) or len(payload["route"]) != 3 or not all(isinstance(z, int) and 0 <= z <= 9 for z in payload["route"]):
+                  raise ValueError("Renderer rejected an invalid route result")
+              if not isinstance(payload["modules"], list) or not all(isinstance(item, str) for item in payload["modules"]):
+                  raise ValueError("Renderer rejected invalid module labels")
+              return payload
+
+          def capability_audit():
+              return {
+                  "schema": "amelia-p3.2-renderer-capability-audit-v1",
+                  "rendererSchema": RENDERER_SCHEMA,
+                  "allowedInput": "immutable canonical JSON payload string",
+                  **CONTRACT,
+                  "imports": ["hashlib", "json"],
+                  "outputOnly": True,
+              }
+
+          def render_payload(payload_json):
+              """Pure deterministic language rendering from a verified sealed payload."""
+              payload = read_payload(payload_json)
+              route = " → ".join(f"Z{zone}" for zone in payload["route"])
+              modules = ", ".join(payload["modules"])
+              telemetry = payload["telemetry"]
+              phases = [
+                  "undivided potential", "differential activation", "lateral recombination",
+                  "threshold articulation", "hinge pressure", "reciprocal coupling",
+                  "syzygetic return", "temporal dispersion", "distributed relay", "terminal modulation",
+              ]
+              articulation = "; ".join(phases[zone] for zone in payload["route"])
+              text = (
+                  f"This is a downstream language rendering of sealed trace {payload['traceDigest'][:12]}. "
+                  f"The resulting Numogram route is {route}: {articulation}. "
+                  f"The trace names these active processes: {modules}. "
+                  f"Its field-tensor norm changed from {telemetry['preTensorNorm']:.6f} to {telemetry['postTensorNorm']:.6f} "
+                  f"with syzygy flux {telemetry['syzygyFlux']:.6f}. "
+                  "The renderer received no original prompt, process-memory state, cohort record, router, or mutation handle; it can only display this verified trace."
+              )
+              result = {
+                  "schema": "amelia-p3.2-rendered-language-display-v1",
+                  "rendererSchema": RENDERER_SCHEMA,
+                  "payloadDigest": payload["payloadDigest"],
+                  "traceDigest": payload["traceDigest"],
+                  "payloadVerified": True,
+                  "deterministic": True,
+                  "displayText": text,
+                  "displayDigest": hashlib.sha256(text.encode("utf-8")).hexdigest(),
+                  "capabilityAudit": capability_audit(),
+              }
+              result["renderDigest"] = digest(result)
+              return result
+          EOF
 
           cat > app/src/main/python/p3_cohort_assay.py <<'EOF'
           """Android-P3: sealed prospective ProcessFieldMemory matched-state cohort.
@@ -92,6 +242,7 @@ jobs:
           from __future__ import annotations
           import hashlib, json, math, threading, time
           from pathlib import Path
+          from p3_read_only_renderer import capability_audit, read_payload, render_payload, seal_trace
 
           try:
               from p3_build_provenance import BUILD_PROVENANCE
@@ -187,15 +338,6 @@ jobs:
               if f >= .001: modules.insert(1,"syzygetic_coupling")
               trace={"schema":"amelia-p3-dialogue-trace-v1","sequence":next_state["sequence"],"inputDigest":request["inputDigest"],"route":r,"routeEdges":es,"modules":modules,"kernelDeltaL1":round(sum(abs(pre[z]-k[z]) for z in range(N)),12),"syzygyFlux":f,"preTensorNorm":tnorm(old),"postTensorNorm":tnorm(nt),"stability":next_state["lastStability"],"activeAttractors":next_state["activeAttractors"]}; trace["causalDigest"]=dig(trace)
               return next_state, trace
-          def dialogue_response(request, trace):
-              route_text=" → ".join(f"Z{zone}" for zone in trace["route"])
-              module_text=", ".join(trace["modules"])
-              tokens=[token for token in request["canonicalInput"].split() if len(token)>=3][:4]
-              signature=", ".join(tokens) if tokens else "the declared prompt"
-              stage=["undivided potential","differential activation","lateral recombination","threshold articulation","hinge pressure","reciprocal coupling","syzygetic return","temporal dispersion","distributed relay","terminal modulation"]
-              image="; ".join(stage[zone] for zone in trace["route"])
-              return f"The local prompt signature ({signature}) was reduced into a Numogram drive and passed through {route_text}: {image}. Active processes: {module_text}. This dialogue memory is local and separate from the sealed P3 cohort; the cohort’s source states, branch records, and scores are unchanged."
-
           def return_step(state, tensor, condition, branch_id, step, seal):
               pre, old = list(state["fieldState"]), cp(tensor); mem = mbias(old)
               k = norm([.47*pre[z] + .24*mem[z] + .11*pre[(z-1)%N] + .11*pre[(z+1)%N] + .07*pre[N-1-z] for z in range(N)])
@@ -225,7 +367,14 @@ jobs:
 
           class Cohort:
               def __init__(self, root):
-                  self.root=Path(root); self.root.mkdir(parents=True,exist_ok=True); self.state_path=self.root/"p3-state.json"; self.ledger_path=self.root/"p3-ledger.jsonl"; self.head_path=self.root/"p3-ledger-head.txt"; self.dialogue_path=self.root/"p3-dialogue-memory.json"; self.dialogue_ledger_path=self.root/"p3-dialogue-ledger.jsonl"; self.dialogue_head_path=self.root/"p3-dialogue-ledger-head.txt"; self.data=self.load(); self.head=self.head_path.read_text().strip() if self.head_path.exists() else "0"*64; self.dialogue=self.load_dialogue(); self.dialogue_head=self.dialogue_head_path.read_text().strip() if self.dialogue_head_path.exists() else "0"*64; self.ch=chassis(); self.proj=projection(self.ch)
+                  self.root=Path(root); self.root.mkdir(parents=True,exist_ok=True)
+                  self.state_path=self.root/"p3-state.json"; self.ledger_path=self.root/"p3-ledger.jsonl"; self.head_path=self.root/"p3-ledger-head.txt"
+                  self.dialogue_path=self.root/"p3-dialogue-memory.json"; self.dialogue_ledger_path=self.root/"p3-dialogue-ledger.jsonl"; self.dialogue_head_path=self.root/"p3-dialogue-ledger-head.txt"
+                  self.renderer_state_path=self.root/"p3-renderer-state.json"; self.renderer_ledger_path=self.root/"p3-renderer-ledger.jsonl"; self.renderer_head_path=self.root/"p3-renderer-ledger-head.txt"
+                  self.data=self.load(); self.head=self.head_path.read_text().strip() if self.head_path.exists() else "0"*64
+                  self.dialogue=self.load_dialogue(); self.dialogue_head=self.dialogue_head_path.read_text().strip() if self.dialogue_head_path.exists() else "0"*64
+                  self.renderer_state=self.load_renderer_state(); self.renderer_head=self.renderer_head_path.read_text().strip() if self.renderer_head_path.exists() else "0"*64
+                  self.ch=chassis(); self.proj=projection(self.ch)
                   self.regime={"name":"SYZYGETIC_GRID","operator":"native-return-v1","eta":ETA,"kappa":KAPPA,"externalSteering":False,"targetVector":None,"outcomeBlueprint":None,"relaySteering":False,"languageModelInCausalLoop":False}
                   self.config={"schema":SCHEMA,"parentSeeds":list(PARENTS),"depths":list(DEPTHS),"replicatesPerDepth":REPS,"conditions":list(CONDITIONS),"observationWindow":{"steps":W,"indices":list(range(W)),"earlyStop":False,"mode":"unguided-native"},"childSeedDerivation":"sha256-first-32bits-v1(parentSeed,depth,replicate)","matchedChassis":self.ch,"observationProjection":self.proj,"commonRegime":self.regime,"controls":{"HISTORY_RETAINED":"actual donor tensor","ABLATED":"zero tensor","NEUTRAL_RESET":"same non-zero canonical M0","TENSOR_PERMUTED":"cyclic donor-tensor transfer across recipient labels"},"rawBeforeScoring":True,"compactRawTupleLayout":{"conditioning":["step","route0","route1","route2","fluxX1e12","postTensorNormX1e12"],"return":["step","route0","route1","route2","fluxX1e12","tensionX1e12","admissibilityX1e12","stabilityX1e12"]},"measurement":{"projection":"regular-decagon open disk","distance":"hyperbolic Poincare D20","triadSummary":"mean of three within-triad pairwise distances","depthSummary":"mean of ten triad summaries; descriptive only"},"claimsBoundary":"bounded Android implementation; no consciousness, autopoiesis, biological, or population inference; its numeric D20 values are not a reproduction claim for a separately sealed external result","sourceProvenance":BUILD_PROVENANCE}; self.config_digest=dig(self.config)
               def load(self):
@@ -243,6 +392,15 @@ jobs:
                   return value
               def save_dialogue(self):
                   tmp=self.dialogue_path.with_suffix(".tmp"); tmp.write_text(canon(self.dialogue)); tmp.replace(self.dialogue_path)
+              def fresh_renderer_state(self):
+                  return {"schema":"amelia-p3.2-renderer-state-v1","renderCounter":0,"last":None}
+              def load_renderer_state(self):
+                  if not self.renderer_state_path.exists(): return self.fresh_renderer_state()
+                  value=json.loads(self.renderer_state_path.read_text())
+                  if value.get("schema")!="amelia-p3.2-renderer-state-v1": raise ValueError("Invalid Android-P3.2 renderer state")
+                  return value
+              def save_renderer_state(self):
+                  tmp=self.renderer_state_path.with_suffix(".tmp"); tmp.write_text(canon(self.renderer_state)); tmp.replace(self.renderer_state_path)
               def append(self, kind, payload):
                   record={"schema":LEDGER_SCHEMA,"kind":kind,"previous":self.head,"payload":payload}; record["recordDigest"]=dig(record); record["chainDigest"]=dig({"previous":self.head,"record":record["recordDigest"]})
                   with self.ledger_path.open("a",encoding="utf-8") as f: f.write(canon(record)+"\n")
@@ -251,6 +409,10 @@ jobs:
                   record={"schema":"amelia-p3-dialogue-ledger-v1","kind":kind,"previous":self.dialogue_head,"payload":payload}; record["recordDigest"]=dig(record); record["chainDigest"]=dig({"previous":self.dialogue_head,"record":record["recordDigest"]})
                   with self.dialogue_ledger_path.open("a",encoding="utf-8") as f: f.write(canon(record)+"\n")
                   self.dialogue_head=record["chainDigest"]; tmp=self.dialogue_head_path.with_suffix(".tmp"); tmp.write_text(self.dialogue_head); tmp.replace(self.dialogue_head_path); return self.dialogue_head
+              def append_renderer(self, kind, payload):
+                  record={"schema":"amelia-p3.2-renderer-ledger-v1","kind":kind,"previous":self.renderer_head,"payload":payload}; record["recordDigest"]=dig(record); record["chainDigest"]=dig({"previous":self.renderer_head,"record":record["recordDigest"]})
+                  with self.renderer_ledger_path.open("a",encoding="utf-8") as f: f.write(canon(record)+"\n")
+                  self.renderer_head=record["chainDigest"]; tmp=self.renderer_head_path.with_suffix(".tmp"); tmp.write_text(self.renderer_head); tmp.replace(self.renderer_head_path); return self.renderer_head
               def manifest(self, eid, created):
                   cond=sum(DEPTHS)*REPS*len(PARENTS); ret=len(DEPTHS)*REPS*len(PARENTS)*len(CONDITIONS)*W
                   return {"schema":"amelia-p3-prospective-manifest-v1","studyId":"AMELIA-ANDROID-P3-PROSPECTIVE-COHORT","executionId":eid,"createdUtc":created,"schedule":{"depths":list(DEPTHS),"parentSeeds":list(PARENTS),"replicatesPerDepth":REPS,"triads":len(DEPTHS)*REPS,"donorSources":len(DEPTHS)*REPS*len(PARENTS),"forkBranches":len(DEPTHS)*REPS*len(PARENTS)*len(CONDITIONS),"conditioningSteps":cond,"returnSteps":ret,"totalRawSteps":cond+ret},"configDigest":self.config_digest,"matchedChassisDigest":dig(self.ch),"matchedChassisUtf8Bytes":len(canon(self.ch).encode()),"observationProjectionDigest":dig(self.proj),"commonRegimeDigest":dig(self.regime),"canonicalBaselineTensorDigest":td(M0),"zeroTensorDigest":td(zero()),"rawBeforeScoring":True,"scoringGate":"No descriptive measurement until all donor and return raw records are append-only logged.","protocol":self.config}
@@ -327,9 +489,28 @@ jobs:
                   return {"ok":True,"kind":"verify","executionId":m["executionId"],"sourcesMatched":sum(sm.values()),"sourcesExpected":len(sm),"branchesMatched":sum(bm.values()),"branchesExpected":len(bm),"allMatch":ok,"ledgerHead":head}
               def dialogue_turn(self, raw_input):
                   if not raw_input or not raw_input.strip(): raise ValueError("Write a local prompt for Amelia")
-                  before_cohort=dig(self.data.get("last")); request=text_request(raw_input.strip()); next_state,trace=dialogue_step(self.dialogue,self.dialogue["deformationTensor"],request); self.dialogue=next_state; self.save_dialogue(); after_cohort=dig(self.data.get("last")); unchanged=before_cohort==after_cohort
-                  head=self.append_dialogue("local_dialogue_turn",{"request":request,"trace":trace,"cohortRecordUnchanged":unchanged})
-                  return {"ok":True,"kind":"dialogue","response":dialogue_response(request,trace),"trace":trace,"cohortRecordUnchanged":unchanged,"dialogueLedgerHead":head}
+                  before_cohort=dig(self.data.get("last")); request=text_request(raw_input.strip())
+                  next_state,trace=dialogue_step(self.dialogue,self.dialogue["deformationTensor"],request)
+                  self.dialogue=next_state; self.save_dialogue(); dialogue_memory_digest=dig(self.dialogue)
+                  after_cohort=dig(self.data.get("last")); unchanged=before_cohort==after_cohort
+                  dialogue_head=self.append_dialogue("local_dialogue_turn",{"request":request,"trace":trace,"cohortRecordUnchanged":unchanged})
+                  # The downstream renderer sees only this immutable JSON string. It never receives request, self, or a storage path.
+                  payload_json=seal_trace(trace); payload=read_payload(payload_json); rendered=render_payload(payload_json)
+                  if dig(self.dialogue)!=dialogue_memory_digest or dig(self.data.get("last"))!=after_cohort:
+                      raise ValueError("Fail closed: renderer boundary changed local substrate or cohort record")
+                  self.renderer_state["renderCounter"]+=1
+                  self.renderer_state["last"]={"schema":"amelia-p3.2-renderer-record-v1","payloadJson":payload_json,"payloadDigest":payload["payloadDigest"],"traceDigest":payload["traceDigest"],"renderDigest":rendered["renderDigest"],"displayDigest":rendered["displayDigest"],"dialogueMemoryDigest":dialogue_memory_digest,"cohortRecordDigest":after_cohort}
+                  self.save_renderer_state()
+                  renderer_head=self.append_renderer("sealed_trace_read_only_rendered",{"payload":payload,"render":{"schema":rendered["schema"],"renderDigest":rendered["renderDigest"],"displayDigest":rendered["displayDigest"],"capabilityAudit":rendered["capabilityAudit"]},"dialogueMemoryDigest":dialogue_memory_digest,"cohortRecordDigest":after_cohort})
+                  return {"ok":True,"kind":"dialogue","trace":trace,"renderer":rendered,"renderingPayload":payload,"cohortRecordUnchanged":unchanged,"dialogueMemoryDigest":dialogue_memory_digest,"dialogueLedgerHead":dialogue_head,"renderLedgerHead":renderer_head}
+              def verify_renderer(self):
+                  last=self.renderer_state.get("last")
+                  if not last: raise ValueError("Send a local dialogue trace before renderer verification")
+                  before_dialogue=dig(self.dialogue); before_cohort=dig(self.data.get("last")); payload=read_payload(last["payloadJson"]); rendered=render_payload(last["payloadJson"])
+                  checks={"payloadDigest":payload["payloadDigest"]==last["payloadDigest"],"traceDigest":payload["traceDigest"]==last["traceDigest"],"renderDigest":rendered["renderDigest"]==last["renderDigest"],"displayDigest":rendered["displayDigest"]==last["displayDigest"],"capabilityContract":rendered["capabilityAudit"]==capability_audit(),"dialogueMemoryUnchanged":before_dialogue==dig(self.dialogue),"cohortRecordUnchanged":before_cohort==dig(self.data.get("last"))}
+                  if not all(checks.values()): raise ValueError("Fail closed: read-only renderer verification mismatch")
+                  renderer_head=self.append_renderer("read_only_renderer_replay_verification",{"payloadDigest":payload["payloadDigest"],"traceDigest":payload["traceDigest"],"renderDigest":rendered["renderDigest"],"checks":checks})
+                  return {"ok":True,"kind":"render_verify","checks":checks,"payloadDigest":payload["payloadDigest"],"traceDigest":payload["traceDigest"],"renderDigest":rendered["renderDigest"],"renderLedgerHead":renderer_head}
               def reset_dialogue(self):
                   self.dialogue=self.fresh_dialogue(); self.save_dialogue(); head=self.append_dialogue("explicit_dialogue_memory_reset",{"sequence":0,"cohortRecordUnchanged":True}); return {"ok":True,"kind":"dialogue_reset","sequence":0,"dialogueLedgerHead":head}
               def reset(self):
@@ -346,17 +527,20 @@ jobs:
           def run_predeclared_cohort(storage_dir): return guarded(lambda:instance(storage_dir).run())
           def verify_last_cohort(storage_dir): return guarded(lambda:instance(storage_dir).verify())
           def run_dialogue_turn(raw_input, storage_dir): return guarded(lambda:instance(storage_dir).dialogue_turn(raw_input))
+          def verify_last_renderer(storage_dir): return guarded(lambda:instance(storage_dir).verify_renderer())
           def reset_dialogue_memory(storage_dir): return guarded(lambda:instance(storage_dir).reset_dialogue())
           def reset_p3(storage_dir): return guarded(lambda:instance(storage_dir).reset())
           EOF
 
           P3_SOURCE_SHA="$(sha256sum app/src/main/python/p3_cohort_assay.py | awk '{print $1}')"
+          RENDERER_SOURCE_SHA="$(sha256sum app/src/main/python/p3_read_only_renderer.py | awk '{print $1}')"
           CORE_SOURCE_SHA="$(sha256sum app/src/main/python/amelia_symbolic_core.py | awk '{print $1}')"
           BUILD_REVISION="${GITHUB_SHA:-local}"
           cat > app/src/main/python/p3_build_provenance.py <<EOF
           BUILD_PROVENANCE = {
-              "workflow": "android-p3-prospective-cohort",
+              "workflow": "android-p3.2-one-way-renderer",
               "p3CohortAssaySha256": "${P3_SOURCE_SHA}",
+              "p3ReadOnlyRendererSha256": "${RENDERER_SOURCE_SHA}",
               "symbolicCoreSha256": "${CORE_SOURCE_SHA}",
               "revision": "${BUILD_REVISION}",
           }
@@ -389,25 +573,28 @@ jobs:
 
               override fun onCreate(savedInstanceState: Bundle?) {
                   super.onCreate(savedInstanceState)
+                  val surface = ScrollView(this)
                   val root = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(dp(16), dp(16), dp(16), dp(16)) }
-                  root.addView(TextView(this).apply { text = "AMELIA · ANDROID-P3.1"; textSize = 23f; gravity = Gravity.CENTER_HORIZONTAL })
-                  root.addView(TextView(this).apply { text = "Prospective matched-state cohort · no language model in causal loop"; textSize = 12f; gravity = Gravity.CENTER_HORIZONTAL; setPadding(0, dp(5), 0, dp(6)) })
+                  root.addView(TextView(this).apply { text = "AMELIA · ANDROID-P3.2"; textSize = 23f; gravity = Gravity.CENTER_HORIZONTAL })
+                  root.addView(TextView(this).apply { text = "Sealed trace → read-only language renderer · no language model in causal loop"; textSize = 12f; gravity = Gravity.CENTER_HORIZONTAL; setPadding(0, dp(5), 0, dp(6)) })
                   root.addView(TextView(this).apply { text = "D=128, 256, 384, 432, 480, 512 · 10 triads/depth · W=20"; textSize = 12f; gravity = Gravity.CENTER_HORIZONTAL; setPadding(0, 0, 0, dp(8)) })
                   val readout = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
-                  output = TextView(this).apply { text = "The dialogue lane is local to Amelia and has its own process memory. It never enters the sealed P3 cohort, whose 180 donor sources, 720 return branches, and 80,160 raw records remain fixed."; textSize = 15f; setPadding(0, dp(8), 0, dp(8)) }
-                  telemetry = TextView(this).apply { text = "TELEMETRY · dialogue and cohort records are separate."; textSize = 13f; setPadding(dp(8), dp(8), dp(8), dp(8)) }
+                  output = TextView(this).apply { text = "A local prompt first commits an Amelia trace. A separate renderer then receives only a sealed trace payload and produces language for display. It cannot call routing, read ProcessFieldMemory or cohort data, or mutate any substrate record."; textSize = 15f; setPadding(0, dp(8), 0, dp(8)) }
+                  telemetry = TextView(this).apply { text = "TELEMETRY · local dialogue, renderer, and sealed cohort records are separate."; textSize = 13f; setPadding(dp(8), dp(8), dp(8), dp(8)) }
                   readout.addView(output); readout.addView(telemetry)
-                  root.addView(ScrollView(this).apply { addView(readout) }, LinearLayout.LayoutParams(-1, 0, 1f))
-                  root.addView(TextView(this).apply { text = "LOCAL AMELIA DIALOGUE · NOT A P3 COHORT INPUT"; textSize = 12f; setPadding(0, dp(4), 0, 0) })
+                  root.addView(ScrollView(this).apply { addView(readout) }, LinearLayout.LayoutParams(-1, dp(280)))
+                  root.addView(TextView(this).apply { text = "LOCAL AMELIA DIALOGUE → SEALED TRACE → LANGUAGE DISPLAY · NOT A P3 COHORT INPUT"; textSize = 12f; setPadding(0, dp(4), 0, 0) })
                   prompt = EditText(this).apply { hint = "Write to Amelia"; inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_MULTI_LINE; minLines = 2; maxLines = 3 }
                   root.addView(prompt)
                   root.addView(action("SEND TO AMELIA", "run_dialogue_turn", true))
+                  root.addView(action("VERIFY LAST RENDERER BOUNDARY", "verify_last_renderer"))
                   root.addView(action("RESET DIALOGUE MEMORY", "reset_dialogue_memory"))
                   root.addView(TextView(this).apply { text = "SEALED P3 COHORT · NOT AFFECTED BY DIALOGUE"; textSize = 12f; setPadding(0, dp(5), 0, 0) })
                   root.addView(action("SEAL & RUN PREDECLARED P3 COHORT", "run_predeclared_cohort"))
                   root.addView(action("VERIFY LAST COHORT REPLAY", "verify_last_cohort"))
                   root.addView(action("RESET ACTIVE P3 RECORD", "reset_p3"))
-                  setContentView(root)
+                  surface.addView(root)
+                  setContentView(surface)
               }
 
               private fun action(label: String, fn: String, needsPrompt: Boolean = false) = Button(this).apply { text = label; setOnClickListener { if (needsPrompt) submitDialogue() else invoke(fn) }; controls.add(this) }
@@ -418,7 +605,7 @@ jobs:
               }
               private fun invoke(fn: String, input: String? = null) {
                   controls.forEach { it.isEnabled = false }
-                  output.text = when (fn) { "run_predeclared_cohort" -> "P3 constructing the sealed cohort. All raw records are written before a descriptive summary..."; "run_dialogue_turn" -> "Amelia local substrate dialogue processing..."; else -> "P3 provenance operation running..." }
+                  output.text = when (fn) { "run_predeclared_cohort" -> "P3 constructing the sealed cohort. All raw records are written before a descriptive summary..."; "run_dialogue_turn" -> "Amelia is committing a local trace, sealing a rendering payload, then producing read-only language..."; "verify_last_renderer" -> "P3.2 replaying the sealed rendering payload without touching local memory or the cohort..."; else -> "P3 provenance operation running..." }
                   Thread {
                       val raw = try { val module = Python.getInstance().getModule("p3_cohort_assay"); if (input == null) module.callAttr(fn, storageDir).toString() else module.callAttr(fn, input, storageDir).toString() } catch (e: Exception) { JSONObject().put("ok", false).put("error", e.message ?: "Android/Python failure").toString() }
                       runOnUiThread { render(raw); if (input != null) prompt.setText(""); controls.forEach { it.isEnabled = true } }
@@ -426,18 +613,23 @@ jobs:
               }
               private fun render(raw: String) {
                   val r = JSONObject(raw)
-                  if (!r.optBoolean("ok", false)) { output.text = "P3 FAIL-CLOSED · do not interpret an outcome."; telemetry.text = "TELEMETRY · ERROR\n${r.optString("error")}"; return }
-                  when (r.optString("kind")) { "dialogue" -> dialogue(r); "dialogue_reset" -> dialogueReset(r); "cohort" -> cohort(r); "verify" -> verify(r); else -> reset(r) }
+                  if (!r.optBoolean("ok", false)) { output.text = "P3.2 FAIL-CLOSED · do not interpret an outcome."; telemetry.text = "TELEMETRY · ERROR\n${r.optString("error")}"; return }
+                  when (r.optString("kind")) { "dialogue" -> dialogue(r); "render_verify" -> rendererVerify(r); "dialogue_reset" -> dialogueReset(r); "cohort" -> cohort(r); "verify" -> verify(r); else -> reset(r) }
               }
               private fun dialogue(r: JSONObject) {
-                  val t=r.getJSONObject("trace")
-                  output.text="AMELIA LOCAL SUBSTRATE DIALOGUE\n\n${r.optString("response")}\n\nRoute: ${zones(t.getJSONArray("route"))}\nModules: ${t.getJSONArray("modules").joinText()}"
-                  telemetry.text="DIALOGUE TELEMETRY\nTurn: ${t.optInt("sequence")}\nInput: ${short(t.optString("inputDigest"))}\nTensor: ${n(t.optDouble("preTensorNorm"))} → ${n(t.optDouble("postTensorNorm"))}\nFlux: ${n(t.optDouble("syzygyFlux"))}\nCohort record unchanged: ${r.optBoolean("cohortRecordUnchanged")}\nDialogue ledger: ${short(r.optString("dialogueLedgerHead"))}"
+                  val t=r.getJSONObject("trace"); val rendered=r.getJSONObject("renderer"); val payload=r.getJSONObject("renderingPayload"); val audit=rendered.getJSONObject("capabilityAudit")
+                  output.text="AMELIA ONE-WAY LANGUAGE DISPLAY\n\n${rendered.optString("displayText")}\n\nSEALED TRACE\nTrace: ${short(rendered.optString("traceDigest"))}\nPayload: ${short(rendered.optString("payloadDigest"))}\nRoute: ${zones(t.getJSONArray("route"))}\nModules: ${t.getJSONArray("modules").joinText()}"
+                  telemetry.text="RENDERER BOUNDARY TELEMETRY\nTurn: ${t.optInt("sequence")}\nInput digest: ${short(t.optString("inputDigest"))}\nTensor: ${n(t.optDouble("preTensorNorm"))} → ${n(t.optDouble("postTensorNorm"))}\nFlux: ${n(t.optDouble("syzygyFlux"))}\nPayload verified: ${rendered.optBoolean("payloadVerified")}\nRaw prompt included: ${audit.optBoolean("rawPromptIncluded")}\nRouter callable: ${audit.optBoolean("mayCallRouter")}\nPFM readable: ${audit.optBoolean("mayReadProcessMemory")}\nCohort readable: ${audit.optBoolean("mayReadCohort")}\nMutator callable: ${audit.optBoolean("mayMutate")}\nCohort record unchanged: ${r.optBoolean("cohortRecordUnchanged")}\nRenderer ledger: ${short(r.optString("renderLedgerHead"))}"
               }
-              private fun dialogueReset(r: JSONObject) { output.text="Amelia dialogue memory reset. The P3 cohort record is unchanged."; telemetry.text="DIALOGUE RESET\nSequence: ${r.optInt("sequence")}\nDialogue ledger: ${short(r.optString("dialogueLedgerHead"))}" }
+              private fun rendererVerify(r: JSONObject) {
+                  val c=r.getJSONObject("checks")
+                  output.text="P3.2 RENDERER VERIFIED · the language display was reproduced solely from its sealed, read-only payload."
+                  telemetry.text="RENDERER REPLAY\nPayload integrity: ${c.optBoolean("payloadDigest")}\nTrace binding: ${c.optBoolean("traceDigest")}\nDisplay reproduced: ${c.optBoolean("displayDigest")}\nCapability contract: ${c.optBoolean("capabilityContract")}\nDialogue memory unchanged: ${c.optBoolean("dialogueMemoryUnchanged")}\nCohort record unchanged: ${c.optBoolean("cohortRecordUnchanged")}\nPayload: ${short(r.optString("payloadDigest"))}\nRenderer ledger: ${short(r.optString("renderLedgerHead"))}"
+              }
+              private fun dialogueReset(r: JSONObject) { output.text="Amelia dialogue memory reset. Earlier renderer records remain separately archived; the P3 cohort record is unchanged."; telemetry.text="DIALOGUE RESET\nSequence: ${r.optInt("sequence")}\nDialogue ledger: ${short(r.optString("dialogueLedgerHead"))}" }
               private fun cohort(r: JSONObject) {
                   val m=r.getJSONObject("manifest"); val s=m.getJSONObject("schedule"); val g=r.getJSONObject("gates"); val l=r.getJSONObject("ledger")
-                  output.text = "P3 SEALED PROSPECTIVE COHORT\n\nExecution: ${m.optString("executionId")}\nSeal: ${short(m.optString("sealDigest"))}\n\n${s.optInt("triads")} triads · ${s.optInt("donorSources")} donor sources · ${s.optInt("forkBranches")} return branches\n${s.optInt("conditioningSteps")} conditioning + ${s.optInt("returnSteps")} return = ${s.optInt("totalRawSteps")} raw steps\n\nAndroid-P3 implementation readout only; not a claim to reproduce a separate sealed result.\n\n${depths(r.getJSONArray("depthSummaries"))}"
+                  output.text = "P3 SEALED PROSPECTIVE COHORT\n\nExecution: ${m.optString("executionId")}\nSeal: ${short(m.optString("sealDigest"))}\n\n${s.optInt("triads")} triads · ${s.optInt("donorSources")} donor sources · ${s.optInt("forkBranches")} return branches\n${s.optInt("conditioningSteps")} conditioning + ${s.optInt("returnSteps")} return = ${s.optInt("totalRawSteps")} raw steps\n\nAndroid-P3.2 implementation readout only; its renderer remains outside this causal record.\n\n${depths(r.getJSONArray("depthSummaries"))}"
                   telemetry.text = "PROVENANCE GATES\nRaw before scoring: ${g.optBoolean("rawRecordedBeforeScoring")}\nMatched non-PFM chassis: ${g.optBoolean("matchedNonPfmState")}\nProjection identity: ${g.optBoolean("observationProjection")}\nDistinct donor tensors: ${g.optBoolean("distinctDonorTensors")}\nSame-tensor transfer: ${g.optBoolean("sameTensorReturnIdentity")}\nNull-control collapse: ${g.optBoolean("nullControlCollapse")}\nRetained D20 positive: ${g.optBoolean("historyRetainedPositive")}\n\nRaw: ${short(l.optString("returns"))}\nSummary: ${short(l.optString("measurement"))}"
               }
               private fun verify(r: JSONObject) { output.text=if(r.optBoolean("allMatch")) "P3 COHORT VERIFIED · every sealed source and return branch reproduced." else "P3 COHORT MISMATCH · do not interpret outcomes."; telemetry.text="DETERMINISTIC REPLAY\nSources: ${r.optInt("sourcesMatched")}/${r.optInt("sourcesExpected")}\nBranches: ${r.optInt("branchesMatched")}/${r.optInt("branchesExpected")}\nLedger: ${short(r.optString("ledgerHead"))}" }
@@ -451,17 +643,39 @@ jobs:
           }
           EOF
 
-      - name: Validate P3 dialogue isolation and prospective provenance gates
+      - name: Validate P3.2 one-way renderer, dialogue isolation, and cohort provenance
         run: |
-          python3 -m py_compile app/src/main/python/amelia_symbolic_core.py app/src/main/python/p3_cohort_assay.py app/src/main/python/p3_build_provenance.py
+          python3 -m py_compile app/src/main/python/amelia_symbolic_core.py app/src/main/python/p3_read_only_renderer.py app/src/main/python/p3_cohort_assay.py app/src/main/python/p3_build_provenance.py
           P3_TEST_DIR="$(mktemp -d)"; export P3_TEST_DIR
           PYTHONPATH=app/src/main/python python3 - <<'PY'
-          import json, os
-          from p3_cohort_assay import run_dialogue_turn, run_predeclared_cohort, verify_last_cohort
+          import inspect, json, os
+          import p3_read_only_renderer as renderer
+          from p3_cohort_assay import run_dialogue_turn, run_predeclared_cohort, verify_last_cohort, verify_last_renderer
           root = os.environ["P3_TEST_DIR"]
           dialogue = json.loads(run_dialogue_turn("A declared local dialogue probe", root))
           assert dialogue["ok"] and dialogue["kind"] == "dialogue", dialogue
           assert dialogue["trace"]["sequence"] == 1 and dialogue["cohortRecordUnchanged"], dialogue
+          assert "response" not in dialogue, dialogue
+          payload, rendered = dialogue["renderingPayload"], dialogue["renderer"]
+          assert "A declared local dialogue probe" not in json.dumps(payload, sort_keys=True), payload
+          assert payload["payloadContract"]["rawPromptIncluded"] is False, payload
+          assert payload["payloadContract"]["mayCallRouter"] is False, payload
+          assert payload["payloadContract"]["mayReadProcessMemory"] is False, payload
+          assert payload["payloadContract"]["mayReadCohort"] is False, payload
+          assert payload["payloadContract"]["mayMutate"] is False, payload
+          assert rendered["payloadVerified"] and rendered["deterministic"], rendered
+          assert renderer.render_payload(renderer.canon(payload))["renderDigest"] == rendered["renderDigest"], rendered
+          tampered = dict(payload); tampered["route"] = [9, 9, 9]
+          try:
+              renderer.render_payload(renderer.canon(tampered))
+              raise AssertionError("Tampered rendering payload was accepted")
+          except ValueError:
+              pass
+          renderer_source = inspect.getsource(renderer)
+          for forbidden in ("p3_cohort_assay", "pathlib", "open(", "os.", "socket", "subprocess", "threading", "requests"):
+              assert forbidden not in renderer_source, forbidden
+          renderer_check = json.loads(verify_last_renderer(root))
+          assert renderer_check["ok"] and all(renderer_check["checks"].values()), renderer_check
           cohort = json.loads(run_predeclared_cohort(root))
           assert cohort["ok"], cohort
           assert all(cohort["gates"].values()), cohort["gates"]
@@ -469,18 +683,20 @@ jobs:
           assert (schedule["triads"], schedule["donorSources"], schedule["forkBranches"], schedule["returnSteps"], schedule["totalRawSteps"]) == (60, 180, 720, 14400, 80160)
           after = json.loads(run_dialogue_turn("A second local dialogue probe", root))
           assert after["ok"] and after["trace"]["sequence"] == 2 and after["cohortRecordUnchanged"], after
+          after_renderer_check = json.loads(verify_last_renderer(root))
+          assert after_renderer_check["ok"] and all(after_renderer_check["checks"].values()), after_renderer_check
           check = json.loads(verify_last_cohort(root))
           assert check["ok"] and check["allMatch"], check
           assert (check["sourcesMatched"], check["branchesMatched"]) == (180, 720)
-          print("P3 prospective cohort validation passed")
+          print("P3.2 one-way renderer, prospective cohort, and full replay validation passed")
           PY
 
-      - name: Build Android-P3 APK
+      - name: Build Android-P3.2 APK
         run: gradle --no-daemon :app:assembleDebug --stacktrace
 
-      - name: Upload Android-P3 APK
+      - name: Upload Android-P3.2 APK
         uses: actions/upload-artifact@v4
         with:
-          name: Amelia-Android-P3.1-Dialogue-and-Cohort
+          name: Amelia-Android-P3.2-One-Way-Renderer
           path: app/build/outputs/apk/debug/app-debug.apk
           retention-days: 14
