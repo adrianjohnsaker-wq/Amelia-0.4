@@ -58,7 +58,8 @@ jobs:
               namespace = "com.amelia.p3"
               compileSdk = 34
               defaultConfig {
-                  applicationId = "com.amelia.p3"
+                  // P3.1 installs beside the sealed P3 app, preserving its local record.
+                  applicationId = "com.amelia.p31"
                   minSdk = 24
                   targetSdk = 34
                   versionCode = 1
@@ -167,6 +168,34 @@ jobs:
               out = {"schema":"amelia-p3-donor-source-v1","sourceId":sid,"parentSeed":parent,"childSeed":seed,"depth":depth,"replicate":rep,"conditioningOperator":"seeded-native-conditioning-v1","terminalConditioningField":field,"deformationTensor":tensor,"tensorDigest":td(tensor),"conditioningTraceDigest":dig(rows),"conditioningSteps":depth}
               out["sourceDigest"] = dig(out); return out, rows
 
+          def text_request(raw_input):
+              canonical_input = " ".join(raw_input.casefold().split())
+              bins = [0.0] * N
+              for position, character in enumerate(canonical_input):
+                  if "a" <= character <= "z": weight = ord(character) - 96
+                  elif character.isdigit(): weight = int(character) + 1
+                  else: continue
+                  bins[(position + weight) % N] += weight
+              if not any(bins): bins[0] = 1.0
+              return {"rawInput":raw_input,"canonicalInput":canonical_input,"inputDigest":hashlib.sha256(canonical_input.encode("utf-8")).hexdigest(),"drive":norm(bins)}
+          def dialogue_step(state, tensor, request):
+              pre, old, drive = list(state["fieldState"]), cp(tensor), request["drive"]; mem = mbias(old)
+              k = norm([.37*pre[z] + .37*drive[z] + .16*mem[z] + .05*pre[(z-1)%N] + .05*pre[N-1-z] for z in range(N)])
+              r, es = route(k); f = flux(k); post = norm([.88*k[z] + .07*k[(z-1)%N] + .05*k[N-1-z] for z in range(N)]); post[r[0]] += .028 + .014*mem[r[0]]; post = norm(post); nt = update_tensor(old, r[0], f); top=max(post)
+              next_state={"schema":"amelia-p3-dialogue-memory-v1","sequence":int(state["sequence"])+1,"fieldState":post,"deformationTensor":nt,"activeAttractors":[z for z,x in enumerate(post) if x>=top*.92],"lastStability":round(max(0.0,1.0-sum(abs(pre[z]-post[z]) for z in range(N))/2.0),12)}
+              modules=["numogram_routing","process_field_memory","rhizomatic_recombination"]
+              if f >= .001: modules.insert(1,"syzygetic_coupling")
+              trace={"schema":"amelia-p3-dialogue-trace-v1","sequence":next_state["sequence"],"inputDigest":request["inputDigest"],"route":r,"routeEdges":es,"modules":modules,"kernelDeltaL1":round(sum(abs(pre[z]-k[z]) for z in range(N)),12),"syzygyFlux":f,"preTensorNorm":tnorm(old),"postTensorNorm":tnorm(nt),"stability":next_state["lastStability"],"activeAttractors":next_state["activeAttractors"]}; trace["causalDigest"]=dig(trace)
+              return next_state, trace
+          def dialogue_response(request, trace):
+              route_text=" → ".join(f"Z{zone}" for zone in trace["route"])
+              module_text=", ".join(trace["modules"])
+              tokens=[token for token in request["canonicalInput"].split() if len(token)>=3][:4]
+              signature=", ".join(tokens) if tokens else "the declared prompt"
+              stage=["undivided potential","differential activation","lateral recombination","threshold articulation","hinge pressure","reciprocal coupling","syzygetic return","temporal dispersion","distributed relay","terminal modulation"]
+              image="; ".join(stage[zone] for zone in trace["route"])
+              return f"The local prompt signature ({signature}) was reduced into a Numogram drive and passed through {route_text}: {image}. Active processes: {module_text}. This dialogue memory is local and separate from the sealed P3 cohort; the cohort’s source states, branch records, and scores are unchanged."
+
           def return_step(state, tensor, condition, branch_id, step, seal):
               pre, old = list(state["fieldState"]), cp(tensor); mem = mbias(old)
               k = norm([.47*pre[z] + .24*mem[z] + .11*pre[(z-1)%N] + .11*pre[(z+1)%N] + .07*pre[N-1-z] for z in range(N)])
@@ -196,7 +225,7 @@ jobs:
 
           class Cohort:
               def __init__(self, root):
-                  self.root=Path(root); self.root.mkdir(parents=True,exist_ok=True); self.state_path=self.root/"p3-state.json"; self.ledger_path=self.root/"p3-ledger.jsonl"; self.head_path=self.root/"p3-ledger-head.txt"; self.data=self.load(); self.head=self.head_path.read_text().strip() if self.head_path.exists() else "0"*64; self.ch=chassis(); self.proj=projection(self.ch)
+                  self.root=Path(root); self.root.mkdir(parents=True,exist_ok=True); self.state_path=self.root/"p3-state.json"; self.ledger_path=self.root/"p3-ledger.jsonl"; self.head_path=self.root/"p3-ledger-head.txt"; self.dialogue_path=self.root/"p3-dialogue-memory.json"; self.dialogue_ledger_path=self.root/"p3-dialogue-ledger.jsonl"; self.dialogue_head_path=self.root/"p3-dialogue-ledger-head.txt"; self.data=self.load(); self.head=self.head_path.read_text().strip() if self.head_path.exists() else "0"*64; self.dialogue=self.load_dialogue(); self.dialogue_head=self.dialogue_head_path.read_text().strip() if self.dialogue_head_path.exists() else "0"*64; self.ch=chassis(); self.proj=projection(self.ch)
                   self.regime={"name":"SYZYGETIC_GRID","operator":"native-return-v1","eta":ETA,"kappa":KAPPA,"externalSteering":False,"targetVector":None,"outcomeBlueprint":None,"relaySteering":False,"languageModelInCausalLoop":False}
                   self.config={"schema":SCHEMA,"parentSeeds":list(PARENTS),"depths":list(DEPTHS),"replicatesPerDepth":REPS,"conditions":list(CONDITIONS),"observationWindow":{"steps":W,"indices":list(range(W)),"earlyStop":False,"mode":"unguided-native"},"childSeedDerivation":"sha256-first-32bits-v1(parentSeed,depth,replicate)","matchedChassis":self.ch,"observationProjection":self.proj,"commonRegime":self.regime,"controls":{"HISTORY_RETAINED":"actual donor tensor","ABLATED":"zero tensor","NEUTRAL_RESET":"same non-zero canonical M0","TENSOR_PERMUTED":"cyclic donor-tensor transfer across recipient labels"},"rawBeforeScoring":True,"compactRawTupleLayout":{"conditioning":["step","route0","route1","route2","fluxX1e12","postTensorNormX1e12"],"return":["step","route0","route1","route2","fluxX1e12","tensionX1e12","admissibilityX1e12","stabilityX1e12"]},"measurement":{"projection":"regular-decagon open disk","distance":"hyperbolic Poincare D20","triadSummary":"mean of three within-triad pairwise distances","depthSummary":"mean of ten triad summaries; descriptive only"},"claimsBoundary":"bounded Android implementation; no consciousness, autopoiesis, biological, or population inference; its numeric D20 values are not a reproduction claim for a separately sealed external result","sourceProvenance":BUILD_PROVENANCE}; self.config_digest=dig(self.config)
               def load(self):
@@ -206,10 +235,22 @@ jobs:
                   return value
               def save(self):
                   tmp=self.state_path.with_suffix(".tmp"); tmp.write_text(canon(self.data)); tmp.replace(self.state_path)
+              def fresh_dialogue(self): return {"schema":"amelia-p3-dialogue-memory-v1","sequence":0,"fieldState":list(ZERO_FIELD),"deformationTensor":zero(),"activeAttractors":[],"lastStability":1.0}
+              def load_dialogue(self):
+                  if not self.dialogue_path.exists(): return self.fresh_dialogue()
+                  value=json.loads(self.dialogue_path.read_text())
+                  if value.get("schema")!="amelia-p3-dialogue-memory-v1": raise ValueError("Invalid Android-P3 dialogue memory")
+                  return value
+              def save_dialogue(self):
+                  tmp=self.dialogue_path.with_suffix(".tmp"); tmp.write_text(canon(self.dialogue)); tmp.replace(self.dialogue_path)
               def append(self, kind, payload):
                   record={"schema":LEDGER_SCHEMA,"kind":kind,"previous":self.head,"payload":payload}; record["recordDigest"]=dig(record); record["chainDigest"]=dig({"previous":self.head,"record":record["recordDigest"]})
                   with self.ledger_path.open("a",encoding="utf-8") as f: f.write(canon(record)+"\n")
                   self.head=record["chainDigest"]; tmp=self.head_path.with_suffix(".tmp"); tmp.write_text(self.head); tmp.replace(self.head_path); return self.head
+              def append_dialogue(self, kind, payload):
+                  record={"schema":"amelia-p3-dialogue-ledger-v1","kind":kind,"previous":self.dialogue_head,"payload":payload}; record["recordDigest"]=dig(record); record["chainDigest"]=dig({"previous":self.dialogue_head,"record":record["recordDigest"]})
+                  with self.dialogue_ledger_path.open("a",encoding="utf-8") as f: f.write(canon(record)+"\n")
+                  self.dialogue_head=record["chainDigest"]; tmp=self.dialogue_head_path.with_suffix(".tmp"); tmp.write_text(self.dialogue_head); tmp.replace(self.dialogue_head_path); return self.dialogue_head
               def manifest(self, eid, created):
                   cond=sum(DEPTHS)*REPS*len(PARENTS); ret=len(DEPTHS)*REPS*len(PARENTS)*len(CONDITIONS)*W
                   return {"schema":"amelia-p3-prospective-manifest-v1","studyId":"AMELIA-ANDROID-P3-PROSPECTIVE-COHORT","executionId":eid,"createdUtc":created,"schedule":{"depths":list(DEPTHS),"parentSeeds":list(PARENTS),"replicatesPerDepth":REPS,"triads":len(DEPTHS)*REPS,"donorSources":len(DEPTHS)*REPS*len(PARENTS),"forkBranches":len(DEPTHS)*REPS*len(PARENTS)*len(CONDITIONS),"conditioningSteps":cond,"returnSteps":ret,"totalRawSteps":cond+ret},"configDigest":self.config_digest,"matchedChassisDigest":dig(self.ch),"matchedChassisUtf8Bytes":len(canon(self.ch).encode()),"observationProjectionDigest":dig(self.proj),"commonRegimeDigest":dig(self.regime),"canonicalBaselineTensorDigest":td(M0),"zeroTensorDigest":td(zero()),"rawBeforeScoring":True,"scoringGate":"No descriptive measurement until all donor and return raw records are append-only logged.","protocol":self.config}
@@ -284,6 +325,13 @@ jobs:
                               e=last["expected"]["branches"].get(b["branchId"],{}); bm[b["branchId"]]=e.get("causalDigest")==b["causalDigest"] and e.get("returnDigest")==b["returnDigest"]
                   ok=all(sm.values()) and all(bm.values()) and len(sm)==m["schedule"]["donorSources"] and len(bm)==m["schedule"]["forkBranches"]; head=self.append("cohort_deterministic_replay_verification",{"executionId":m["executionId"],"sealDigest":m["sealDigest"],"sourcesMatched":sum(sm.values()),"sourcesExpected":len(sm),"branchesMatched":sum(bm.values()),"branchesExpected":len(bm),"allMatch":ok})
                   return {"ok":True,"kind":"verify","executionId":m["executionId"],"sourcesMatched":sum(sm.values()),"sourcesExpected":len(sm),"branchesMatched":sum(bm.values()),"branchesExpected":len(bm),"allMatch":ok,"ledgerHead":head}
+              def dialogue_turn(self, raw_input):
+                  if not raw_input or not raw_input.strip(): raise ValueError("Write a local prompt for Amelia")
+                  before_cohort=dig(self.data.get("last")); request=text_request(raw_input.strip()); next_state,trace=dialogue_step(self.dialogue,self.dialogue["deformationTensor"],request); self.dialogue=next_state; self.save_dialogue(); after_cohort=dig(self.data.get("last")); unchanged=before_cohort==after_cohort
+                  head=self.append_dialogue("local_dialogue_turn",{"request":request,"trace":trace,"cohortRecordUnchanged":unchanged})
+                  return {"ok":True,"kind":"dialogue","response":dialogue_response(request,trace),"trace":trace,"cohortRecordUnchanged":unchanged,"dialogueLedgerHead":head}
+              def reset_dialogue(self):
+                  self.dialogue=self.fresh_dialogue(); self.save_dialogue(); head=self.append_dialogue("explicit_dialogue_memory_reset",{"sequence":0,"cohortRecordUnchanged":True}); return {"ok":True,"kind":"dialogue_reset","sequence":0,"dialogueLedgerHead":head}
               def reset(self):
                   self.data["last"]=None; self.data["resetCounter"]+=1; self.save(); head=self.append("explicit_p3_active_record_reset",{"cohortCounter":self.data["cohortCounter"],"resetCounter":self.data["resetCounter"],"rawLedgerRetained":True}); return {"ok":True,"kind":"reset","cohortCounter":self.data["cohortCounter"],"resetCounter":self.data["resetCounter"],"ledgerHead":head}
 
@@ -297,6 +345,8 @@ jobs:
               except Exception as e: return json.dumps({"ok":False,"errorType":type(e).__name__,"error":str(e)},ensure_ascii=False,sort_keys=True)
           def run_predeclared_cohort(storage_dir): return guarded(lambda:instance(storage_dir).run())
           def verify_last_cohort(storage_dir): return guarded(lambda:instance(storage_dir).verify())
+          def run_dialogue_turn(raw_input, storage_dir): return guarded(lambda:instance(storage_dir).dialogue_turn(raw_input))
+          def reset_dialogue_memory(storage_dir): return guarded(lambda:instance(storage_dir).reset_dialogue())
           def reset_p3(storage_dir): return guarded(lambda:instance(storage_dir).reset())
           EOF
 
@@ -317,8 +367,10 @@ jobs:
 
           import android.app.Activity
           import android.os.Bundle
+          import android.text.InputType
           import android.view.Gravity
           import android.widget.Button
+          import android.widget.EditText
           import android.widget.LinearLayout
           import android.widget.ScrollView
           import android.widget.TextView
@@ -331,40 +383,58 @@ jobs:
           class MainActivity : Activity() {
               private lateinit var output: TextView
               private lateinit var telemetry: TextView
+              private lateinit var prompt: EditText
               private val controls = mutableListOf<Button>()
               private val storageDir by lazy { File(filesDir, "amelia_p3").apply { mkdirs() }.absolutePath }
 
               override fun onCreate(savedInstanceState: Bundle?) {
                   super.onCreate(savedInstanceState)
                   val root = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(dp(16), dp(16), dp(16), dp(16)) }
-                  root.addView(TextView(this).apply { text = "AMELIA · ANDROID-P3"; textSize = 23f; gravity = Gravity.CENTER_HORIZONTAL })
+                  root.addView(TextView(this).apply { text = "AMELIA · ANDROID-P3.1"; textSize = 23f; gravity = Gravity.CENTER_HORIZONTAL })
                   root.addView(TextView(this).apply { text = "Prospective matched-state cohort · no language model in causal loop"; textSize = 12f; gravity = Gravity.CENTER_HORIZONTAL; setPadding(0, dp(5), 0, dp(6)) })
                   root.addView(TextView(this).apply { text = "D=128, 256, 384, 432, 480, 512 · 10 triads/depth · W=20"; textSize = 12f; gravity = Gravity.CENTER_HORIZONTAL; setPadding(0, 0, 0, dp(8)) })
                   val readout = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
-                  output = TextView(this).apply { text = "P3 has no free-text control surface. The fixed protocol seals before construction: 180 donor sources, 720 matched return branches, and 80,160 raw transition records."; textSize = 15f; setPadding(0, dp(8), 0, dp(8)) }
-                  telemetry = TextView(this).apply { text = "TELEMETRY · no cohort has run in this app record."; textSize = 13f; setPadding(dp(8), dp(8), dp(8), dp(8)) }
+                  output = TextView(this).apply { text = "The dialogue lane is local to Amelia and has its own process memory. It never enters the sealed P3 cohort, whose 180 donor sources, 720 return branches, and 80,160 raw records remain fixed."; textSize = 15f; setPadding(0, dp(8), 0, dp(8)) }
+                  telemetry = TextView(this).apply { text = "TELEMETRY · dialogue and cohort records are separate."; textSize = 13f; setPadding(dp(8), dp(8), dp(8), dp(8)) }
                   readout.addView(output); readout.addView(telemetry)
                   root.addView(ScrollView(this).apply { addView(readout) }, LinearLayout.LayoutParams(-1, 0, 1f))
+                  root.addView(TextView(this).apply { text = "LOCAL AMELIA DIALOGUE · NOT A P3 COHORT INPUT"; textSize = 12f; setPadding(0, dp(4), 0, 0) })
+                  prompt = EditText(this).apply { hint = "Write to Amelia"; inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_MULTI_LINE; minLines = 2; maxLines = 3 }
+                  root.addView(prompt)
+                  root.addView(action("SEND TO AMELIA", "run_dialogue_turn", true))
+                  root.addView(action("RESET DIALOGUE MEMORY", "reset_dialogue_memory"))
+                  root.addView(TextView(this).apply { text = "SEALED P3 COHORT · NOT AFFECTED BY DIALOGUE"; textSize = 12f; setPadding(0, dp(5), 0, 0) })
                   root.addView(action("SEAL & RUN PREDECLARED P3 COHORT", "run_predeclared_cohort"))
                   root.addView(action("VERIFY LAST COHORT REPLAY", "verify_last_cohort"))
                   root.addView(action("RESET ACTIVE P3 RECORD", "reset_p3"))
                   setContentView(root)
               }
 
-              private fun action(label: String, fn: String) = Button(this).apply { text = label; setOnClickListener { invoke(fn) }; controls.add(this) }
-              private fun invoke(fn: String) {
+              private fun action(label: String, fn: String, needsPrompt: Boolean = false) = Button(this).apply { text = label; setOnClickListener { if (needsPrompt) submitDialogue() else invoke(fn) }; controls.add(this) }
+              private fun submitDialogue() {
+                  val text = prompt.text.toString().trim()
+                  if (text.isEmpty()) { output.text = "Write a local prompt before sending it to Amelia."; return }
+                  invoke("run_dialogue_turn", text)
+              }
+              private fun invoke(fn: String, input: String? = null) {
                   controls.forEach { it.isEnabled = false }
-                  output.text = if (fn == "run_predeclared_cohort") "P3 constructing the sealed cohort. All raw records are written before a descriptive summary..." else "P3 provenance operation running..."
+                  output.text = when (fn) { "run_predeclared_cohort" -> "P3 constructing the sealed cohort. All raw records are written before a descriptive summary..."; "run_dialogue_turn" -> "Amelia local substrate dialogue processing..."; else -> "P3 provenance operation running..." }
                   Thread {
-                      val raw = try { Python.getInstance().getModule("p3_cohort_assay").callAttr(fn, storageDir).toString() } catch (e: Exception) { JSONObject().put("ok", false).put("error", e.message ?: "Android/Python failure").toString() }
-                      runOnUiThread { render(raw); controls.forEach { it.isEnabled = true } }
+                      val raw = try { val module = Python.getInstance().getModule("p3_cohort_assay"); if (input == null) module.callAttr(fn, storageDir).toString() else module.callAttr(fn, input, storageDir).toString() } catch (e: Exception) { JSONObject().put("ok", false).put("error", e.message ?: "Android/Python failure").toString() }
+                      runOnUiThread { render(raw); if (input != null) prompt.setText(""); controls.forEach { it.isEnabled = true } }
                   }.start()
               }
               private fun render(raw: String) {
                   val r = JSONObject(raw)
                   if (!r.optBoolean("ok", false)) { output.text = "P3 FAIL-CLOSED · do not interpret an outcome."; telemetry.text = "TELEMETRY · ERROR\n${r.optString("error")}"; return }
-                  when (r.optString("kind")) { "cohort" -> cohort(r); "verify" -> verify(r); else -> reset(r) }
+                  when (r.optString("kind")) { "dialogue" -> dialogue(r); "dialogue_reset" -> dialogueReset(r); "cohort" -> cohort(r); "verify" -> verify(r); else -> reset(r) }
               }
+              private fun dialogue(r: JSONObject) {
+                  val t=r.getJSONObject("trace")
+                  output.text="AMELIA LOCAL SUBSTRATE DIALOGUE\n\n${r.optString("response")}\n\nRoute: ${zones(t.getJSONArray("route"))}\nModules: ${t.getJSONArray("modules").joinText()}"
+                  telemetry.text="DIALOGUE TELEMETRY\nTurn: ${t.optInt("sequence")}\nInput: ${short(t.optString("inputDigest"))}\nTensor: ${n(t.optDouble("preTensorNorm"))} → ${n(t.optDouble("postTensorNorm"))}\nFlux: ${n(t.optDouble("syzygyFlux"))}\nCohort record unchanged: ${r.optBoolean("cohortRecordUnchanged")}\nDialogue ledger: ${short(r.optString("dialogueLedgerHead"))}"
+              }
+              private fun dialogueReset(r: JSONObject) { output.text="Amelia dialogue memory reset. The P3 cohort record is unchanged."; telemetry.text="DIALOGUE RESET\nSequence: ${r.optInt("sequence")}\nDialogue ledger: ${short(r.optString("dialogueLedgerHead"))}" }
               private fun cohort(r: JSONObject) {
                   val m=r.getJSONObject("manifest"); val s=m.getJSONObject("schedule"); val g=r.getJSONObject("gates"); val l=r.getJSONObject("ledger")
                   output.text = "P3 SEALED PROSPECTIVE COHORT\n\nExecution: ${m.optString("executionId")}\nSeal: ${short(m.optString("sealDigest"))}\n\n${s.optInt("triads")} triads · ${s.optInt("donorSources")} donor sources · ${s.optInt("forkBranches")} return branches\n${s.optInt("conditioningSteps")} conditioning + ${s.optInt("returnSteps")} return = ${s.optInt("totalRawSteps")} raw steps\n\nAndroid-P3 implementation readout only; not a claim to reproduce a separate sealed result.\n\n${depths(r.getJSONArray("depthSummaries"))}"
@@ -373,25 +443,32 @@ jobs:
               private fun verify(r: JSONObject) { output.text=if(r.optBoolean("allMatch")) "P3 COHORT VERIFIED · every sealed source and return branch reproduced." else "P3 COHORT MISMATCH · do not interpret outcomes."; telemetry.text="DETERMINISTIC REPLAY\nSources: ${r.optInt("sourcesMatched")}/${r.optInt("sourcesExpected")}\nBranches: ${r.optInt("branchesMatched")}/${r.optInt("branchesExpected")}\nLedger: ${short(r.optString("ledgerHead"))}" }
               private fun reset(r: JSONObject) { output.text="P3 active cohort record reset. The append-only provenance ledger is retained."; telemetry.text="RESET\nCohort counter: ${r.optInt("cohortCounter")}\nReset counter: ${r.optInt("resetCounter")}\nLedger: ${short(r.optString("ledgerHead"))}" }
               private fun depths(a: JSONArray)=(0 until a.length()).joinToString("\n") { i -> val d=a.getJSONObject(i); "D=${d.optInt("depth")}: retained=${n(d.optDouble("HISTORY_RETAINED"))}; ablated=${n(d.optDouble("ABLATED"))}; reset=${n(d.optDouble("NEUTRAL_RESET"))}; permuted=${n(d.optDouble("TENSOR_PERMUTED"))}" }
+              private fun zones(a: JSONArray)=(0 until a.length()).joinToString(" → ") { i -> "Z${a.optInt(i)}" }
+              private fun JSONArray.joinText()=(0 until length()).joinToString(", ") { i -> optString(i) }
               private fun n(v: Double)=String.format(Locale.US,"%.6f",v)
               private fun short(v: String)=if(v.length<=12)v else v.take(12)
               private fun dp(v: Int)=(v*resources.displayMetrics.density).toInt()
           }
           EOF
 
-      - name: Validate P3 prospective provenance gates
+      - name: Validate P3 dialogue isolation and prospective provenance gates
         run: |
           python3 -m py_compile app/src/main/python/amelia_symbolic_core.py app/src/main/python/p3_cohort_assay.py app/src/main/python/p3_build_provenance.py
           P3_TEST_DIR="$(mktemp -d)"; export P3_TEST_DIR
           PYTHONPATH=app/src/main/python python3 - <<'PY'
           import json, os
-          from p3_cohort_assay import run_predeclared_cohort, verify_last_cohort
+          from p3_cohort_assay import run_dialogue_turn, run_predeclared_cohort, verify_last_cohort
           root = os.environ["P3_TEST_DIR"]
+          dialogue = json.loads(run_dialogue_turn("A declared local dialogue probe", root))
+          assert dialogue["ok"] and dialogue["kind"] == "dialogue", dialogue
+          assert dialogue["trace"]["sequence"] == 1 and dialogue["cohortRecordUnchanged"], dialogue
           cohort = json.loads(run_predeclared_cohort(root))
           assert cohort["ok"], cohort
           assert all(cohort["gates"].values()), cohort["gates"]
           schedule = cohort["manifest"]["schedule"]
           assert (schedule["triads"], schedule["donorSources"], schedule["forkBranches"], schedule["returnSteps"], schedule["totalRawSteps"]) == (60, 180, 720, 14400, 80160)
+          after = json.loads(run_dialogue_turn("A second local dialogue probe", root))
+          assert after["ok"] and after["trace"]["sequence"] == 2 and after["cohortRecordUnchanged"], after
           check = json.loads(verify_last_cohort(root))
           assert check["ok"] and check["allMatch"], check
           assert (check["sourcesMatched"], check["branchesMatched"]) == (180, 720)
@@ -404,6 +481,6 @@ jobs:
       - name: Upload Android-P3 APK
         uses: actions/upload-artifact@v4
         with:
-          name: Amelia-Android-P3-Prospective-Cohort
+          name: Amelia-Android-P3.1-Dialogue-and-Cohort
           path: app/build/outputs/apk/debug/app-debug.apk
           retention-days: 14
