@@ -1,9 +1,9 @@
-"""Deferred P3.6 tensor Numogram substrate.
+"""P3.6 tensor Numogram substrate.
 
-P3.5A packages and syntax-checks this module without importing it: the P3.5A
-probe intentionally carries no Torch dependency.  When P3.6 installs the
-declared Android Torch wheel, this module provides a deterministic, explicitly
-seeded Numogram system for initialize -> status -> transition testing.
+P3.5A packaged and syntax-checked this module without importing it. P3.6 is
+the first runtime which imports Torch, initializes the tensor field, reads its
+status, and commits one explicitly seeded transition. Persistence remains off
+unless a later, separate stage enables it.
 """
 from __future__ import annotations
 
@@ -73,7 +73,9 @@ class TensorBasedNumogramSystem:
         self.learning_rate = float(learning_rate)
         self.seed = int(seed)
         self._rng = random.Random(self.seed)
-        self._torch_generator = torch.Generator(device="cpu")
+        # The default CPU generator is supported by the Android Torch 1.8.1
+        # wheel and is deliberately independent of Python's random stream.
+        self._torch_generator = torch.Generator()
         self._torch_generator.manual_seed(self.seed)
         self.zone_tensors = torch.rand(
             (ZONE_COUNT, self.dimension, self.dimension),
@@ -232,6 +234,29 @@ _SYSTEM: Optional[TensorBasedNumogramSystem] = None
 
 def _canonical(value):
     return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+
+
+def get_runtime_info():
+    """Return the sealed, read-only Torch runtime identity for P3.6."""
+    if torch is None:
+        return _canonical(
+            {
+                "schema": "amelia-p3.6-torch-runtime-v1",
+                "status": "torch_unavailable",
+                "torch_version": None,
+                "zone_count": ZONE_COUNT,
+                "persistence_default": False,
+            }
+        )
+    return _canonical(
+        {
+            "schema": "amelia-p3.6-torch-runtime-v1",
+            "status": "torch_ready",
+            "torch_version": str(torch.__version__),
+            "zone_count": ZONE_COUNT,
+            "persistence_default": False,
+        }
+    )
 
 
 def initialize_system(seed: int = 0, dimension: int = 3):
