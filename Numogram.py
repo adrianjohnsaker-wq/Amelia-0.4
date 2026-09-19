@@ -1,12 +1,41 @@
-"""P3.6 tensor Numogram substrate.
+"""P3.6.1 tensor Numogram substrate.
 
-P3.5A packaged and syntax-checked this module without importing it. P3.6 is
-the first runtime which imports Torch, initializes the tensor field, reads its
-status, and commits one explicitly seeded transition. Persistence remains off
-unless a later, separate stage enables it.
+P3.5A packaged and syntax-checked this module without importing it. P3.6
+was the first runtime to import Torch, initialize the tensor field, and
+commit one seeded transition -- confirmed on-device.
+
+P3.6.1 is a hygiene revision to the module-level facade only. Nothing in
+TensorBasedNumogramSystem or MinimalBaseNumogram changes.
+
+Two fixes:
+
+1. initialize_system() previously had no guard at all: every call
+   unconditionally replaced _SYSTEM, silently discarding any accumulated
+   evolution_step/transition_history from a prior process attachment.
+   Python's module state is process-wide and can outlive the Activity that
+   first created it, so a bare "require uninitialized" would only make the
+   discarding visible, not prevent it. Instead: a second initialize_system
+   call is checked against a canonical digest of (seed, dimension). If it
+   matches what's already running, the call reattaches without touching
+   _SYSTEM -- no reset, no data loss. If it doesn't match, the call is
+   rejected outright and _SYSTEM is still left untouched. Either way,
+   nothing is silently overwritten.
+
+2. initialize_system() and transition() could previously raise uncaught
+   across the Chaquopy boundary (get_status/get_runtime_info could not --
+   nothing in them raises). Both now catch their own exceptions and return
+   a structured {"status": "error", ...} string instead, matching
+   get_status/get_runtime_info's existing behaviour. This also means a
+   failure partway through a call sequence no longer discards whatever
+   already succeeded before it, since the caller keeps getting a valid
+   JSON string back at every step rather than an exception unwinding the
+   whole sequence.
+
+Persistence remains off unless a later, separate stage enables it.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import math
 import random
@@ -230,10 +259,21 @@ class TensorBasedNumogramSystem:
 
 
 _SYSTEM: Optional[TensorBasedNumogramSystem] = None
+_INIT_DIGEST: Optional[str] = None
 
 
 def _canonical(value):
     return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+
+
+def _config_digest(seed: int, dimension: int) -> str:
+    # Covers exactly the parameters initialize_system actually exposes.
+    # If a future revision exposes learning_rate as a caller-supplied
+    # parameter too, it needs to be folded into this payload, or a
+    # reattachment could silently accept a configuration that differs in
+    # a way this digest can't see.
+    payload = json.dumps({"seed": int(seed), "dimension": int(dimension)}, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 
 def get_runtime_info():
@@ -260,24 +300,74 @@ def get_runtime_info():
 
 
 def initialize_system(seed: int = 0, dimension: int = 3):
-    global _SYSTEM
-    _SYSTEM = TensorBasedNumogramSystem(seed=int(seed), dimension=int(dimension))
-    return _canonical({"status": "initialized", "system": _SYSTEM.status()})
+    """
+    Exact-once initialization with digest-matched reattachment.
+
+    - No existing system: construct one, record its config digest.
+    - Existing system, same (seed, dimension): reattach, state unchanged.
+    - Existing system, different (seed, dimension): rejected, state
+      unchanged -- this is what keeps it exact-once rather than a reset.
+    """
+    global _SYSTEM, _INIT_DIGEST
+    try:
+        seed = int(seed)
+        dimension = int(dimension)
+        attempted_digest = _config_digest(seed, dimension)
+
+        if _SYSTEM is not None:
+            if attempted_digest == _INIT_DIGEST:
+                return _canonical({
+                    "status": "already_initialized",
+                    "init_digest": _INIT_DIGEST,
+                    "attempted_init_digest": attempted_digest,
+                    "state_unchanged": True,
+                    "system": _SYSTEM.status(),
+                })
+            return _canonical({
+                "status": "error",
+                "error_type": "ConfigMismatch",
+                "message": "system already initialized with a different (seed, dimension)",
+                "init_digest": _INIT_DIGEST,
+                "attempted_init_digest": attempted_digest,
+            })
+
+        system = TensorBasedNumogramSystem(seed=seed, dimension=dimension)
+        _SYSTEM = system
+        _INIT_DIGEST = attempted_digest
+        return _canonical({"status": "initialized", "init_digest": _INIT_DIGEST, "system": _SYSTEM.status()})
+    except Exception as error:
+        return _canonical({"status": "error", "error_type": type(error).__name__, "message": str(error)})
 
 
 def get_status():
     if _SYSTEM is None:
         return _canonical({"status": "uninitialized"})
-    return _canonical({"status": "ready", "system": _SYSTEM.status()})
+    return _canonical({"status": "ready", "init_digest": _INIT_DIGEST, "system": _SYSTEM.status()})
 
 
 def transition(current_zone: int, context_json: str = "{}"):
-    if _SYSTEM is None:
-        raise RuntimeError("initialize_system must be called before transition")
     try:
-        context = json.loads(context_json) if context_json else {}
+        if _SYSTEM is None:
+            return _canonical({
+                "status": "error",
+                "error_type": "RuntimeError",
+                "message": "initialize_system must be called before transition",
+            })
+        try:
+            context = json.loads(context_json) if context_json else {}
+        except Exception:
+            return _canonical({
+                "status": "error",
+                "error_type": "ValueError",
+                "message": "context_json must be a JSON object",
+            })
+        if not isinstance(context, dict):
+            return _canonical({
+                "status": "error",
+                "error_type": "ValueError",
+                "message": "context_json must encode a JSON object",
+            })
+        event = _SYSTEM.transition(current_zone, context)
+        return _canonical({"status": "transitioned", "event": event, "system": _SYSTEM.status()})
     except Exception as error:
-        raise ValueError("context_json must be a JSON object") from error
-    if not isinstance(context, dict):
-        raise ValueError("context_json must encode a JSON object")
-    return _canonical({"status": "transitioned", "event": _SYSTEM.transition(current_zone, context), "system": _SYSTEM.status()})
+        return _canonical({"status": "error", "error_type": type(error).__name__, "message": str(error)})
