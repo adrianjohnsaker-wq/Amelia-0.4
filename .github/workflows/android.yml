@@ -1,4 +1,4 @@
-name: Build Amelia Android-P3.6 Torch Numogram Probe APK
+name: Build Amelia Android-P3.6.1 Torch Numogram Probe APK
 
 on:
   push:
@@ -22,8 +22,10 @@ jobs:
           distribution: temurin
           java-version: "17"
 
-      # P3.6 stays on the P3.5A-proven Chaquopy 16.1 / Python 3.8 lane.
-      # The new variable is exactly one native package: torch==1.8.1.
+      # P3.6.1 stays on the same Chaquopy 16.1 / Python 3.8 lane P3.6
+      # validated on-device. Nothing about the toolchain changes here --
+      # only the Numogram facade's reinitialization behaviour, and the
+      # probe UI's acceptance contract to match it.
       - name: Set up Python 3.8
         uses: actions/setup-python@v5
         with:
@@ -34,14 +36,14 @@ jobs:
         with:
           gradle-version: "8.9"
 
-      - name: Verify P3.6 source files exist
+      - name: Verify P3.6.1 source files exist
         shell: bash
         run: |
           set -euo pipefail
 
           for source in bridge_probe.py Numogram.py NumogramBridge.kt ChaquopyProbe.kt; do
             if [[ ! -f "$source" ]]; then
-              echo "::error file=$source::Required P3.6 source is absent from repository root."
+              echo "::error file=$source::Required P3.6.1 source is absent from repository root."
               echo "Repository root contents:"
               find . -maxdepth 1 -type f -printf ' - %f\n' | sort
               exit 1
@@ -50,27 +52,28 @@ jobs:
           done
 
           echo
-          echo "P3.6 source fingerprints:"
+          echo "P3.6.1 source fingerprints:"
           sha256sum \
             bridge_probe.py \
             Numogram.py \
             NumogramBridge.kt \
             ChaquopyProbe.kt
 
-      - name: Create Android-P3.6 Torch Numogram probe project
+      - name: Create Android-P3.6.1 Torch Numogram probe project
         shell: bash
         run: |
           set -euo pipefail
 
           mkdir -p \
-            app/src/main/java/com/amelia/p36 \
+            app/src/main/java/com/amelia/p361 \
             app/src/main/java/com/amelia/bridge \
             app/src/main/python \
             app/src/main/res/values
 
-          # Preserve the four root sources as the build inputs. P3.6 imports
-          # Numogram.py through NumogramBridge; the P3.5A probe pair remains
-          # packaged solely as source provenance and is not invoked.
+          # Preserve the four root sources as the build inputs. Only
+          # Numogram.py's content changed for P3.6.1 (digest-matched
+          # reattachment, exception-safe facade functions); NumogramBridge.kt,
+          # ChaquopyProbe.kt, and bridge_probe.py are copied as-is.
           cp bridge_probe.py \
             app/src/main/python/bridge_probe.py
 
@@ -100,7 +103,7 @@ jobs:
               }
           }
 
-          rootProject.name = "AmeliaAndroidP36"
+          rootProject.name = "AmeliaAndroidP361"
           include(":app")
           EOF
 
@@ -118,10 +121,8 @@ jobs:
           kotlin.code.style=official
           EOF
 
-          # P3.6's sole new dependency is the Chaquopy-native Android Torch
-          # wheel selected by this exact requirement. It is intentionally not
-          # supplemented by a language model, network client, or persistence
-          # package.
+          # Same single dependency as P3.6: torch==1.8.1. P3.6.1 changes
+          # facade logic, not the dependency lane.
           cat > app/build.gradle.kts <<'EOF'
           plugins {
               id("com.android.application")
@@ -130,15 +131,15 @@ jobs:
           }
 
           android {
-              namespace = "com.amelia.p36"
+              namespace = "com.amelia.p361"
               compileSdk = 34
 
               defaultConfig {
-                  applicationId = "com.amelia.p36"
+                  applicationId = "com.amelia.p361"
                   minSdk = 24
                   targetSdk = 34
                   versionCode = 1
-                  versionName = "0.8-android-p3.6-torch-numogram-probe"
+                  versionName = "0.8.1-android-p3.6.1-torch-numogram-reattach"
 
                   ndk {
                       abiFilters += listOf(
@@ -170,8 +171,7 @@ jobs:
           }
           EOF
 
-          # P3.6 remains a local substrate assay. It has no INTERNET
-          # permission and no outbound provider path.
+          # Same as P3.6: local substrate assay only, no INTERNET permission.
           cat > app/src/main/AndroidManifest.xml <<'EOF'
           <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
@@ -199,22 +199,26 @@ jobs:
 
           cat > app/src/main/res/values/strings.xml <<'EOF'
           <resources>
-              <string name="app_name">Amelia P3.6 Torch Numogram</string>
+              <string name="app_name">Amelia P3.6.1 Torch Numogram</string>
           </resources>
           EOF
 
-          # P3.6's on-device experiment is intentionally fixed and small:
+          # P3.6.1's on-device experiment is the same fixed probe as P3.6:
           #
           # Kotlin -> NumogramBridge -> Numogram.py -> Torch
-          #        -> initialize(seed=3606, dimension=3)
+          #        -> initialize(seed=3606, dimension=3)   [fresh OR reattach]
           #        -> status
           #        -> transition(origin=Z3, context={})
           #        -> status -> Kotlin
           #
-          # No free-text input, network call, language model, persistent
-          # memory store, or external routing surface participates here.
-          cat > app/src/main/java/com/amelia/p36/MainActivity.kt <<'EOF'
-          package com.amelia.p36
+          # The difference is what counts as passing: a repeat launch that
+          # reattaches to an already-running, digest-matched system is now a
+          # valid pass, and the step/history checks compare against this
+          # run's own baseline rather than hardcoded absolute values -- so
+          # the screen stays correct on the second, third, or Nth launch,
+          # not just a cold start.
+          cat > app/src/main/java/com/amelia/p361/MainActivity.kt <<'ACTIVITY_EOF'
+          package com.amelia.p361
 
           import android.app.Activity
           import android.os.Bundle
@@ -230,7 +234,7 @@ jobs:
           class MainActivity : Activity() {
 
               companion object {
-                  private const val LOG_TAG = "AMELIA_P36"
+                  private const val LOG_TAG = "AMELIA_P361"
                   private const val PROBE_SEED = 3606
                   private const val PROBE_DIMENSION = 3
                   private const val PROBE_ORIGIN = 3
@@ -250,7 +254,7 @@ jobs:
 
                   root.addView(
                       TextView(this).apply {
-                          text = "AMELIA · P3.6"
+                          text = "AMELIA · P3.6.1"
                           textSize = 25f
                           gravity = Gravity.CENTER_HORIZONTAL
                       }
@@ -258,7 +262,7 @@ jobs:
 
                   root.addView(
                       TextView(this).apply {
-                          text = "Chaquopy 16.1 · Python 3.8 · Torch 1.8.1 · live Numogram probe"
+                          text = "Chaquopy 16.1 · Python 3.8 · Torch 1.8.1 · digest-matched reattachment"
                           textSize = 14f
                           gravity = Gravity.CENTER_HORIZONTAL
                           setPadding(0, dp(8), 0, dp(18))
@@ -266,7 +270,7 @@ jobs:
                   )
 
                   statusView = TextView(this).apply {
-                      text = "P3.6 tensor probe starting…"
+                      text = "P3.6.1 tensor probe starting…"
                       textSize = 20f
                       gravity = Gravity.CENTER_HORIZONTAL
                       setPadding(dp(8), dp(18), dp(8), dp(18))
@@ -284,7 +288,7 @@ jobs:
                   root.addView(
                       TextView(this).apply {
                           text =
-                              "\nP3.6 boundary:\n\n" +
+                              "\nP3.6.1 boundary:\n\n" +
                               "Kotlin\n" +
                               "  ↓\n" +
                               "NumogramBridge\n" +
@@ -293,11 +297,16 @@ jobs:
                               "  ↓\n" +
                               "Torch 1.8.1 tensor field\n" +
                               "  ↓\n" +
-                              "initialize → status → transition → status\n" +
+                              "initialize (fresh OR digest-matched reattach) → status → transition → status\n" +
                               "  ↓\n" +
                               "Kotlin\n\n" +
                               "Fixed probe: seed 3606 · dimension 3 · origin Z3 · context {}\n\n" +
-                              "No language model. No network. Persistence disabled."
+                              "No language model. No network. Persistence disabled.\n\n" +
+                              "A repeat launch reattaches to the already-running system (same " +
+                              "seed/dimension) rather than silently discarding its history, and " +
+                              "this screen checks that exactly one transition happened this run " +
+                              "-- not that the step count is 1 -- so it stays correct whether " +
+                              "this is the first launch or the fifth."
                           textSize = 14f
                       }
                   )
@@ -313,7 +322,7 @@ jobs:
                           executeProbe()
                       } catch (t: Throwable) {
                           JSONObject()
-                              .put("schema", "amelia-p3.6-probe-result-v1")
+                              .put("schema", "amelia-p3.6.1-probe-result-v1")
                               .put("status", "error")
                               .put("error_type", t::class.java.simpleName)
                               .put("message", t.message ?: "Unknown Android, Chaquopy, or Torch error")
@@ -337,7 +346,7 @@ jobs:
                   val finalStatus = JSONObject(bridge.status())
 
                   return JSONObject()
-                      .put("schema", "amelia-p3.6-probe-result-v1")
+                      .put("schema", "amelia-p3.6.1-probe-result-v1")
                       .put("status", "completed")
                       .put("runtime", runtime)
                       .put("before", before)
@@ -393,22 +402,31 @@ jobs:
                               runtime.optInt("zone_count", -1) == 10 &&
                               !runtime.optBoolean("persistence_default", true)
 
+                      val initStatus = initialized.optString("status", "")
+                      val digestMatchedReattachment =
+                          initStatus == "already_initialized" &&
+                              initialized.optBoolean("state_unchanged", false) &&
+                              initialized.optString("init_digest", "").isNotBlank() &&
+                              initialized.optString("init_digest", "") ==
+                                  initialized.optString("attempted_init_digest", "")
+
                       val initializationHeld =
-                          initialized.optString("status", "") == "initialized" &&
+                          (initStatus == "initialized" || digestMatchedReattachment) &&
                               initializedSystem.optInt("seed", -1) == PROBE_SEED &&
                               initializedSystem.optInt("dimension", -1) == PROBE_DIMENSION &&
-                              initializedSystem.optInt("evolution_step", -1) == 0 &&
-                              initializedSystem.optInt("transition_history", -1) == 0 &&
                               !initializedSystem.optBoolean("persistence_enabled", true)
+
+                      val baselineStep = readySystem.optInt("evolution_step", -1)
+                      val baselineHistory = readySystem.optInt("transition_history", -1)
 
                       val readyHeld =
                           ready.optString("status", "") == "ready" &&
-                              readySystem.optInt("evolution_step", -1) == 0 &&
-                              readySystem.optInt("transition_history", -1) == 0
+                              baselineStep >= 0 &&
+                              baselineHistory >= 0
 
                       val transitionHeld =
                           transitioned.optString("status", "") == "transitioned" &&
-                              event.optInt("step", -1) == 1 &&
+                              event.optInt("step", -1) == baselineStep + 1 &&
                               event.optInt("from", -1) == PROBE_ORIGIN &&
                               event.optInt("to", -1) in 0 until 10 &&
                               !event.optBoolean("fallback", true) &&
@@ -418,8 +436,8 @@ jobs:
 
                       val finalHeld =
                           finalStatus.optString("status", "") == "ready" &&
-                              finalSystem.optInt("evolution_step", -1) == 1 &&
-                              finalSystem.optInt("transition_history", -1) == 1 &&
+                              finalSystem.optInt("evolution_step", -1) == baselineStep + 1 &&
+                              finalSystem.optInt("transition_history", -1) == baselineHistory + 1 &&
                               !finalSystem.optBoolean("persistence_enabled", true)
 
                       val passed =
@@ -432,37 +450,44 @@ jobs:
 
                       val transitionLine =
                           "Z" + event.optInt("from") + " → Z" + event.optInt("to")
+                      val initKind = if (initStatus == "already_initialized") {
+                          "reattached to existing system (digest-matched)"
+                      } else {
+                          "fresh initialization"
+                      }
 
                       if (passed) {
-                          statusView.text = "P3.6 PASSED ✓"
+                          statusView.text = "P3.6.1 PASSED ✓"
                           detailView.text =
                               "Torch imported and the live tensor Numogram lifecycle completed.\n\n" +
                                   "Torch: " + torchVersion + "\n" +
                                   "Before initialization: " + before.optString("status") + "\n" +
+                                  "Initialization: " + initKind + "\n" +
                                   "Seed: " + initializedSystem.optInt("seed") + "\n" +
                                   "Dimension: " + initializedSystem.optInt("dimension") + "\n" +
+                                  "Step baseline going in: " + baselineStep + "\n" +
                                   "Transition: " + transitionLine + "\n" +
-                                  "Step: " + event.optInt("step") + "\n" +
+                                  "Step after: " + event.optInt("step") + "\n" +
                                   "Probability mass: " + probabilityMass + "\n" +
                                   "Fallback: " + event.optBoolean("fallback") + "\n" +
                                   "History: " + finalSystem.optInt("transition_history") + "\n" +
                                   "Persistence: " + finalSystem.optBoolean("persistence_enabled")
                       } else {
-                          statusView.text = "P3.6 FAIL-CLOSED"
+                          statusView.text = "P3.6.1 FAIL-CLOSED"
                           detailView.text =
                               "A Torch/Numogram response was received, but it did not satisfy " +
-                                  "the sealed P3.6 contract.\n\n" +
+                                  "the sealed P3.6.1 contract.\n\n" +
                                   "Torch ready: " + torchReady + "\n" +
-                                  "Initialization: " + initializationHeld + "\n" +
+                                  "Initialization: " + initializationHeld + " (" + initStatus + ")\n" +
                                   "Ready state: " + readyHeld + "\n" +
                                   "Transition: " + transitionHeld + "\n" +
                                   "Final state: " + finalHeld + "\n\n" +
                                   "Raw response:\n" + raw
                       }
                   } catch (t: Throwable) {
-                      statusView.text = "P3.6 FAIL-CLOSED"
+                      statusView.text = "P3.6.1 FAIL-CLOSED"
                       detailView.text =
-                          "The returned Torch/Numogram value was not valid P3.6 probe JSON.\n\n" +
+                          "The returned Torch/Numogram value was not valid P3.6.1 probe JSON.\n\n" +
                               "Error: " + (t.message ?: "Unknown parsing error") + "\n\n" +
                               "Raw response:\n" + raw
                   }
@@ -472,12 +497,14 @@ jobs:
                   return (value * resources.displayMetrics.density).toInt()
               }
           }
-          EOF
+          ACTIVITY_EOF
 
       # Numogram.py is compiled and structurally audited on the Python 3.8
-      # build host. Its Torch import is deliberately exercised only in the
-      # Android build and on-device probe, using the Chaquopy Android wheel.
-      - name: Validate P3.6 source and lifecycle contract
+      # build host, same as P3.6. P3.6.1 adds checks for the digest-matched
+      # reattachment logic specifically, so a regression back to the old
+      # unconditional-overwrite behaviour would fail the build rather than
+      # only being caught on-device.
+      - name: Validate P3.6.1 source and lifecycle contract
         shell: bash
         run: |
           set -euo pipefail
@@ -503,41 +530,49 @@ jobs:
               "initialize_system",
               "get_status",
               "transition",
+              "_config_digest",
           }
           missing = required - functions
           assert not missing, f"Missing Numogram entry points: {sorted(missing)}"
-          print("P3.6 Numogram entry-point contract validated")
+          print("P3.6.1 Numogram entry-point contract validated")
           PY
 
           grep -Fq 'install("torch==1.8.1")' app/build.gradle.kts
           grep -Fq 'buildPython("python3.8")' app/build.gradle.kts
           grep -Fq 'getModule("Numogram")' app/src/main/java/com/amelia/bridge/NumogramBridge.kt
-          grep -Fq 'runtimeInfo()' app/src/main/java/com/amelia/bridge/NumogramBridge.kt
-          grep -Fq 'bridge.initialize' app/src/main/java/com/amelia/p36/MainActivity.kt
-          grep -Fq 'bridge.status' app/src/main/java/com/amelia/p36/MainActivity.kt
-          grep -Fq 'bridge.transition' app/src/main/java/com/amelia/p36/MainActivity.kt
+
+          # P3.6.1-specific: the reattachment fix must actually be present,
+          # not just the four original entry points.
+          grep -Fq 'already_initialized' app/src/main/python/Numogram.py
+          grep -Fq '_config_digest' app/src/main/python/Numogram.py
+          grep -Fq 'attempted_init_digest' app/src/main/python/Numogram.py
+
+          grep -Fq 'bridge.initialize' app/src/main/java/com/amelia/p361/MainActivity.kt
+          grep -Fq 'bridge.status' app/src/main/java/com/amelia/p361/MainActivity.kt
+          grep -Fq 'bridge.transition' app/src/main/java/com/amelia/p361/MainActivity.kt
+          grep -Fq 'digestMatchedReattachment' app/src/main/java/com/amelia/p361/MainActivity.kt
+          grep -Fq 'baselineStep' app/src/main/java/com/amelia/p361/MainActivity.kt
 
           if grep -Fq 'android.permission.INTERNET' app/src/main/AndroidManifest.xml; then
-            echo "FAIL: P3.6 must not declare INTERNET permission."
+            echo "FAIL: P3.6.1 must not declare INTERNET permission."
             exit 1
           fi
 
           echo
-          echo "P3.6 pre-build validation passed."
+          echo "P3.6.1 pre-build validation passed."
           echo "Torch requirement is exact: torch==1.8.1"
-          echo "Runtime lifecycle is fixed: initialize -> status -> transition -> status."
+          echo "Reinitialization is digest-matched, not unconditional overwrite."
+          echo "Acceptance contract checks step/history deltas, not hardcoded absolutes."
           echo "No runtime INTERNET permission is present."
 
-      # This build is the first point at which the Chaquopy resolver retrieves
-      # the Android-native Torch wheel and packages it for both selected ABIs.
-      - name: Build Android-P3.6 Torch Numogram APK
+      - name: Build Android-P3.6.1 Torch Numogram APK
         run: |
           gradle \
             --no-daemon \
             :app:assembleDebug \
             --stacktrace
 
-      - name: Record P3.6 build manifest
+      - name: Record P3.6.1 build manifest
         shell: bash
         run: |
           set -euo pipefail
@@ -550,13 +585,13 @@ jobs:
             Numogram.py \
             NumogramBridge.kt \
             ChaquopyProbe.kt \
-            > p36-source-sha256.txt
+            > p361-source-sha256.txt
 
           APK_SHA="$(sha256sum "$APK" | awk '{print $1}')"
 
-          cat > p36-build-manifest.txt <<EOF
-          Amelia Android P3.6
-          ===================
+          cat > p361-build-manifest.txt <<EOF
+          Amelia Android P3.6.1
+          ======================
 
           Revision:
           $GITHUB_SHA
@@ -579,12 +614,21 @@ jobs:
           Torch requirement:
           torch==1.8.1
 
-          Numogram imported:
-          YES — only through NumogramBridge in the P3.6 probe.
+          Changed from P3.6:
+          Numogram.py -- initialize_system() now checks a canonical digest of
+          (seed, dimension) before reattaching to an already-running system,
+          instead of unconditionally overwriting it. initialize_system() and
+          transition() now catch their own exceptions and return a structured
+          error string instead of raising across the Chaquopy boundary.
+          MainActivity.kt -- acceptance contract now accepts a digest-matched
+          reattachment as a pass, and checks the evolution_step/history delta
+          produced by this run rather than hardcoded absolute values, so a
+          second or later launch is judged correctly rather than failing
+          closed on stale-looking state.
 
           Runtime lifecycle:
           get_runtime_info
-          initialize(seed=3606, dimension=3)
+          initialize_system(seed=3606, dimension=3)  [fresh OR reattach]
           status
           transition(origin=Z3, context={})
           status
@@ -599,24 +643,28 @@ jobs:
           armeabi-v7a
           arm64-v8a
 
+          Application ID:
+          com.amelia.p361 (separate from com.amelia.p36; P3.6 install is preserved)
+
           APK SHA-256:
           $APK_SHA
 
           Acceptance condition:
-          App displays "P3.6 PASSED ✓" only after Torch reports version
-          1.8.1, the Numogram initializes with the sealed seed and dimension,
-          and one non-fallback Z3 transition commits to history.
+          App displays "P3.6.1 PASSED ✓" when Torch reports version 1.8.1, the
+          Numogram either freshly initializes or digest-matched-reattaches with
+          the sealed seed and dimension, and exactly one non-fallback Z3
+          transition commits relative to this run's own baseline step/history.
           EOF
 
-          cat p36-build-manifest.txt
-          cat p36-source-sha256.txt
+          cat p361-build-manifest.txt
+          cat p361-source-sha256.txt
 
-      - name: Upload Android-P3.6 Torch Numogram APK
+      - name: Upload Android-P3.6.1 Torch Numogram APK
         uses: actions/upload-artifact@v4
         with:
-          name: Amelia-Android-P3.6-Torch-Numogram-Probe
+          name: Amelia-Android-P3.6.1-Torch-Numogram-Reattach
           path: |
             app/build/outputs/apk/debug/app-debug.apk
-            p36-build-manifest.txt
-            p36-source-sha256.txt
+            p361-build-manifest.txt
+            p361-source-sha256.txt
           retention-days: 14
