@@ -5,8 +5,9 @@ import com.chaquo.python.Python
 import com.chaquo.python.android.AndroidPlatform
 
 /**
- * Deferred P3.6 bridge for the tensor Numogram. P3.5A compiles this class but
- * deliberately does not instantiate it or import Numogram.py.
+ * P3.6's narrow Kotlin-to-Python boundary for the tensor Numogram. P3.5A
+ * compiled this class without instantiating it; P3.6 activates only the
+ * Torch-runtime report and initialize -> status -> transition lifecycle.
  */
 class NumogramBridge(private val context: Context) {
     private fun module() = run {
@@ -14,6 +15,10 @@ class NumogramBridge(private val context: Context) {
             Python.start(AndroidPlatform(context.applicationContext))
         }
         Python.getInstance().getModule("Numogram")
+    }
+
+    fun runtimeInfo(): String {
+        return module().callAttr("get_runtime_info").toString()
     }
 
     fun initialize(seed: Int = 0, dimension: Int = 3): String {
