@@ -117,8 +117,19 @@ jobs:
           }
           EOF
 
+          # kotlin.daemon.jvmargs is set separately from org.gradle.jvmargs:
+          # Kotlin compiles in its own out-of-process daemon by default, which
+          # does NOT inherit org.gradle.jvmargs -- without its own explicit
+          # -Dfile.encoding=UTF-8, that daemon falls back to the runner's
+          # platform default charset for reading .kt source files. Literal
+          # string constants (the middle dots, arrows, and checkmark in
+          # MainActivity.kt) get decoded under whatever that default turns
+          # out to be at compile time, and whatever comes out wrong is what
+          # gets permanently baked into the compiled string constant -- correct
+          # UTF-8 bytes in the committed source were not enough on their own.
           cat > gradle.properties <<'EOF'
           org.gradle.jvmargs=-Xmx3g -Dfile.encoding=UTF-8
+          kotlin.daemon.jvmargs=-Dfile.encoding=UTF-8
           android.useAndroidX=true
           kotlin.code.style=official
           EOF
@@ -265,7 +276,7 @@ jobs:
 
                   root.addView(
                       TextView(this).apply {
-                          text = "AMELIA 路 P3.7"
+                          text = "AMELIA · P3.7"
                           textSize = 25f
                           gravity = Gravity.CENTER_HORIZONTAL
                       }
@@ -273,7 +284,7 @@ jobs:
 
                   root.addView(
                       TextView(this).apply {
-                          text = "Chaquopy 16.1 路 Python 3.8 路 Torch 1.8.1 路 matched FULL/ABLATED/NEUTRAL_RESET fork"
+                          text = "Chaquopy 16.1 · Python 3.8 · Torch 1.8.1 · matched FULL/ABLATED/NEUTRAL_RESET fork"
                           textSize = 14f
                           gravity = Gravity.CENTER_HORIZONTAL
                           setPadding(0, dp(8), 0, dp(18))
@@ -281,7 +292,7 @@ jobs:
                   )
 
                   statusView = TextView(this).apply {
-                      text = "P3.7 fork probe starting鈥�"
+                      text = "P3.7 fork probe starting…"
                       textSize = 20f
                       gravity = Gravity.CENTER_HORIZONTAL
                       setPadding(dp(8), dp(18), dp(8), dp(18))
@@ -301,19 +312,19 @@ jobs:
                           text =
                               "\nP3.7 boundary:\n\n" +
                               "Kotlin\n" +
-                              "  鈫揬n" +
+                              "  ↓\n" +
                               "NumogramBridge\n" +
-                              "  鈫揬n" +
-                              "Python 3.8 路 Numogram.py\n" +
-                              "  鈫揬n" +
-                              "initialize (fresh OR reattach) 鈫� status 鈫� transition(Z3)\n" +
-                              "  鈫� run_fork(Z3): FULL, ABLATED_TRANSITION, ABLATED_MAGNETISM,\n" +
+                              "  ↓\n" +
+                              "Python 3.8 · Numogram.py\n" +
+                              "  ↓\n" +
+                              "initialize (fresh OR reattach) → status → transition(Z3)\n" +
+                              "  → run_fork(Z3): FULL, ABLATED_TRANSITION, ABLATED_MAGNETISM,\n" +
                               "    ABLATED_BOTH, NEUTRAL_RESET, sealed from one captured\n" +
                               "    pre-state, none of them mutating the live system\n" +
-                              "  鈫� verify_last_fork 鈫� status\n" +
-                              "  鈫揬n" +
+                              "  → verify_last_fork → status\n" +
+                              "  ↓\n" +
                               "Kotlin\n\n" +
-                              "Fixed probe: seed 3606 路 dimension 3 路 origin Z3 路 context {}\n\n" +
+                              "Fixed probe: seed 3606 · dimension 3 · origin Z3 · context {}\n\n" +
                               "One real transition is committed from Z3 first, so the fork " +
                               "runs against a state that actually has something learned in " +
                               "it -- forking a cold, never-committed system would trivially " +
@@ -475,7 +486,7 @@ jobs:
                                   branchProbs != null && probabilitiesValid(branchProbs)
                           if (!wellFormed) branchesWellFormed = false
                           branchLines.append(
-                              "$name: Z${branch.optInt("from")} 鈫� Z${branch.optInt("to")}" +
+                              "$name: Z${branch.optInt("from")} → Z${branch.optInt("to")}" +
                                   (if (branch.optBoolean("fallback", false)) " (fallback)" else "") + "\n"
                           )
                       }
@@ -519,10 +530,10 @@ jobs:
                       } else {
                           "fresh initialization"
                       }
-                      val transitionLine = "Z" + event.optInt("from") + " 鈫� Z" + event.optInt("to")
+                      val transitionLine = "Z" + event.optInt("from") + " → Z" + event.optInt("to")
 
                       if (passed) {
-                          statusView.text = "P3.7 PASSED 鉁�"
+                          statusView.text = "P3.7 PASSED ✓"
                           detailView.text =
                               "Torch imported, one transition committed, and the five-condition " +
                                   "fork ran and replay-verified without touching live state.\n\n" +
