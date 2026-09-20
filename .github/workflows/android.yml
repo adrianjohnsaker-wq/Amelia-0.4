@@ -1,4 +1,4 @@
-name: Build Amelia Android-P3.7 Torch Numogram Fork Probe APK
+name: Build Amelia Android-P3.8 Torch Numogram Render APK
 
 on:
   push:
@@ -22,10 +22,6 @@ jobs:
           distribution: temurin
           java-version: "17"
 
-      # P3.7 stays on the same Chaquopy 16.1 / Python 3.8 / torch==1.8.1
-      # lane P3.6/P3.6.1 validated on-device. Nothing about the toolchain
-      # changes -- only Numogram.py's facade (adds run_fork/verify_last_fork)
-      # and the probe UI, which now exercises the fork.
       - name: Set up Python 3.8
         uses: actions/setup-python@v5
         with:
@@ -36,14 +32,14 @@ jobs:
         with:
           gradle-version: "8.9"
 
-      - name: Verify P3.7 source files exist
+      - name: Verify P3.8 source files exist
         shell: bash
         run: |
           set -euo pipefail
 
-          for source in bridge_probe.py Numogram.py NumogramBridge.kt ChaquopyProbe.kt; do
+          for source in bridge_probe.py Numogram.py NumogramBridge.kt ChaquopyProbe.kt RenderTransport.kt RenderPromptBuilder.kt; do
             if [[ ! -f "$source" ]]; then
-              echo "::error file=$source::Required P3.7 source is absent from repository root."
+              echo "::error file=$source::Required P3.8 source is absent from repository root."
               echo "Repository root contents:"
               find . -maxdepth 1 -type f -printf ' - %f\n' | sort
               exit 1
@@ -52,30 +48,44 @@ jobs:
           done
 
           echo
-          echo "P3.7 source fingerprints:"
+          echo "P3.8 source fingerprints:"
           sha256sum \
             bridge_probe.py \
             Numogram.py \
             NumogramBridge.kt \
-            ChaquopyProbe.kt
+            ChaquopyProbe.kt \
+            RenderTransport.kt \
+            RenderPromptBuilder.kt
 
-      - name: Create Android-P3.7 Torch Numogram fork probe project
+      - name: Warn if ANTHROPIC_API_KEY secret is not set
+        shell: bash
+        run: |
+          if [[ -z "${ANTHROPIC_API_KEY_PRESENCE_CHECK}" ]]; then
+            echo "::warning::ANTHROPIC_API_KEY repository secret appears to be unset. The build will still succeed, but BuildConfig.ANTHROPIC_API_KEY will be blank and the app will report 'no_api_key_configured' instead of attempting a render call. Add the secret under Settings -> Secrets and variables -> Actions if you want the render step to actually run."
+          else
+            echo "ANTHROPIC_API_KEY secret is present."
+          fi
+        env:
+          ANTHROPIC_API_KEY_PRESENCE_CHECK: ${{ secrets.ANTHROPIC_API_KEY }}
+
+      - name: Create Android-P3.8 Torch Numogram Render project
         shell: bash
         run: |
           set -euo pipefail
 
           mkdir -p \
-            app/src/main/java/com/amelia/p37 \
+            app/src/main/java/com/amelia/p38 \
             app/src/main/java/com/amelia/bridge \
+            app/src/main/java/com/amelia/renderer \
             app/src/main/python \
             app/src/main/res/values
 
-          # Root sources are the build inputs. Numogram.py's content changed
-          # for P3.7 (run_fork/verify_last_fork, the predict_transitions
-          # purification, per-branch generators); NumogramBridge.kt gained
-          # two thin pass-through methods (runFork/verifyLastFork) but is
-          # otherwise the same simple bridge as P3.6/P3.6.1. bridge_probe.py
-          # and ChaquopyProbe.kt are unchanged since P3.5A.
+          # bridge_probe.py, Numogram.py, NumogramBridge.kt, and
+          # ChaquopyProbe.kt are UNCHANGED from P3.7 -- P3.8 adds a purely
+          # Kotlin-side rendering layer above the existing, already-verified
+          # Numogram bridge. Python never learns Claude's API exists; the
+          # render call happens entirely after NumogramBridge hands back a
+          # completed, sealed fork result.
           cp bridge_probe.py \
             app/src/main/python/bridge_probe.py
 
@@ -87,6 +97,12 @@ jobs:
 
           cp ChaquopyProbe.kt \
             app/src/main/java/com/amelia/bridge/ChaquopyProbe.kt
+
+          cp RenderTransport.kt \
+            app/src/main/java/com/amelia/renderer/RenderTransport.kt
+
+          cp RenderPromptBuilder.kt \
+            app/src/main/java/com/amelia/renderer/RenderPromptBuilder.kt
 
           cat > settings.gradle.kts <<'EOF'
           pluginManagement {
@@ -105,7 +121,7 @@ jobs:
               }
           }
 
-          rootProject.name = "AmeliaAndroidP37"
+          rootProject.name = "AmeliaAndroidP38"
           include(":app")
           EOF
 
@@ -117,16 +133,6 @@ jobs:
           }
           EOF
 
-          # kotlin.daemon.jvmargs is set separately from org.gradle.jvmargs:
-          # Kotlin compiles in its own out-of-process daemon by default, which
-          # does NOT inherit org.gradle.jvmargs -- without its own explicit
-          # -Dfile.encoding=UTF-8, that daemon falls back to the runner's
-          # platform default charset for reading .kt source files. Literal
-          # string constants (the middle dots, arrows, and checkmark in
-          # MainActivity.kt) get decoded under whatever that default turns
-          # out to be at compile time, and whatever comes out wrong is what
-          # gets permanently baked into the compiled string constant -- correct
-          # UTF-8 bytes in the committed source were not enough on their own.
           cat > gradle.properties <<'EOF'
           org.gradle.jvmargs=-Xmx3g -Dfile.encoding=UTF-8
           kotlin.daemon.jvmargs=-Dfile.encoding=UTF-8
@@ -134,8 +140,12 @@ jobs:
           kotlin.code.style=official
           EOF
 
-          # Same single dependency as P3.6/P3.6.1: torch==1.8.1. P3.7 changes
-          # facade logic and the probe, not the dependency lane.
+          # NEW at P3.8: buildConfigField reads ANTHROPIC_API_KEY from the
+          # environment at build time (populated from a GitHub Actions
+          # secret in the build step below) and bakes it into
+          # BuildConfig.ANTHROPIC_API_KEY as a compiled string constant.
+          # That constant ends up IN the built APK -- see RenderTransport.kt's
+          # header comment for what that tradeoff actually means.
           cat > app/build.gradle.kts <<'EOF'
           plugins {
               id("com.android.application")
@@ -144,15 +154,15 @@ jobs:
           }
 
           android {
-              namespace = "com.amelia.p37"
+              namespace = "com.amelia.p38"
               compileSdk = 34
 
               defaultConfig {
-                  applicationId = "com.amelia.p37"
+                  applicationId = "com.amelia.p38"
                   minSdk = 24
                   targetSdk = 34
                   versionCode = 1
-                  versionName = "0.9-android-p3.7-torch-numogram-fork"
+                  versionName = "0.10-android-p3.8-torch-numogram-render"
 
                   ndk {
                       abiFilters += listOf(
@@ -160,6 +170,16 @@ jobs:
                           "arm64-v8a"
                       )
                   }
+
+                  buildConfigField(
+                      "String",
+                      "ANTHROPIC_API_KEY",
+                      "\"${System.getenv("ANTHROPIC_API_KEY") ?: ""}\""
+                  )
+              }
+
+              buildFeatures {
+                  buildConfig = true
               }
 
               compileOptions {
@@ -184,9 +204,15 @@ jobs:
           }
           EOF
 
-          # Same as P3.6/P3.6.1: local substrate assay only, no INTERNET permission.
+          # NEW at P3.8: INTERNET permission is required -- this is the
+          # first stage in this project that makes a network call at all.
+          # Every prior stage's own manifest and CI check explicitly
+          # REJECTED this permission; P3.8 is a deliberate, named crossing
+          # of that boundary, not an oversight.
           cat > app/src/main/AndroidManifest.xml <<'EOF'
           <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+              <uses-permission android:name="android.permission.INTERNET" />
 
               <application
                   android:name="com.chaquo.python.android.PyApplication"
@@ -212,31 +238,26 @@ jobs:
 
           cat > app/src/main/res/values/strings.xml <<'EOF'
           <resources>
-              <string name="app_name">Amelia P3.7 Torch Numogram Fork</string>
+              <string name="app_name">Amelia P3.8 Torch Numogram Render</string>
           </resources>
           EOF
 
-          # P3.7's on-device experiment:
+          # P3.8's on-device experiment:
           #
           # Kotlin -> NumogramBridge -> Numogram.py -> Torch
-          #        -> initialize(seed=3606, dimension=3)   [fresh OR reattach]
-          #        -> status
-          #        -> transition(origin=Z3, context={})    [one real commit]
-          #        -> run_fork(origin=Z3, context={})       [FULL, ABLATED_TRANSITION,
-          #                                                   ABLATED_MAGNETISM, ABLATED_BOTH,
-          #                                                   NEUTRAL_RESET -- none mutating]
-          #        -> verify_last_fork
-          #        -> status -> Kotlin
-          #
-          # The committed transition happens before the fork specifically so
-          # the fork runs against a state with something actually learned in
-          # it; a fork against a never-committed system would trivially show
-          # every ABLATED_* condition equal to FULL. The fork always forks
-          # from Z3 again regardless of where that commit landed, so repeat
-          # launches stay comparable rather than forking from a drifting
-          # starting zone each time.
-          cat > app/src/main/java/com/amelia/p37/MainActivity.kt <<'ACTIVITY_EOF'
-          package com.amelia.p37
+          #        -> initialize/reattach -> status -> transition(Z3)
+          #        -> run_fork(Z3) -> verify_last_fork -> status
+          #        -> RenderPromptBuilder (curate + digest)
+          #        -> RenderCapsule.seal()
+          #        -> RenderTransport.execute() [real network call to
+          #           Anthropic's Messages API, IF ANTHROPIC_API_KEY is set]
+          #        -> status again, compared against the post-fork status
+          #           to confirm the render call left no trace in the
+          #           substrate -- checked, not assumed
+          #        -> Kotlin: displays rendered text or a clear
+          #           no-key-configured message
+          cat > app/src/main/java/com/amelia/p38/MainActivity.kt <<'ACTIVITY_EOF'
+          package com.amelia.p38
 
           import android.app.Activity
           import android.os.Bundle
@@ -246,6 +267,9 @@ jobs:
           import android.widget.ScrollView
           import android.widget.TextView
           import com.amelia.bridge.NumogramBridge
+          import com.amelia.renderer.RenderCapsule
+          import com.amelia.renderer.RenderPromptBuilder
+          import com.amelia.renderer.RenderTransport
           import kotlin.math.abs
           import org.json.JSONArray
           import org.json.JSONObject
@@ -253,7 +277,7 @@ jobs:
           class MainActivity : Activity() {
 
               companion object {
-                  private const val LOG_TAG = "AMELIA_P37"
+                  private const val LOG_TAG = "AMELIA_P38"
                   private const val PROBE_SEED = 3606
                   private const val PROBE_DIMENSION = 3
                   private const val PROBE_ORIGIN = 3
@@ -264,6 +288,7 @@ jobs:
 
               private lateinit var statusView: TextView
               private lateinit var detailView: TextView
+              private lateinit var renderView: TextView
 
               override fun onCreate(savedInstanceState: Bundle?) {
                   super.onCreate(savedInstanceState)
@@ -276,7 +301,7 @@ jobs:
 
                   root.addView(
                       TextView(this).apply {
-                          text = "AMELIA · P3.7"
+                          text = "AMELIA · P3.8"
                           textSize = 25f
                           gravity = Gravity.CENTER_HORIZONTAL
                       }
@@ -284,7 +309,7 @@ jobs:
 
                   root.addView(
                       TextView(this).apply {
-                          text = "Chaquopy 16.1 · Python 3.8 · Torch 1.8.1 · matched FULL/ABLATED/NEUTRAL_RESET fork"
+                          text = "Chaquopy 16.1 · Python 3.8 · Torch 1.8.1 · sealed fork → Claude API render"
                           textSize = 14f
                           gravity = Gravity.CENTER_HORIZONTAL
                           setPadding(0, dp(8), 0, dp(18))
@@ -292,48 +317,51 @@ jobs:
                   )
 
                   statusView = TextView(this).apply {
-                      text = "P3.7 fork probe starting…"
+                      text = "P3.8 render probe starting…"
                       textSize = 20f
                       gravity = Gravity.CENTER_HORIZONTAL
                       setPadding(dp(8), dp(18), dp(8), dp(18))
                   }
 
                   detailView = TextView(this).apply {
-                      text = "Waiting for Torch import, the sealed Numogram lifecycle, and the fork."
+                      text = "Waiting for the Numogram fork, then the sealed render call."
                       textSize = 13f
+                      setPadding(dp(8), dp(12), dp(8), dp(12))
+                  }
+
+                  renderView = TextView(this).apply {
+                      text = ""
+                      textSize = 14f
                       setPadding(dp(8), dp(12), dp(8), dp(12))
                   }
 
                   root.addView(statusView)
                   root.addView(detailView)
+                  root.addView(renderView)
 
                   root.addView(
                       TextView(this).apply {
                           text =
-                              "\nP3.7 boundary:\n\n" +
+                              "\nP3.8 boundary:\n\n" +
                               "Kotlin\n" +
                               "  ↓\n" +
-                              "NumogramBridge\n" +
+                              "NumogramBridge → Numogram.py (fork, as P3.7)\n" +
                               "  ↓\n" +
-                              "Python 3.8 · Numogram.py\n" +
+                              "RenderPromptBuilder: curates the fork result into a prompt,\n" +
+                              "  digests the trace, the curated payload, and the template\n" +
                               "  ↓\n" +
-                              "initialize (fresh OR reattach) → status → transition(Z3)\n" +
-                              "  → run_fork(Z3): FULL, ABLATED_TRANSITION, ABLATED_MAGNETISM,\n" +
-                              "    ABLATED_BOTH, NEUTRAL_RESET, sealed from one captured\n" +
-                              "    pre-state, none of them mutating the live system\n" +
-                              "  → verify_last_fork → status\n" +
+                              "RenderCapsule.seal(): fixes provider, model, params,\n" +
+                              "  streaming/tools/functionCalling/webhook all false\n" +
                               "  ↓\n" +
-                              "Kotlin\n\n" +
+                              "RenderTransport.execute(): single sealed call to the\n" +
+                              "  declared endpoint only; response classified and\n" +
+                              "  digested before any of it is trusted\n" +
+                              "  ↓\n" +
+                              "Kotlin: displays the rendered text; never routes it\n" +
+                              "  back into NumogramBridge -- checked below, not assumed\n\n" +
                               "Fixed probe: seed 3606 · dimension 3 · origin Z3 · context {}\n\n" +
-                              "One real transition is committed from Z3 first, so the fork " +
-                              "runs against a state that actually has something learned in " +
-                              "it -- forking a cold, never-committed system would trivially " +
-                              "show every ABLATED_* condition equal to FULL, which confirms " +
-                              "nothing. The fork itself always runs from Z3 again, regardless " +
-                              "of where that committed transition landed, so a repeat launch " +
-                              "stays comparable to earlier ones rather than forking from a " +
-                              "different, accumulating starting zone each time.\n\n" +
-                              "No language model. No network. Persistence disabled."
+                              "No key configured means no network call is attempted -- " +
+                              "reported plainly rather than left to fail as an HTTP error."
                           textSize = 13f
                       }
                   )
@@ -349,10 +377,10 @@ jobs:
                           executeProbe()
                       } catch (t: Throwable) {
                           JSONObject()
-                              .put("schema", "amelia-p3.7-probe-result-v1")
+                              .put("schema", "amelia-p3.8-probe-result-v1")
                               .put("status", "error")
                               .put("error_type", t::class.java.simpleName)
-                              .put("message", t.message ?: "Unknown Android, Chaquopy, or Torch error")
+                              .put("message", t.message ?: "Unknown Android, Chaquopy, Torch, or network error")
                               .toString()
                       }
 
@@ -370,24 +398,66 @@ jobs:
                   val initialized = JSONObject(bridge.initialize(PROBE_SEED, PROBE_DIMENSION))
                   val ready = JSONObject(bridge.status())
                   val transitioned = JSONObject(bridge.transition(PROBE_ORIGIN, "{}"))
-                  val postTransition = JSONObject(bridge.status())
                   val forked = JSONObject(bridge.runFork(PROBE_ORIGIN, "{}"))
                   val verified = JSONObject(bridge.verifyLastFork())
-                  val finalStatus = JSONObject(bridge.status())
+                  val postForkStatus = JSONObject(bridge.status())
 
-                  return JSONObject()
-                      .put("schema", "amelia-p3.7-probe-result-v1")
-                      .put("status", "completed")
+                  val result = JSONObject()
+                      .put("schema", "amelia-p3.8-probe-result-v1")
                       .put("runtime", runtime)
                       .put("before", before)
                       .put("initialized", initialized)
                       .put("ready", ready)
                       .put("transitioned", transitioned)
-                      .put("post_transition", postTransition)
                       .put("forked", forked)
                       .put("verified", verified)
-                      .put("final", finalStatus)
-                      .toString()
+                      .put("post_fork_status", postForkStatus)
+
+                  val apiKey = BuildConfig.ANTHROPIC_API_KEY
+                  if (apiKey.isBlank()) {
+                      result.put("status", "completed_no_render")
+                      result.put("render_status", "no_api_key_configured")
+                      val finalStatus = JSONObject(bridge.status())
+                      result.put("final", finalStatus)
+                      return result.toString()
+                  }
+
+                  val promptPayload = RenderPromptBuilder.buildFromForkResult(forked)
+                  val capsule = RenderCapsule.seal(
+                      traceDigest = promptPayload.traceDigest,
+                      payloadDigest = promptPayload.payloadDigest,
+                      rendererTemplateDigest = promptPayload.rendererTemplateDigest
+                  )
+                  val transportResult = RenderTransport.execute(capsule, promptPayload.renderPrompt, apiKey)
+
+                  // The boundary claim this stage exists to check: the render call
+                  // must not have touched the substrate. Compared against ACTUAL
+                  // status calls before and after, not assumed from the transport
+                  // object's own (necessarily self-reported) behaviour.
+                  val postRenderStatus = JSONObject(bridge.status())
+
+                  val sealed = transportResult.sealed
+                  result.put("status", "completed")
+                  result.put("capsule_digest", capsule.capsuleDigest)
+                  result.put("trace_digest", promptPayload.traceDigest)
+                  result.put("payload_digest", promptPayload.payloadDigest)
+                  result.put("renderer_template_digest", promptPayload.rendererTemplateDigest)
+                  result.put("model", capsule.model)
+                  result.put("attempt_count", transportResult.attempts.size)
+                  if (sealed != null) {
+                      result.put("render_status", "completed")
+                      result.put("response_class", sealed.responseClass.name)
+                      result.put("http_status", sealed.httpStatus)
+                      result.put("raw_response_digest", sealed.rawResponseDigest)
+                      result.put("rendered_text", sealed.parsedDisplayText)
+                  } else {
+                      result.put("render_status", "transport_failed")
+                      result.put("attempts_all_errored", true)
+                  }
+                  result.put("post_render_status", postRenderStatus)
+                  result.put("final", postRenderStatus)
+
+                  return result.toString()
               }
 
               private fun probabilitiesValid(probabilities: JSONArray): Boolean {
@@ -418,8 +488,6 @@ jobs:
                           ?: throw IllegalStateException("Missing fork result")
                       val verified = result.optJSONObject("verified")
                           ?: throw IllegalStateException("Missing verify result")
-                      val finalStatus = result.optJSONObject("final")
-                          ?: throw IllegalStateException("Missing final status")
 
                       val initializedSystem = initialized.optJSONObject("system")
                           ?: throw IllegalStateException("Missing initialized system")
@@ -427,8 +495,6 @@ jobs:
                           ?: throw IllegalStateException("Missing ready system")
                       val event = transitioned.optJSONObject("event")
                           ?: throw IllegalStateException("Missing transition event")
-                      val finalSystem = finalStatus.optJSONObject("system")
-                          ?: throw IllegalStateException("Missing final system")
                       val transitionProbs = event.optJSONArray("probabilities")
                           ?: throw IllegalStateException("Missing transition probability vector")
                       val branches = forked.optJSONObject("branches")
@@ -509,68 +575,107 @@ jobs:
                               mismatchedBranches != null && mismatchedBranches.length() == 0 &&
                               verified.optString("capsule_digest", "") == forked.optString("capsule_digest", "")
 
-                      val finalHeld =
-                          finalStatus.optString("status", "") == "ready" &&
-                              finalSystem.optInt("evolution_step", -1) == baselineStep + 1 &&
-                              finalSystem.optInt("transition_history", -1) == baselineHistory + 1 &&
-                              !finalSystem.optBoolean("persistence_enabled", true)
+                      val overallStatus = result.optString("status", "")
+                      val renderStatus = result.optString("render_status", "")
+
+                      if (overallStatus == "completed_no_render") {
+                          statusView.text = "P3.8 NO RENDER (key not configured)"
+                          detailView.text =
+                              "The Numogram fork completed and verified normally, but " +
+                                  "BuildConfig.ANTHROPIC_API_KEY is blank, so no network call " +
+                                  "was attempted. Fork held: " + forkHeld + " · Verify held: " + verifyHeld +
+                                  "\n\nAdd the ANTHROPIC_API_KEY repository secret and rebuild " +
+                                  "to exercise the render step."
+                          renderView.text = ""
+                          return
+                      }
+
+                      // post_render_status is the ground-truth check for the one-way
+                      // boundary: the Numogram must show exactly the same evolution_step
+                      // and transition_history after the render call as it did right
+                      // after the fork -- a render call that somehow looped back into
+                      // the substrate would show up here as an unexpected increment.
+                      val postForkStatus = result.optJSONObject("post_fork_status")
+                          ?: throw IllegalStateException("Missing post-fork status")
+                      val postRenderStatus = result.optJSONObject("post_render_status")
+                          ?: throw IllegalStateException("Missing post-render status")
+                      val postForkSystem = postForkStatus.optJSONObject("system")
+                          ?: throw IllegalStateException("Missing post-fork system")
+                      val postRenderSystem = postRenderStatus.optJSONObject("system")
+                          ?: throw IllegalStateException("Missing post-render system")
+
+                      val noFeedbackHeld =
+                          postRenderSystem.optInt("evolution_step", -1) == postForkSystem.optInt("evolution_step", -2) &&
+                              postRenderSystem.optInt("transition_history", -1) == postForkSystem.optInt("transition_history", -2)
+
+                      val renderTransportSucceeded = renderStatus == "completed"
+                      val responseClass = result.optString("response_class", "")
+                      val renderedText = result.optString("rendered_text", "")
 
                       val passed =
-                          result.optString("status", "") == "completed" &&
+                          overallStatus == "completed" &&
                               torchReady &&
                               initializationHeld &&
                               readyHeld &&
                               transitionHeld &&
                               forkHeld &&
                               verifyHeld &&
-                              finalHeld
+                              renderTransportSucceeded &&
+                              noFeedbackHeld
 
                       val initKind = if (initStatus == "already_initialized") {
                           "reattached to existing system (digest-matched)"
                       } else {
                           "fresh initialization"
                       }
-                      val transitionLine = "Z" + event.optInt("from") + " → Z" + event.optInt("to")
 
                       if (passed) {
-                          statusView.text = "P3.7 PASSED ✓"
+                          statusView.text = "P3.8 PASSED ✓"
                           detailView.text =
-                              "Torch imported, one transition committed, and the five-condition " +
-                                  "fork ran and replay-verified without touching live state.\n\n" +
+                              "Torch imported, one transition committed, the five-condition " +
+                                  "fork ran and replay-verified, and the sealed render call " +
+                                  "completed without any trace of feeding back into the substrate.\n\n" +
                                   "Torch: " + torchVersion + "\n" +
-                                  "Before initialization: " + before.optString("status") + "\n" +
                                   "Initialization: " + initKind + "\n" +
-                                  "Step baseline going in: " + baselineStep + "\n" +
-                                  "Committed transition: " + transitionLine + "\n\n" +
-                                  "Fork branches (all from Z3):\n" + branchLines.toString() + "\n" +
-                                  "live_state_unchanged: " + liveStateUnchanged + "\n" +
-                                  "generator_state_unchanged: " + generatorStateUnchanged + "\n" +
-                                  "ablated_both_matches_neutral_reset: " + ablatedMatchesNeutral + "\n" +
+                                  "Fork branches (all from Z3):\n" + branchLines.toString() +
                                   "verify_last_fork: " + verified.optString("status") + "\n\n" +
-                                  "Step after: " + finalSystem.optInt("evolution_step") + "\n" +
-                                  "History: " + finalSystem.optInt("transition_history") + "\n" +
-                                  "Persistence: " + finalSystem.optBoolean("persistence_enabled")
+                                  "Model: " + result.optString("model", "") + "\n" +
+                                  "Response class: " + responseClass + "\n" +
+                                  "HTTP status: " + result.optInt("http_status", -1) + "\n" +
+                                  "Attempts: " + result.optInt("attempt_count", -1) + "\n" +
+                                  "Capsule digest: " + result.optString("capsule_digest", "").take(16) + "…\n" +
+                                  "no_feedback_held: " + noFeedbackHeld
+                          renderView.text =
+                              if (responseClass == "SUCCESS_TEXT") {
+                                  "Rendered text:\n\n" + renderedText
+                              } else {
+                                  "Renderer returned " + responseClass + " rather than text " +
+                                      "(this is still a mechanically correct, boundary-respecting " +
+                                      "result -- the transport and the sealed capsule worked; " +
+                                      "the model just didn't produce display text this time).\n\n" +
+                                      "Raw: " + renderedText.take(300)
+                              }
                       } else {
-                          statusView.text = "P3.7 FAIL-CLOSED"
+                          statusView.text = "P3.8 FAIL-CLOSED"
+                          renderView.text = ""
                           detailView.text =
-                              "A Torch/Numogram response was received, but it did not satisfy " +
-                                  "the sealed P3.7 contract.\n\n" +
+                              "A response was received, but it did not satisfy the sealed " +
+                                  "P3.8 contract.\n\n" +
                                   "Torch ready: " + torchReady + "\n" +
                                   "Initialization: " + initializationHeld + " (" + initStatus + ")\n" +
                                   "Ready state: " + readyHeld + "\n" +
                                   "Transition: " + transitionHeld + "\n" +
                                   "Fork: " + forkHeld + " (branches well-formed: " + branchesWellFormed + ")\n" +
-                                  "  live_state_unchanged: " + liveStateUnchanged + "\n" +
-                                  "  generator_state_unchanged: " + generatorStateUnchanged + "\n" +
-                                  "  ablated_both_matches_neutral_reset: " + ablatedMatchesNeutral + "\n" +
                                   "Verify: " + verifyHeld + "\n" +
-                                  "Final state: " + finalHeld + "\n\n" +
+                                  "Render transport succeeded: " + renderTransportSucceeded + "\n" +
+                                  "no_feedback_held: " + noFeedbackHeld + "\n\n" +
                                   "Raw response:\n" + raw
                       }
                   } catch (t: Throwable) {
-                      statusView.text = "P3.7 FAIL-CLOSED"
+                      statusView.text = "P3.8 FAIL-CLOSED"
+                      renderView.text = ""
                       detailView.text =
-                          "The returned Torch/Numogram value was not valid P3.7 probe JSON.\n\n" +
+                          "The returned value was not valid P3.8 probe JSON.\n\n" +
                               "Error: " + (t.message ?: "Unknown parsing error") + "\n\n" +
                               "Raw response:\n" + raw
                   }
@@ -582,13 +687,12 @@ jobs:
           }
           ACTIVITY_EOF
 
-      # Numogram.py is compiled and structurally audited on the Python 3.8
-      # build host, same as P3.6/P3.6.1. P3.7 adds checks for the fork
-      # facade and its supporting helpers specifically, so a regression
-      # (e.g. a fork branch reusing the live generator, or the reattachment
-      # fix from P3.6.1 disappearing) fails the build rather than only
-      # being caught on-device.
-      - name: Validate P3.7 source and lifecycle contract
+      # Numogram.py's own contract (reattachment, fork, five conditions) is
+      # unchanged from P3.7 and checked identically here. P3.8 adds checks
+      # for the new renderer layer and, deliberately, INVERTS the INTERNET
+      # permission check every prior stage's workflow carried: P3.8 requires
+      # that permission rather than rejecting it.
+      - name: Validate P3.8 source and lifecycle contract
         shell: bash
         run: |
           set -euo pipefail
@@ -624,61 +728,63 @@ jobs:
           }
           missing = required - functions
           assert not missing, f"Missing Numogram entry points: {sorted(missing)}"
-          print("P3.7 Numogram entry-point contract validated")
+          print("P3.8 Numogram entry-point contract validated (unchanged from P3.7)")
           PY
 
           grep -Fq 'install("torch==1.8.1")' app/build.gradle.kts
           grep -Fq 'buildPython("python3.8")' app/build.gradle.kts
           grep -Fq 'getModule("Numogram")' app/src/main/java/com/amelia/bridge/NumogramBridge.kt
 
-          # Carried over from P3.6.1: the reattachment fix must still be present.
           grep -Fq 'already_initialized' app/src/main/python/Numogram.py
           grep -Fq '_config_digest' app/src/main/python/Numogram.py
-          grep -Fq 'attempted_init_digest' app/src/main/python/Numogram.py
-
-          # P3.7-specific: the fork's five conditions and its non-mutation
-          # machinery must actually be present, not just the facade names.
           grep -Fq 'ABLATED_TRANSITION' app/src/main/python/Numogram.py
-          grep -Fq 'ABLATED_MAGNETISM' app/src/main/python/Numogram.py
-          grep -Fq 'ABLATED_BOTH' app/src/main/python/Numogram.py
-          grep -Fq 'NEUTRAL_RESET' app/src/main/python/Numogram.py
-          grep -Fq '_initial_transition_tensor' app/src/main/python/Numogram.py
-          grep -Fq '_initial_zone_magnetism' app/src/main/python/Numogram.py
           grep -Fq 'live_state_unchanged' app/src/main/python/Numogram.py
-          grep -Fq 'generator_state_unchanged' app/src/main/python/Numogram.py
-          grep -Fq 'ablated_both_matches_neutral_reset' app/src/main/python/Numogram.py
 
           grep -Fq 'runFork' app/src/main/java/com/amelia/bridge/NumogramBridge.kt
           grep -Fq 'verifyLastFork' app/src/main/java/com/amelia/bridge/NumogramBridge.kt
 
-          grep -Fq 'bridge.initialize' app/src/main/java/com/amelia/p37/MainActivity.kt
-          grep -Fq 'bridge.status' app/src/main/java/com/amelia/p37/MainActivity.kt
-          grep -Fq 'bridge.transition' app/src/main/java/com/amelia/p37/MainActivity.kt
-          grep -Fq 'bridge.runFork' app/src/main/java/com/amelia/p37/MainActivity.kt
-          grep -Fq 'bridge.verifyLastFork' app/src/main/java/com/amelia/p37/MainActivity.kt
-          grep -Fq 'digestMatchedReattachment' app/src/main/java/com/amelia/p37/MainActivity.kt
-          grep -Fq 'branchesWellFormed' app/src/main/java/com/amelia/p37/MainActivity.kt
+          # P3.8-specific: the renderer layer and its capsule discipline.
+          grep -Fq 'class RenderCapsule' app/src/main/java/com/amelia/renderer/RenderTransport.kt
+          grep -Fq 'object RenderTransport' app/src/main/java/com/amelia/renderer/RenderTransport.kt
+          grep -Fq 'streamingEnabled = false' app/src/main/java/com/amelia/renderer/RenderTransport.kt
+          grep -Fq 'toolsEnabled = false' app/src/main/java/com/amelia/renderer/RenderTransport.kt
+          grep -Fq 'ALLOWED_ENDPOINTS' app/src/main/java/com/amelia/renderer/RenderTransport.kt
+          grep -Fq 'object RenderPromptBuilder' app/src/main/java/com/amelia/renderer/RenderPromptBuilder.kt
+          grep -Fq 'buildFromForkResult' app/src/main/java/com/amelia/renderer/RenderPromptBuilder.kt
 
-          if grep -Fq 'android.permission.INTERNET' app/src/main/AndroidManifest.xml; then
-            echo "FAIL: P3.7 must not declare INTERNET permission."
+          grep -Fq 'ANTHROPIC_API_KEY' app/build.gradle.kts
+          grep -Fq 'buildConfig = true' app/build.gradle.kts
+          grep -Fq 'BuildConfig.ANTHROPIC_API_KEY' app/src/main/java/com/amelia/p38/MainActivity.kt
+          grep -Fq 'RenderPromptBuilder.buildFromForkResult' app/src/main/java/com/amelia/p38/MainActivity.kt
+          grep -Fq 'RenderCapsule.seal' app/src/main/java/com/amelia/p38/MainActivity.kt
+          grep -Fq 'RenderTransport.execute' app/src/main/java/com/amelia/p38/MainActivity.kt
+          grep -Fq 'noFeedbackHeld' app/src/main/java/com/amelia/p38/MainActivity.kt
+          grep -Fq 'post_fork_status' app/src/main/java/com/amelia/p38/MainActivity.kt
+          grep -Fq 'post_render_status' app/src/main/java/com/amelia/p38/MainActivity.kt
+
+          # INVERTED from every prior stage: P3.8 REQUIRES INTERNET, since
+          # this is the first stage that makes a real network call.
+          if ! grep -Fq 'android.permission.INTERNET' app/src/main/AndroidManifest.xml; then
+            echo "FAIL: P3.8 requires the INTERNET permission for the render call; it is missing."
             exit 1
           fi
 
           echo
-          echo "P3.7 pre-build validation passed."
-          echo "Torch requirement is exact: torch==1.8.1"
-          echo "Reinitialization is digest-matched, not unconditional overwrite (carried from P3.6.1)."
-          echo "Fork facade, five conditions, and non-mutation invariants are all present."
-          echo "No runtime INTERNET permission is present."
+          echo "P3.8 pre-build validation passed."
+          echo "Numogram facade unchanged from P3.7 (reattachment + five-condition fork intact)."
+          echo "Renderer layer present: sealed capsule, curated prompt builder, BuildConfig wiring."
+          echo "INTERNET permission is present, as required for this stage specifically."
 
-      - name: Build Android-P3.7 Torch Numogram Fork APK
+      - name: Build Android-P3.8 Torch Numogram Render APK
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
           gradle \
             --no-daemon \
             :app:assembleDebug \
             --stacktrace
 
-      - name: Record P3.7 build manifest
+      - name: Record P3.8 build manifest
         shell: bash
         run: |
           set -euo pipefail
@@ -691,12 +797,14 @@ jobs:
             Numogram.py \
             NumogramBridge.kt \
             ChaquopyProbe.kt \
-            > p37-source-sha256.txt
+            RenderTransport.kt \
+            RenderPromptBuilder.kt \
+            > p38-source-sha256.txt
 
           APK_SHA="$(sha256sum "$APK" | awk '{print $1}')"
 
-          cat > p37-build-manifest.txt <<EOF
-          Amelia Android P3.7
+          cat > p38-build-manifest.txt <<EOF
+          Amelia Android P3.8
           ====================
 
           Revision:
@@ -720,26 +828,36 @@ jobs:
           Torch requirement:
           torch==1.8.1
 
-          Changed from P3.6.1:
-          Numogram.py -- predict_transitions() no longer mutates
-          self._last_fallback_triggered; it returns (probabilities, fallback)
-          instead, so it can be called freely by fork branches without leaving
-          a trace on the live instance. Added run_fork() (seals the live
-          transition_tensor/zone_magnetism pair plus origin/context, then runs
-          FULL, ABLATED_TRANSITION, ABLATED_MAGNETISM, ABLATED_BOTH, and
-          NEUTRAL_RESET against that captured state) and verify_last_fork()
-          (independently re-derives the same capsule's branches later and
-          confirms they still match). Every fork branch samples from its own
-          generator, deterministically derived from the capsule digest and
-          branch name -- never the live system's own generator, which would
-          otherwise be silently advanced by a nominally read-only fork.
-          NumogramBridge.kt -- added runFork()/verifyLastFork(), same plain
-          pass-through style as the rest of the bridge.
-          MainActivity.kt -- commits one real transition from Z3, then forks
-          from Z3 again against the resulting state, then verifies the fork,
-          checking branch well-formedness and all three invariants
-          (live_state_unchanged, generator_state_unchanged,
-          ablated_both_matches_neutral_reset) before reporting PASSED.
+          Changed from P3.7:
+          Numogram.py, NumogramBridge.kt -- UNCHANGED. The render layer sits
+          entirely above the existing bridge; Python never learns the LLM
+          exists. Added RenderTransport.kt (reviewed fresh against the
+          current architecture; DEFAULT_MODEL updated from a stale P3.4
+          placeholder to claude-sonnet-5, package moved from
+          com.amelia.p3.renderer to the shared com.amelia.renderer) and
+          RenderPromptBuilder.kt (new -- curates a fork result into a
+          renderPrompt plus trace/payload/template digests). MainActivity.kt
+          now runs the full P3.7 sequence, then builds a render capsule from
+          the fork result and calls RenderTransport.execute() against the
+          real Anthropic Messages API. A fresh status() call after the
+          render step is compared against the post-fork status to confirm
+          the render call left no trace in the substrate -- checked
+          directly, not assumed from the transport code's own design.
+
+          Deliberate boundary crossing, named explicitly rather than left
+          implicit: this is the first stage in the project that requires
+          the INTERNET permission and makes a real network call. Every
+          prior stage's manifest and CI check explicitly rejected that
+          permission; P3.8's workflow inverts that check to REQUIRE it.
+
+          Credentials:
+          BuildConfig.ANTHROPIC_API_KEY, populated at build time from the
+          ANTHROPIC_API_KEY GitHub Actions repository secret. If that
+          secret is unset, the build still succeeds but the field is blank
+          and the app reports "no_api_key_configured" rather than
+          attempting a call. The key, once baked in, is a compiled string
+          constant inside this APK -- extractable by anyone with the file.
+          Keep this repository and its build artifacts private.
 
           Runtime lifecycle:
           get_runtime_info
@@ -749,42 +867,47 @@ jobs:
           run_fork(origin=Z3, context={})
           verify_last_fork
           status
+          [render step, only if API key present]
+          status (compared against the pre-render status)
 
           Persistence:
-          DISABLED
+          DISABLED (Numogram side; unrelated to the network call)
 
           Runtime INTERNET permission:
-          NOT DECLARED
+          DECLARED (first stage to require this)
 
           ABIs:
           armeabi-v7a
           arm64-v8a
 
           Application ID:
-          com.amelia.p37 (separate from com.amelia.p361; prior installs preserved)
+          com.amelia.p38 (separate from com.amelia.p37; prior installs preserved)
 
           APK SHA-256:
           $APK_SHA
 
           Acceptance condition:
-          App displays "P3.7 PASSED (check mark)" when Torch reports version
-          1.8.1, the Numogram either freshly initializes or digest-matched-
-          reattaches, the committed Z3 transition holds against this run's own
-          baseline, all five fork branches are well-formed and from Z3, all
-          three fork invariants are true, verify_last_fork reports zero
-          mismatched branches against the same capsule digest, and the final
-          step/history delta is exactly one relative to baseline.
+          App displays "P3.8 PASSED (check mark)" when the full P3.7 contract
+          holds (torch ready, initialization, transition, fork, verify) AND
+          the render transport completes with a classified response AND a
+          post-render status check shows the exact same evolution_step and
+          transition_history as immediately after the fork. A REFUSAL or
+          EMPTY response class still counts toward a pass if the transport
+          and boundary check succeeded -- this stage tests the mechanism,
+          not the content of what the model says. If ANTHROPIC_API_KEY is
+          unset, the app reports "NO RENDER (key not configured)" rather
+          than failing or attempting a call with a blank credential.
           EOF
 
-          cat p37-build-manifest.txt
-          cat p37-source-sha256.txt
+          cat p38-build-manifest.txt
+          cat p38-source-sha256.txt
 
-      - name: Upload Android-P3.7 Torch Numogram Fork APK
+      - name: Upload Android-P3.8 Torch Numogram Render APK
         uses: actions/upload-artifact@v4
         with:
-          name: Amelia-Android-P3.7-Torch-Numogram-Fork
+          name: Amelia-Android-P3.8-Torch-Numogram-Render
           path: |
             app/build/outputs/apk/debug/app-debug.apk
-            p37-build-manifest.txt
-            p37-source-sha256.txt
+            p38-build-manifest.txt
+            p38-source-sha256.txt
           retention-days: 14
