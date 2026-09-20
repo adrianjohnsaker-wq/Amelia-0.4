@@ -499,18 +499,39 @@ jobs:
                   val rawDigest = terminal.optString("raw_response_digest", "")
                   val rawPreview = terminal.optString("raw_response_preview", "").take(2048)
 
-                  return (
-                      "Attempt: " + terminal.optInt("attempt_number", -1) + "\n" +
-                          "HTTP status: " + httpStatusText + "\n" +
-                          "Response class: " + terminal.optString("response_class", "") + "\n" +
-                          "Error type: " + (if (errorType.isBlank()) "(none)" else errorType) + "\n" +
-                          "Error message: " + (if (errorMessage.isBlank()) "(none)" else errorMessage) + "\n" +
-                          "Raw response recorded: " + rawRecorded + "\n" +
-                          "Raw bytes: " + rawBytes + "\n" +
-                          "Raw SHA-256: " + rawDigest + "\n\n" +
-                          "Provider response preview:\n" +
-                          (if (rawPreview.isBlank()) "(no response body received)" else rawPreview)
-                  )
+                  return buildString {
+                      append("Attempt: ")
+                      append(terminal.optInt("attempt_number", -1))
+                      append('\n')
+                      append("HTTP status: ")
+                      append(httpStatusText)
+                      append('\n')
+                      append("Response class: ")
+                      append(terminal.optString("response_class", ""))
+                      append('\n')
+                      append("Error type: ")
+                      append(if (errorType.isBlank()) "(none)" else errorType)
+                      append('\n')
+                      append("Error message: ")
+                      append(if (errorMessage.isBlank()) "(none)" else errorMessage)
+                      append('\n')
+                      append("Raw response recorded: ")
+                      append(rawRecorded)
+                      append('\n')
+                      append("Raw bytes: ")
+                      append(rawBytes)
+                      append('\n')
+                      append("Raw SHA-256: ")
+                      append(rawDigest)
+                      append("\n\nProvider response preview:\n")
+                      append(
+                          if (rawPreview.isBlank()) {
+                              "(no response body received)"
+                          } else {
+                              rawPreview
+                          }
+                      )
+                  }
               }
 
               private fun renderProbeResult(raw: String) {
@@ -815,7 +836,7 @@ jobs:
           grep -Fq 'RenderTransport.execute' app/src/main/java/com/amelia/p381/MainActivity.kt
           grep -Fq 'transport_archive' app/src/main/java/com/amelia/p381/MainActivity.kt
           grep -Fq 'terminalTransportDiagnostic' app/src/main/java/com/amelia/p381/MainActivity.kt
-          grep -Fq 'return (' app/src/main/java/com/amelia/p381/MainActivity.kt
+          grep -Fq 'return buildString {' app/src/main/java/com/amelia/p381/MainActivity.kt
           grep -Fq 'noFeedbackHeld' app/src/main/java/com/amelia/p381/MainActivity.kt
           grep -Fq 'post_fork_status' app/src/main/java/com/amelia/p381/MainActivity.kt
           grep -Fq 'post_render_status' app/src/main/java/com/amelia/p381/MainActivity.kt
