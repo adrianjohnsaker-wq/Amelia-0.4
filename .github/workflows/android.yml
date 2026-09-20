@@ -1,4 +1,4 @@
-name: Build Amelia Android-P3.6.1 Torch Numogram Probe APK
+name: Build Amelia Android-P3.7 Torch Numogram Fork Probe APK
 
 on:
   push:
@@ -22,10 +22,10 @@ jobs:
           distribution: temurin
           java-version: "17"
 
-      # P3.6.1 stays on the same Chaquopy 16.1 / Python 3.8 lane P3.6
-      # validated on-device. Nothing about the toolchain changes here --
-      # only the Numogram facade's reinitialization behaviour, and the
-      # probe UI's acceptance contract to match it.
+      # P3.7 stays on the same Chaquopy 16.1 / Python 3.8 / torch==1.8.1
+      # lane P3.6/P3.6.1 validated on-device. Nothing about the toolchain
+      # changes -- only Numogram.py's facade (adds run_fork/verify_last_fork)
+      # and the probe UI, which now exercises the fork.
       - name: Set up Python 3.8
         uses: actions/setup-python@v5
         with:
@@ -36,14 +36,14 @@ jobs:
         with:
           gradle-version: "8.9"
 
-      - name: Verify P3.6.1 source files exist
+      - name: Verify P3.7 source files exist
         shell: bash
         run: |
           set -euo pipefail
 
           for source in bridge_probe.py Numogram.py NumogramBridge.kt ChaquopyProbe.kt; do
             if [[ ! -f "$source" ]]; then
-              echo "::error file=$source::Required P3.6.1 source is absent from repository root."
+              echo "::error file=$source::Required P3.7 source is absent from repository root."
               echo "Repository root contents:"
               find . -maxdepth 1 -type f -printf ' - %f\n' | sort
               exit 1
@@ -52,28 +52,30 @@ jobs:
           done
 
           echo
-          echo "P3.6.1 source fingerprints:"
+          echo "P3.7 source fingerprints:"
           sha256sum \
             bridge_probe.py \
             Numogram.py \
             NumogramBridge.kt \
             ChaquopyProbe.kt
 
-      - name: Create Android-P3.6.1 Torch Numogram probe project
+      - name: Create Android-P3.7 Torch Numogram fork probe project
         shell: bash
         run: |
           set -euo pipefail
 
           mkdir -p \
-            app/src/main/java/com/amelia/p361 \
+            app/src/main/java/com/amelia/p37 \
             app/src/main/java/com/amelia/bridge \
             app/src/main/python \
             app/src/main/res/values
 
-          # Preserve the four root sources as the build inputs. Only
-          # Numogram.py's content changed for P3.6.1 (digest-matched
-          # reattachment, exception-safe facade functions); NumogramBridge.kt,
-          # ChaquopyProbe.kt, and bridge_probe.py are copied as-is.
+          # Root sources are the build inputs. Numogram.py's content changed
+          # for P3.7 (run_fork/verify_last_fork, the predict_transitions
+          # purification, per-branch generators); NumogramBridge.kt gained
+          # two thin pass-through methods (runFork/verifyLastFork) but is
+          # otherwise the same simple bridge as P3.6/P3.6.1. bridge_probe.py
+          # and ChaquopyProbe.kt are unchanged since P3.5A.
           cp bridge_probe.py \
             app/src/main/python/bridge_probe.py
 
@@ -103,7 +105,7 @@ jobs:
               }
           }
 
-          rootProject.name = "AmeliaAndroidP361"
+          rootProject.name = "AmeliaAndroidP37"
           include(":app")
           EOF
 
@@ -121,8 +123,8 @@ jobs:
           kotlin.code.style=official
           EOF
 
-          # Same single dependency as P3.6: torch==1.8.1. P3.6.1 changes
-          # facade logic, not the dependency lane.
+          # Same single dependency as P3.6/P3.6.1: torch==1.8.1. P3.7 changes
+          # facade logic and the probe, not the dependency lane.
           cat > app/build.gradle.kts <<'EOF'
           plugins {
               id("com.android.application")
@@ -131,15 +133,15 @@ jobs:
           }
 
           android {
-              namespace = "com.amelia.p361"
+              namespace = "com.amelia.p37"
               compileSdk = 34
 
               defaultConfig {
-                  applicationId = "com.amelia.p361"
+                  applicationId = "com.amelia.p37"
                   minSdk = 24
                   targetSdk = 34
                   versionCode = 1
-                  versionName = "0.8.1-android-p3.6.1-torch-numogram-reattach"
+                  versionName = "0.9-android-p3.7-torch-numogram-fork"
 
                   ndk {
                       abiFilters += listOf(
@@ -171,7 +173,7 @@ jobs:
           }
           EOF
 
-          # Same as P3.6: local substrate assay only, no INTERNET permission.
+          # Same as P3.6/P3.6.1: local substrate assay only, no INTERNET permission.
           cat > app/src/main/AndroidManifest.xml <<'EOF'
           <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
@@ -199,26 +201,31 @@ jobs:
 
           cat > app/src/main/res/values/strings.xml <<'EOF'
           <resources>
-              <string name="app_name">Amelia P3.6.1 Torch Numogram</string>
+              <string name="app_name">Amelia P3.7 Torch Numogram Fork</string>
           </resources>
           EOF
 
-          # P3.6.1's on-device experiment is the same fixed probe as P3.6:
+          # P3.7's on-device experiment:
           #
           # Kotlin -> NumogramBridge -> Numogram.py -> Torch
           #        -> initialize(seed=3606, dimension=3)   [fresh OR reattach]
           #        -> status
-          #        -> transition(origin=Z3, context={})
+          #        -> transition(origin=Z3, context={})    [one real commit]
+          #        -> run_fork(origin=Z3, context={})       [FULL, ABLATED_TRANSITION,
+          #                                                   ABLATED_MAGNETISM, ABLATED_BOTH,
+          #                                                   NEUTRAL_RESET -- none mutating]
+          #        -> verify_last_fork
           #        -> status -> Kotlin
           #
-          # The difference is what counts as passing: a repeat launch that
-          # reattaches to an already-running, digest-matched system is now a
-          # valid pass, and the step/history checks compare against this
-          # run's own baseline rather than hardcoded absolute values -- so
-          # the screen stays correct on the second, third, or Nth launch,
-          # not just a cold start.
-          cat > app/src/main/java/com/amelia/p361/MainActivity.kt <<'ACTIVITY_EOF'
-          package com.amelia.p361
+          # The committed transition happens before the fork specifically so
+          # the fork runs against a state with something actually learned in
+          # it; a fork against a never-committed system would trivially show
+          # every ABLATED_* condition equal to FULL. The fork always forks
+          # from Z3 again regardless of where that commit landed, so repeat
+          # launches stay comparable rather than forking from a drifting
+          # starting zone each time.
+          cat > app/src/main/java/com/amelia/p37/MainActivity.kt <<'ACTIVITY_EOF'
+          package com.amelia.p37
 
           import android.app.Activity
           import android.os.Bundle
@@ -229,15 +236,19 @@ jobs:
           import android.widget.TextView
           import com.amelia.bridge.NumogramBridge
           import kotlin.math.abs
+          import org.json.JSONArray
           import org.json.JSONObject
 
           class MainActivity : Activity() {
 
               companion object {
-                  private const val LOG_TAG = "AMELIA_P361"
+                  private const val LOG_TAG = "AMELIA_P37"
                   private const val PROBE_SEED = 3606
                   private const val PROBE_DIMENSION = 3
                   private const val PROBE_ORIGIN = 3
+                  private val EXPECTED_BRANCHES = listOf(
+                      "FULL", "ABLATED_TRANSITION", "ABLATED_MAGNETISM", "ABLATED_BOTH", "NEUTRAL_RESET"
+                  )
               }
 
               private lateinit var statusView: TextView
@@ -254,7 +265,7 @@ jobs:
 
                   root.addView(
                       TextView(this).apply {
-                          text = "AMELIA · P3.6.1"
+                          text = "AMELIA 路 P3.7"
                           textSize = 25f
                           gravity = Gravity.CENTER_HORIZONTAL
                       }
@@ -262,7 +273,7 @@ jobs:
 
                   root.addView(
                       TextView(this).apply {
-                          text = "Chaquopy 16.1 · Python 3.8 · Torch 1.8.1 · digest-matched reattachment"
+                          text = "Chaquopy 16.1 路 Python 3.8 路 Torch 1.8.1 路 matched FULL/ABLATED/NEUTRAL_RESET fork"
                           textSize = 14f
                           gravity = Gravity.CENTER_HORIZONTAL
                           setPadding(0, dp(8), 0, dp(18))
@@ -270,15 +281,15 @@ jobs:
                   )
 
                   statusView = TextView(this).apply {
-                      text = "P3.6.1 tensor probe starting…"
+                      text = "P3.7 fork probe starting鈥�"
                       textSize = 20f
                       gravity = Gravity.CENTER_HORIZONTAL
                       setPadding(dp(8), dp(18), dp(8), dp(18))
                   }
 
                   detailView = TextView(this).apply {
-                      text = "Waiting for Torch import and the sealed Numogram lifecycle."
-                      textSize = 14f
+                      text = "Waiting for Torch import, the sealed Numogram lifecycle, and the fork."
+                      textSize = 13f
                       setPadding(dp(8), dp(12), dp(8), dp(12))
                   }
 
@@ -288,26 +299,31 @@ jobs:
                   root.addView(
                       TextView(this).apply {
                           text =
-                              "\nP3.6.1 boundary:\n\n" +
+                              "\nP3.7 boundary:\n\n" +
                               "Kotlin\n" +
-                              "  ↓\n" +
+                              "  鈫揬n" +
                               "NumogramBridge\n" +
-                              "  ↓\n" +
-                              "Python 3.8 · Numogram.py\n" +
-                              "  ↓\n" +
-                              "Torch 1.8.1 tensor field\n" +
-                              "  ↓\n" +
-                              "initialize (fresh OR digest-matched reattach) → status → transition → status\n" +
-                              "  ↓\n" +
+                              "  鈫揬n" +
+                              "Python 3.8 路 Numogram.py\n" +
+                              "  鈫揬n" +
+                              "initialize (fresh OR reattach) 鈫� status 鈫� transition(Z3)\n" +
+                              "  鈫� run_fork(Z3): FULL, ABLATED_TRANSITION, ABLATED_MAGNETISM,\n" +
+                              "    ABLATED_BOTH, NEUTRAL_RESET, sealed from one captured\n" +
+                              "    pre-state, none of them mutating the live system\n" +
+                              "  鈫� verify_last_fork 鈫� status\n" +
+                              "  鈫揬n" +
                               "Kotlin\n\n" +
-                              "Fixed probe: seed 3606 · dimension 3 · origin Z3 · context {}\n\n" +
-                              "No language model. No network. Persistence disabled.\n\n" +
-                              "A repeat launch reattaches to the already-running system (same " +
-                              "seed/dimension) rather than silently discarding its history, and " +
-                              "this screen checks that exactly one transition happened this run " +
-                              "-- not that the step count is 1 -- so it stays correct whether " +
-                              "this is the first launch or the fifth."
-                          textSize = 14f
+                              "Fixed probe: seed 3606 路 dimension 3 路 origin Z3 路 context {}\n\n" +
+                              "One real transition is committed from Z3 first, so the fork " +
+                              "runs against a state that actually has something learned in " +
+                              "it -- forking a cold, never-committed system would trivially " +
+                              "show every ABLATED_* condition equal to FULL, which confirms " +
+                              "nothing. The fork itself always runs from Z3 again, regardless " +
+                              "of where that committed transition landed, so a repeat launch " +
+                              "stays comparable to earlier ones rather than forking from a " +
+                              "different, accumulating starting zone each time.\n\n" +
+                              "No language model. No network. Persistence disabled."
+                          textSize = 13f
                       }
                   )
 
@@ -322,7 +338,7 @@ jobs:
                           executeProbe()
                       } catch (t: Throwable) {
                           JSONObject()
-                              .put("schema", "amelia-p3.6.1-probe-result-v1")
+                              .put("schema", "amelia-p3.7-probe-result-v1")
                               .put("status", "error")
                               .put("error_type", t::class.java.simpleName)
                               .put("message", t.message ?: "Unknown Android, Chaquopy, or Torch error")
@@ -343,18 +359,35 @@ jobs:
                   val initialized = JSONObject(bridge.initialize(PROBE_SEED, PROBE_DIMENSION))
                   val ready = JSONObject(bridge.status())
                   val transitioned = JSONObject(bridge.transition(PROBE_ORIGIN, "{}"))
+                  val postTransition = JSONObject(bridge.status())
+                  val forked = JSONObject(bridge.runFork(PROBE_ORIGIN, "{}"))
+                  val verified = JSONObject(bridge.verifyLastFork())
                   val finalStatus = JSONObject(bridge.status())
 
                   return JSONObject()
-                      .put("schema", "amelia-p3.6.1-probe-result-v1")
+                      .put("schema", "amelia-p3.7-probe-result-v1")
                       .put("status", "completed")
                       .put("runtime", runtime)
                       .put("before", before)
                       .put("initialized", initialized)
                       .put("ready", ready)
                       .put("transitioned", transitioned)
+                      .put("post_transition", postTransition)
+                      .put("forked", forked)
+                      .put("verified", verified)
                       .put("final", finalStatus)
                       .toString()
+              }
+
+              private fun probabilitiesValid(probabilities: JSONArray): Boolean {
+                  if (probabilities.length() != 10) return false
+                  var mass = 0.0
+                  for (index in 0 until probabilities.length()) {
+                      val value = probabilities.optDouble(index, Double.NaN)
+                      if (value.isNaN() || value.isInfinite()) return false
+                      mass += value
+                  }
+                  return abs(mass - 1.0) <= 0.00001
               }
 
               private fun renderProbeResult(raw: String) {
@@ -370,6 +403,10 @@ jobs:
                           ?: throw IllegalStateException("Missing ready status")
                       val transitioned = result.optJSONObject("transitioned")
                           ?: throw IllegalStateException("Missing transition result")
+                      val forked = result.optJSONObject("forked")
+                          ?: throw IllegalStateException("Missing fork result")
+                      val verified = result.optJSONObject("verified")
+                          ?: throw IllegalStateException("Missing verify result")
                       val finalStatus = result.optJSONObject("final")
                           ?: throw IllegalStateException("Missing final status")
 
@@ -381,19 +418,12 @@ jobs:
                           ?: throw IllegalStateException("Missing transition event")
                       val finalSystem = finalStatus.optJSONObject("system")
                           ?: throw IllegalStateException("Missing final system")
-                      val probabilities = event.optJSONArray("probabilities")
-                          ?: throw IllegalStateException("Missing probability vector")
-
-                      var probabilityMass = 0.0
-                      var finiteProbabilities = true
-                      for (index in 0 until probabilities.length()) {
-                          val value = probabilities.optDouble(index, Double.NaN)
-                          if (value.isNaN() || value.isInfinite()) {
-                              finiteProbabilities = false
-                          } else {
-                              probabilityMass += value
-                          }
-                      }
+                      val transitionProbs = event.optJSONArray("probabilities")
+                          ?: throw IllegalStateException("Missing transition probability vector")
+                      val branches = forked.optJSONObject("branches")
+                          ?: throw IllegalStateException("Missing fork branches")
+                      val invariants = forked.optJSONObject("invariants")
+                          ?: throw IllegalStateException("Missing fork invariants")
 
                       val torchVersion = runtime.optString("torch_version", "")
                       val torchReady =
@@ -420,19 +450,53 @@ jobs:
                       val baselineHistory = readySystem.optInt("transition_history", -1)
 
                       val readyHeld =
-                          ready.optString("status", "") == "ready" &&
-                              baselineStep >= 0 &&
-                              baselineHistory >= 0
+                          ready.optString("status", "") == "ready" && baselineStep >= 0 && baselineHistory >= 0
 
                       val transitionHeld =
                           transitioned.optString("status", "") == "transitioned" &&
                               event.optInt("step", -1) == baselineStep + 1 &&
                               event.optInt("from", -1) == PROBE_ORIGIN &&
                               event.optInt("to", -1) in 0 until 10 &&
-                              !event.optBoolean("fallback", true) &&
-                              probabilities.length() == 10 &&
-                              finiteProbabilities &&
-                              abs(probabilityMass - 1.0) <= 0.00001
+                              probabilitiesValid(transitionProbs)
+
+                      var branchesWellFormed = true
+                      val branchLines = StringBuilder()
+                      for (name in EXPECTED_BRANCHES) {
+                          val branch = branches.optJSONObject(name)
+                          if (branch == null) {
+                              branchesWellFormed = false
+                              branchLines.append("$name: missing\n")
+                              continue
+                          }
+                          val branchProbs = branch.optJSONArray("probabilities")
+                          val wellFormed =
+                              branch.optInt("from", -1) == PROBE_ORIGIN &&
+                                  branch.optInt("to", -1) in 0 until 10 &&
+                                  branchProbs != null && probabilitiesValid(branchProbs)
+                          if (!wellFormed) branchesWellFormed = false
+                          branchLines.append(
+                              "$name: Z${branch.optInt("from")} 鈫� Z${branch.optInt("to")}" +
+                                  (if (branch.optBoolean("fallback", false)) " (fallback)" else "") + "\n"
+                          )
+                      }
+
+                      val liveStateUnchanged = invariants.optBoolean("live_state_unchanged", false)
+                      val generatorStateUnchanged = invariants.optBoolean("generator_state_unchanged", false)
+                      val ablatedMatchesNeutral = invariants.optBoolean("ablated_both_matches_neutral_reset", false)
+
+                      val forkHeld =
+                          forked.optString("status", "") == "forked" &&
+                              forked.optString("capsule_digest", "").isNotBlank() &&
+                              branchesWellFormed &&
+                              liveStateUnchanged &&
+                              generatorStateUnchanged &&
+                              ablatedMatchesNeutral
+
+                      val mismatchedBranches = verified.optJSONArray("mismatched_branches")
+                      val verifyHeld =
+                          verified.optString("status", "") == "verified" &&
+                              mismatchedBranches != null && mismatchedBranches.length() == 0 &&
+                              verified.optString("capsule_digest", "") == forked.optString("capsule_digest", "")
 
                       val finalHeld =
                           finalStatus.optString("status", "") == "ready" &&
@@ -446,48 +510,56 @@ jobs:
                               initializationHeld &&
                               readyHeld &&
                               transitionHeld &&
+                              forkHeld &&
+                              verifyHeld &&
                               finalHeld
 
-                      val transitionLine =
-                          "Z" + event.optInt("from") + " → Z" + event.optInt("to")
                       val initKind = if (initStatus == "already_initialized") {
                           "reattached to existing system (digest-matched)"
                       } else {
                           "fresh initialization"
                       }
+                      val transitionLine = "Z" + event.optInt("from") + " 鈫� Z" + event.optInt("to")
 
                       if (passed) {
-                          statusView.text = "P3.6.1 PASSED ✓"
+                          statusView.text = "P3.7 PASSED 鉁�"
                           detailView.text =
-                              "Torch imported and the live tensor Numogram lifecycle completed.\n\n" +
+                              "Torch imported, one transition committed, and the five-condition " +
+                                  "fork ran and replay-verified without touching live state.\n\n" +
                                   "Torch: " + torchVersion + "\n" +
                                   "Before initialization: " + before.optString("status") + "\n" +
                                   "Initialization: " + initKind + "\n" +
-                                  "Seed: " + initializedSystem.optInt("seed") + "\n" +
-                                  "Dimension: " + initializedSystem.optInt("dimension") + "\n" +
                                   "Step baseline going in: " + baselineStep + "\n" +
-                                  "Transition: " + transitionLine + "\n" +
-                                  "Step after: " + event.optInt("step") + "\n" +
-                                  "Probability mass: " + probabilityMass + "\n" +
-                                  "Fallback: " + event.optBoolean("fallback") + "\n" +
+                                  "Committed transition: " + transitionLine + "\n\n" +
+                                  "Fork branches (all from Z3):\n" + branchLines.toString() + "\n" +
+                                  "live_state_unchanged: " + liveStateUnchanged + "\n" +
+                                  "generator_state_unchanged: " + generatorStateUnchanged + "\n" +
+                                  "ablated_both_matches_neutral_reset: " + ablatedMatchesNeutral + "\n" +
+                                  "verify_last_fork: " + verified.optString("status") + "\n\n" +
+                                  "Step after: " + finalSystem.optInt("evolution_step") + "\n" +
                                   "History: " + finalSystem.optInt("transition_history") + "\n" +
                                   "Persistence: " + finalSystem.optBoolean("persistence_enabled")
                       } else {
-                          statusView.text = "P3.6.1 FAIL-CLOSED"
+                          statusView.text = "P3.7 FAIL-CLOSED"
                           detailView.text =
                               "A Torch/Numogram response was received, but it did not satisfy " +
-                                  "the sealed P3.6.1 contract.\n\n" +
+                                  "the sealed P3.7 contract.\n\n" +
                                   "Torch ready: " + torchReady + "\n" +
                                   "Initialization: " + initializationHeld + " (" + initStatus + ")\n" +
                                   "Ready state: " + readyHeld + "\n" +
                                   "Transition: " + transitionHeld + "\n" +
+                                  "Fork: " + forkHeld + " (branches well-formed: " + branchesWellFormed + ")\n" +
+                                  "  live_state_unchanged: " + liveStateUnchanged + "\n" +
+                                  "  generator_state_unchanged: " + generatorStateUnchanged + "\n" +
+                                  "  ablated_both_matches_neutral_reset: " + ablatedMatchesNeutral + "\n" +
+                                  "Verify: " + verifyHeld + "\n" +
                                   "Final state: " + finalHeld + "\n\n" +
                                   "Raw response:\n" + raw
                       }
                   } catch (t: Throwable) {
-                      statusView.text = "P3.6.1 FAIL-CLOSED"
+                      statusView.text = "P3.7 FAIL-CLOSED"
                       detailView.text =
-                          "The returned Torch/Numogram value was not valid P3.6.1 probe JSON.\n\n" +
+                          "The returned Torch/Numogram value was not valid P3.7 probe JSON.\n\n" +
                               "Error: " + (t.message ?: "Unknown parsing error") + "\n\n" +
                               "Raw response:\n" + raw
                   }
@@ -500,11 +572,12 @@ jobs:
           ACTIVITY_EOF
 
       # Numogram.py is compiled and structurally audited on the Python 3.8
-      # build host, same as P3.6. P3.6.1 adds checks for the digest-matched
-      # reattachment logic specifically, so a regression back to the old
-      # unconditional-overwrite behaviour would fail the build rather than
-      # only being caught on-device.
-      - name: Validate P3.6.1 source and lifecycle contract
+      # build host, same as P3.6/P3.6.1. P3.7 adds checks for the fork
+      # facade and its supporting helpers specifically, so a regression
+      # (e.g. a fork branch reusing the live generator, or the reattachment
+      # fix from P3.6.1 disappearing) fails the build rather than only
+      # being caught on-device.
+      - name: Validate P3.7 source and lifecycle contract
         shell: bash
         run: |
           set -euo pipefail
@@ -530,49 +603,71 @@ jobs:
               "initialize_system",
               "get_status",
               "transition",
+              "run_fork",
+              "verify_last_fork",
               "_config_digest",
+              "_branch_seed",
+              "_digest_of",
+              "_generator_fingerprint",
+              "_run_fork_branches",
           }
           missing = required - functions
           assert not missing, f"Missing Numogram entry points: {sorted(missing)}"
-          print("P3.6.1 Numogram entry-point contract validated")
+          print("P3.7 Numogram entry-point contract validated")
           PY
 
           grep -Fq 'install("torch==1.8.1")' app/build.gradle.kts
           grep -Fq 'buildPython("python3.8")' app/build.gradle.kts
           grep -Fq 'getModule("Numogram")' app/src/main/java/com/amelia/bridge/NumogramBridge.kt
 
-          # P3.6.1-specific: the reattachment fix must actually be present,
-          # not just the four original entry points.
+          # Carried over from P3.6.1: the reattachment fix must still be present.
           grep -Fq 'already_initialized' app/src/main/python/Numogram.py
           grep -Fq '_config_digest' app/src/main/python/Numogram.py
           grep -Fq 'attempted_init_digest' app/src/main/python/Numogram.py
 
-          grep -Fq 'bridge.initialize' app/src/main/java/com/amelia/p361/MainActivity.kt
-          grep -Fq 'bridge.status' app/src/main/java/com/amelia/p361/MainActivity.kt
-          grep -Fq 'bridge.transition' app/src/main/java/com/amelia/p361/MainActivity.kt
-          grep -Fq 'digestMatchedReattachment' app/src/main/java/com/amelia/p361/MainActivity.kt
-          grep -Fq 'baselineStep' app/src/main/java/com/amelia/p361/MainActivity.kt
+          # P3.7-specific: the fork's five conditions and its non-mutation
+          # machinery must actually be present, not just the facade names.
+          grep -Fq 'ABLATED_TRANSITION' app/src/main/python/Numogram.py
+          grep -Fq 'ABLATED_MAGNETISM' app/src/main/python/Numogram.py
+          grep -Fq 'ABLATED_BOTH' app/src/main/python/Numogram.py
+          grep -Fq 'NEUTRAL_RESET' app/src/main/python/Numogram.py
+          grep -Fq '_initial_transition_tensor' app/src/main/python/Numogram.py
+          grep -Fq '_initial_zone_magnetism' app/src/main/python/Numogram.py
+          grep -Fq 'live_state_unchanged' app/src/main/python/Numogram.py
+          grep -Fq 'generator_state_unchanged' app/src/main/python/Numogram.py
+          grep -Fq 'ablated_both_matches_neutral_reset' app/src/main/python/Numogram.py
+
+          grep -Fq 'runFork' app/src/main/java/com/amelia/bridge/NumogramBridge.kt
+          grep -Fq 'verifyLastFork' app/src/main/java/com/amelia/bridge/NumogramBridge.kt
+
+          grep -Fq 'bridge.initialize' app/src/main/java/com/amelia/p37/MainActivity.kt
+          grep -Fq 'bridge.status' app/src/main/java/com/amelia/p37/MainActivity.kt
+          grep -Fq 'bridge.transition' app/src/main/java/com/amelia/p37/MainActivity.kt
+          grep -Fq 'bridge.runFork' app/src/main/java/com/amelia/p37/MainActivity.kt
+          grep -Fq 'bridge.verifyLastFork' app/src/main/java/com/amelia/p37/MainActivity.kt
+          grep -Fq 'digestMatchedReattachment' app/src/main/java/com/amelia/p37/MainActivity.kt
+          grep -Fq 'branchesWellFormed' app/src/main/java/com/amelia/p37/MainActivity.kt
 
           if grep -Fq 'android.permission.INTERNET' app/src/main/AndroidManifest.xml; then
-            echo "FAIL: P3.6.1 must not declare INTERNET permission."
+            echo "FAIL: P3.7 must not declare INTERNET permission."
             exit 1
           fi
 
           echo
-          echo "P3.6.1 pre-build validation passed."
+          echo "P3.7 pre-build validation passed."
           echo "Torch requirement is exact: torch==1.8.1"
-          echo "Reinitialization is digest-matched, not unconditional overwrite."
-          echo "Acceptance contract checks step/history deltas, not hardcoded absolutes."
+          echo "Reinitialization is digest-matched, not unconditional overwrite (carried from P3.6.1)."
+          echo "Fork facade, five conditions, and non-mutation invariants are all present."
           echo "No runtime INTERNET permission is present."
 
-      - name: Build Android-P3.6.1 Torch Numogram APK
+      - name: Build Android-P3.7 Torch Numogram Fork APK
         run: |
           gradle \
             --no-daemon \
             :app:assembleDebug \
             --stacktrace
 
-      - name: Record P3.6.1 build manifest
+      - name: Record P3.7 build manifest
         shell: bash
         run: |
           set -euo pipefail
@@ -585,13 +680,13 @@ jobs:
             Numogram.py \
             NumogramBridge.kt \
             ChaquopyProbe.kt \
-            > p361-source-sha256.txt
+            > p37-source-sha256.txt
 
           APK_SHA="$(sha256sum "$APK" | awk '{print $1}')"
 
-          cat > p361-build-manifest.txt <<EOF
-          Amelia Android P3.6.1
-          ======================
+          cat > p37-build-manifest.txt <<EOF
+          Amelia Android P3.7
+          ====================
 
           Revision:
           $GITHUB_SHA
@@ -614,23 +709,34 @@ jobs:
           Torch requirement:
           torch==1.8.1
 
-          Changed from P3.6:
-          Numogram.py -- initialize_system() now checks a canonical digest of
-          (seed, dimension) before reattaching to an already-running system,
-          instead of unconditionally overwriting it. initialize_system() and
-          transition() now catch their own exceptions and return a structured
-          error string instead of raising across the Chaquopy boundary.
-          MainActivity.kt -- acceptance contract now accepts a digest-matched
-          reattachment as a pass, and checks the evolution_step/history delta
-          produced by this run rather than hardcoded absolute values, so a
-          second or later launch is judged correctly rather than failing
-          closed on stale-looking state.
+          Changed from P3.6.1:
+          Numogram.py -- predict_transitions() no longer mutates
+          self._last_fallback_triggered; it returns (probabilities, fallback)
+          instead, so it can be called freely by fork branches without leaving
+          a trace on the live instance. Added run_fork() (seals the live
+          transition_tensor/zone_magnetism pair plus origin/context, then runs
+          FULL, ABLATED_TRANSITION, ABLATED_MAGNETISM, ABLATED_BOTH, and
+          NEUTRAL_RESET against that captured state) and verify_last_fork()
+          (independently re-derives the same capsule's branches later and
+          confirms they still match). Every fork branch samples from its own
+          generator, deterministically derived from the capsule digest and
+          branch name -- never the live system's own generator, which would
+          otherwise be silently advanced by a nominally read-only fork.
+          NumogramBridge.kt -- added runFork()/verifyLastFork(), same plain
+          pass-through style as the rest of the bridge.
+          MainActivity.kt -- commits one real transition from Z3, then forks
+          from Z3 again against the resulting state, then verifies the fork,
+          checking branch well-formedness and all three invariants
+          (live_state_unchanged, generator_state_unchanged,
+          ablated_both_matches_neutral_reset) before reporting PASSED.
 
           Runtime lifecycle:
           get_runtime_info
           initialize_system(seed=3606, dimension=3)  [fresh OR reattach]
           status
           transition(origin=Z3, context={})
+          run_fork(origin=Z3, context={})
+          verify_last_fork
           status
 
           Persistence:
@@ -644,27 +750,30 @@ jobs:
           arm64-v8a
 
           Application ID:
-          com.amelia.p361 (separate from com.amelia.p36; P3.6 install is preserved)
+          com.amelia.p37 (separate from com.amelia.p361; prior installs preserved)
 
           APK SHA-256:
           $APK_SHA
 
           Acceptance condition:
-          App displays "P3.6.1 PASSED ✓" when Torch reports version 1.8.1, the
-          Numogram either freshly initializes or digest-matched-reattaches with
-          the sealed seed and dimension, and exactly one non-fallback Z3
-          transition commits relative to this run's own baseline step/history.
+          App displays "P3.7 PASSED (check mark)" when Torch reports version
+          1.8.1, the Numogram either freshly initializes or digest-matched-
+          reattaches, the committed Z3 transition holds against this run's own
+          baseline, all five fork branches are well-formed and from Z3, all
+          three fork invariants are true, verify_last_fork reports zero
+          mismatched branches against the same capsule digest, and the final
+          step/history delta is exactly one relative to baseline.
           EOF
 
-          cat p361-build-manifest.txt
-          cat p361-source-sha256.txt
+          cat p37-build-manifest.txt
+          cat p37-source-sha256.txt
 
-      - name: Upload Android-P3.6.1 Torch Numogram APK
+      - name: Upload Android-P3.7 Torch Numogram Fork APK
         uses: actions/upload-artifact@v4
         with:
-          name: Amelia-Android-P3.6.1-Torch-Numogram-Reattach
+          name: Amelia-Android-P3.7-Torch-Numogram-Fork
           path: |
             app/build/outputs/apk/debug/app-debug.apk
-            p361-build-manifest.txt
-            p361-source-sha256.txt
+            p37-build-manifest.txt
+            p37-source-sha256.txt
           retention-days: 14
