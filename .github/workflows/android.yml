@@ -1,4 +1,4 @@
-name: Build Amelia Android-P3.8 Torch Numogram Render APK
+name: Build Amelia Android-P3.8.1 Transport Diagnostics APK
 
 on:
   push:
@@ -32,14 +32,14 @@ jobs:
         with:
           gradle-version: "8.9"
 
-      - name: Verify P3.8 source files exist
+      - name: Verify P3.8.1 source files exist
         shell: bash
         run: |
           set -euo pipefail
 
           for source in bridge_probe.py Numogram.py NumogramBridge.kt ChaquopyProbe.kt RenderTransport.kt RenderPromptBuilder.kt; do
             if [[ ! -f "$source" ]]; then
-              echo "::error file=$source::Required P3.8 source is absent from repository root."
+              echo "::error file=$source::Required P3.8.1 source is absent from repository root."
               echo "Repository root contents:"
               find . -maxdepth 1 -type f -printf ' - %f\n' | sort
               exit 1
@@ -48,7 +48,7 @@ jobs:
           done
 
           echo
-          echo "P3.8 source fingerprints:"
+          echo "P3.8.1 source fingerprints:"
           sha256sum \
             bridge_probe.py \
             Numogram.py \
@@ -68,21 +68,21 @@ jobs:
         env:
           ANTHROPIC_API_KEY_PRESENCE_CHECK: ${{ secrets.ANTHROPIC_API_KEY }}
 
-      - name: Create Android-P3.8 Torch Numogram Render project
+      - name: Create Android-P3.8.1 Transport Diagnostics project
         shell: bash
         run: |
           set -euo pipefail
 
           mkdir -p \
-            app/src/main/java/com/amelia/p38 \
+            app/src/main/java/com/amelia/p381 \
             app/src/main/java/com/amelia/bridge \
             app/src/main/java/com/amelia/renderer \
             app/src/main/python \
             app/src/main/res/values
 
           # bridge_probe.py, Numogram.py, NumogramBridge.kt, and
-          # ChaquopyProbe.kt are UNCHANGED from P3.7 -- P3.8 adds a purely
-          # Kotlin-side rendering layer above the existing, already-verified
+          # ChaquopyProbe.kt are UNCHANGED from P3.7. P3.8.1 retains the
+          # purely Kotlin-side rendering layer above the existing, already-verified
           # Numogram bridge. Python never learns Claude's API exists; the
           # render call happens entirely after NumogramBridge hands back a
           # completed, sealed fork result.
@@ -121,7 +121,7 @@ jobs:
               }
           }
 
-          rootProject.name = "AmeliaAndroidP38"
+          rootProject.name = "AmeliaAndroidP381"
           include(":app")
           EOF
 
@@ -140,7 +140,7 @@ jobs:
           kotlin.code.style=official
           EOF
 
-          # NEW at P3.8: buildConfigField reads ANTHROPIC_API_KEY from the
+          # Retained at P3.8.1: buildConfigField reads ANTHROPIC_API_KEY
           # environment at build time (populated from a GitHub Actions
           # secret in the build step below) and bakes it into
           # BuildConfig.ANTHROPIC_API_KEY as a compiled string constant.
@@ -154,15 +154,15 @@ jobs:
           }
 
           android {
-              namespace = "com.amelia.p38"
+              namespace = "com.amelia.p381"
               compileSdk = 34
 
               defaultConfig {
-                  applicationId = "com.amelia.p38"
+                  applicationId = "com.amelia.p381"
                   minSdk = 24
                   targetSdk = 34
                   versionCode = 1
-                  versionName = "0.10-android-p3.8-torch-numogram-render"
+                  versionName = "0.10.1-android-p3.8.1-transport-diagnostics"
 
                   ndk {
                       abiFilters += listOf(
@@ -204,10 +204,10 @@ jobs:
           }
           EOF
 
-          # NEW at P3.8: INTERNET permission is required -- this is the
+          # Retained at P3.8.1: INTERNET permission is required -- this is the
           # first stage in this project that makes a network call at all.
           # Every prior stage's own manifest and CI check explicitly
-          # REJECTED this permission; P3.8 is a deliberate, named crossing
+          # REJECTED this permission; P3.8.1 retains that deliberate, named
           # of that boundary, not an oversight.
           cat > app/src/main/AndroidManifest.xml <<'EOF'
           <manifest xmlns:android="http://schemas.android.com/apk/res/android">
@@ -238,11 +238,11 @@ jobs:
 
           cat > app/src/main/res/values/strings.xml <<'EOF'
           <resources>
-              <string name="app_name">Amelia P3.8 Torch Numogram Render</string>
+              <string name="app_name">Amelia P3.8.1 Transport Diagnostics</string>
           </resources>
           EOF
 
-          # P3.8's on-device experiment:
+          # P3.8.1's on-device experiment:
           #
           # Kotlin -> NumogramBridge -> Numogram.py -> Torch
           #        -> initialize/reattach -> status -> transition(Z3)
@@ -256,8 +256,8 @@ jobs:
           #           substrate -- checked, not assumed
           #        -> Kotlin: displays rendered text or a clear
           #           no-key-configured message
-          cat > app/src/main/java/com/amelia/p38/MainActivity.kt <<'ACTIVITY_EOF'
-          package com.amelia.p38
+          cat > app/src/main/java/com/amelia/p381/MainActivity.kt <<'ACTIVITY_EOF'
+          package com.amelia.p381
 
           import android.app.Activity
           import android.os.Bundle
@@ -277,7 +277,7 @@ jobs:
           class MainActivity : Activity() {
 
               companion object {
-                  private const val LOG_TAG = "AMELIA_P38"
+                  private const val LOG_TAG = "AMELIA_P381"
                   private const val PROBE_SEED = 3606
                   private const val PROBE_DIMENSION = 3
                   private const val PROBE_ORIGIN = 3
@@ -301,7 +301,7 @@ jobs:
 
                   root.addView(
                       TextView(this).apply {
-                          text = "AMELIA · P3.8"
+                          text = "AMELIA · P3.8.1"
                           textSize = 25f
                           gravity = Gravity.CENTER_HORIZONTAL
                       }
@@ -317,7 +317,7 @@ jobs:
                   )
 
                   statusView = TextView(this).apply {
-                      text = "P3.8 render probe starting…"
+                      text = "P3.8.1 render probe starting…"
                       textSize = 20f
                       gravity = Gravity.CENTER_HORIZONTAL
                       setPadding(dp(8), dp(18), dp(8), dp(18))
@@ -342,7 +342,7 @@ jobs:
                   root.addView(
                       TextView(this).apply {
                           text =
-                              "\nP3.8 boundary:\n\n" +
+                              "\nP3.8.1 boundary:\n\n" +
                               "Kotlin\n" +
                               "  ↓\n" +
                               "NumogramBridge → Numogram.py (fork, as P3.7)\n" +
@@ -354,8 +354,8 @@ jobs:
                               "  streaming/tools/functionCalling/webhook all false\n" +
                               "  ↓\n" +
                               "RenderTransport.execute(): single sealed call to the\n" +
-                              "  declared endpoint only; response classified and\n" +
-                              "  digested before any of it is trusted\n" +
+                              "  declared endpoint only; every terminal outcome is\n" +
+                              "  archived and digested before any of it is trusted\n" +
                               "  ↓\n" +
                               "Kotlin: displays the rendered text; never routes it\n" +
                               "  back into NumogramBridge -- checked below, not assumed\n\n" +
@@ -377,7 +377,7 @@ jobs:
                           executeProbe()
                       } catch (t: Throwable) {
                           JSONObject()
-                              .put("schema", "amelia-p3.8-probe-result-v1")
+                              .put("schema", "amelia-p3.8.1-probe-result-v1")
                               .put("status", "error")
                               .put("error_type", t::class.java.simpleName)
                               .put("message", t.message ?: "Unknown Android, Chaquopy, Torch, or network error")
@@ -403,7 +403,7 @@ jobs:
                   val postForkStatus = JSONObject(bridge.status())
 
                   val result = JSONObject()
-                      .put("schema", "amelia-p3.8-probe-result-v1")
+                      .put("schema", "amelia-p3.8.1-probe-result-v1")
                       .put("runtime", runtime)
                       .put("before", before)
                       .put("initialized", initialized)
@@ -429,6 +429,7 @@ jobs:
                       rendererTemplateDigest = promptPayload.rendererTemplateDigest
                   )
                   val transportResult = RenderTransport.execute(capsule, promptPayload.renderPrompt, apiKey)
+                  val transportArchive = transportResult.archiveJson()
 
                   // The boundary claim this stage exists to check: the render call
                   // must not have touched the substrate. Compared against ACTUAL
@@ -444,6 +445,7 @@ jobs:
                   result.put("renderer_template_digest", promptPayload.rendererTemplateDigest)
                   result.put("model", capsule.model)
                   result.put("attempt_count", transportResult.attempts.size)
+                  result.put("transport_archive", transportArchive)
                   if (sealed != null) {
                       result.put("render_status", "completed")
                       result.put("response_class", sealed.responseClass.name)
@@ -451,8 +453,13 @@ jobs:
                       result.put("raw_response_digest", sealed.rawResponseDigest)
                       result.put("rendered_text", sealed.parsedDisplayText)
                   } else {
+                      val terminal = transportResult.terminal
                       result.put("render_status", "transport_failed")
                       result.put("attempts_all_errored", true)
+                      result.put("http_status", terminal.httpStatus)
+                      result.put("raw_response_digest", terminal.rawResponseDigest)
+                      result.put("terminal_error_type", terminal.errorType ?: "")
+                      result.put("terminal_error_message", terminal.errorMessage ?: "")
                   }
                   result.put("post_render_status", postRenderStatus)
                   result.put("final", postRenderStatus)
@@ -469,6 +476,40 @@ jobs:
                       mass += value
                   }
                   return abs(mass - 1.0) <= 0.00001
+              }
+
+              /**
+               * This is deliberately display-only. The exact response bytes are
+               * retained as Base64 in transport_archive for the log/ledger; the
+               * screen shows a bounded preview so an error body cannot swamp the
+               * diagnostic interface.
+               */
+              private fun terminalTransportDiagnostic(terminal: JSONObject?): String {
+                  if (terminal == null) {
+                      return "Transport archive missing."
+                  }
+
+                  val httpStatus = terminal.optInt("http_status", -1)
+                  val httpStatusText =
+                      if (httpStatus >= 0) httpStatus.toString() else "not received"
+                  val errorType = terminal.optString("error_type", "")
+                  val errorMessage = terminal.optString("error_message", "")
+                  val rawRecorded = terminal.optBoolean("raw_response_recorded", false)
+                  val rawBytes = terminal.optInt("raw_response_bytes", 0)
+                  val rawDigest = terminal.optString("raw_response_digest", "")
+                  val rawPreview = terminal.optString("raw_response_preview", "").take(2048)
+
+                  return
+                      "Attempt: " + terminal.optInt("attempt_number", -1) + "\n" +
+                          "HTTP status: " + httpStatusText + "\n" +
+                          "Response class: " + terminal.optString("response_class", "") + "\n" +
+                          "Error type: " + (if (errorType.isBlank()) "(none)" else errorType) + "\n" +
+                          "Error message: " + (if (errorMessage.isBlank()) "(none)" else errorMessage) + "\n" +
+                          "Raw response recorded: " + rawRecorded + "\n" +
+                          "Raw bytes: " + rawBytes + "\n" +
+                          "Raw SHA-256: " + rawDigest + "\n\n" +
+                          "Provider response preview:\n" +
+                          (if (rawPreview.isBlank()) "(no response body received)" else rawPreview)
               }
 
               private fun renderProbeResult(raw: String) {
@@ -579,7 +620,7 @@ jobs:
                       val renderStatus = result.optString("render_status", "")
 
                       if (overallStatus == "completed_no_render") {
-                          statusView.text = "P3.8 NO RENDER (key not configured)"
+                          statusView.text = "P3.8.1 NO RENDER (key not configured)"
                           detailView.text =
                               "The Numogram fork completed and verified normally, but " +
                                   "BuildConfig.ANTHROPIC_API_KEY is blank, so no network call " +
@@ -611,6 +652,8 @@ jobs:
                       val renderTransportSucceeded = renderStatus == "completed"
                       val responseClass = result.optString("response_class", "")
                       val renderedText = result.optString("rendered_text", "")
+                      val transportArchive = result.optJSONObject("transport_archive")
+                      val terminalAttempt = transportArchive?.optJSONObject("terminal_attempt")
 
                       val passed =
                           overallStatus == "completed" &&
@@ -630,7 +673,7 @@ jobs:
                       }
 
                       if (passed) {
-                          statusView.text = "P3.8 PASSED ✓"
+                          statusView.text = "P3.8.1 PASSED ✓"
                           detailView.text =
                               "Torch imported, one transition committed, the five-condition " +
                                   "fork ran and replay-verified, and the sealed render call " +
@@ -656,11 +699,18 @@ jobs:
                                       "Raw: " + renderedText.take(300)
                               }
                       } else {
-                          statusView.text = "P3.8 FAIL-CLOSED"
-                          renderView.text = ""
+                          statusView.text = "P3.8.1 FAIL-CLOSED"
+                          renderView.text =
+                              if (renderStatus == "transport_failed") {
+                                  "Terminal transport archive (display-only):\n\n" +
+                                      terminalTransportDiagnostic(terminalAttempt)
+                              } else {
+                                  ""
+                              }
                           detailView.text =
-                              "A response was received, but it did not satisfy the sealed " +
-                                  "P3.8 contract.\n\n" +
+                              "The sealed P3.8.1 contract failed closed. The terminal " +
+                                  "transport archive below distinguishes an HTTP rejection " +
+                                  "from a connection, write, or read failure.\n\n" +
                                   "Torch ready: " + torchReady + "\n" +
                                   "Initialization: " + initializationHeld + " (" + initStatus + ")\n" +
                                   "Ready state: " + readyHeld + "\n" +
@@ -668,16 +718,15 @@ jobs:
                                   "Fork: " + forkHeld + " (branches well-formed: " + branchesWellFormed + ")\n" +
                                   "Verify: " + verifyHeld + "\n" +
                                   "Render transport succeeded: " + renderTransportSucceeded + "\n" +
-                                  "no_feedback_held: " + noFeedbackHeld + "\n\n" +
-                                  "Raw response:\n" + raw
-                      }
-                  } catch (t: Throwable) {
-                      statusView.text = "P3.8 FAIL-CLOSED"
+                                  "no_feedback_held: " + noFeedbackHeld
+                  }
+              } catch (t: Throwable) {
+                      statusView.text = "P3.8.1 FAIL-CLOSED"
                       renderView.text = ""
                       detailView.text =
-                          "The returned value was not valid P3.8 probe JSON.\n\n" +
+                          "The returned value was not valid P3.8.1 probe JSON.\n\n" +
                               "Error: " + (t.message ?: "Unknown parsing error") + "\n\n" +
-                              "Raw response:\n" + raw
+                              "Probe-result preview:\n" + raw.take(2048)
                   }
               }
 
@@ -688,11 +737,10 @@ jobs:
           ACTIVITY_EOF
 
       # Numogram.py's own contract (reattachment, fork, five conditions) is
-      # unchanged from P3.7 and checked identically here. P3.8 adds checks
-      # for the new renderer layer and, deliberately, INVERTS the INTERNET
-      # permission check every prior stage's workflow carried: P3.8 requires
-      # that permission rather than rejecting it.
-      - name: Validate P3.8 source and lifecycle contract
+      # unchanged from P3.7. P3.8.1 changes the renderer's observability:
+      # every budgeted transport attempt must be archived, including an
+      # all-error run with no sealed response. INTERNET remains deliberate.
+      - name: Validate P3.8.1 source and lifecycle contract
         shell: bash
         run: |
           set -euo pipefail
@@ -728,7 +776,7 @@ jobs:
           }
           missing = required - functions
           assert not missing, f"Missing Numogram entry points: {sorted(missing)}"
-          print("P3.8 Numogram entry-point contract validated (unchanged from P3.7)")
+          print("P3.8.1 Numogram entry-point contract validated (unchanged from P3.7)")
           PY
 
           grep -Fq 'install("torch==1.8.1")' app/build.gradle.kts
@@ -743,39 +791,48 @@ jobs:
           grep -Fq 'runFork' app/src/main/java/com/amelia/bridge/NumogramBridge.kt
           grep -Fq 'verifyLastFork' app/src/main/java/com/amelia/bridge/NumogramBridge.kt
 
-          # P3.8-specific: the renderer layer and its capsule discipline.
+          # P3.8.1-specific: the renderer layer, capsule discipline, and
+          # terminal diagnostics for an all-error transport budget.
           grep -Fq 'class RenderCapsule' app/src/main/java/com/amelia/renderer/RenderTransport.kt
           grep -Fq 'object RenderTransport' app/src/main/java/com/amelia/renderer/RenderTransport.kt
           grep -Fq 'streamingEnabled = false' app/src/main/java/com/amelia/renderer/RenderTransport.kt
           grep -Fq 'toolsEnabled = false' app/src/main/java/com/amelia/renderer/RenderTransport.kt
           grep -Fq 'ALLOWED_ENDPOINTS' app/src/main/java/com/amelia/renderer/RenderTransport.kt
+          grep -Fq 'fun archiveJson' app/src/main/java/com/amelia/renderer/RenderTransport.kt
+          grep -Fq 'raw_response_base64' app/src/main/java/com/amelia/renderer/RenderTransport.kt
+          grep -Fq 'raw_response_digest' app/src/main/java/com/amelia/renderer/RenderTransport.kt
+          grep -Fq 'error_type' app/src/main/java/com/amelia/renderer/RenderTransport.kt
+          grep -Fq 'p3.8.1-transport-diagnostics-v1' app/src/main/java/com/amelia/renderer/RenderTransport.kt
           grep -Fq 'object RenderPromptBuilder' app/src/main/java/com/amelia/renderer/RenderPromptBuilder.kt
           grep -Fq 'buildFromForkResult' app/src/main/java/com/amelia/renderer/RenderPromptBuilder.kt
 
           grep -Fq 'ANTHROPIC_API_KEY' app/build.gradle.kts
           grep -Fq 'buildConfig = true' app/build.gradle.kts
-          grep -Fq 'BuildConfig.ANTHROPIC_API_KEY' app/src/main/java/com/amelia/p38/MainActivity.kt
-          grep -Fq 'RenderPromptBuilder.buildFromForkResult' app/src/main/java/com/amelia/p38/MainActivity.kt
-          grep -Fq 'RenderCapsule.seal' app/src/main/java/com/amelia/p38/MainActivity.kt
-          grep -Fq 'RenderTransport.execute' app/src/main/java/com/amelia/p38/MainActivity.kt
-          grep -Fq 'noFeedbackHeld' app/src/main/java/com/amelia/p38/MainActivity.kt
-          grep -Fq 'post_fork_status' app/src/main/java/com/amelia/p38/MainActivity.kt
-          grep -Fq 'post_render_status' app/src/main/java/com/amelia/p38/MainActivity.kt
+          grep -Fq 'BuildConfig.ANTHROPIC_API_KEY' app/src/main/java/com/amelia/p381/MainActivity.kt
+          grep -Fq 'RenderPromptBuilder.buildFromForkResult' app/src/main/java/com/amelia/p381/MainActivity.kt
+          grep -Fq 'RenderCapsule.seal' app/src/main/java/com/amelia/p381/MainActivity.kt
+          grep -Fq 'RenderTransport.execute' app/src/main/java/com/amelia/p381/MainActivity.kt
+          grep -Fq 'transport_archive' app/src/main/java/com/amelia/p381/MainActivity.kt
+          grep -Fq 'terminalTransportDiagnostic' app/src/main/java/com/amelia/p381/MainActivity.kt
+          grep -Fq 'noFeedbackHeld' app/src/main/java/com/amelia/p381/MainActivity.kt
+          grep -Fq 'post_fork_status' app/src/main/java/com/amelia/p381/MainActivity.kt
+          grep -Fq 'post_render_status' app/src/main/java/com/amelia/p381/MainActivity.kt
 
-          # INVERTED from every prior stage: P3.8 REQUIRES INTERNET, since
+          # INVERTED from every prior stage: P3.8.1 REQUIRES INTERNET, since
           # this is the first stage that makes a real network call.
           if ! grep -Fq 'android.permission.INTERNET' app/src/main/AndroidManifest.xml; then
-            echo "FAIL: P3.8 requires the INTERNET permission for the render call; it is missing."
+            echo "FAIL: P3.8.1 requires the INTERNET permission for the render call; it is missing."
             exit 1
           fi
 
           echo
-          echo "P3.8 pre-build validation passed."
+          echo "P3.8.1 pre-build validation passed."
           echo "Numogram facade unchanged from P3.7 (reattachment + five-condition fork intact)."
           echo "Renderer layer present: sealed capsule, curated prompt builder, BuildConfig wiring."
+          echo "Every transport outcome has a terminal archive: HTTP status, error type/message, and raw-body digest."
           echo "INTERNET permission is present, as required for this stage specifically."
 
-      - name: Build Android-P3.8 Torch Numogram Render APK
+      - name: Build Android-P3.8.1 Transport Diagnostics APK
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
@@ -784,7 +841,7 @@ jobs:
             :app:assembleDebug \
             --stacktrace
 
-      - name: Record P3.8 build manifest
+      - name: Record P3.8.1 build manifest
         shell: bash
         run: |
           set -euo pipefail
@@ -799,13 +856,13 @@ jobs:
             ChaquopyProbe.kt \
             RenderTransport.kt \
             RenderPromptBuilder.kt \
-            > p38-source-sha256.txt
+            > p381-source-sha256.txt
 
           APK_SHA="$(sha256sum "$APK" | awk '{print $1}')"
 
-          cat > p38-build-manifest.txt <<EOF
-          Amelia Android P3.8
-          ====================
+          cat > p381-build-manifest.txt <<EOF
+          Amelia Android P3.8.1
+          ======================
 
           Revision:
           $GITHUB_SHA
@@ -828,27 +885,23 @@ jobs:
           Torch requirement:
           torch==1.8.1
 
-          Changed from P3.7:
-          Numogram.py, NumogramBridge.kt -- UNCHANGED. The render layer sits
-          entirely above the existing bridge; Python never learns the LLM
-          exists. Added RenderTransport.kt (reviewed fresh against the
-          current architecture; DEFAULT_MODEL updated from a stale P3.4
-          placeholder to claude-sonnet-5, package moved from
-          com.amelia.p3.renderer to the shared com.amelia.renderer) and
-          RenderPromptBuilder.kt (new -- curates a fork result into a
-          renderPrompt plus trace/payload/template digests). MainActivity.kt
-          now runs the full P3.7 sequence, then builds a render capsule from
-          the fork result and calls RenderTransport.execute() against the
-          real Anthropic Messages API. A fresh status() call after the
-          render step is compared against the post-fork status to confirm
-          the render call left no trace in the substrate -- checked
-          directly, not assumed from the transport code's own design.
+          Changed from P3.8:
+          Numogram.py, NumogramBridge.kt, and RenderPromptBuilder.kt are
+          unchanged. P3.8.1 changes RenderTransport.kt and MainActivity.kt
+          only to make a failed sealed call inspectable. Every transport
+          attempt is now retained in a display/ledger-only archive with:
+          attempt number, HTTP status, error type/message, the SHA-256 of
+          the raw response bytes, and the exact raw bytes encoded as Base64
+          before parsing. When no response body is received, the archive
+          says so explicitly rather than pretending an empty string was a
+          provider response. The archive is created after the sealed fork
+          and is never supplied to NumogramBridge or Numogram.py.
 
           Deliberate boundary crossing, named explicitly rather than left
           implicit: this is the first stage in the project that requires
           the INTERNET permission and makes a real network call. Every
           prior stage's manifest and CI check explicitly rejected that
-          permission; P3.8's workflow inverts that check to REQUIRE it.
+          permission; P3.8.1 retains that explicit requirement.
 
           Credentials:
           BuildConfig.ANTHROPIC_API_KEY, populated at build time from the
@@ -881,13 +934,13 @@ jobs:
           arm64-v8a
 
           Application ID:
-          com.amelia.p38 (separate from com.amelia.p37; prior installs preserved)
+          com.amelia.p381 (separate from P3.8 and all earlier installs)
 
           APK SHA-256:
           $APK_SHA
 
           Acceptance condition:
-          App displays "P3.8 PASSED (check mark)" when the full P3.7 contract
+          App displays "P3.8.1 PASSED (check mark)" when the full P3.7 contract
           holds (torch ready, initialization, transition, fork, verify) AND
           the render transport completes with a classified response AND a
           post-render status check shows the exact same evolution_step and
@@ -896,18 +949,22 @@ jobs:
           and boundary check succeeded -- this stage tests the mechanism,
           not the content of what the model says. If ANTHROPIC_API_KEY is
           unset, the app reports "NO RENDER (key not configured)" rather
-          than failing or attempting a call with a blank credential.
+          than failing or attempting a call with a blank credential. If the
+          attempt budget is exhausted by errors, the app fail-closes AND
+          displays the terminal diagnostic; the exact archive remains in
+          the logged P3.8.1 result. This is observability, not an LLM
+          reproducibility or routing claim.
           EOF
 
-          cat p38-build-manifest.txt
-          cat p38-source-sha256.txt
+          cat p381-build-manifest.txt
+          cat p381-source-sha256.txt
 
-      - name: Upload Android-P3.8 Torch Numogram Render APK
+      - name: Upload Android-P3.8.1 Transport Diagnostics APK
         uses: actions/upload-artifact@v4
         with:
-          name: Amelia-Android-P3.8-Torch-Numogram-Render
+          name: Amelia-Android-P3.8.1-Transport-Diagnostics
           path: |
             app/build/outputs/apk/debug/app-debug.apk
-            p38-build-manifest.txt
-            p38-source-sha256.txt
+            p381-build-manifest.txt
+            p381-source-sha256.txt
           retention-days: 14
