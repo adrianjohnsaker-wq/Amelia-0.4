@@ -499,7 +499,7 @@ jobs:
                   val rawDigest = terminal.optString("raw_response_digest", "")
                   val rawPreview = terminal.optString("raw_response_preview", "").take(2048)
 
-                  return
+                  return (
                       "Attempt: " + terminal.optInt("attempt_number", -1) + "\n" +
                           "HTTP status: " + httpStatusText + "\n" +
                           "Response class: " + terminal.optString("response_class", "") + "\n" +
@@ -510,6 +510,7 @@ jobs:
                           "Raw SHA-256: " + rawDigest + "\n\n" +
                           "Provider response preview:\n" +
                           (if (rawPreview.isBlank()) "(no response body received)" else rawPreview)
+                  )
               }
 
               private fun renderProbeResult(raw: String) {
@@ -814,6 +815,7 @@ jobs:
           grep -Fq 'RenderTransport.execute' app/src/main/java/com/amelia/p381/MainActivity.kt
           grep -Fq 'transport_archive' app/src/main/java/com/amelia/p381/MainActivity.kt
           grep -Fq 'terminalTransportDiagnostic' app/src/main/java/com/amelia/p381/MainActivity.kt
+          grep -Fq 'return (' app/src/main/java/com/amelia/p381/MainActivity.kt
           grep -Fq 'noFeedbackHeld' app/src/main/java/com/amelia/p381/MainActivity.kt
           grep -Fq 'post_fork_status' app/src/main/java/com/amelia/p381/MainActivity.kt
           grep -Fq 'post_render_status' app/src/main/java/com/amelia/p381/MainActivity.kt
