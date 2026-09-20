@@ -113,6 +113,39 @@ object RenderPromptBuilder {
         )
     }
 
+    /** Self-contained JSON string escaping -- deliberately NOT using
+     * JSONObject.quote(). That method has never actually been exercised by
+     * a successful build in this project (unlike .put()/.get()/.opt*(),
+     * which P3.6 and P3.7 already proved work on Android's org.json), and
+     * JSONObject.valueToString() looked exactly as standard and turned out
+     * not to exist there at all. Rather than gamble on a second unverified
+     * static method after being wrong about the first, this uses only
+     * basic Kotlin stdlib (StringBuilder, Char.code, Int.toString(radix)),
+     * which carries no such risk. */
+    private fun jsonQuote(s: String): String {
+        val builder = StringBuilder(s.length + 2)
+        builder.append('"')
+        for (ch in s) {
+            when (ch) {
+                '"' -> builder.append("\\\"")
+                '\\' -> builder.append("\\\\")
+                '\n' -> builder.append("\\n")
+                '\r' -> builder.append("\\r")
+                '\t' -> builder.append("\\t")
+                '\b' -> builder.append("\\b")
+                '\u000C' -> builder.append("\\f")
+                else -> if (ch.code < 0x20) {
+                    builder.append("\\u")
+                    builder.append(ch.code.toString(16).padStart(4, '0'))
+                } else {
+                    builder.append(ch)
+                }
+            }
+        }
+        builder.append('"')
+        return builder.toString()
+    }
+
     /** org.json.JSONObject doesn't sort keys on toString(), and its parsed
      * form doesn't preserve source order either -- so re-serializing a
      * parsed JSONObject can legitimately produce different byte output than
@@ -120,7 +153,11 @@ object RenderPromptBuilder {
      * already sorts keys. Digest stability requires sorting again here,
      * recursively, including through arrays in case an array element is
      * itself an object (not the case in the current fork-result shape, but
-     * handled generally rather than relying on that happening to be true). */
+     * handled generally rather than relying on that happening to be true).
+     *
+     * Uses only jsonQuote() and plain .toString() for primitives -- no
+     * org.json static utility methods at all, after the valueToString
+     * failure above. */
     private fun canonicalize(value: Any?): String {
         return when (value) {
             is JSONObject -> {
@@ -128,7 +165,7 @@ object RenderPromptBuilder {
                 val builder = StringBuilder("{")
                 for ((index, key) in keys.withIndex()) {
                     if (index > 0) builder.append(",")
-                    builder.append(JSONObject.quote(key)).append(":")
+                    builder.append(jsonQuote(key)).append(":")
                     builder.append(canonicalize(value.get(key)))
                 }
                 builder.append("}")
@@ -143,7 +180,12 @@ object RenderPromptBuilder {
                 builder.append("]")
                 builder.toString()
             }
-            else -> JSONObject.valueToString(value)
+            null -> "null"
+            JSONObject.NULL -> "null"
+            is String -> jsonQuote(value)
+            is Boolean -> value.toString()
+            is Number -> value.toString()
+            else -> jsonQuote(value.toString())
         }
     }
 
