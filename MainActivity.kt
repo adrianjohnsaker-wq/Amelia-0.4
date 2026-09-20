@@ -1,4 +1,4 @@
-package com.amelia.p37
+package com.amelia.p38
 
 import android.app.Activity
 import android.os.Bundle
@@ -8,6 +8,9 @@ import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import com.amelia.bridge.NumogramBridge
+import com.amelia.renderer.RenderCapsule
+import com.amelia.renderer.RenderPromptBuilder
+import com.amelia.renderer.RenderTransport
 import kotlin.math.abs
 import org.json.JSONArray
 import org.json.JSONObject
@@ -15,7 +18,7 @@ import org.json.JSONObject
 class MainActivity : Activity() {
 
     companion object {
-        private const val LOG_TAG = "AMELIA_P37"
+        private const val LOG_TAG = "AMELIA_P38"
         private const val PROBE_SEED = 3606
         private const val PROBE_DIMENSION = 3
         private const val PROBE_ORIGIN = 3
@@ -26,6 +29,7 @@ class MainActivity : Activity() {
 
     private lateinit var statusView: TextView
     private lateinit var detailView: TextView
+    private lateinit var renderView: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,7 +42,7 @@ class MainActivity : Activity() {
 
         root.addView(
             TextView(this).apply {
-                text = "AMELIA · P3.7"
+                text = "AMELIA · P3.8"
                 textSize = 25f
                 gravity = Gravity.CENTER_HORIZONTAL
             }
@@ -46,7 +50,7 @@ class MainActivity : Activity() {
 
         root.addView(
             TextView(this).apply {
-                text = "Chaquopy 16.1 · Python 3.8 · Torch 1.8.1 · matched FULL/ABLATED/NEUTRAL_RESET fork"
+                text = "Chaquopy 16.1 · Python 3.8 · Torch 1.8.1 · sealed fork → Claude API render"
                 textSize = 14f
                 gravity = Gravity.CENTER_HORIZONTAL
                 setPadding(0, dp(8), 0, dp(18))
@@ -54,48 +58,51 @@ class MainActivity : Activity() {
         )
 
         statusView = TextView(this).apply {
-            text = "P3.7 fork probe starting…"
+            text = "P3.8 render probe starting…"
             textSize = 20f
             gravity = Gravity.CENTER_HORIZONTAL
             setPadding(dp(8), dp(18), dp(8), dp(18))
         }
 
         detailView = TextView(this).apply {
-            text = "Waiting for Torch import, the sealed Numogram lifecycle, and the fork."
+            text = "Waiting for the Numogram fork, then the sealed render call."
             textSize = 13f
+            setPadding(dp(8), dp(12), dp(8), dp(12))
+        }
+
+        renderView = TextView(this).apply {
+            text = ""
+            textSize = 14f
             setPadding(dp(8), dp(12), dp(8), dp(12))
         }
 
         root.addView(statusView)
         root.addView(detailView)
+        root.addView(renderView)
 
         root.addView(
             TextView(this).apply {
                 text =
-                    "\nP3.7 boundary:\n\n" +
+                    "\nP3.8 boundary:\n\n" +
                     "Kotlin\n" +
                     "  ↓\n" +
-                    "NumogramBridge\n" +
+                    "NumogramBridge → Numogram.py (fork, as P3.7)\n" +
                     "  ↓\n" +
-                    "Python 3.8 · Numogram.py\n" +
+                    "RenderPromptBuilder: curates the fork result into a prompt,\n" +
+                    "  digests the trace, the curated payload, and the template\n" +
                     "  ↓\n" +
-                    "initialize (fresh OR reattach) → status → transition(Z3)\n" +
-                    "  → run_fork(Z3): FULL, ABLATED_TRANSITION, ABLATED_MAGNETISM,\n" +
-                    "    ABLATED_BOTH, NEUTRAL_RESET, sealed from one captured\n" +
-                    "    pre-state, none of them mutating the live system\n" +
-                    "  → verify_last_fork → status\n" +
+                    "RenderCapsule.seal(): fixes provider, model, params,\n" +
+                    "  streaming/tools/functionCalling/webhook all false\n" +
                     "  ↓\n" +
-                    "Kotlin\n\n" +
+                    "RenderTransport.execute(): single sealed call to the\n" +
+                    "  declared endpoint only; response classified and\n" +
+                    "  digested before any of it is trusted\n" +
+                    "  ↓\n" +
+                    "Kotlin: displays the rendered text; never routes it\n" +
+                    "  back into NumogramBridge -- checked below, not assumed\n\n" +
                     "Fixed probe: seed 3606 · dimension 3 · origin Z3 · context {}\n\n" +
-                    "One real transition is committed from Z3 first, so the fork " +
-                    "runs against a state that actually has something learned in " +
-                    "it -- forking a cold, never-committed system would trivially " +
-                    "show every ABLATED_* condition equal to FULL, which confirms " +
-                    "nothing. The fork itself always runs from Z3 again, regardless " +
-                    "of where that committed transition landed, so a repeat launch " +
-                    "stays comparable to earlier ones rather than forking from a " +
-                    "different, accumulating starting zone each time.\n\n" +
-                    "No language model. No network. Persistence disabled."
+                    "No key configured means no network call is attempted -- " +
+                    "reported plainly rather than left to fail as an HTTP error."
                 textSize = 13f
             }
         )
@@ -111,10 +118,10 @@ class MainActivity : Activity() {
                 executeProbe()
             } catch (t: Throwable) {
                 JSONObject()
-                    .put("schema", "amelia-p3.7-probe-result-v1")
+                    .put("schema", "amelia-p3.8-probe-result-v1")
                     .put("status", "error")
                     .put("error_type", t::class.java.simpleName)
-                    .put("message", t.message ?: "Unknown Android, Chaquopy, or Torch error")
+                    .put("message", t.message ?: "Unknown Android, Chaquopy, Torch, or network error")
                     .toString()
             }
 
@@ -132,24 +139,66 @@ class MainActivity : Activity() {
         val initialized = JSONObject(bridge.initialize(PROBE_SEED, PROBE_DIMENSION))
         val ready = JSONObject(bridge.status())
         val transitioned = JSONObject(bridge.transition(PROBE_ORIGIN, "{}"))
-        val postTransition = JSONObject(bridge.status())
         val forked = JSONObject(bridge.runFork(PROBE_ORIGIN, "{}"))
         val verified = JSONObject(bridge.verifyLastFork())
-        val finalStatus = JSONObject(bridge.status())
+        val postForkStatus = JSONObject(bridge.status())
 
-        return JSONObject()
-            .put("schema", "amelia-p3.7-probe-result-v1")
-            .put("status", "completed")
+        val result = JSONObject()
+            .put("schema", "amelia-p3.8-probe-result-v1")
             .put("runtime", runtime)
             .put("before", before)
             .put("initialized", initialized)
             .put("ready", ready)
             .put("transitioned", transitioned)
-            .put("post_transition", postTransition)
             .put("forked", forked)
             .put("verified", verified)
-            .put("final", finalStatus)
-            .toString()
+            .put("post_fork_status", postForkStatus)
+
+        val apiKey = BuildConfig.ANTHROPIC_API_KEY
+        if (apiKey.isBlank()) {
+            result.put("status", "completed_no_render")
+            result.put("render_status", "no_api_key_configured")
+            val finalStatus = JSONObject(bridge.status())
+            result.put("final", finalStatus)
+            return result.toString()
+        }
+
+        val promptPayload = RenderPromptBuilder.buildFromForkResult(forked)
+        val capsule = RenderCapsule.seal(
+            traceDigest = promptPayload.traceDigest,
+            payloadDigest = promptPayload.payloadDigest,
+            rendererTemplateDigest = promptPayload.rendererTemplateDigest
+        )
+        val transportResult = RenderTransport.execute(capsule, promptPayload.renderPrompt, apiKey)
+
+        // The boundary claim this stage exists to check: the render call
+        // must not have touched the substrate. Compared against ACTUAL
+        // status calls before and after, not assumed from the transport
+        // object's own (necessarily self-reported) behaviour.
+        val postRenderStatus = JSONObject(bridge.status())
+
+        val sealed = transportResult.sealed
+        result.put("status", "completed")
+        result.put("capsule_digest", capsule.capsuleDigest)
+        result.put("trace_digest", promptPayload.traceDigest)
+        result.put("payload_digest", promptPayload.payloadDigest)
+        result.put("renderer_template_digest", promptPayload.rendererTemplateDigest)
+        result.put("model", capsule.model)
+        result.put("attempt_count", transportResult.attempts.size)
+        if (sealed != null) {
+            result.put("render_status", "completed")
+            result.put("response_class", sealed.responseClass.name)
+            result.put("http_status", sealed.httpStatus)
+            result.put("raw_response_digest", sealed.rawResponseDigest)
+            result.put("rendered_text", sealed.parsedDisplayText)
+        } else {
+            result.put("render_status", "transport_failed")
+            result.put("attempts_all_errored", true)
+        }
+        result.put("post_render_status", postRenderStatus)
+        result.put("final", postRenderStatus)
+
+        return result.toString()
     }
 
     private fun probabilitiesValid(probabilities: JSONArray): Boolean {
@@ -180,8 +229,6 @@ class MainActivity : Activity() {
                 ?: throw IllegalStateException("Missing fork result")
             val verified = result.optJSONObject("verified")
                 ?: throw IllegalStateException("Missing verify result")
-            val finalStatus = result.optJSONObject("final")
-                ?: throw IllegalStateException("Missing final status")
 
             val initializedSystem = initialized.optJSONObject("system")
                 ?: throw IllegalStateException("Missing initialized system")
@@ -189,8 +236,6 @@ class MainActivity : Activity() {
                 ?: throw IllegalStateException("Missing ready system")
             val event = transitioned.optJSONObject("event")
                 ?: throw IllegalStateException("Missing transition event")
-            val finalSystem = finalStatus.optJSONObject("system")
-                ?: throw IllegalStateException("Missing final system")
             val transitionProbs = event.optJSONArray("probabilities")
                 ?: throw IllegalStateException("Missing transition probability vector")
             val branches = forked.optJSONObject("branches")
@@ -271,68 +316,107 @@ class MainActivity : Activity() {
                     mismatchedBranches != null && mismatchedBranches.length() == 0 &&
                     verified.optString("capsule_digest", "") == forked.optString("capsule_digest", "")
 
-            val finalHeld =
-                finalStatus.optString("status", "") == "ready" &&
-                    finalSystem.optInt("evolution_step", -1) == baselineStep + 1 &&
-                    finalSystem.optInt("transition_history", -1) == baselineHistory + 1 &&
-                    !finalSystem.optBoolean("persistence_enabled", true)
+            val overallStatus = result.optString("status", "")
+            val renderStatus = result.optString("render_status", "")
+
+            if (overallStatus == "completed_no_render") {
+                statusView.text = "P3.8 NO RENDER (key not configured)"
+                detailView.text =
+                    "The Numogram fork completed and verified normally, but " +
+                        "BuildConfig.ANTHROPIC_API_KEY is blank, so no network call " +
+                        "was attempted. Fork held: " + forkHeld + " · Verify held: " + verifyHeld +
+                        "\n\nAdd the ANTHROPIC_API_KEY repository secret and rebuild " +
+                        "to exercise the render step."
+                renderView.text = ""
+                return
+            }
+
+            // post_render_status is the ground-truth check for the one-way
+            // boundary: the Numogram must show exactly the same evolution_step
+            // and transition_history after the render call as it did right
+            // after the fork -- a render call that somehow looped back into
+            // the substrate would show up here as an unexpected increment.
+            val postForkStatus = result.optJSONObject("post_fork_status")
+                ?: throw IllegalStateException("Missing post-fork status")
+            val postRenderStatus = result.optJSONObject("post_render_status")
+                ?: throw IllegalStateException("Missing post-render status")
+            val postForkSystem = postForkStatus.optJSONObject("system")
+                ?: throw IllegalStateException("Missing post-fork system")
+            val postRenderSystem = postRenderStatus.optJSONObject("system")
+                ?: throw IllegalStateException("Missing post-render system")
+
+            val noFeedbackHeld =
+                postRenderSystem.optInt("evolution_step", -1) == postForkSystem.optInt("evolution_step", -2) &&
+                    postRenderSystem.optInt("transition_history", -1) == postForkSystem.optInt("transition_history", -2)
+
+            val renderTransportSucceeded = renderStatus == "completed"
+            val responseClass = result.optString("response_class", "")
+            val renderedText = result.optString("rendered_text", "")
 
             val passed =
-                result.optString("status", "") == "completed" &&
+                overallStatus == "completed" &&
                     torchReady &&
                     initializationHeld &&
                     readyHeld &&
                     transitionHeld &&
                     forkHeld &&
                     verifyHeld &&
-                    finalHeld
+                    renderTransportSucceeded &&
+                    noFeedbackHeld
 
             val initKind = if (initStatus == "already_initialized") {
                 "reattached to existing system (digest-matched)"
             } else {
                 "fresh initialization"
             }
-            val transitionLine = "Z" + event.optInt("from") + " → Z" + event.optInt("to")
 
             if (passed) {
-                statusView.text = "P3.7 PASSED ✓"
+                statusView.text = "P3.8 PASSED ✓"
                 detailView.text =
-                    "Torch imported, one transition committed, and the five-condition " +
-                        "fork ran and replay-verified without touching live state.\n\n" +
+                    "Torch imported, one transition committed, the five-condition " +
+                        "fork ran and replay-verified, and the sealed render call " +
+                        "completed without any trace of feeding back into the substrate.\n\n" +
                         "Torch: " + torchVersion + "\n" +
-                        "Before initialization: " + before.optString("status") + "\n" +
                         "Initialization: " + initKind + "\n" +
-                        "Step baseline going in: " + baselineStep + "\n" +
-                        "Committed transition: " + transitionLine + "\n\n" +
-                        "Fork branches (all from Z3):\n" + branchLines.toString() + "\n" +
-                        "live_state_unchanged: " + liveStateUnchanged + "\n" +
-                        "generator_state_unchanged: " + generatorStateUnchanged + "\n" +
-                        "ablated_both_matches_neutral_reset: " + ablatedMatchesNeutral + "\n" +
+                        "Fork branches (all from Z3):\n" + branchLines.toString() +
                         "verify_last_fork: " + verified.optString("status") + "\n\n" +
-                        "Step after: " + finalSystem.optInt("evolution_step") + "\n" +
-                        "History: " + finalSystem.optInt("transition_history") + "\n" +
-                        "Persistence: " + finalSystem.optBoolean("persistence_enabled")
+                        "Model: " + result.optString("model", "") + "\n" +
+                        "Response class: " + responseClass + "\n" +
+                        "HTTP status: " + result.optInt("http_status", -1) + "\n" +
+                        "Attempts: " + result.optInt("attempt_count", -1) + "\n" +
+                        "Capsule digest: " + result.optString("capsule_digest", "").take(16) + "…\n" +
+                        "no_feedback_held: " + noFeedbackHeld
+                renderView.text =
+                    if (responseClass == "SUCCESS_TEXT") {
+                        "Rendered text:\n\n" + renderedText
+                    } else {
+                        "Renderer returned " + responseClass + " rather than text " +
+                            "(this is still a mechanically correct, boundary-respecting " +
+                            "result -- the transport and the sealed capsule worked; " +
+                            "the model just didn't produce display text this time).\n\n" +
+                            "Raw: " + renderedText.take(300)
+                    }
             } else {
-                statusView.text = "P3.7 FAIL-CLOSED"
+                statusView.text = "P3.8 FAIL-CLOSED"
+                renderView.text = ""
                 detailView.text =
-                    "A Torch/Numogram response was received, but it did not satisfy " +
-                        "the sealed P3.7 contract.\n\n" +
+                    "A response was received, but it did not satisfy the sealed " +
+                        "P3.8 contract.\n\n" +
                         "Torch ready: " + torchReady + "\n" +
                         "Initialization: " + initializationHeld + " (" + initStatus + ")\n" +
                         "Ready state: " + readyHeld + "\n" +
                         "Transition: " + transitionHeld + "\n" +
                         "Fork: " + forkHeld + " (branches well-formed: " + branchesWellFormed + ")\n" +
-                        "  live_state_unchanged: " + liveStateUnchanged + "\n" +
-                        "  generator_state_unchanged: " + generatorStateUnchanged + "\n" +
-                        "  ablated_both_matches_neutral_reset: " + ablatedMatchesNeutral + "\n" +
                         "Verify: " + verifyHeld + "\n" +
-                        "Final state: " + finalHeld + "\n\n" +
+                        "Render transport succeeded: " + renderTransportSucceeded + "\n" +
+                        "no_feedback_held: " + noFeedbackHeld + "\n\n" +
                         "Raw response:\n" + raw
             }
         } catch (t: Throwable) {
-            statusView.text = "P3.7 FAIL-CLOSED"
+            statusView.text = "P3.8 FAIL-CLOSED"
+            renderView.text = ""
             detailView.text =
-                "The returned Torch/Numogram value was not valid P3.7 probe JSON.\n\n" +
+                "The returned value was not valid P3.8 probe JSON.\n\n" +
                     "Error: " + (t.message ?: "Unknown parsing error") + "\n\n" +
                     "Raw response:\n" + raw
         }
