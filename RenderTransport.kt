@@ -1,6 +1,6 @@
 package com.amelia.renderer
 
-// STATUS AT P3.8.1: this file was built at P3.4, before the real Numogram
+// STATUS AT P3.8.2: this file was built at P3.4, before the real Numogram
 // architecture (the 10-zone torch implementation, the plain NumogramBridge
 // pass-through style) was known. Reviewed fresh here against everything
 // since -- the capsule design still holds, nothing about it assumed the
@@ -10,9 +10,14 @@ package com.amelia.renderer
 // one numbered stage) and DEFAULT_MODEL (was a stale placeholder from P3.4
 // that was never a real model string). The stop_reason == "refusal" check
 // was flagged as unverified at P3.4 and confirmed against Anthropic's own
-// documentation before P3.6 -- no longer an open item. P3.8.1 adds an
-// append-only terminal-error archive; this is diagnostic output only and
-// cannot re-enter the Numogram path.
+// documentation before P3.6 -- no longer an open item. P3.8.1 added an
+// append-only terminal-error archive. P3.8.2 keeps that archive and
+// separates a received provider rejection from a transport failure: a
+// 4xx/5xx response is terminal and cannot be retried as if a different
+// response could be selected. P3.8.2 also seals provider-default sampling:
+// temperature, top_p, and top_k are omitted from the request entirely,
+// rather than silently treating a serialized 0.0 as equivalent. This
+// diagnostic output cannot re-enter the Numogram path.
 //
 // STILL NOT COMPILED: no Kotlin toolchain exists in the environment this
 // review was done in. Reviewed carefully, not built -- same caveat as
@@ -25,7 +30,7 @@ package com.amelia.renderer
 //      DEFAULT_ENDPOINT, and the auth header in performSingleAttempt() all
 //      need to change together.
 //   2. Credentials: read from BuildConfig.ANTHROPIC_API_KEY, populated from
-//      a GitHub Actions secret at build time (see the P3.8.1 workflow). No
+//      a GitHub Actions secret at build time (see the P3.8.2 workflow). No
 //      key is hardcoded or guessed here -- and note plainly what this
 //      pattern actually means: the built APK contains the key as a
 //      compiled string constant. Anyone with the APK file can extract it.
@@ -43,12 +48,12 @@ import java.net.URL
 import java.security.MessageDigest
 import java.util.UUID
 
-// P3.8.1 adds an append-only diagnostic archive for every transport
+// P3.8.2 keeps an append-only diagnostic archive for every transport
 // attempt. It changes observability only: no archive field is available to
 // NumogramBridge, Numogram.py, routing, memory, cohort state, or mutation.
-private const val TRANSPORT_POLICY_VERSION = "p3.8.1-transport-diagnostics-v1"
+private const val TRANSPORT_POLICY_VERSION = "p3.8.2-provider-default-sampling-v1"
 private const val DEFAULT_ENDPOINT = "https://api.anthropic.com/v1/messages"
-private const val DEFAULT_MODEL = "claude-sonnet-5" // updated from a stale placeholder at P3.4; confirm against your own needs before relying on it long-term
+private const val DEFAULT_MODEL = "claude-sonnet-5"
 private const val DEFAULT_MAX_TOKENS = 512
 private const val DEFAULT_TIMEOUT_MS = 20_000
 
@@ -72,7 +77,7 @@ data class RenderCapsule(
     val endpoint: String,
     val model: String,
     val maxTokens: Int,
-    val temperature: Double,
+    val samplingPolicy: String,
     val tokenLimit: Int,
     val timeoutMs: Int,
     val maxAttempts: Int,
@@ -94,16 +99,19 @@ data class RenderCapsule(
             endpoint: String = DEFAULT_ENDPOINT,
             model: String = DEFAULT_MODEL,
             maxTokens: Int = DEFAULT_MAX_TOKENS,
-            temperature: Double = 0.0,
+            samplingPolicy: String = "provider_default_omitted",
             tokenLimit: Int = DEFAULT_MAX_TOKENS,
             timeoutMs: Int = DEFAULT_TIMEOUT_MS,
             maxAttempts: Int = 1
         ): RenderCapsule {
             require(maxAttempts >= 1) { "A render capsule must declare at least one attempt" }
+            require(samplingPolicy == "provider_default_omitted") {
+                "P3.8.2 permits provider-default sampling only"
+            }
             val capsuleId = UUID.randomUUID().toString()
             val digestInput = listOf(
                 capsuleId, traceDigest, payloadDigest, provider, endpoint, model,
-                maxTokens.toString(), temperature.toString(), tokenLimit.toString(),
+                maxTokens.toString(), "sampling=$samplingPolicy", tokenLimit.toString(),
                 timeoutMs.toString(), maxAttempts.toString(),
                 "streaming=false", "tools=false", "functionCalling=false", "webhook=false",
                 "responseSchema=opaque_display_text", rendererTemplateDigest,
@@ -118,7 +126,7 @@ data class RenderCapsule(
                 endpoint = endpoint,
                 model = model,
                 maxTokens = maxTokens,
-                temperature = temperature,
+                samplingPolicy = samplingPolicy,
                 tokenLimit = tokenLimit,
                 timeoutMs = timeoutMs,
                 maxAttempts = maxAttempts,
@@ -135,7 +143,20 @@ data class RenderCapsule(
     }
 }
 
-enum class ResponseClass { SUCCESS_TEXT, REFUSAL, ERROR, EMPTY }
+/**
+ * TRANSPORT_ERROR means no terminal provider response was received (for
+ * example, a connection, write, or read exception). PROVIDER_REJECTED means
+ * an HTTP response was received and is terminal; retrying an authentication
+ * or request rejection would create a post-hoc second call rather than
+ * recovery of a lost transport attempt.
+ */
+enum class ResponseClass {
+    SUCCESS_TEXT,
+    REFUSAL,
+    EMPTY,
+    PROVIDER_REJECTED,
+    TRANSPORT_ERROR
+}
 
 /**
  * Not a data class: it carries a ByteArray, and Kotlin's auto-generated
@@ -189,15 +210,15 @@ class TransportAttempt(
 data class TransportResult(
     val capsule: RenderCapsule,
     val attempts: List<TransportAttempt>,  // every attempt, including failed ones
-    val sealed: TransportAttempt?,         // first classified response, or null
-    val terminal: TransportAttempt         // first classified response or last budgeted error
+    val sealed: TransportAttempt?,         // first terminal provider response, or null
+    val terminal: TransportAttempt         // first provider response or last budgeted transport error
 ) {
     /** This value is display/ledger-only. It has no mutable substrate reference. */
     fun archiveJson(): JSONObject {
         val archivedAttempts = JSONArray()
         attempts.forEach { archivedAttempts.put(it.archiveJson()) }
         return JSONObject()
-            .put("schema", "amelia-p3.8.1-transport-archive-v1")
+            .put("schema", "amelia-p3.8.2-transport-archive-v2")
             .put("attempt_count", attempts.size)
             .put("sealed_response_present", sealed != null)
             .put("terminal_attempt", terminal.archiveJson())
@@ -219,12 +240,10 @@ object RenderTransport {
     /**
      * Executes a sealed capsule against its declared endpoint only.
      * Attempts up to capsule.maxAttempts times, but only genuine transport
-     * failures (exceptions, non-2xx HTTP) consume an attempt toward that
-     * budget without being sealed -- the first attempt that produces a
-     * classified response (SUCCESS_TEXT, REFUSAL, or EMPTY) is sealed as
-     * terminal immediately. This is deliberate: retrying past a real
-     * response would be a reroll, which is exactly what predeclaring "only
-     * the first schema-valid response is sealed" was meant to rule out.
+     * failures (connection, write, or read exceptions) consume an attempt
+     * toward that budget without being sealed. Any received HTTP response is
+     * terminal, including a 4xx/5xx provider rejection. Retrying after a
+     * received response would be a reroll, contrary to the sealed policy.
      */
     fun execute(capsule: RenderCapsule, renderPrompt: String, apiKey: String): TransportResult {
         require(capsule.endpoint in ALLOWED_ENDPOINTS) {
@@ -248,7 +267,7 @@ object RenderTransport {
                     rawResponseDigest = sha256Hex(ByteArray(0)),
                     rawResponseBytes = ByteArray(0),
                     parsedDisplayText = "",
-                    responseClass = ResponseClass.ERROR,
+                    responseClass = ResponseClass.TRANSPORT_ERROR,
                     terminal = false,
                     errorType = e.javaClass.simpleName,
                     errorMessage = boundedErrorMessage(e.message ?: e.javaClass.simpleName)
@@ -256,13 +275,13 @@ object RenderTransport {
             }
             attempts.add(attempt)
 
-            if (attempt.responseClass != ResponseClass.ERROR) {
+            if (attempt.responseClass != ResponseClass.TRANSPORT_ERROR) {
                 val terminalAttempt = markTerminal(attempt)
                 attempts[attempts.lastIndex] = terminalAttempt
                 sealed = terminalAttempt
                 break
             }
-            // ERROR: falls through to the next attempt, if any remain.
+            // TRANSPORT_ERROR: falls through to the next attempt, if any remain.
         }
 
         check(attempts.isNotEmpty()) { "Render capsule produced no transport attempts" }
@@ -334,7 +353,7 @@ object RenderTransport {
             if (status !in 200..299) {
                 return TransportAttempt(
                     attemptNumber, status, rawDigest, rawBytes,
-                    parsedDisplayText = "", responseClass = ResponseClass.ERROR,
+                    parsedDisplayText = "", responseClass = ResponseClass.PROVIDER_REJECTED,
                     terminal = false,
                     rawResponseRecorded = true,
                     errorType = "HttpStatus",
@@ -364,7 +383,7 @@ object RenderTransport {
                 rawResponseDigest = sha256Hex(ByteArray(0)),
                 rawResponseBytes = ByteArray(0),
                 parsedDisplayText = "",
-                responseClass = ResponseClass.ERROR,
+                responseClass = ResponseClass.TRANSPORT_ERROR,
                 terminal = false,
                 errorType = e.javaClass.simpleName,
                 errorMessage = boundedErrorMessage(e.message ?: e.javaClass.simpleName)
@@ -379,9 +398,13 @@ object RenderTransport {
 
     private fun buildRequestBody(capsule: RenderCapsule, renderPrompt: String): JSONObject =
         JSONObject().apply {
+            require(capsule.samplingPolicy == "provider_default_omitted") {
+                "Unsupported sampling policy in sealed capsule"
+            }
             put("model", capsule.model)
             put("max_tokens", capsule.maxTokens)
-            put("temperature", capsule.temperature)
+            // Sampling overrides are deliberately omitted. The omission itself
+            // is sealed and digested as provider_default_omitted.
             put("stream", false)
             put("messages", JSONArray().put(
                 JSONObject().put("role", "user").put("content", renderPrompt)
