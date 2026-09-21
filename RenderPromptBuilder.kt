@@ -1,33 +1,18 @@
 package com.amelia.renderer
 
-// Sits between NumogramBridge's raw JSON and RenderTransport's sealed
-// capsule. Takes a completed run_fork() result and produces exactly what
-// RenderCapsule.seal() needs: a renderPrompt string, and digests over the
-// trace being rendered, the specific payload handed to the model, and the
-// prompt template itself.
-//
-// Deliberately curated, not verbatim: the renderer gets origin, each
-// branch's from/to/fallback, and the three invariant flags -- not the full
-// probability vectors, not the capsule digest, not anything about seed or
-// internal tensor state. This is the same principle P3.2's template
-// renderer worked under ("received no original prompt, process-memory
-// state, cohort record, or mutation handle") applied to a real LLM instead
-// of a fixed phrase table: give it only what it needs to describe the
-// trace, nothing that would let it reconstruct or reason about the
-// substrate's internals beyond what's already been computed and sealed.
-//
-// PROMPT WORDING IS A FIRST DRAFT, NOT SETTLED: the actual phrasing here
-// is mine, written to state the one-way/no-feedback boundary and the
-// no-consciousness-claim discipline this project has held since P0 --
-// not to dictate voice or philosophical framing, which is yours to adjust.
-// Changing the prompt text changes rendererTemplateDigest, which is exactly
-// the point: any change to what the renderer is told to do is itself
-// tracked, not silently absorbed into "the same template" as before.
-
 import org.json.JSONObject
 import java.security.MessageDigest
 
-private const val TEMPLATE_VERSION = "p3.8-fork-render-v1"
+/**
+ * P3.9's sealed-trace prompt builder.
+ *
+ * The renderer receives a deliberately small, canonical view of the completed
+ * fork. It does not receive a mutable Numogram handle, an original user
+ * prompt, or the full tensor state. The response contract is structured so
+ * RendererFaithfulness can compare each claimed destination to the archived
+ * branch table before the prose is treated as a faithful rendering.
+ */
+private const val TEMPLATE_VERSION = "p3.9-faithfulness-render-v1"
 
 data class RenderPromptPayload(
     val renderPrompt: String,
@@ -38,23 +23,44 @@ data class RenderPromptPayload(
 
 object RenderPromptBuilder {
 
+    private val BRANCHES = listOf(
+        "FULL",
+        "ABLATED_TRANSITION",
+        "ABLATED_MAGNETISM",
+        "ABLATED_BOTH",
+        "NEUTRAL_RESET"
+    )
+
     private val PROMPT_TEMPLATE = """
         You are rendering one sealed trace from a deterministic computational
-        substrate into plain descriptive prose. The substrate is a ten-zone
-        Numogram (zones 0-9) with a torch-based tensor memory channel. The
-        trace below has already been fully computed and sealed before you
-        were called -- you are a read-only, one-way display. Nothing you
-        write feeds back into the substrate, changes any future computation,
-        or is stored as part of the trace itself.
+        substrate into plain descriptive prose. The trace below has already
+        been fully computed and sealed before you were called. You are a
+        read-only display: nothing you write can feed back into the substrate,
+        change a future computation, activate a module, or alter the trace.
 
-        Do not invent zones, numbers, or outcomes beyond what is given below.
-        Do not claim this trace is evidence of consciousness, sentience, or
-        agency. Describe only the structural pattern the data actually
-        shows: which branch went where, whether the ablated conditions
-        diverged from the full condition, and whether the neutral-reset
-        condition landed somewhere different. Two or three sentences of
-        plain prose. No bullet points, no headers, no restating the raw
-        numbers back verbatim.
+        Return exactly one JSON object and no Markdown or code fence, with
+        this exact shape:
+        {
+          "schema": "amelia-p3.9-render-response-v1",
+          "branch_destinations": {
+            "FULL": 0,
+            "ABLATED_TRANSITION": 0,
+            "ABLATED_MAGNETISM": 0,
+            "ABLATED_BOTH": 0,
+            "NEUTRAL_RESET": 0
+          },
+          "ablated_both_neutral_reset_relation": "copy the relation token from the sealed trace",
+          "narrative": "two or three sentences of plain prose"
+        }
+
+        Copy every branch destination and the relation token exactly from the
+        sealed trace. Do not invent zones, numbers, outcomes, capabilities,
+        consciousness, sentience, or agency. The relation token
+        "same_probability_distribution_only" means that ABLATED_BOTH and
+        NEUTRAL_RESET share a probability distribution but may still have
+        different independently sampled destinations; never describe that as
+        a same-destination result unless the table itself shows the same `to`
+        value. The narrative must describe only the sealed branch table.
 
         Sealed trace:
         %s
@@ -65,7 +71,7 @@ object RenderPromptBuilder {
         val invariants = forkResult.optJSONObject("invariants") ?: JSONObject()
 
         val curatedBranches = JSONObject()
-        for (name in listOf("FULL", "ABLATED_TRANSITION", "ABLATED_MAGNETISM", "ABLATED_BOTH", "NEUTRAL_RESET")) {
+        for (name in BRANCHES) {
             val branch = branches.optJSONObject(name) ?: continue
             curatedBranches.put(
                 name,
@@ -76,57 +82,58 @@ object RenderPromptBuilder {
             )
         }
 
+        val ablatedBoth = curatedBranches.optJSONObject("ABLATED_BOTH")
+        val neutralReset = curatedBranches.optJSONObject("NEUTRAL_RESET")
+        val distributionsMatch =
+            invariants.optBoolean("ablated_both_matches_neutral_reset", false)
+        val relationToken = when {
+            !distributionsMatch -> "no_probability_distribution_equality_claim"
+            ablatedBoth != null && neutralReset != null &&
+                ablatedBoth.optInt("to", -1) == neutralReset.optInt("to", -2) ->
+                "same_probability_distribution_and_same_sampled_destination"
+            else -> "same_probability_distribution_only"
+        }
+
         val curatedPayload = JSONObject()
-            .put("schema", "amelia-p3.8-render-payload-v1")
+            .put("schema", "amelia-p3.9-render-payload-v1")
             .put("capsule_digest", forkResult.optString("capsule_digest", ""))
             .put("origin", forkResult.optInt("origin", -1))
             .put("branches", curatedBranches)
+            .put("ablated_both_neutral_reset_relation", relationToken)
             .put(
                 "invariants",
                 JSONObject()
-                    .put("live_state_unchanged", invariants.optBoolean("live_state_unchanged", false))
-                    .put("generator_state_unchanged", invariants.optBoolean("generator_state_unchanged", false))
+                    .put(
+                        "live_state_unchanged",
+                        invariants.optBoolean("live_state_unchanged", false)
+                    )
+                    .put(
+                        "generator_state_unchanged",
+                        invariants.optBoolean("generator_state_unchanged", false)
+                    )
                     .put(
                         "ablated_both_matches_neutral_reset",
-                        invariants.optBoolean("ablated_both_matches_neutral_reset", false)
+                        distributionsMatch
                     )
             )
 
         val canonicalPayload = canonicalize(curatedPayload)
         val payloadDigest = sha256Hex(canonicalPayload)
-
-        // traceDigest covers the full, uncurated Numogram result -- what
-        // was actually sealed by run_fork(), independent of how much of it
-        // the renderer was actually shown. Lets a later check confirm the
-        // render corresponds to a real, specific trace even though the
-        // renderer itself never saw the whole thing.
         val traceDigest = sha256Hex(canonicalize(forkResult))
 
-        val renderPrompt = PROMPT_TEMPLATE.format(canonicalPayload)
-        val rendererTemplateDigest = sha256Hex(PROMPT_TEMPLATE + TEMPLATE_VERSION)
-
         return RenderPromptPayload(
-            renderPrompt = renderPrompt,
+            renderPrompt = PROMPT_TEMPLATE.format(canonicalPayload),
             traceDigest = traceDigest,
             payloadDigest = payloadDigest,
-            rendererTemplateDigest = rendererTemplateDigest
+            rendererTemplateDigest = sha256Hex(PROMPT_TEMPLATE + TEMPLATE_VERSION)
         )
     }
 
-    /** Self-contained JSON string escaping -- deliberately NOT using
-     * JSONObject.quote(). That method has never actually been exercised by
-     * a successful build in this project (unlike .put()/.get()/.opt*(),
-     * which P3.6 and P3.7 already proved work on Android's org.json), and
-     * JSONObject.valueToString() looked exactly as standard and turned out
-     * not to exist there at all. Rather than gamble on a second unverified
-     * static method after being wrong about the first, this uses only
-     * basic Kotlin stdlib (StringBuilder, Char.code, Int.toString(radix)),
-     * which carries no such risk. */
-    private fun jsonQuote(s: String): String {
-        val builder = StringBuilder(s.length + 2)
+    private fun jsonQuote(value: String): String {
+        val builder = StringBuilder(value.length + 2)
         builder.append('"')
-        for (ch in s) {
-            when (ch) {
+        for (character in value) {
+            when (character) {
                 '"' -> builder.append("\\\"")
                 '\\' -> builder.append("\\\\")
                 '\n' -> builder.append("\\n")
@@ -134,11 +141,11 @@ object RenderPromptBuilder {
                 '\t' -> builder.append("\\t")
                 '\b' -> builder.append("\\b")
                 '\u000C' -> builder.append("\\f")
-                else -> if (ch.code < 0x20) {
+                else -> if (character.code < 0x20) {
                     builder.append("\\u")
-                    builder.append(ch.code.toString(16).padStart(4, '0'))
+                    builder.append(character.code.toString(16).padStart(4, '0'))
                 } else {
-                    builder.append(ch)
+                    builder.append(character)
                 }
             }
         }
@@ -146,50 +153,36 @@ object RenderPromptBuilder {
         return builder.toString()
     }
 
-    /** org.json.JSONObject doesn't sort keys on toString(), and its parsed
-     * form doesn't preserve source order either -- so re-serializing a
-     * parsed JSONObject can legitimately produce different byte output than
-     * what Python originally sent, even though Python's own _canonical()
-     * already sorts keys. Digest stability requires sorting again here,
-     * recursively, including through arrays in case an array element is
-     * itself an object (not the case in the current fork-result shape, but
-     * handled generally rather than relying on that happening to be true).
-     *
-     * Uses only jsonQuote() and plain .toString() for primitives -- no
-     * org.json static utility methods at all, after the valueToString
-     * failure above. */
-    private fun canonicalize(value: Any?): String {
-        return when (value) {
-            is JSONObject -> {
-                val keys = value.keys().asSequence().sorted().toList()
-                val builder = StringBuilder("{")
+    private fun canonicalize(value: Any?): String = when (value) {
+        is JSONObject -> {
+            val keys = value.keys().asSequence().sorted().toList()
+            buildString {
+                append('{')
                 for ((index, key) in keys.withIndex()) {
-                    if (index > 0) builder.append(",")
-                    builder.append(jsonQuote(key)).append(":")
-                    builder.append(canonicalize(value.get(key)))
+                    if (index > 0) append(',')
+                    append(jsonQuote(key))
+                    append(':')
+                    append(canonicalize(value.get(key)))
                 }
-                builder.append("}")
-                builder.toString()
+                append('}')
             }
-            is org.json.JSONArray -> {
-                val builder = StringBuilder("[")
-                for (i in 0 until value.length()) {
-                    if (i > 0) builder.append(",")
-                    builder.append(canonicalize(value.get(i)))
-                }
-                builder.append("]")
-                builder.toString()
-            }
-            null -> "null"
-            JSONObject.NULL -> "null"
-            is String -> jsonQuote(value)
-            is Boolean -> value.toString()
-            is Number -> value.toString()
-            else -> jsonQuote(value.toString())
         }
+        is org.json.JSONArray -> buildString {
+            append('[')
+            for (index in 0 until value.length()) {
+                if (index > 0) append(',')
+                append(canonicalize(value.get(index)))
+            }
+            append(']')
+        }
+        null, JSONObject.NULL -> "null"
+        is String -> jsonQuote(value)
+        is Boolean, is Number -> value.toString()
+        else -> jsonQuote(value.toString())
     }
 
     private fun sha256Hex(input: String): String =
-        MessageDigest.getInstance("SHA-256").digest(input.toByteArray(Charsets.UTF_8))
+        MessageDigest.getInstance("SHA-256")
+            .digest(input.toByteArray(Charsets.UTF_8))
             .joinToString("") { "%02x".format(it) }
 }
