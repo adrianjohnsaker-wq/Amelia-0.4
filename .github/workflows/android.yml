@@ -1,4 +1,4 @@
-name: Build Amelia Android-P3.8.2 Provider-Default Sampling APK
+name: Build Amelia Android-P3.9 Chat Faithfulness Vault APK
 
 on:
   push:
@@ -32,15 +32,25 @@ jobs:
         with:
           gradle-version: "8.9"
 
-      - name: Verify P3.8.2 source files exist
+      - name: Verify P3.9 source files exist
         shell: bash
         run: |
           set -euo pipefail
 
-          for source in bridge_probe.py Numogram.py NumogramBridge.kt ChaquopyProbe.kt RenderTransport.kt RenderPromptBuilder.kt; do
+          for source in \
+            bridge_probe.py \
+            Numogram.py \
+            NumogramBridge.kt \
+            ChaquopyProbe.kt \
+            RenderTransport.kt \
+            RenderPromptBuilder.kt \
+            RendererFaithfulness.kt \
+            ChatPromptBuilder.kt \
+            PythonModuleVault.kt \
+            P39MainActivity.kt
+          do
             if [[ ! -f "$source" ]]; then
-              echo "::error file=$source::Required P3.8.2 source is absent from repository root."
-              echo "Repository root contents:"
+              echo "::error file=$source::Required P3.9 source is absent from repository root."
               find . -maxdepth 1 -type f -printf ' - %f\n' | sort
               exit 1
             fi
@@ -48,100 +58,89 @@ jobs:
           done
 
           echo
-          echo "P3.8.2 source fingerprints:"
+          echo "P3.9 source fingerprints:"
           sha256sum \
             bridge_probe.py \
             Numogram.py \
             NumogramBridge.kt \
             ChaquopyProbe.kt \
             RenderTransport.kt \
-            RenderPromptBuilder.kt
+            RenderPromptBuilder.kt \
+            RendererFaithfulness.kt \
+            ChatPromptBuilder.kt \
+            PythonModuleVault.kt \
+            P39MainActivity.kt
 
-      - name: Seal P3.8.2 credential attestation
+      # This uses the same direct-provider research-build pattern that P3.8.2
+      # proved. It is deliberately attested before packaging, but is not a
+      # production secret-distribution mechanism: the private APK contains the
+      # compiled key. A missing/noncanonical/mismatched key prevents all calls.
+      - name: Seal P3.9 credential attestation
         shell: bash
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
           set -euo pipefail
 
-          P382_KEY="${ANTHROPIC_API_KEY:-}"
-          if [[ -z "$P382_KEY" ]]; then
+          P39_KEY="${ANTHROPIC_API_KEY:-}"
+          if [[ -z "$P39_KEY" ]]; then
             {
-              echo "P382_CREDENTIAL_STATE=missing"
-              echo "P382_CREDENTIAL_FINGERPRINT=missing"
-              echo "P382_CREDENTIAL_LENGTH=0"
-              echo "P382_CREDENTIAL_SHAPE=missing"
+              echo "P39_CREDENTIAL_FINGERPRINT=missing"
+              echo "P39_CREDENTIAL_SHAPE=missing"
             } >> "$GITHUB_ENV"
-            echo "::warning::ANTHROPIC_API_KEY is unset. P3.8.2 will make no provider call."
+            echo "::warning::ANTHROPIC_API_KEY is unset. P3.9 will run locally but make no provider calls."
           else
-            P382_FINGERPRINT="$(printf '%s' "$P382_KEY" | sha256sum | awk '{print $1}')"
-            P382_LENGTH="$(printf '%s' "$P382_KEY" | LC_ALL=C wc -c | tr -d '[:space:]')"
-            P382_HAS_WHITESPACE=false
-            P382_HAS_WRAPPER=false
+            P39_FINGERPRINT="$(printf '%s' "$P39_KEY" | sha256sum | awk '{print $1}')"
+            P39_HAS_WHITESPACE=false
+            P39_HAS_WRAPPER=false
 
-            if [[ "$P382_KEY" =~ [[:space:]] ]]; then
-              P382_HAS_WHITESPACE=true
+            if [[ "$P39_KEY" =~ [[:space:]] ]]; then
+              P39_HAS_WHITESPACE=true
+            fi
+            P39_FIRST_CHARACTER="${P39_KEY:0:1}"
+            if [[ "$P39_FIRST_CHARACTER" == '"' || "$P39_FIRST_CHARACTER" == "'" || \
+                  "$P39_KEY" == "Bearer "* || \
+                  "$P39_KEY" == "x-api-key:"* || \
+                  "$P39_KEY" == "ANTHROPIC_API_KEY="* ]]; then
+              P39_HAS_WRAPPER=true
             fi
 
-            P382_FIRST_CHARACTER="${P382_KEY:0:1}"
-            if [[ "$P382_FIRST_CHARACTER" == '"' || "$P382_FIRST_CHARACTER" == "'" || \
-                  "$P382_KEY" == "Bearer "* || \
-                  "$P382_KEY" == "x-api-key:"* || \
-                  "$P382_KEY" == "ANTHROPIC_API_KEY="* ]]; then
-              P382_HAS_WRAPPER=true
-            fi
-
-            if [[ "$P382_KEY" == sk-ant-* && "$P382_HAS_WHITESPACE" == false && "$P382_HAS_WRAPPER" == false ]]; then
-              P382_SHAPE=canonical
+            if [[ "$P39_KEY" == sk-ant-* && "$P39_HAS_WHITESPACE" == false && "$P39_HAS_WRAPPER" == false ]]; then
+              P39_SHAPE=canonical
             else
-              P382_SHAPE=noncanonical
+              P39_SHAPE=noncanonical
             fi
 
             {
-              echo "P382_CREDENTIAL_STATE=present"
-              echo "P382_CREDENTIAL_FINGERPRINT=$P382_FINGERPRINT"
-              echo "P382_CREDENTIAL_LENGTH=$P382_LENGTH"
-              echo "P382_CREDENTIAL_SHAPE=$P382_SHAPE"
+              echo "P39_CREDENTIAL_FINGERPRINT=$P39_FINGERPRINT"
+              echo "P39_CREDENTIAL_SHAPE=$P39_SHAPE"
             } >> "$GITHUB_ENV"
-
-            echo "P3.8.2 credential attestation sealed: present; bytes=$P382_LENGTH; shape=$P382_SHAPE; sha256-prefix=${P382_FINGERPRINT:0:16}."
+            echo "P3.9 credential attestation sealed: shape=$P39_SHAPE; sha256-prefix=${P39_FINGERPRINT:0:16}."
           fi
 
-      - name: Create Android-P3.8.2 Provider-Default Sampling project
+      - name: Create Android-P3.9 Chat Faithfulness Vault project
         shell: bash
         run: |
           set -euo pipefail
 
           mkdir -p \
-            app/src/main/java/com/amelia/p382 \
+            app/src/main/java/com/amelia/p39 \
             app/src/main/java/com/amelia/bridge \
             app/src/main/java/com/amelia/renderer \
+            app/src/main/java/com/amelia/modules \
             app/src/main/python \
             app/src/main/res/values
 
-          # bridge_probe.py, Numogram.py, NumogramBridge.kt, and
-          # ChaquopyProbe.kt are UNCHANGED from P3.7. P3.8.2 retains the
-          # purely Kotlin-side rendering layer above the existing, already-verified
-          # Numogram bridge. Python never learns Claude's API exists; the
-          # render call happens entirely after NumogramBridge hands back a
-          # completed, sealed fork result.
-          cp bridge_probe.py \
-            app/src/main/python/bridge_probe.py
-
-          cp Numogram.py \
-            app/src/main/python/Numogram.py
-
-          cp NumogramBridge.kt \
-            app/src/main/java/com/amelia/bridge/NumogramBridge.kt
-
-          cp ChaquopyProbe.kt \
-            app/src/main/java/com/amelia/bridge/ChaquopyProbe.kt
-
-          cp RenderTransport.kt \
-            app/src/main/java/com/amelia/renderer/RenderTransport.kt
-
-          cp RenderPromptBuilder.kt \
-            app/src/main/java/com/amelia/renderer/RenderPromptBuilder.kt
+          cp bridge_probe.py app/src/main/python/bridge_probe.py
+          cp Numogram.py app/src/main/python/Numogram.py
+          cp NumogramBridge.kt app/src/main/java/com/amelia/bridge/NumogramBridge.kt
+          cp ChaquopyProbe.kt app/src/main/java/com/amelia/bridge/ChaquopyProbe.kt
+          cp RenderTransport.kt app/src/main/java/com/amelia/renderer/RenderTransport.kt
+          cp RenderPromptBuilder.kt app/src/main/java/com/amelia/renderer/RenderPromptBuilder.kt
+          cp RendererFaithfulness.kt app/src/main/java/com/amelia/renderer/RendererFaithfulness.kt
+          cp ChatPromptBuilder.kt app/src/main/java/com/amelia/renderer/ChatPromptBuilder.kt
+          cp PythonModuleVault.kt app/src/main/java/com/amelia/modules/PythonModuleVault.kt
+          cp P39MainActivity.kt app/src/main/java/com/amelia/p39/MainActivity.kt
 
           cat > settings.gradle.kts <<'EOF'
           pluginManagement {
@@ -160,7 +159,7 @@ jobs:
               }
           }
 
-          rootProject.name = "AmeliaAndroidP382"
+          rootProject.name = "AmeliaAndroidP39"
           include(":app")
           EOF
 
@@ -179,16 +178,6 @@ jobs:
           kotlin.code.style=official
           EOF
 
-          # P3.8.2 carries the secret into the APK only for this constrained
-          # direct-provider assay. It also embeds a SHA-256 attestation of the
-          # exact secret bytes computed by the GitHub runner. The app compares
-          # the safe digest against the actual BuildConfig string before any
-          # network call, so a quote, whitespace, cache, or escaping change
-          # becomes observable without exposing the credential.
-          #
-          # Its sampling policy is sealed in RenderCapsule as
-          # provider_default_omitted: temperature, top_p, and top_k are not
-          # serialized into the provider request.
           cat > app/build.gradle.kts <<'EOF'
           plugins {
               id("com.android.application")
@@ -213,22 +202,22 @@ jobs:
 
           val sealedApiKey = System.getenv("ANTHROPIC_API_KEY") ?: ""
           val credentialFingerprint =
-              System.getenv("P382_CREDENTIAL_FINGERPRINT") ?: "missing"
+              System.getenv("P39_CREDENTIAL_FINGERPRINT") ?: "missing"
           val credentialShape =
-              System.getenv("P382_CREDENTIAL_SHAPE") ?: "missing"
+              System.getenv("P39_CREDENTIAL_SHAPE") ?: "missing"
           val buildRevision =
               (System.getenv("GITHUB_SHA") ?: "local").take(12)
 
           android {
-              namespace = "com.amelia.p382"
+              namespace = "com.amelia.p39"
               compileSdk = 34
 
               defaultConfig {
-                  applicationId = "com.amelia.p382"
+                  applicationId = "com.amelia.p39"
                   minSdk = 24
                   targetSdk = 34
                   versionCode = 1
-                  versionName = "0.10.2-android-p3.8.2-provider-default-sampling"
+                  versionName = "0.11-android-p3.9-chat-faithfulness-vault"
 
                   ndk {
                       abiFilters += listOf(
@@ -277,7 +266,6 @@ jobs:
               defaultConfig {
                   version = "3.8"
                   buildPython("python3.8")
-
                   pip {
                       install("torch==1.8.1")
                   }
@@ -285,11 +273,9 @@ jobs:
           }
           EOF
 
-          # Retained at P3.8.2: INTERNET permission is required -- this is the
-          # first stage in this project that makes a network call at all.
-          # Every prior stage's own manifest and CI check explicitly
-          # REJECTED this permission; P3.8.2 retains that deliberate, named
-          # of that boundary, not an oversight.
+          # ACTION_OPEN_DOCUMENT supplies a user-selected document. No broad
+          # storage permission is declared. INTERNET is the explicit P3.8+
+          # boundary for the sealed direct provider calls.
           cat > app/src/main/AndroidManifest.xml <<'EOF'
           <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
@@ -299,7 +285,8 @@ jobs:
                   android:name="com.chaquo.python.android.PyApplication"
                   android:allowBackup="true"
                   android:label="@string/app_name"
-                  android:theme="@android:style/Theme.Material.Light.NoActionBar">
+                  android:theme="@android:style/Theme.Material.Light.NoActionBar"
+                  android:usesCleartextTraffic="false">
 
                   <activity
                       android:name=".MainActivity"
@@ -319,696 +306,16 @@ jobs:
 
           cat > app/src/main/res/values/strings.xml <<'EOF'
           <resources>
-              <string name="app_name">Amelia P3.8.2 Provider-Default Sampling</string>
+              <string name="app_name">Amelia P3.9 Chat</string>
           </resources>
           EOF
 
-          # P3.8.2's on-device experiment keeps the P3.7 fork/replay assay
-          # and adds one build-to-device attestation before the sealed call:
-          # runner secret bytes -> SHA-256 -> BuildConfig bytes -> SHA-256.
-          # The raw credential is never displayed, logged, or passed to
-          # Numogram.py. A mismatch or noncanonical shape stops before any
-          # provider call.
-          #
-          # Kotlin -> NumogramBridge -> Numogram.py -> Torch
-          #        -> initialize/reattach -> status -> transition(Z3)
-          #        -> run_fork(Z3) -> verify_last_fork -> status
-          #        -> RenderPromptBuilder (curate + digest)
-          #        -> RenderCapsule.seal()
-          #        -> RenderTransport.execute() [real network call to
-          #           Anthropic's Messages API, IF ANTHROPIC_API_KEY is set]
-          #        -> status again, compared against the post-fork status
-          #           to confirm the render call left no trace in the
-          #           substrate -- checked, not assumed
-          #        -> Kotlin: displays rendered text or a clear
-          #           no-key-configured message
-          cat > app/src/main/java/com/amelia/p382/MainActivity.kt <<'ACTIVITY_EOF'
-          package com.amelia.p382
-
-          import android.app.Activity
-          import android.os.Bundle
-          import android.util.Log
-          import android.view.Gravity
-          import android.widget.LinearLayout
-          import android.widget.ScrollView
-          import android.widget.TextView
-          import com.amelia.bridge.NumogramBridge
-          import com.amelia.renderer.RenderCapsule
-          import com.amelia.renderer.RenderPromptBuilder
-          import com.amelia.renderer.RenderTransport
-          import kotlin.math.abs
-          import org.json.JSONArray
-          import org.json.JSONObject
-          import java.security.MessageDigest
-
-          class MainActivity : Activity() {
-
-              companion object {
-                  private const val LOG_TAG = "AMELIA_P382"
-                  private const val PROBE_SEED = 3606
-                  private const val PROBE_DIMENSION = 3
-                  private const val PROBE_ORIGIN = 3
-                  private val EXPECTED_BRANCHES = listOf(
-                      "FULL", "ABLATED_TRANSITION", "ABLATED_MAGNETISM", "ABLATED_BOTH", "NEUTRAL_RESET"
-                  )
-              }
-
-              private lateinit var statusView: TextView
-              private lateinit var detailView: TextView
-              private lateinit var renderView: TextView
-
-              override fun onCreate(savedInstanceState: Bundle?) {
-                  super.onCreate(savedInstanceState)
-
-                  val scroll = ScrollView(this)
-                  val root = LinearLayout(this).apply {
-                      orientation = LinearLayout.VERTICAL
-                      setPadding(dp(20), dp(24), dp(20), dp(24))
-                  }
-
-                  root.addView(
-                      TextView(this).apply {
-                          text = "AMELIA · P3.8.2"
-                          textSize = 25f
-                          gravity = Gravity.CENTER_HORIZONTAL
-                      }
-                  )
-
-                  root.addView(
-                      TextView(this).apply {
-                          text = "Chaquopy 16.1 · Python 3.8 · Torch 1.8.1 · sealed fork → Claude API render"
-                          textSize = 14f
-                          gravity = Gravity.CENTER_HORIZONTAL
-                          setPadding(0, dp(8), 0, dp(18))
-                      }
-                  )
-
-                  statusView = TextView(this).apply {
-                          text = "P3.8.2 render probe starting…"
-                      textSize = 20f
-                      gravity = Gravity.CENTER_HORIZONTAL
-                      setPadding(dp(8), dp(18), dp(8), dp(18))
-                  }
-
-                  detailView = TextView(this).apply {
-                      text = "Waiting for the Numogram fork, then the sealed render call."
-                      textSize = 13f
-                      setPadding(dp(8), dp(12), dp(8), dp(12))
-                  }
-
-                  renderView = TextView(this).apply {
-                      text = ""
-                      textSize = 14f
-                      setPadding(dp(8), dp(12), dp(8), dp(12))
-                  }
-
-                  root.addView(statusView)
-                  root.addView(detailView)
-                  root.addView(renderView)
-
-                  root.addView(
-                      TextView(this).apply {
-                          text =
-                              "\nP3.8.2 boundary:\n\n" +
-                              "Kotlin\n" +
-                              "  ↓\n" +
-                              "NumogramBridge → Numogram.py (fork, as P3.7)\n" +
-                              "  ↓\n" +
-                              "RenderPromptBuilder: curates the fork result into a prompt,\n" +
-                              "  digests the trace, the curated payload, and the template\n" +
-                              "  ↓\n" +
-                              "RenderCapsule.seal(): fixes provider, model, params,\n" +
-                              "  streaming/tools/functionCalling/webhook all false\n" +
-                              "  ↓\n" +
-                              "RenderTransport.execute(): single sealed call to the\n" +
-                              "  declared endpoint only; every terminal outcome is\n" +
-                              "  archived and digested before any of it is trusted\n" +
-                              "  ↓\n" +
-                              "Kotlin: displays the rendered text; never routes it\n" +
-                              "  back into NumogramBridge -- checked below, not assumed\n\n" +
-                              "Fixed probe: seed 3606 · dimension 3 · origin Z3 · context {}\n\n" +
-                              "Before the sealed call, P3.8.2 compares a non-secret " +
-                              "runner SHA-256 fingerprint with the APK's BuildConfig value.\n" +
-                              "Sampling is sealed as provider-default: temperature, top_p, " +
-                              "and top_k are omitted.\n\n" +
-                              "No key configured means no network call is attempted."
-                          textSize = 13f
-                      }
-                  )
-
-                  scroll.addView(root)
-                  setContentView(scroll)
-                  runProbe()
-              }
-
-              private fun runProbe() {
-                  Thread {
-                      val raw = try {
-                          executeProbe()
-                      } catch (t: Throwable) {
-                          JSONObject()
-                              .put("schema", "amelia-p3.8.2-probe-result-v1")
-                              .put("status", "error")
-                              .put("error_type", t::class.java.simpleName)
-                              .put("message", t.message ?: "Unknown Android, Chaquopy, Torch, or network error")
-                              .toString()
-                      }
-
-                      Log.i(LOG_TAG, raw)
-                      runOnUiThread {
-                          renderProbeResult(raw)
-                      }
-                  }.start()
-              }
-
-              private fun executeProbe(): String {
-                  val bridge = NumogramBridge(applicationContext)
-                  val runtime = JSONObject(bridge.runtimeInfo())
-                  val before = JSONObject(bridge.status())
-                  val initialized = JSONObject(bridge.initialize(PROBE_SEED, PROBE_DIMENSION))
-                  val ready = JSONObject(bridge.status())
-                  val transitioned = JSONObject(bridge.transition(PROBE_ORIGIN, "{}"))
-                  val forked = JSONObject(bridge.runFork(PROBE_ORIGIN, "{}"))
-                  val verified = JSONObject(bridge.verifyLastFork())
-                  val postForkStatus = JSONObject(bridge.status())
-
-                  val result = JSONObject()
-                      .put("schema", "amelia-p3.8.2-probe-result-v1")
-                      .put("runtime", runtime)
-                      .put("before", before)
-                      .put("initialized", initialized)
-                      .put("ready", ready)
-                      .put("transitioned", transitioned)
-                      .put("forked", forked)
-                      .put("verified", verified)
-                      .put("post_fork_status", postForkStatus)
-
-                  val apiKey = BuildConfig.ANTHROPIC_API_KEY
-                  val credentialAttestation = credentialAttestation(apiKey)
-                  result.put("build_revision", BuildConfig.BUILD_REVISION)
-                  result.put("credential_attestation", credentialAttestation)
-
-                  if (apiKey.isBlank()) {
-                      result.put("status", "completed_no_render")
-                      result.put("render_status", "no_api_key_configured")
-                      val finalStatus = JSONObject(bridge.status())
-                      result.put("final", finalStatus)
-                      return result.toString()
-                  }
-
-                  if (!credentialAttestation.optBoolean("runner_fingerprint_matches_apk", false)) {
-                      result.put("status", "completed_credential_mismatch")
-                      result.put("render_status", "credential_attestation_failed")
-                      val finalStatus = JSONObject(bridge.status())
-                      result.put("final", finalStatus)
-                      return result.toString()
-                  }
-
-                  if (!credentialAttestation.optBoolean("canonical_shape", false)) {
-                      result.put("status", "completed_credential_shape_rejected")
-                      result.put("render_status", "credential_shape_rejected")
-                      val finalStatus = JSONObject(bridge.status())
-                      result.put("final", finalStatus)
-                      return result.toString()
-                  }
-
-                  val promptPayload = RenderPromptBuilder.buildFromForkResult(forked)
-                  val capsule = RenderCapsule.seal(
-                      traceDigest = promptPayload.traceDigest,
-                      payloadDigest = promptPayload.payloadDigest,
-                      rendererTemplateDigest = promptPayload.rendererTemplateDigest
-                  )
-                  val transportResult = RenderTransport.execute(capsule, promptPayload.renderPrompt, apiKey)
-                  val transportArchive = transportResult.archiveJson()
-
-                  // The boundary claim this stage exists to check: the render call
-                  // must not have touched the substrate. Compared against ACTUAL
-                  // status calls before and after, not assumed from the transport
-                  // object's own (necessarily self-reported) behaviour.
-                  val postRenderStatus = JSONObject(bridge.status())
-
-                  val sealed = transportResult.sealed
-                  result.put("status", "completed")
-                  result.put("capsule_digest", capsule.capsuleDigest)
-                  result.put("trace_digest", promptPayload.traceDigest)
-                  result.put("payload_digest", promptPayload.payloadDigest)
-                  result.put("renderer_template_digest", promptPayload.rendererTemplateDigest)
-                  result.put("model", capsule.model)
-                  result.put("sampling_policy", capsule.samplingPolicy)
-                  result.put("attempt_count", transportResult.attempts.size)
-                  result.put("transport_archive", transportArchive)
-                  if (sealed != null) {
-                      val renderStatus =
-                          if (sealed.responseClass.name == "PROVIDER_REJECTED") {
-                              "provider_rejected"
-                          } else {
-                              "completed"
-                          }
-                      result.put("render_status", renderStatus)
-                      result.put("response_class", sealed.responseClass.name)
-                      result.put("http_status", sealed.httpStatus)
-                      result.put("raw_response_digest", sealed.rawResponseDigest)
-                      result.put("rendered_text", sealed.parsedDisplayText)
-                  } else {
-                      val terminal = transportResult.terminal
-                      result.put("render_status", "transport_failed")
-                      result.put("attempts_all_errored", true)
-                      result.put("http_status", terminal.httpStatus)
-                      result.put("raw_response_digest", terminal.rawResponseDigest)
-                      result.put("terminal_error_type", terminal.errorType ?: "")
-                      result.put("terminal_error_message", terminal.errorMessage ?: "")
-                  }
-                  result.put("post_render_status", postRenderStatus)
-                  result.put("final", postRenderStatus)
-
-                  return result.toString()
-              }
-
-              private fun probabilitiesValid(probabilities: JSONArray): Boolean {
-                  if (probabilities.length() != 10) return false
-                  var mass = 0.0
-                  for (index in 0 until probabilities.length()) {
-                      val value = probabilities.optDouble(index, Double.NaN)
-                      if (value.isNaN() || value.isInfinite()) return false
-                      mass += value
-                  }
-                  return abs(mass - 1.0) <= 0.00001
-              }
-
-              /**
-               * This is an attestation, not a credential export. It records
-               * only safe properties of the value actually packaged into the
-               * APK: byte count, format flags, and a SHA-256 digest. The
-               * digest is compared with a digest sealed on the Actions runner
-               * before any network request is allowed.
-               */
-              private fun credentialAttestation(apiKey: String): JSONObject {
-                  val rawBytes = apiKey.toByteArray(Charsets.UTF_8)
-                  val observedFingerprint = sha256Hex(rawBytes)
-                  val expectedFingerprint = BuildConfig.CREDENTIAL_FINGERPRINT
-                  val containsWhitespace = apiKey.any { it.isWhitespace() }
-                  val containsControl = apiKey.any { Character.isISOControl(it) }
-                  val hasWrapper =
-                      apiKey.startsWith("Bearer ") ||
-                          apiKey.startsWith("x-api-key:") ||
-                          apiKey.startsWith("ANTHROPIC_API_KEY=") ||
-                          apiKey.startsWith("\"") ||
-                          apiKey.startsWith("'")
-                  val looksAnthropic = apiKey.startsWith("sk-ant-")
-                  val canonicalShape =
-                      apiKey.isNotBlank() &&
-                          looksAnthropic &&
-                          !containsWhitespace &&
-                          !containsControl &&
-                          !hasWrapper
-                  val fingerprintMatches =
-                      expectedFingerprint != "missing" &&
-                          expectedFingerprint == observedFingerprint
-
-                  return JSONObject()
-                      .put("state", if (apiKey.isBlank()) "missing" else "present")
-                      .put("length_bytes", rawBytes.size)
-                      .put("runner_shape", BuildConfig.CREDENTIAL_SHAPE)
-                      .put("looks_anthropic_api_key", looksAnthropic)
-                      .put("contains_whitespace", containsWhitespace)
-                      .put("contains_control", containsControl)
-                      .put("has_wrapper", hasWrapper)
-                      .put("canonical_shape", canonicalShape)
-                      .put("runner_fingerprint_prefix", expectedFingerprint.take(16))
-                      .put("apk_fingerprint_prefix", observedFingerprint.take(16))
-                      .put("runner_fingerprint_matches_apk", fingerprintMatches)
-              }
-
-              private fun sha256Hex(bytes: ByteArray): String =
-                  MessageDigest.getInstance("SHA-256")
-                      .digest(bytes)
-                      .joinToString("") { "%02x".format(it) }
-
-              private fun credentialAttestationText(attestation: JSONObject?): String {
-                  if (attestation == null) return "Credential attestation missing."
-
-                  return buildString {
-                      append("Build revision: ")
-                      append(BuildConfig.BUILD_REVISION)
-                      append('\n')
-                      append("Credential present: ")
-                      append(attestation.optString("state", "") == "present")
-                      append('\n')
-                      append("Byte count: ")
-                      append(attestation.optInt("length_bytes", -1))
-                      append('\n')
-                      append("Runner shape: ")
-                      append(attestation.optString("runner_shape", ""))
-                      append('\n')
-                      append("Canonical APK shape: ")
-                      append(attestation.optBoolean("canonical_shape", false))
-                      append('\n')
-                      append("Runner/APK fingerprint match: ")
-                      append(attestation.optBoolean("runner_fingerprint_matches_apk", false))
-                      append('\n')
-                      append("Fingerprint: ")
-                      append(attestation.optString("apk_fingerprint_prefix", ""))
-                      append("…")
-                  }
-              }
-
-              /**
-               * This is deliberately display-only. The exact response bytes are
-               * retained as Base64 in transport_archive for the log/ledger; the
-               * screen shows a bounded preview so an error body cannot swamp the
-               * diagnostic interface.
-               */
-              private fun terminalTransportDiagnostic(terminal: JSONObject?): String {
-                  if (terminal == null) {
-                      return "Transport archive missing."
-                  }
-
-                  val httpStatus = terminal.optInt("http_status", -1)
-                  val httpStatusText =
-                      if (httpStatus >= 0) httpStatus.toString() else "not received"
-                  val errorType = terminal.optString("error_type", "")
-                  val errorMessage = terminal.optString("error_message", "")
-                  val rawRecorded = terminal.optBoolean("raw_response_recorded", false)
-                  val rawBytes = terminal.optInt("raw_response_bytes", 0)
-                  val rawDigest = terminal.optString("raw_response_digest", "")
-                  val rawPreview = terminal.optString("raw_response_preview", "").take(2048)
-
-                  return buildString {
-                      append("Attempt: ")
-                      append(terminal.optInt("attempt_number", -1))
-                      append('\n')
-                      append("HTTP status: ")
-                      append(httpStatusText)
-                      append('\n')
-                      append("Response class: ")
-                      append(terminal.optString("response_class", ""))
-                      append('\n')
-                      append("Error type: ")
-                      append(if (errorType.isBlank()) "(none)" else errorType)
-                      append('\n')
-                      append("Error message: ")
-                      append(if (errorMessage.isBlank()) "(none)" else errorMessage)
-                      append('\n')
-                      append("Raw response recorded: ")
-                      append(rawRecorded)
-                      append('\n')
-                      append("Raw bytes: ")
-                      append(rawBytes)
-                      append('\n')
-                      append("Raw SHA-256: ")
-                      append(rawDigest)
-                      append("\n\nProvider response preview:\n")
-                      append(
-                          if (rawPreview.isBlank()) {
-                              "(no response body received)"
-                          } else {
-                              rawPreview
-                          }
-                      )
-                  }
-              }
-
-              private fun renderProbeResult(raw: String) {
-                  try {
-                      val result = JSONObject(raw)
-                      val runtime = result.optJSONObject("runtime")
-                          ?: throw IllegalStateException("Missing Torch runtime record")
-                      val before = result.optJSONObject("before")
-                          ?: throw IllegalStateException("Missing pre-initialization status")
-                      val initialized = result.optJSONObject("initialized")
-                          ?: throw IllegalStateException("Missing initialization result")
-                      val ready = result.optJSONObject("ready")
-                          ?: throw IllegalStateException("Missing ready status")
-                      val transitioned = result.optJSONObject("transitioned")
-                          ?: throw IllegalStateException("Missing transition result")
-                      val forked = result.optJSONObject("forked")
-                          ?: throw IllegalStateException("Missing fork result")
-                      val verified = result.optJSONObject("verified")
-                          ?: throw IllegalStateException("Missing verify result")
-
-                      val initializedSystem = initialized.optJSONObject("system")
-                          ?: throw IllegalStateException("Missing initialized system")
-                      val readySystem = ready.optJSONObject("system")
-                          ?: throw IllegalStateException("Missing ready system")
-                      val event = transitioned.optJSONObject("event")
-                          ?: throw IllegalStateException("Missing transition event")
-                      val transitionProbs = event.optJSONArray("probabilities")
-                          ?: throw IllegalStateException("Missing transition probability vector")
-                      val branches = forked.optJSONObject("branches")
-                          ?: throw IllegalStateException("Missing fork branches")
-                      val invariants = forked.optJSONObject("invariants")
-                          ?: throw IllegalStateException("Missing fork invariants")
-
-                      val torchVersion = runtime.optString("torch_version", "")
-                      val torchReady =
-                          runtime.optString("status", "") == "torch_ready" &&
-                              torchVersion.startsWith("1.8.1") &&
-                              runtime.optInt("zone_count", -1) == 10 &&
-                              !runtime.optBoolean("persistence_default", true)
-
-                      val initStatus = initialized.optString("status", "")
-                      val digestMatchedReattachment =
-                          initStatus == "already_initialized" &&
-                              initialized.optBoolean("state_unchanged", false) &&
-                              initialized.optString("init_digest", "").isNotBlank() &&
-                              initialized.optString("init_digest", "") ==
-                                  initialized.optString("attempted_init_digest", "")
-
-                      val initializationHeld =
-                          (initStatus == "initialized" || digestMatchedReattachment) &&
-                              initializedSystem.optInt("seed", -1) == PROBE_SEED &&
-                              initializedSystem.optInt("dimension", -1) == PROBE_DIMENSION &&
-                              !initializedSystem.optBoolean("persistence_enabled", true)
-
-                      val baselineStep = readySystem.optInt("evolution_step", -1)
-                      val baselineHistory = readySystem.optInt("transition_history", -1)
-
-                      val readyHeld =
-                          ready.optString("status", "") == "ready" && baselineStep >= 0 && baselineHistory >= 0
-
-                      val transitionHeld =
-                          transitioned.optString("status", "") == "transitioned" &&
-                              event.optInt("step", -1) == baselineStep + 1 &&
-                              event.optInt("from", -1) == PROBE_ORIGIN &&
-                              event.optInt("to", -1) in 0 until 10 &&
-                              probabilitiesValid(transitionProbs)
-
-                      var branchesWellFormed = true
-                      val branchLines = StringBuilder()
-                      for (name in EXPECTED_BRANCHES) {
-                          val branch = branches.optJSONObject(name)
-                          if (branch == null) {
-                              branchesWellFormed = false
-                              branchLines.append("$name: missing\n")
-                              continue
-                          }
-                          val branchProbs = branch.optJSONArray("probabilities")
-                          val wellFormed =
-                              branch.optInt("from", -1) == PROBE_ORIGIN &&
-                                  branch.optInt("to", -1) in 0 until 10 &&
-                                  branchProbs != null && probabilitiesValid(branchProbs)
-                          if (!wellFormed) branchesWellFormed = false
-                          branchLines.append(
-                              "$name: Z${branch.optInt("from")} → Z${branch.optInt("to")}" +
-                                  (if (branch.optBoolean("fallback", false)) " (fallback)" else "") + "\n"
-                          )
-                      }
-
-                      val liveStateUnchanged = invariants.optBoolean("live_state_unchanged", false)
-                      val generatorStateUnchanged = invariants.optBoolean("generator_state_unchanged", false)
-                      val ablatedMatchesNeutral = invariants.optBoolean("ablated_both_matches_neutral_reset", false)
-
-                      val forkHeld =
-                          forked.optString("status", "") == "forked" &&
-                              forked.optString("capsule_digest", "").isNotBlank() &&
-                              branchesWellFormed &&
-                              liveStateUnchanged &&
-                              generatorStateUnchanged &&
-                              ablatedMatchesNeutral
-
-                      val mismatchedBranches = verified.optJSONArray("mismatched_branches")
-                      val verifyHeld =
-                          verified.optString("status", "") == "verified" &&
-                              mismatchedBranches != null && mismatchedBranches.length() == 0 &&
-                              verified.optString("capsule_digest", "") == forked.optString("capsule_digest", "")
-
-                      val overallStatus = result.optString("status", "")
-                      val renderStatus = result.optString("render_status", "")
-                      val credential = result.optJSONObject("credential_attestation")
-
-                      if (overallStatus == "completed_no_render") {
-                          statusView.text = "P3.8.2 NO RENDER (key not configured)"
-                          detailView.text =
-                              "The Numogram fork completed and verified normally, but " +
-                                  "BuildConfig.ANTHROPIC_API_KEY is blank, so no network call " +
-                                  "was attempted. Fork held: " + forkHeld + " · Verify held: " + verifyHeld +
-                                  "\n\n" + credentialAttestationText(credential)
-                          renderView.text = "No provider call was attempted."
-                          return
-                      }
-
-                      if (overallStatus == "completed_credential_mismatch") {
-                          statusView.text = "P3.8.2 CREDENTIAL MISMATCH"
-                          detailView.text =
-                              "The runner's sealed credential fingerprint does not match " +
-                                  "the value packaged into this APK. No provider call was " +
-                                  "attempted.\n\n" + credentialAttestationText(credential)
-                          renderView.text =
-                              "Fail-closed before network access: rebuild and install the " +
-                                  "APK from this exact Actions run."
-                          return
-                      }
-
-                      if (overallStatus == "completed_credential_shape_rejected") {
-                          statusView.text = "P3.8.2 CREDENTIAL SHAPE REJECTED"
-                          detailView.text =
-                              "The credential survived runner-to-APK packaging, but its " +
-                                  "format is not canonical for a direct Anthropic API key. " +
-                                  "No provider call was attempted.\n\n" +
-                                  credentialAttestationText(credential)
-                          renderView.text =
-                              "Expected: a raw sk-ant-… API key with no wrapper, quote, " +
-                                  "or whitespace."
-                          return
-                      }
-
-                      // post_render_status is the ground-truth check for the one-way
-                      // boundary: the Numogram must show exactly the same evolution_step
-                      // and transition_history after the render call as it did right
-                      // after the fork -- a render call that somehow looped back into
-                      // the substrate would show up here as an unexpected increment.
-                      val postForkStatus = result.optJSONObject("post_fork_status")
-                          ?: throw IllegalStateException("Missing post-fork status")
-                      val postRenderStatus = result.optJSONObject("post_render_status")
-                          ?: throw IllegalStateException("Missing post-render status")
-                      val postForkSystem = postForkStatus.optJSONObject("system")
-                          ?: throw IllegalStateException("Missing post-fork system")
-                      val postRenderSystem = postRenderStatus.optJSONObject("system")
-                          ?: throw IllegalStateException("Missing post-render system")
-
-                      val noFeedbackHeld =
-                          postRenderSystem.optInt("evolution_step", -1) == postForkSystem.optInt("evolution_step", -2) &&
-                              postRenderSystem.optInt("transition_history", -1) == postForkSystem.optInt("transition_history", -2)
-
-                      val renderTransportSucceeded = renderStatus == "completed"
-                      val responseClass = result.optString("response_class", "")
-                      val renderedText = result.optString("rendered_text", "")
-                      val transportArchive = result.optJSONObject("transport_archive")
-                      val terminalAttempt = transportArchive?.optJSONObject("terminal_attempt")
-
-                      if (renderStatus == "provider_rejected") {
-                          statusView.text = "P3.8.2 PROVIDER REJECTED"
-                          detailView.text =
-                                  "The sealed request reached the declared provider and received " +
-                                  "a terminal rejection. This is not a connection failure and " +
-                                  "was not retried. The Numogram boundary still held.\n\n" +
-                                  "Model: " + result.optString("model", "") + "\n" +
-                                  "Sampling: " + result.optString("sampling_policy", "") + "\n\n" +
-                                  credentialAttestationText(credential) + "\n\n" +
-                                  "no_feedback_held: " + noFeedbackHeld
-                          renderView.text =
-                              "Terminal provider archive (display-only):\n\n" +
-                                  terminalTransportDiagnostic(terminalAttempt)
-                          return
-                      }
-
-                      val passed =
-                          overallStatus == "completed" &&
-                              torchReady &&
-                              initializationHeld &&
-                              readyHeld &&
-                              transitionHeld &&
-                              forkHeld &&
-                              verifyHeld &&
-                              renderTransportSucceeded &&
-                              noFeedbackHeld
-
-                      val initKind = if (initStatus == "already_initialized") {
-                          "reattached to existing system (digest-matched)"
-                      } else {
-                          "fresh initialization"
-                      }
-
-                      if (passed) {
-                          statusView.text = "P3.8.2 PASSED ✓"
-                          detailView.text =
-                              "Torch imported, one transition committed, the five-condition " +
-                                  "fork ran and replay-verified, and the sealed render call " +
-                                  "completed without any trace of feeding back into the substrate.\n\n" +
-                                  "Torch: " + torchVersion + "\n" +
-                                  "Initialization: " + initKind + "\n" +
-                                  "Fork branches (all from Z3):\n" + branchLines.toString() +
-                                  "verify_last_fork: " + verified.optString("status") + "\n\n" +
-                                  "Model: " + result.optString("model", "") + "\n" +
-                                  "Sampling: " + result.optString("sampling_policy", "") + "\n" +
-                                  "Response class: " + responseClass + "\n" +
-                                  "HTTP status: " + result.optInt("http_status", -1) + "\n" +
-                                  "Attempts: " + result.optInt("attempt_count", -1) + "\n" +
-                                  "Capsule digest: " + result.optString("capsule_digest", "").take(16) + "…\n" +
-                                  credentialAttestationText(credential) + "\n" +
-                                  "no_feedback_held: " + noFeedbackHeld
-                          renderView.text =
-                              if (responseClass == "SUCCESS_TEXT") {
-                                  "Rendered text:\n\n" + renderedText
-                              } else {
-                                  "Renderer returned " + responseClass + " rather than text " +
-                                      "(this is still a mechanically correct, boundary-respecting " +
-                                      "result -- the transport and the sealed capsule worked; " +
-                                      "the model just didn't produce display text this time).\n\n" +
-                                      "Raw: " + renderedText.take(300)
-                              }
-                      } else {
-                          statusView.text = "P3.8.2 FAIL-CLOSED"
-                          renderView.text =
-                              if (renderStatus == "transport_failed") {
-                                  "Terminal transport archive (display-only):\n\n" +
-                                      terminalTransportDiagnostic(terminalAttempt)
-                              } else {
-                                  ""
-                              }
-                          detailView.text =
-                              "The sealed P3.8.2 contract failed closed. The terminal " +
-                                  "transport archive below distinguishes a provider rejection " +
-                                  "from a connection, write, or read failure.\n\n" +
-                                  "Torch ready: " + torchReady + "\n" +
-                                  "Initialization: " + initializationHeld + " (" + initStatus + ")\n" +
-                                  "Ready state: " + readyHeld + "\n" +
-                                  "Transition: " + transitionHeld + "\n" +
-                                  "Fork: " + forkHeld + " (branches well-formed: " + branchesWellFormed + ")\n" +
-                                  "Verify: " + verifyHeld + "\n" +
-                                  "Render transport succeeded: " + renderTransportSucceeded + "\n" +
-                                  credentialAttestationText(credential) + "\n" +
-                                  "no_feedback_held: " + noFeedbackHeld
-                  }
-              } catch (t: Throwable) {
-                      statusView.text = "P3.8.2 FAIL-CLOSED"
-                      renderView.text = ""
-                      detailView.text =
-                          "The returned value was not valid P3.8.2 probe JSON.\n\n" +
-                              "Error: " + (t.message ?: "Unknown parsing error") + "\n\n" +
-                              "Probe-result preview:\n" + raw.take(2048)
-                  }
-              }
-
-              private fun dp(value: Int): Int {
-                  return (value * resources.displayMetrics.density).toInt()
-              }
-          }
-          ACTIVITY_EOF
-
-      # Numogram.py's reattachment, fork, and five-condition verification
-      # are unchanged from P3.7. P3.8.2 adds a pre-call, non-secret
-      # credential attestation, provider-default sampling with no serialized
-      # temperature/top_p/top_k, and a status taxonomy in which a received
-      # HTTP rejection is a terminal provider response, not a transport
-      # failure to retry.
-      - name: Validate P3.8.2 source and lifecycle contract
+      - name: Validate P3.9 source and boundary contracts
         shell: bash
         run: |
           set -euo pipefail
 
           python3.8 --version
-
           python3.8 -m py_compile \
             app/src/main/python/bridge_probe.py \
             app/src/main/python/Numogram.py
@@ -1030,75 +337,63 @@ jobs:
               "transition",
               "run_fork",
               "verify_last_fork",
-              "_config_digest",
-              "_branch_seed",
-              "_digest_of",
-              "_generator_fingerprint",
-              "_run_fork_branches",
           }
           missing = required - functions
           assert not missing, f"Missing Numogram entry points: {sorted(missing)}"
-          print("P3.8.2 Numogram entry-point contract validated (unchanged from P3.7)")
+          print("P3.9 Numogram entry-point contract validated")
           PY
 
           grep -Fq 'install("torch==1.8.1")' app/build.gradle.kts
           grep -Fq 'buildPython("python3.8")' app/build.gradle.kts
-          grep -Fq 'getModule("Numogram")' app/src/main/java/com/amelia/bridge/NumogramBridge.kt
-          grep -Fq 'already_initialized' app/src/main/python/Numogram.py
-          grep -Fq '_config_digest' app/src/main/python/Numogram.py
-          grep -Fq 'ABLATED_TRANSITION' app/src/main/python/Numogram.py
-          grep -Fq 'live_state_unchanged' app/src/main/python/Numogram.py
-          grep -Fq 'runFork' app/src/main/java/com/amelia/bridge/NumogramBridge.kt
-          grep -Fq 'verifyLastFork' app/src/main/java/com/amelia/bridge/NumogramBridge.kt
+          grep -Fq 'android.permission.INTERNET' app/src/main/AndroidManifest.xml
+          grep -Fq 'ACTION_OPEN_DOCUMENT' app/src/main/java/com/amelia/p39/MainActivity.kt
+          grep -Fq 'PythonModuleVault.ingest' app/src/main/java/com/amelia/p39/MainActivity.kt
+          grep -Fq 'STAGED_NOT_IMPORTED' app/src/main/java/com/amelia/modules/PythonModuleVault.kt
+          grep -Fq 'CONTRADICTION_DETECTED' app/src/main/java/com/amelia/renderer/RendererFaithfulness.kt
+          grep -Fq 'UNVERIFIABLE' app/src/main/java/com/amelia/renderer/RendererFaithfulness.kt
+          grep -Fq 'amelia-p3.9-render-response-v1' app/src/main/java/com/amelia/renderer/RenderPromptBuilder.kt
+          grep -Fq 'same_probability_distribution_only' app/src/main/java/com/amelia/renderer/RenderPromptBuilder.kt
+          grep -Fq 'ChatPromptBuilder.build' app/src/main/java/com/amelia/p39/MainActivity.kt
+          grep -Fq 'RenderPromptBuilder.buildFromForkResult' app/src/main/java/com/amelia/p39/MainActivity.kt
+          grep -Fq 'RenderTransport.execute' app/src/main/java/com/amelia/p39/MainActivity.kt
+          grep -Fq 'noFeedbackHeld' app/src/main/java/com/amelia/p39/MainActivity.kt
 
-          grep -Fq 'class RenderCapsule' app/src/main/java/com/amelia/renderer/RenderTransport.kt
-          grep -Fq 'object RenderTransport' app/src/main/java/com/amelia/renderer/RenderTransport.kt
-          grep -Fq 'streamingEnabled = false' app/src/main/java/com/amelia/renderer/RenderTransport.kt
-          grep -Fq 'toolsEnabled = false' app/src/main/java/com/amelia/renderer/RenderTransport.kt
-          grep -Fq 'ALLOWED_ENDPOINTS' app/src/main/java/com/amelia/renderer/RenderTransport.kt
-          grep -Fq 'raw_response_base64' app/src/main/java/com/amelia/renderer/RenderTransport.kt
-          grep -Fq 'p3.8.2-provider-default-sampling-v1' app/src/main/java/com/amelia/renderer/RenderTransport.kt
-          grep -Fq 'provider_default_omitted' app/src/main/java/com/amelia/renderer/RenderTransport.kt
-          grep -Fq 'PROVIDER_REJECTED' app/src/main/java/com/amelia/renderer/RenderTransport.kt
-          grep -Fq 'TRANSPORT_ERROR' app/src/main/java/com/amelia/renderer/RenderTransport.kt
-          grep -Fq 'claude-sonnet-5' app/src/main/java/com/amelia/renderer/RenderTransport.kt
-          if grep -Fq 'put("temperature"' app/src/main/java/com/amelia/renderer/RenderTransport.kt; then
-            echo "FAIL: P3.8.2 must omit temperature from the sealed provider request."
+          CHAT_EXECUTE_BODY="$(
+            sed -n \
+              '/private fun executeChat(/,/^    private fun renderChatResult/p' \
+              app/src/main/java/com/amelia/p39/MainActivity.kt
+          )"
+          if printf '%s' "$CHAT_EXECUTE_BODY" | \
+            rg -n 'NumogramBridge|PythonModuleVault|runFork|transition\('
+          then
+            echo "FAIL: P3.9 chat must not call the substrate or module vault."
             exit 1
           fi
-          grep -Fq 'object RenderPromptBuilder' app/src/main/java/com/amelia/renderer/RenderPromptBuilder.kt
-          grep -Fq 'buildFromForkResult' app/src/main/java/com/amelia/renderer/RenderPromptBuilder.kt
 
-          grep -Fq 'asJavaStringLiteral' app/build.gradle.kts
-          grep -Fq 'CREDENTIAL_FINGERPRINT' app/build.gradle.kts
-          grep -Fq 'buildConfig = true' app/build.gradle.kts
-          grep -Fq 'BuildConfig.ANTHROPIC_API_KEY' app/src/main/java/com/amelia/p382/MainActivity.kt
-          grep -Fq 'credentialAttestation' app/src/main/java/com/amelia/p382/MainActivity.kt
-          grep -Fq 'runner_fingerprint_matches_apk' app/src/main/java/com/amelia/p382/MainActivity.kt
-          grep -Fq 'credential_shape_rejected' app/src/main/java/com/amelia/p382/MainActivity.kt
-          grep -Fq 'sampling_policy' app/src/main/java/com/amelia/p382/MainActivity.kt
-          grep -Fq 'RenderPromptBuilder.buildFromForkResult' app/src/main/java/com/amelia/p382/MainActivity.kt
-          grep -Fq 'RenderCapsule.seal' app/src/main/java/com/amelia/p382/MainActivity.kt
-          grep -Fq 'RenderTransport.execute' app/src/main/java/com/amelia/p382/MainActivity.kt
-          grep -Fq 'transport_archive' app/src/main/java/com/amelia/p382/MainActivity.kt
-          grep -Fq 'terminalTransportDiagnostic' app/src/main/java/com/amelia/p382/MainActivity.kt
-          grep -Fq 'return buildString {' app/src/main/java/com/amelia/p382/MainActivity.kt
-          grep -Fq 'noFeedbackHeld' app/src/main/java/com/amelia/p382/MainActivity.kt
-          grep -Fq 'post_fork_status' app/src/main/java/com/amelia/p382/MainActivity.kt
-          grep -Fq 'post_render_status' app/src/main/java/com/amelia/p382/MainActivity.kt
+          # The staged module vault must not obtain a Chaquopy handle or call
+          # an uploaded module. Its lexical audit is intentionally not called
+          # a sandbox; P3.9's safety property is non-execution.
+          if rg -n 'Python\.getInstance|getModule\(|callAttr\(' \
+            app/src/main/java/com/amelia/modules/PythonModuleVault.kt
+          then
+            echo "FAIL: P3.9 module vault must not import or execute uploaded source."
+            exit 1
+          fi
 
-          if ! grep -Fq 'android.permission.INTERNET' app/src/main/AndroidManifest.xml; then
-            echo "FAIL: P3.8.2 requires INTERNET for its single sealed provider call."
+          if rg -n 'put\("temperature"|put\("top_p"|put\("top_k"' \
+            app/src/main/java/com/amelia/renderer/RenderTransport.kt
+          then
+            echo "FAIL: P3.9 must retain provider-default sampling omission."
             exit 1
           fi
 
           echo
-          echo "P3.8.2 pre-build validation passed."
-          echo "Credential attestation is digest-only: no API key is printed."
-          echo "Provider-default sampling is sealed: no temperature/top_p/top_k request field."
-          echo "A 4xx/5xx response is terminal and cannot trigger a reroll."
+          echo "P3.9 pre-build validation passed."
+          echo "Chat and trace calls use a one-attempt sealed transport capsule."
+          echo "Trace prose must be structured and checked against the sealed branch table."
+          echo "Uploaded Python is staged in app-private storage and is not imported."
 
-      - name: Build Android-P3.8.2 Provider-Default Sampling APK
+      - name: Build Android-P3.9 Chat Faithfulness Vault APK
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
@@ -1107,7 +402,7 @@ jobs:
             :app:assembleDebug \
             --stacktrace
 
-      - name: Record P3.8.2 build manifest
+      - name: Record P3.9 build manifest
         shell: bash
         run: |
           set -euo pipefail
@@ -1122,19 +417,20 @@ jobs:
             ChaquopyProbe.kt \
             RenderTransport.kt \
             RenderPromptBuilder.kt \
-            > p382-source-sha256.txt
+            RendererFaithfulness.kt \
+            ChatPromptBuilder.kt \
+            PythonModuleVault.kt \
+            P39MainActivity.kt \
+            > p39-source-sha256.txt
 
           APK_SHA="$(sha256sum "$APK" | awk '{print $1}')"
-          P382_FINGERPRINT="${P382_CREDENTIAL_FINGERPRINT:-missing}"
-          P382_SHAPE="${P382_CREDENTIAL_SHAPE:-missing}"
-          P382_LENGTH="${P382_CREDENTIAL_LENGTH:-0}"
 
-          cat > p382-build-manifest.txt <<EOF
-          Amelia Android P3.8.2
-          ======================
+          cat > p39-build-manifest.txt <<EOF
+          Amelia Android P3.9
+          ==================
 
           Revision:
-          $GITHUB_SHA
+          ${GITHUB_SHA}
 
           Android Gradle Plugin:
           8.7.3
@@ -1154,88 +450,67 @@ jobs:
           Torch requirement:
           torch==1.8.1
 
-          Provider model:
-          claude-sonnet-5
+          Application ID:
+          com.amelia.p39
 
-          Sampling policy:
-          provider_default_omitted
-          temperature, top_p, and top_k are intentionally absent from the
-          sealed request body. This omission is included in the capsule digest.
+          Chat lane:
+          User text is sealed into a display-only chat capsule and sent in
+          one provider call only when the attested credential is usable.
+          Chat has no NumogramBridge reference and cannot become Numogram
+          context, routing, mutation, cohort, or module invocation input.
 
-          Credential attestation (non-secret):
-          State: ${P382_CREDENTIAL_STATE:-missing}
-          Byte length: $P382_LENGTH
-          Runner shape: $P382_SHAPE
-          SHA-256 prefix: ${P382_FINGERPRINT:0:16}
+          Trace renderer:
+          The fixed Numogram fork is displayed as an authoritative sealed
+          branch table. The provider must return a structured destination
+          claim table plus prose. RendererFaithfulness compares the claims
+          and the ABLATED_BOTH/NEUTRAL_RESET relation against the archived
+          fork. Contradictory prose is rejected without retry; unparseable
+          output is visibly labelled unverified.
 
-          P3.8.2 change:
-          The Actions runner computes a SHA-256 digest of the exact secret
-          bytes and packages only that digest, shape, byte count, and build
-          revision beside the direct-call credential. Before any provider
-          request, the app independently digests its BuildConfig value and
-          requires an exact match plus canonical raw-key shape. The raw API
-          key is never shown in the UI, log, manifest, or archive. A mismatch
-          or noncanonical shape fails closed before network access. The
-          request additionally seals provider-default sampling: no temperature,
-          top_p, or top_k field is serialized. This does not make model output
-          reproducible; it fixes the exact request configuration whose archived
-          response can later be integrity-checked.
+          Module facility:
+          ACTION_OPEN_DOCUMENT picks a .py source file without broad storage
+          permission. P3.9 enforces a 128 KiB, UTF-8, filename, and lexical
+          capability policy, then stores accepted source in app-private
+          storage with SHA-256 provenance. This is a staging audit, not a
+          sandbox: accepted modules are never added to sys.path, imported,
+          or executed in P3.9.
 
-          Transport taxonomy:
-          A received HTTP 4xx/5xx response is a terminal provider rejection,
-          archived before parsing and never retried. Only a connection, write,
-          or read failure may consume another predeclared attempt. This is a
-          boundary and selection-policy correction, not an LLM reproducibility
-          claim.
+          Provider credential:
+          Same P3.8.2 private research-build model. The key is compiled into
+          this APK after the runner fingerprint attestation passes. Keep the
+          repository and artifact private; this is not a production key
+          distribution design.
 
-          Runtime lifecycle:
-          get_runtime_info
-          initialize_system(seed=3606, dimension=3)  [fresh OR reattach]
-          status
-          transition(origin=Z3, context={})
-          run_fork(origin=Z3, context={})
-          verify_last_fork
-          status
-          [credential attestation]
-          [one sealed render call, only if attestation holds]
-          status (compared against the pre-render status)
-
-          Persistence:
-          DISABLED (Numogram side)
+          Provider policy:
+          Endpoint/model/attempt budget are sealed before each call.
+          maxAttempts=1. Streaming, tools, function calling, and webhook are
+          disabled. temperature, top_p, and top_k are omitted entirely.
 
           Runtime INTERNET permission:
-          DECLARED (only for the sealed provider call)
-
-          ABIs:
-          armeabi-v7a
-          arm64-v8a
-
-          Application ID:
-          com.amelia.p382 (installs beside P3.8.1 and prior stages)
+          DECLARED for explicit user chat and sealed renderer calls.
 
           APK SHA-256:
-          $APK_SHA
+          ${APK_SHA}
 
-          Acceptance condition:
-          App displays "P3.8.2 PASSED (check mark)" only when the P3.7
-          substrate contract holds, the runner/APK credential fingerprints
-          match, the key has canonical raw shape, one sealed provider call
-          returns a non-rejected classified response, and the post-render
-          status has the same evolution_step and transition_history as the
-          post-fork status. A refusal or empty response may still pass; a
-          provider rejection remains a terminal, archived failure. No build
-          preflight provider call is made.
+          Acceptance conditions:
+          1. Chat response appears after one sealed display-only provider call
+             and does not invoke Numogram or uploaded code.
+          2. The trace screen displays a sealed branch table and reports
+             VERIFIED only when structured renderer claims match it and
+             no_feedback_held is true.
+          3. A picked safe .py file appears as STAGED_NOT_IMPORTED; it is
+             never automatically executed.
           EOF
 
-          cat p382-build-manifest.txt
-          cat p382-source-sha256.txt
+          cat p39-build-manifest.txt
+          cat p39-source-sha256.txt
 
-      - name: Upload Android-P3.8.2 Provider-Default Sampling APK
+      - name: Upload Android-P3.9 Chat Faithfulness Vault APK
         uses: actions/upload-artifact@v4
         with:
-          name: Amelia-Android-P3.8.2-Provider-Default-Sampling
+          name: Amelia-Android-P3.9-Chat-Faithfulness-Vault
           path: |
             app/build/outputs/apk/debug/app-debug.apk
-            p382-build-manifest.txt
-            p382-source-sha256.txt
+            p39-build-manifest.txt
+            p39-source-sha256.txt
           retention-days: 14
