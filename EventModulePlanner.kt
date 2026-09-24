@@ -167,7 +167,9 @@ object EventModulePlanner {
 
             val py = Python.getInstance()
             val sys = py.getModule("sys")
-            val path = sys.get("path")
+            val path = requireNotNull(sys.get("path")) {
+                "Python sys.path unavailable."
+            }
             val moduleName = record.fileName.removeSuffix(".py")
             val directoryPath = moduleDirectory.absolutePath
 
