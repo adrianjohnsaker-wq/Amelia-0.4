@@ -1,4 +1,4 @@
-name: Build Amelia Android-P3.9 Chat Faithfulness Vault APK
+name: Build Amelia Android-P3.10 Numogram Mediated Chat APK
 
 on:
   push:
@@ -32,7 +32,7 @@ jobs:
         with:
           gradle-version: "8.9"
 
-      - name: Verify P3.9 source files exist
+      - name: Verify P3.10 source files exist
         shell: bash
         run: |
           set -euo pipefail
@@ -43,14 +43,13 @@ jobs:
             NumogramBridge.kt \
             ChaquopyProbe.kt \
             RenderTransport.kt \
-            RenderPromptBuilder.kt \
-            RendererFaithfulness.kt \
-            ChatPromptBuilder.kt \
             PythonModuleVault.kt \
-            P39MainActivity.kt
+            EventModulePlanner.kt \
+            MediatedChatPromptBuilder.kt \
+            P310MainActivity.kt
           do
             if [[ ! -f "$source" ]]; then
-              echo "::error file=$source::Required P3.9 source is absent from repository root."
+              echo "::error file=$source::Required P3.10 source is absent from repository root."
               find . -maxdepth 1 -type f -printf ' - %f\n' | sort
               exit 1
             fi
@@ -58,76 +57,77 @@ jobs:
           done
 
           echo
-          echo "P3.9 source fingerprints:"
+          echo "P3.10 source fingerprints:"
           sha256sum \
             bridge_probe.py \
             Numogram.py \
             NumogramBridge.kt \
             ChaquopyProbe.kt \
             RenderTransport.kt \
-            RenderPromptBuilder.kt \
-            RendererFaithfulness.kt \
-            ChatPromptBuilder.kt \
             PythonModuleVault.kt \
-            P39MainActivity.kt
+            EventModulePlanner.kt \
+            MediatedChatPromptBuilder.kt \
+            P310MainActivity.kt
 
-      # This uses the same direct-provider research-build pattern that P3.8.2
-      # proved. It is deliberately attested before packaging, but is not a
-      # production secret-distribution mechanism: the private APK contains the
-      # compiled key. A missing/noncanonical/mismatched key prevents all calls.
-      - name: Seal P3.9 credential attestation
+      - name: Seal P3.10 credential attestation
         shell: bash
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
           set -euo pipefail
 
-          P39_KEY="${ANTHROPIC_API_KEY:-}"
-          if [[ -z "$P39_KEY" ]]; then
+          P310_KEY="${ANTHROPIC_API_KEY:-}"
+
+          if [[ -z "$P310_KEY" ]]; then
             {
-              echo "P39_CREDENTIAL_FINGERPRINT=missing"
-              echo "P39_CREDENTIAL_SHAPE=missing"
+              echo "P310_CREDENTIAL_FINGERPRINT=missing"
+              echo "P310_CREDENTIAL_SHAPE=missing"
             } >> "$GITHUB_ENV"
-            echo "::warning::ANTHROPIC_API_KEY is unset. P3.9 will run locally but make no provider calls."
+            echo "::warning::ANTHROPIC_API_KEY is unset. P3.10 will execute local Numogram events but make no language relay calls."
           else
-            P39_FINGERPRINT="$(printf '%s' "$P39_KEY" | sha256sum | awk '{print $1}')"
-            P39_HAS_WHITESPACE=false
-            P39_HAS_WRAPPER=false
+            P310_FINGERPRINT="$(printf '%s' "$P310_KEY" | sha256sum | awk '{print $1}')"
+            P310_HAS_WHITESPACE=false
+            P310_HAS_WRAPPER=false
 
-            if [[ "$P39_KEY" =~ [[:space:]] ]]; then
-              P39_HAS_WHITESPACE=true
-            fi
-            P39_FIRST_CHARACTER="${P39_KEY:0:1}"
-            if [[ "$P39_FIRST_CHARACTER" == '"' || "$P39_FIRST_CHARACTER" == "'" || \
-                  "$P39_KEY" == "Bearer "* || \
-                  "$P39_KEY" == "x-api-key:"* || \
-                  "$P39_KEY" == "ANTHROPIC_API_KEY="* ]]; then
-              P39_HAS_WRAPPER=true
+            if [[ "$P310_KEY" =~ [[:space:]] ]]; then
+              P310_HAS_WHITESPACE=true
             fi
 
-            if [[ "$P39_KEY" == sk-ant-* && "$P39_HAS_WHITESPACE" == false && "$P39_HAS_WRAPPER" == false ]]; then
-              P39_SHAPE=canonical
+            P310_FIRST_CHARACTER="${P310_KEY:0:1}"
+            if [[ "$P310_FIRST_CHARACTER" == '"' || "$P310_FIRST_CHARACTER" == "'" || \
+                  "$P310_KEY" == "Bearer "* || \
+                  "$P310_KEY" == "x-api-key:"* || \
+                  "$P310_KEY" == "ANTHROPIC_API_KEY="* ]]; then
+              P310_HAS_WRAPPER=true
+            fi
+
+            if [[ "$P310_KEY" == sk-ant-* && \
+                  "$P310_HAS_WHITESPACE" == false && \
+                  "$P310_HAS_WRAPPER" == false ]]; then
+              P310_SHAPE=canonical
             else
-              P39_SHAPE=noncanonical
+              P310_SHAPE=noncanonical
             fi
 
             {
-              echo "P39_CREDENTIAL_FINGERPRINT=$P39_FINGERPRINT"
-              echo "P39_CREDENTIAL_SHAPE=$P39_SHAPE"
+              echo "P310_CREDENTIAL_FINGERPRINT=$P310_FINGERPRINT"
+              echo "P310_CREDENTIAL_SHAPE=$P310_SHAPE"
             } >> "$GITHUB_ENV"
-            echo "P3.9 credential attestation sealed: shape=$P39_SHAPE; sha256-prefix=${P39_FINGERPRINT:0:16}."
+
+            echo "P3.10 credential attestation sealed: shape=$P310_SHAPE; sha256-prefix=${P310_FINGERPRINT:0:16}."
           fi
 
-      - name: Create Android-P3.9 Chat Faithfulness Vault project
+      - name: Create Android-P3.10 project
         shell: bash
         run: |
           set -euo pipefail
 
           mkdir -p \
-            app/src/main/java/com/amelia/p39 \
+            app/src/main/java/com/amelia/p310 \
             app/src/main/java/com/amelia/bridge \
             app/src/main/java/com/amelia/renderer \
             app/src/main/java/com/amelia/modules \
+            app/src/main/java/com/amelia/orchestration \
             app/src/main/python \
             app/src/main/res/values
 
@@ -136,11 +136,10 @@ jobs:
           cp NumogramBridge.kt app/src/main/java/com/amelia/bridge/NumogramBridge.kt
           cp ChaquopyProbe.kt app/src/main/java/com/amelia/bridge/ChaquopyProbe.kt
           cp RenderTransport.kt app/src/main/java/com/amelia/renderer/RenderTransport.kt
-          cp RenderPromptBuilder.kt app/src/main/java/com/amelia/renderer/RenderPromptBuilder.kt
-          cp RendererFaithfulness.kt app/src/main/java/com/amelia/renderer/RendererFaithfulness.kt
-          cp ChatPromptBuilder.kt app/src/main/java/com/amelia/renderer/ChatPromptBuilder.kt
           cp PythonModuleVault.kt app/src/main/java/com/amelia/modules/PythonModuleVault.kt
-          cp P39MainActivity.kt app/src/main/java/com/amelia/p39/MainActivity.kt
+          cp EventModulePlanner.kt app/src/main/java/com/amelia/orchestration/EventModulePlanner.kt
+          cp MediatedChatPromptBuilder.kt app/src/main/java/com/amelia/renderer/MediatedChatPromptBuilder.kt
+          cp P310MainActivity.kt app/src/main/java/com/amelia/p310/MainActivity.kt
 
           cat > settings.gradle.kts <<'EOF'
           pluginManagement {
@@ -159,7 +158,7 @@ jobs:
               }
           }
 
-          rootProject.name = "AmeliaAndroidP39"
+          rootProject.name = "AmeliaAndroidP310"
           include(":app")
           EOF
 
@@ -200,24 +199,25 @@ jobs:
               append('"')
           }
 
-          val sealedApiKey = System.getenv("ANTHROPIC_API_KEY") ?: ""
+          val sealedApiKey =
+              System.getenv("ANTHROPIC_API_KEY") ?: ""
           val credentialFingerprint =
-              System.getenv("P39_CREDENTIAL_FINGERPRINT") ?: "missing"
+              System.getenv("P310_CREDENTIAL_FINGERPRINT") ?: "missing"
           val credentialShape =
-              System.getenv("P39_CREDENTIAL_SHAPE") ?: "missing"
+              System.getenv("P310_CREDENTIAL_SHAPE") ?: "missing"
           val buildRevision =
               (System.getenv("GITHUB_SHA") ?: "local").take(12)
 
           android {
-              namespace = "com.amelia.p39"
+              namespace = "com.amelia.p310"
               compileSdk = 34
 
               defaultConfig {
-                  applicationId = "com.amelia.p39"
+                  applicationId = "com.amelia.p310"
                   minSdk = 24
                   targetSdk = 34
                   versionCode = 1
-                  versionName = "0.11-android-p3.9-chat-faithfulness-vault"
+                  versionName = "0.12-android-p3.10-numogram-mediated-chat"
 
                   ndk {
                       abiFilters += listOf(
@@ -266,6 +266,7 @@ jobs:
               defaultConfig {
                   version = "3.8"
                   buildPython("python3.8")
+
                   pip {
                       install("torch==1.8.1")
                   }
@@ -273,9 +274,6 @@ jobs:
           }
           EOF
 
-          # ACTION_OPEN_DOCUMENT supplies a user-selected document. No broad
-          # storage permission is declared. INTERNET is the explicit P3.8+
-          # boundary for the sealed direct provider calls.
           cat > app/src/main/AndroidManifest.xml <<'EOF'
           <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
@@ -306,11 +304,11 @@ jobs:
 
           cat > app/src/main/res/values/strings.xml <<'EOF'
           <resources>
-              <string name="app_name">Amelia P3.9 Chat</string>
+              <string name="app_name">Amelia P3.10</string>
           </resources>
           EOF
 
-      - name: Validate P3.9 source and boundary contracts
+      - name: Validate P3.10 source and process contracts
         shell: bash
         run: |
           set -euo pipefail
@@ -324,12 +322,15 @@ jobs:
           import ast
           from pathlib import Path
 
-          tree = ast.parse(Path("app/src/main/python/Numogram.py").read_text(encoding="utf-8"))
+          tree = ast.parse(
+              Path("app/src/main/python/Numogram.py").read_text(encoding="utf-8")
+          )
           functions = {
               node.name
               for node in tree.body
               if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
           }
+
           required = {
               "get_runtime_info",
               "initialize_system",
@@ -338,62 +339,72 @@ jobs:
               "run_fork",
               "verify_last_fork",
           }
+
           missing = required - functions
           assert not missing, f"Missing Numogram entry points: {sorted(missing)}"
-          print("P3.9 Numogram entry-point contract validated")
+          print("P3.10 Numogram entry-point contract validated")
           PY
 
           grep -Fq 'install("torch==1.8.1")' app/build.gradle.kts
           grep -Fq 'buildPython("python3.8")' app/build.gradle.kts
           grep -Fq 'android.permission.INTERNET' app/src/main/AndroidManifest.xml
-          grep -Fq 'ACTION_OPEN_DOCUMENT' app/src/main/java/com/amelia/p39/MainActivity.kt
-          grep -Fq 'PythonModuleVault.ingest' app/src/main/java/com/amelia/p39/MainActivity.kt
-          grep -Fq 'STAGED_NOT_IMPORTED' app/src/main/java/com/amelia/modules/PythonModuleVault.kt
-          grep -Fq 'CONTRADICTION_DETECTED' app/src/main/java/com/amelia/renderer/RendererFaithfulness.kt
-          grep -Fq 'UNVERIFIABLE' app/src/main/java/com/amelia/renderer/RendererFaithfulness.kt
-          grep -Fq 'amelia-p3.9-render-response-v1' app/src/main/java/com/amelia/renderer/RenderPromptBuilder.kt
-          grep -Fq 'same_probability_distribution_only' app/src/main/java/com/amelia/renderer/RenderPromptBuilder.kt
-          grep -Fq 'ChatPromptBuilder.build' app/src/main/java/com/amelia/p39/MainActivity.kt
-          grep -Fq 'RenderPromptBuilder.buildFromForkResult' app/src/main/java/com/amelia/p39/MainActivity.kt
-          grep -Fq 'RenderTransport.execute' app/src/main/java/com/amelia/p39/MainActivity.kt
-          grep -Fq 'noFeedbackHeld' app/src/main/java/com/amelia/p39/MainActivity.kt
 
-          CHAT_EXECUTE_BODY="$(
-            sed -n \
-              '/private fun executeChat(/,/^    private fun renderChatResult/p' \
-              app/src/main/java/com/amelia/p39/MainActivity.kt
-          )"
-          if printf '%s' "$CHAT_EXECUTE_BODY" | \
-            rg -n 'NumogramBridge|PythonModuleVault|runFork|transition\('
-          then
-            echo "FAIL: P3.9 chat must not call the substrate or module vault."
-            exit 1
-          fi
+          grep -Fq 'EventModulePlanner.numogramContext' \
+            app/src/main/java/com/amelia/p310/MainActivity.kt
+          grep -Fq 'bridge.transition' \
+            app/src/main/java/com/amelia/p310/MainActivity.kt
+          grep -Fq 'EventModulePlanner.plan' \
+            app/src/main/java/com/amelia/p310/MainActivity.kt
+          grep -Fq 'EventModulePlanner.executeSelected' \
+            app/src/main/java/com/amelia/p310/MainActivity.kt
+          grep -Fq 'MediatedChatPromptBuilder.build' \
+            app/src/main/java/com/amelia/p310/MainActivity.kt
+          grep -Fq 'maxTokens = 1600' \
+            app/src/main/java/com/amelia/p310/MainActivity.kt
+          grep -Fq 'no_feedback_held' \
+            app/src/main/java/com/amelia/p310/MainActivity.kt
 
-          # The staged module vault must not obtain a Chaquopy handle or call
-          # an uploaded module. Its lexical audit is intentionally not called
-          # a sandbox; P3.9's safety property is non-execution.
-          if rg -n 'Python\.getInstance|getModule\(|callAttr\(' \
-            app/src/main/java/com/amelia/modules/PythonModuleVault.kt
-          then
-            echo "FAIL: P3.9 module vault must not import or execute uploaded source."
-            exit 1
-          fi
+          grep -Fq 'amelia_event' \
+            app/src/main/java/com/amelia/orchestration/EventModulePlanner.kt
+          grep -Fq 'getModule(moduleName)' \
+            app/src/main/java/com/amelia/orchestration/EventModulePlanner.kt
+          grep -Fq 'STAGED_NOT_IMPORTED' \
+            app/src/main/java/com/amelia/orchestration/EventModulePlanner.kt
+
+          grep -Fq 'amelia-p3.10-mediated-payload-v1' \
+            app/src/main/java/com/amelia/renderer/MediatedChatPromptBuilder.kt
+          grep -Fq 'The sealed event below is authoritative' \
+            app/src/main/java/com/amelia/renderer/MediatedChatPromptBuilder.kt
 
           if rg -n 'put\("temperature"|put\("top_p"|put\("top_k"' \
             app/src/main/java/com/amelia/renderer/RenderTransport.kt
           then
-            echo "FAIL: P3.9 must retain provider-default sampling omission."
+            echo "FAIL: P3.10 must retain provider-default sampling omission."
+            exit 1
+          fi
+
+          POST_RENDER_BLOCK="$(
+            sed -n \
+              '/val transport = RenderTransport.execute/,/return result.toString()/p' \
+              app/src/main/java/com/amelia/p310/MainActivity.kt
+          )"
+
+          if printf '%s' "$POST_RENDER_BLOCK" | \
+            rg -n 'bridge\.transition|runFork\(|verifyLastFork\('
+          then
+            echo "FAIL: language relay output must not re-enter the Numogram."
             exit 1
           fi
 
           echo
-          echo "P3.9 pre-build validation passed."
-          echo "Chat and trace calls use a one-attempt sealed transport capsule."
-          echo "Trace prose must be structured and checked against the sealed branch table."
-          echo "Uploaded Python is staged in app-private storage and is not imported."
+          echo "P3.10 pre-build validation passed."
+          echo "Numogram commits one transition before the language relay."
+          echo "EventModulePlanner deterministically selects audited staged modules."
+          echo "Selected modules can execute only after the transition."
+          echo "The provider receives the completed event and cannot feed back."
+          echo "Renderer budget is raised to 1600 tokens to prevent short responses."
 
-      - name: Build Android-P3.9 Chat Faithfulness Vault APK
+      - name: Build Android-P3.10 APK
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
@@ -402,7 +413,7 @@ jobs:
             :app:assembleDebug \
             --stacktrace
 
-      - name: Record P3.9 build manifest
+      - name: Record P3.10 build manifest
         shell: bash
         run: |
           set -euo pipefail
@@ -416,101 +427,76 @@ jobs:
             NumogramBridge.kt \
             ChaquopyProbe.kt \
             RenderTransport.kt \
-            RenderPromptBuilder.kt \
-            RendererFaithfulness.kt \
-            ChatPromptBuilder.kt \
             PythonModuleVault.kt \
-            P39MainActivity.kt \
-            > p39-source-sha256.txt
+            EventModulePlanner.kt \
+            MediatedChatPromptBuilder.kt \
+            P310MainActivity.kt \
+            > p310-source-sha256.txt
 
           APK_SHA="$(sha256sum "$APK" | awk '{print $1}')"
 
-          cat > p39-build-manifest.txt <<EOF
-          Amelia Android P3.9
-          ==================
+          cat > p310-build-manifest.txt <<EOF
+          Amelia Android P3.10
+          ====================
 
           Revision:
           ${GITHUB_SHA}
 
-          Android Gradle Plugin:
-          8.7.3
+          Architecture:
+          user event
+            -> deterministic ten-zone input field
+            -> committed Numogram transition
+            -> event/module synthesis
+            -> selected audited Python-module contributions
+            -> sealed language relay
+            -> post-render no-feedback verification
 
-          Gradle:
-          8.9
+          Numogram:
+          Existing P3.7 tensor substrate retained unchanged.
 
-          Java:
-          17
-
-          Chaquopy:
-          16.1.0
-
-          Android Python:
-          3.8
-
-          Torch requirement:
-          torch==1.8.1
-
-          Application ID:
-          com.amelia.p39
-
-          Chat lane:
-          User text is sealed into a display-only chat capsule and sent in
-          one provider call only when the attested credential is usable.
-          Chat has no NumogramBridge reference and cannot become Numogram
-          context, routing, mutation, cohort, or module invocation input.
-
-          Trace renderer:
-          The fixed Numogram fork is displayed as an authoritative sealed
-          branch table. The provider must return a structured destination
-          claim table plus prose. RendererFaithfulness compares the claims
-          and the ABLATED_BOTH/NEUTRAL_RESET relation against the archived
-          fork. Contradictory prose is rejected without retry; unparseable
-          output is visibly labelled unverified.
+          Language relay:
+          One sealed provider call.
+          max_tokens=1600.
+          Streaming, tools, function calling, and webhook disabled.
+          Provider-default sampling parameters remain omitted.
 
           Module facility:
-          ACTION_OPEN_DOCUMENT picks a .py source file without broad storage
-          permission. P3.9 enforces a 128 KiB, UTF-8, filename, and lexical
-          capability policy, then stores accepted source in app-private
-          storage with SHA-256 provenance. This is a staging audit, not a
-          sandbox: accepted modules are never added to sys.path, imported,
-          or executed in P3.9.
+          P3.9 source-vault ingestion and lexical audit retained.
+          P3.10 introduces a separate, explicit execution boundary in
+          EventModulePlanner. Up to three deterministically selected staged
+          modules may be called through amelia_event, process, run, or
+          transform after the Numogram transition has already occurred.
 
-          Provider credential:
-          Same P3.8.2 private research-build model. The key is compiled into
-          this APK after the runner fingerprint attestation passes. Keep the
-          repository and artifact private; this is not a production key
-          distribution design.
+          Security scope:
+          The source audit is a bounded capability filter, not a sandbox.
+          Uploaded modules are user-selected and execute only after passing
+          the retained audit. No module output is routed back into Numogram.
 
-          Provider policy:
-          Endpoint/model/attempt budget are sealed before each call.
-          maxAttempts=1. Streaming, tools, function calling, and webhook are
-          disabled. temperature, top_p, and top_k are omitted entirely.
-
-          Runtime INTERNET permission:
-          DECLARED for explicit user chat and sealed renderer calls.
+          Application ID:
+          com.amelia.p310
 
           APK SHA-256:
           ${APK_SHA}
 
-          Acceptance conditions:
-          1. Chat response appears after one sealed display-only provider call
-             and does not invoke Numogram or uploaded code.
-          2. The trace screen displays a sealed branch table and reports
-             VERIFIED only when structured renderer claims match it and
-             no_feedback_held is true.
-          3. A picked safe .py file appears as STAGED_NOT_IMPORTED; it is
-             never automatically executed.
+          Acceptance:
+          1. User text produces one committed Numogram transition.
+          2. The event planner records event class and module families.
+          3. Selected staged modules may contribute after the transition.
+          4. The language provider renders the completed event.
+          5. no_feedback_held is checked against actual Numogram status.
+          6. The renderer has a 1600-token ceiling, replacing the prior
+             512-token budget that could cut answers short.
           EOF
 
-          cat p39-build-manifest.txt
-          cat p39-source-sha256.txt
+          cat p310-build-manifest.txt
+          cat p310-source-sha256.txt
 
-      - name: Upload Android-P3.9 Chat Faithfulness Vault APK
+      - name: Upload Android-P3.10 APK
         uses: actions/upload-artifact@v4
         with:
-          name: Amelia-Android-P3.9-Chat-Faithfulness-Vault
+          name: Amelia-Android-P3.10-Numogram-Mediated-Chat
           path: |
             app/build/outputs/apk/debug/app-debug.apk
-            p39-build-manifest.txt
-            p39-source-sha256.txt
+            p310-build-manifest.txt
+            p310-source-sha256.txt
           retention-days: 14
