@@ -1,4 +1,4 @@
-package.antonio.my.ai.girlfriend.free.amelia.bridges
+package.com.response.orchestrator.amelia.bridges
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
