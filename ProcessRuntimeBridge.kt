@@ -1,4 +1,4 @@
-package com.antonio.my.ai.girlfriend.free.amelia.bridge
+package com.amelia.process.runtime.bridge
 
 import com.chaquo.python.Python
 import org.json.JSONObject
