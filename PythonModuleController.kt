@@ -1,4 +1,4 @@
-package com.antonio.my.ai.girlfriend.free.amelia.python
+package com.amelia.module.controller.python
 
 import com.chaquo.python.PyObject
 import com.chaquo.python.Python
