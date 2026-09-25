@@ -1,4 +1,4 @@
-name: Build Amelia Android-P3.10 Numogram Mediated Chat APK
+name: Build Amelia Android-P3.11 ProcessFieldMemory Relay APK
 
 on:
   push:
@@ -32,7 +32,7 @@ jobs:
         with:
           gradle-version: "8.9"
 
-      - name: Verify P3.10 source files exist
+      - name: Verify P3.11 source files exist
         shell: bash
         run: |
           set -euo pipefail
@@ -45,11 +45,12 @@ jobs:
             RenderTransport.kt \
             PythonModuleVault.kt \
             EventModulePlanner.kt \
-            MediatedChatPromptBuilder.kt \
-            P310MainActivity.kt
+            ProcessFieldMemory.py \
+            P311MediatedChatPromptBuilder.kt \
+            P311MainActivity.kt
           do
             if [[ ! -f "$source" ]]; then
-              echo "::error file=$source::Required P3.10 source is absent from repository root."
+              echo "::error file=$source::Required P3.11 source is absent from repository root."
               find . -maxdepth 1 -type f -printf ' - %f\n' | sort
               exit 1
             fi
@@ -57,7 +58,7 @@ jobs:
           done
 
           echo
-          echo "P3.10 source fingerprints:"
+          echo "P3.11 source fingerprints:"
           sha256sum \
             bridge_probe.py \
             Numogram.py \
@@ -66,69 +67,71 @@ jobs:
             RenderTransport.kt \
             PythonModuleVault.kt \
             EventModulePlanner.kt \
-            MediatedChatPromptBuilder.kt \
-            P310MainActivity.kt
+            ProcessFieldMemory.py \
+            P311MediatedChatPromptBuilder.kt \
+            P311MainActivity.kt
 
-      - name: Seal P3.10 credential attestation
+      - name: Seal P3.11 credential attestation
         shell: bash
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
           set -euo pipefail
 
-          P310_KEY="${ANTHROPIC_API_KEY:-}"
+          P311_KEY="${ANTHROPIC_API_KEY:-}"
 
-          if [[ -z "$P310_KEY" ]]; then
+          if [[ -z "$P311_KEY" ]]; then
             {
-              echo "P310_CREDENTIAL_FINGERPRINT=missing"
-              echo "P310_CREDENTIAL_SHAPE=missing"
+              echo "P311_CREDENTIAL_FINGERPRINT=missing"
+              echo "P311_CREDENTIAL_SHAPE=missing"
             } >> "$GITHUB_ENV"
-            echo "::warning::ANTHROPIC_API_KEY is unset. P3.10 will execute local Numogram events but make no language relay calls."
+            echo "::warning::ANTHROPIC_API_KEY is unset. P3.11 can execute Numogram/PFM locally but cannot call the language relay."
           else
-            P310_FINGERPRINT="$(printf '%s' "$P310_KEY" | sha256sum | awk '{print $1}')"
-            P310_HAS_WHITESPACE=false
-            P310_HAS_WRAPPER=false
+            P311_FINGERPRINT="$(printf '%s' "$P311_KEY" | sha256sum | awk '{print $1}')"
+            P311_HAS_WHITESPACE=false
+            P311_HAS_WRAPPER=false
 
-            if [[ "$P310_KEY" =~ [[:space:]] ]]; then
-              P310_HAS_WHITESPACE=true
+            if [[ "$P311_KEY" =~ [[:space:]] ]]; then
+              P311_HAS_WHITESPACE=true
             fi
 
-            P310_FIRST_CHARACTER="${P310_KEY:0:1}"
-            if [[ "$P310_FIRST_CHARACTER" == '"' || "$P310_FIRST_CHARACTER" == "'" || \
-                  "$P310_KEY" == "Bearer "* || \
-                  "$P310_KEY" == "x-api-key:"* || \
-                  "$P310_KEY" == "ANTHROPIC_API_KEY="* ]]; then
-              P310_HAS_WRAPPER=true
+            P311_FIRST_CHARACTER="${P311_KEY:0:1}"
+            if [[ "$P311_FIRST_CHARACTER" == '"' || "$P311_FIRST_CHARACTER" == "'" || \
+                  "$P311_KEY" == "Bearer "* || \
+                  "$P311_KEY" == "x-api-key:"* || \
+                  "$P311_KEY" == "ANTHROPIC_API_KEY="* ]]; then
+              P311_HAS_WRAPPER=true
             fi
 
-            if [[ "$P310_KEY" == sk-ant-* && \
-                  "$P310_HAS_WHITESPACE" == false && \
-                  "$P310_HAS_WRAPPER" == false ]]; then
-              P310_SHAPE=canonical
+            if [[ "$P311_KEY" == sk-ant-* && \
+                  "$P311_HAS_WHITESPACE" == false && \
+                  "$P311_HAS_WRAPPER" == false ]]; then
+              P311_SHAPE=canonical
             else
-              P310_SHAPE=noncanonical
+              P311_SHAPE=noncanonical
             fi
 
             {
-              echo "P310_CREDENTIAL_FINGERPRINT=$P310_FINGERPRINT"
-              echo "P310_CREDENTIAL_SHAPE=$P310_SHAPE"
+              echo "P311_CREDENTIAL_FINGERPRINT=$P311_FINGERPRINT"
+              echo "P311_CREDENTIAL_SHAPE=$P311_SHAPE"
             } >> "$GITHUB_ENV"
 
-            echo "P3.10 credential attestation sealed: shape=$P310_SHAPE; sha256-prefix=${P310_FINGERPRINT:0:16}."
+            echo "P3.11 credential attestation sealed: shape=$P311_SHAPE; sha256-prefix=${P311_FINGERPRINT:0:16}."
           fi
 
-      - name: Create Android-P3.10 project
+      - name: Create Android-P3.11 project
         shell: bash
         run: |
           set -euo pipefail
 
           mkdir -p \
-            app/src/main/java/com/amelia/p310 \
+            app/src/main/java/com/amelia/p311 \
             app/src/main/java/com/amelia/bridge \
             app/src/main/java/com/amelia/renderer \
             app/src/main/java/com/amelia/modules \
             app/src/main/java/com/amelia/orchestration \
             app/src/main/python \
+            app/src/main/assets/p311 \
             app/src/main/res/values
 
           cp bridge_probe.py app/src/main/python/bridge_probe.py
@@ -138,8 +141,13 @@ jobs:
           cp RenderTransport.kt app/src/main/java/com/amelia/renderer/RenderTransport.kt
           cp PythonModuleVault.kt app/src/main/java/com/amelia/modules/PythonModuleVault.kt
           cp EventModulePlanner.kt app/src/main/java/com/amelia/orchestration/EventModulePlanner.kt
-          cp MediatedChatPromptBuilder.kt app/src/main/java/com/amelia/renderer/MediatedChatPromptBuilder.kt
-          cp P310MainActivity.kt app/src/main/java/com/amelia/p310/MainActivity.kt
+          cp P311MediatedChatPromptBuilder.kt app/src/main/java/com/amelia/renderer/P311MediatedChatPromptBuilder.kt
+          cp P311MainActivity.kt app/src/main/java/com/amelia/p311/MainActivity.kt
+
+          # Deliberately an Android asset, not a Chaquopy import. The module
+          # cannot execute until the user explicitly stages it through
+          # PythonModuleVault inside the app.
+          cp ProcessFieldMemory.py app/src/main/assets/p311/ProcessFieldMemory.py
 
           cat > settings.gradle.kts <<'EOF'
           pluginManagement {
@@ -158,7 +166,7 @@ jobs:
               }
           }
 
-          rootProject.name = "AmeliaAndroidP310"
+          rootProject.name = "AmeliaAndroidP311"
           include(":app")
           EOF
 
@@ -202,22 +210,22 @@ jobs:
           val sealedApiKey =
               System.getenv("ANTHROPIC_API_KEY") ?: ""
           val credentialFingerprint =
-              System.getenv("P310_CREDENTIAL_FINGERPRINT") ?: "missing"
+              System.getenv("P311_CREDENTIAL_FINGERPRINT") ?: "missing"
           val credentialShape =
-              System.getenv("P310_CREDENTIAL_SHAPE") ?: "missing"
+              System.getenv("P311_CREDENTIAL_SHAPE") ?: "missing"
           val buildRevision =
               (System.getenv("GITHUB_SHA") ?: "local").take(12)
 
           android {
-              namespace = "com.amelia.p310"
+              namespace = "com.amelia.p311"
               compileSdk = 34
 
               defaultConfig {
-                  applicationId = "com.amelia.p310"
+                  applicationId = "com.amelia.p311"
                   minSdk = 24
                   targetSdk = 34
                   versionCode = 1
-                  versionName = "0.12-android-p3.10-numogram-mediated-chat"
+                  versionName = "0.13-android-p3.11-process-field-memory"
 
                   ndk {
                       abiFilters += listOf(
@@ -304,11 +312,11 @@ jobs:
 
           cat > app/src/main/res/values/strings.xml <<'EOF'
           <resources>
-              <string name="app_name">Amelia P3.10</string>
+              <string name="app_name">Amelia P3.11</string>
           </resources>
           EOF
 
-      - name: Validate P3.10 source and process contracts
+      - name: Validate P3.11 source and process contracts
         shell: bash
         run: |
           set -euo pipefail
@@ -316,22 +324,26 @@ jobs:
           python3.8 --version
           python3.8 -m py_compile \
             app/src/main/python/bridge_probe.py \
-            app/src/main/python/Numogram.py
+            app/src/main/python/Numogram.py \
+            app/src/main/assets/p311/ProcessFieldMemory.py
 
           python3.8 - <<'PY'
           import ast
+          import json
+          import re
           from pathlib import Path
 
-          tree = ast.parse(
-              Path("app/src/main/python/Numogram.py").read_text(encoding="utf-8")
-          )
-          functions = {
+          numogram_source = Path(
+              "app/src/main/python/Numogram.py"
+          ).read_text(encoding="utf-8")
+          numogram_tree = ast.parse(numogram_source)
+          numogram_functions = {
               node.name
-              for node in tree.body
+              for node in numogram_tree.body
               if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
           }
 
-          required = {
+          required_numogram = {
               "get_runtime_info",
               "initialize_system",
               "get_status",
@@ -339,30 +351,107 @@ jobs:
               "run_fork",
               "verify_last_fork",
           }
+          missing = required_numogram - numogram_functions
+          assert not missing, (
+              f"Missing Numogram entry points: {sorted(missing)}"
+          )
 
-          missing = required - functions
-          assert not missing, f"Missing Numogram entry points: {sorted(missing)}"
-          print("P3.10 Numogram entry-point contract validated")
+          pfm_path = Path(
+              "app/src/main/assets/p311/ProcessFieldMemory.py"
+          )
+          pfm_source = pfm_path.read_text(encoding="utf-8")
+          pfm_tree = ast.parse(pfm_source)
+          pfm_functions = {
+              node.name
+              for node in pfm_tree.body
+              if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+          }
+          assert "amelia_event" in pfm_functions
+
+          # Mirror PythonModuleVault's lexical capability audit. P3.11 must
+          # prove that the bundled source will actually be stageable on-device.
+          rules = [
+              ("dynamic import", re.compile(
+                  r"\b(?:__import__|importlib\s*\.|reload\s*\()",
+                  re.I,
+              )),
+              ("process or shell access", re.compile(
+                  r"\b(?:subprocess|os\.system|popen\s*\(|system\s*\()",
+                  re.I,
+              )),
+              ("network capability", re.compile(
+                  r"\b(?:socket|requests|urllib|http\.client|httpx|aiohttp|ssl)\b",
+                  re.I,
+              )),
+              ("file or environment access", re.compile(
+                  r"\b(?:(?:import|from)\s+(?:os|sys)\b|open\s*\(|pathlib|shutil|tempfile|os\.|sys\.)",
+                  re.I,
+              )),
+              ("native or Android bridge", re.compile(
+                  r"\b(?:ctypes|cffi|java\.|android\.|jnius|chaquopy)\b",
+                  re.I,
+              )),
+              ("runtime evaluation or reflection", re.compile(
+                  r"\b(?:exec\s*\(|eval\s*\(|compile\s*\(|globals\s*\(|locals\s*\(|getattr\s*\(|setattr\s*\()",
+                  re.I,
+              )),
+          ]
+          findings = [label for label, rule in rules if rule.search(pfm_source)]
+          assert not findings, (
+              "Bundled ProcessFieldMemory would fail vault audit: "
+              + ", ".join(findings)
+          )
+
+          # Deterministic two-event smoke test. The second call must inherit
+          # retained state from the first call in the same Python process.
+          namespace = {}
+          exec(compile(pfm_source, str(pfm_path), "exec"), namespace)
+          call = namespace["amelia_event"]
+
+          event_one = json.loads(call(json.dumps({
+              "transition": {"from": 3, "to": 2},
+              "event_plan": {"event_type": "TRANSITIONAL_PREHENSION"},
+          })))
+          event_two = json.loads(call(json.dumps({
+              "transition": {"from": 2, "to": 5},
+              "event_plan": {"event_type": "TRANSITIONAL_PREHENSION"},
+          })))
+
+          assert event_one["history_depth"] == 1
+          assert event_two["history_depth"] == 2
+          assert event_one["relay_marker"] != event_two["relay_marker"]
+          assert event_two["previous_zone_profile"] == event_one["current_zone_profile"]
+          assert event_two["interpretive_contribution"]
+
+          print("P3.11 Numogram entry-point contract validated")
+          print("P3.11 ProcessFieldMemory vault audit validated")
+          print("P3.11 ProcessFieldMemory retained-state smoke test validated")
           PY
 
           grep -Fq 'install("torch==1.8.1")' app/build.gradle.kts
           grep -Fq 'buildPython("python3.8")' app/build.gradle.kts
           grep -Fq 'android.permission.INTERNET' app/src/main/AndroidManifest.xml
 
+          grep -Fq 'STAGE PROCESS FIELD MEMORY' \
+            app/src/main/java/com/amelia/p311/MainActivity.kt
+          grep -Fq 'assets' \
+            app/src/main/java/com/amelia/p311/MainActivity.kt
+          grep -Fq '.open("p311/ProcessFieldMemory.py")' \
+            app/src/main/java/com/amelia/p311/MainActivity.kt
           grep -Fq 'EventModulePlanner.numogramContext' \
-            app/src/main/java/com/amelia/p310/MainActivity.kt
+            app/src/main/java/com/amelia/p311/MainActivity.kt
           grep -Fq 'bridge.transition' \
-            app/src/main/java/com/amelia/p310/MainActivity.kt
-          grep -Fq 'EventModulePlanner.plan' \
-            app/src/main/java/com/amelia/p310/MainActivity.kt
+            app/src/main/java/com/amelia/p311/MainActivity.kt
           grep -Fq 'EventModulePlanner.executeSelected' \
-            app/src/main/java/com/amelia/p310/MainActivity.kt
-          grep -Fq 'MediatedChatPromptBuilder.build' \
-            app/src/main/java/com/amelia/p310/MainActivity.kt
+            app/src/main/java/com/amelia/p311/MainActivity.kt
+          grep -Fq 'P311MediatedChatPromptBuilder.build' \
+            app/src/main/java/com/amelia/p311/MainActivity.kt
+          grep -Fq 'pfm_relay_evidence_held' \
+            app/src/main/java/com/amelia/p311/MainActivity.kt
           grep -Fq 'maxTokens = 1600' \
-            app/src/main/java/com/amelia/p310/MainActivity.kt
+            app/src/main/java/com/amelia/p311/MainActivity.kt
           grep -Fq 'no_feedback_held' \
-            app/src/main/java/com/amelia/p310/MainActivity.kt
+            app/src/main/java/com/amelia/p311/MainActivity.kt
 
           grep -Fq 'amelia_event' \
             app/src/main/java/com/amelia/orchestration/EventModulePlanner.kt
@@ -371,22 +460,31 @@ jobs:
           grep -Fq 'STAGED_NOT_IMPORTED' \
             app/src/main/java/com/amelia/orchestration/EventModulePlanner.kt
 
-          grep -Fq 'amelia-p3.10-mediated-payload-v1' \
-            app/src/main/java/com/amelia/renderer/MediatedChatPromptBuilder.kt
-          grep -Fq 'The sealed event below is authoritative' \
-            app/src/main/java/com/amelia/renderer/MediatedChatPromptBuilder.kt
+          grep -Fq 'amelia-p3.11-mediated-payload-v1' \
+            app/src/main/java/com/amelia/renderer/P311MediatedChatPromptBuilder.kt
+          grep -Fq 'PROCESS-FIELD MEMORY INCORPORATION CONTRACT' \
+            app/src/main/java/com/amelia/renderer/P311MediatedChatPromptBuilder.kt
+          grep -Fq '[[PFM-EVIDENCE:' \
+            app/src/main/java/com/amelia/renderer/P311MediatedChatPromptBuilder.kt
+
+          # ProcessFieldMemory must remain an inert APK asset until the user
+          # explicitly stages it through PythonModuleVault.
+          if [[ -f app/src/main/python/ProcessFieldMemory.py ]]; then
+            echo "FAIL: ProcessFieldMemory was copied into Chaquopy import path."
+            exit 1
+          fi
 
           if rg -n 'put\("temperature"|put\("top_p"|put\("top_k"' \
             app/src/main/java/com/amelia/renderer/RenderTransport.kt
           then
-            echo "FAIL: P3.10 must retain provider-default sampling omission."
+            echo "FAIL: P3.11 must retain provider-default sampling omission."
             exit 1
           fi
 
           POST_RENDER_BLOCK="$(
             sed -n \
               '/val transport = RenderTransport.execute/,/return result.toString()/p' \
-              app/src/main/java/com/amelia/p310/MainActivity.kt
+              app/src/main/java/com/amelia/p311/MainActivity.kt
           )"
 
           if printf '%s' "$POST_RENDER_BLOCK" | \
@@ -397,14 +495,16 @@ jobs:
           fi
 
           echo
-          echo "P3.10 pre-build validation passed."
-          echo "Numogram commits one transition before the language relay."
-          echo "EventModulePlanner deterministically selects audited staged modules."
-          echo "Selected modules can execute only after the transition."
-          echo "The provider receives the completed event and cannot feed back."
-          echo "Renderer budget is raised to 1600 tokens to prevent short responses."
+          echo "P3.11 pre-build validation passed."
+          echo "P3.10 sources remain untouched as the control baseline."
+          echo "ProcessFieldMemory ships as an inert Android asset."
+          echo "User action stages it through the existing vault audit."
+          echo "The module retains deterministic session-local process history."
+          echo "The renderer must return a PFM evidence token when PFM executes."
+          echo "The UI strips the token and records whether relay evidence held."
+          echo "Numogram no-feedback verification remains independent."
 
-      - name: Build Android-P3.10 APK
+      - name: Build Android-P3.11 APK
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
@@ -413,7 +513,7 @@ jobs:
             :app:assembleDebug \
             --stacktrace
 
-      - name: Record P3.10 build manifest
+      - name: Record P3.11 build manifest
         shell: bash
         run: |
           set -euo pipefail
@@ -429,74 +529,86 @@ jobs:
             RenderTransport.kt \
             PythonModuleVault.kt \
             EventModulePlanner.kt \
-            MediatedChatPromptBuilder.kt \
-            P310MainActivity.kt \
-            > p310-source-sha256.txt
+            ProcessFieldMemory.py \
+            P311MediatedChatPromptBuilder.kt \
+            P311MainActivity.kt \
+            > p311-source-sha256.txt
 
           APK_SHA="$(sha256sum "$APK" | awk '{print $1}')"
+          PFM_SHA="$(sha256sum ProcessFieldMemory.py | awk '{print $1}')"
 
-          cat > p310-build-manifest.txt <<EOF
-          Amelia Android P3.10
+          cat > p311-build-manifest.txt <<EOF
+          Amelia Android P3.11
           ====================
 
           Revision:
           ${GITHUB_SHA}
 
+          Control:
+          P3.10 source files are not modified or packaged as the P3.11 activity.
+          P3.11 uses application ID com.amelia.p311 so both APKs can coexist.
+
           Architecture:
           user event
             -> deterministic ten-zone input field
             -> committed Numogram transition
-            -> event/module synthesis
-            -> selected audited Python-module contributions
-            -> sealed language relay
-            -> post-render no-feedback verification
+            -> EventModulePlanner
+            -> staged ProcessFieldMemory contribution
+            -> P3.11 sealed language relay
+            -> PFM relay-evidence verification
+            -> post-render Numogram no-feedback verification
 
-          Numogram:
-          Existing P3.7 tensor substrate retained unchanged.
+          ProcessFieldMemory:
+          Bundled as inert Android asset until explicitly staged by the user.
+          Vault audit must pass before execution eligibility.
+          Deterministic 10x10 bounded field.
+          Session-local persistence only (Python process lifetime).
+          No filesystem, environment, network, native, or Android access.
+          Source SHA-256: ${PFM_SHA}
+
+          Incorporation evidence:
+          When ProcessFieldMemory executes successfully, its output supplies a
+          deterministic relay marker and an interpretive contribution. The
+          renderer is required to use the contribution and append the marker.
+          The app verifies the marker, records pfm_relay_evidence_held, and
+          strips the marker before displaying the answer. This confirms relay
+          receipt/acknowledgement; semantic faithfulness remains a separate
+          higher-level check.
 
           Language relay:
           One sealed provider call.
           max_tokens=1600.
           Streaming, tools, function calling, and webhook disabled.
-          Provider-default sampling parameters remain omitted.
-
-          Module facility:
-          P3.9 source-vault ingestion and lexical audit retained.
-          P3.10 introduces a separate, explicit execution boundary in
-          EventModulePlanner. Up to three deterministically selected staged
-          modules may be called through amelia_event, process, run, or
-          transform after the Numogram transition has already occurred.
-
-          Security scope:
-          The source audit is a bounded capability filter, not a sandbox.
-          Uploaded modules are user-selected and execute only after passing
-          the retained audit. No module output is routed back into Numogram.
+          Provider-default sampling parameters omitted.
 
           Application ID:
-          com.amelia.p310
+          com.amelia.p311
 
           APK SHA-256:
           ${APK_SHA}
 
-          Acceptance:
-          1. User text produces one committed Numogram transition.
-          2. The event planner records event class and module families.
-          3. Selected staged modules may contribute after the transition.
-          4. The language provider renders the completed event.
-          5. no_feedback_held is checked against actual Numogram status.
-          6. The renderer has a 1600-token ceiling, replacing the prior
-             512-token budget that could cut answers short.
+          P3.11 acceptance:
+          1. Fresh P3.11 install starts with an empty module vault.
+          2. User explicitly stages bundled ProcessFieldMemory.py.
+          3. Vault audit passes and ProcessFieldMemory.py appears staged.
+          4. A Numogram transition occurs before module execution.
+          5. ProcessFieldMemory.py is selected and reports status=executed.
+          6. PFM history_depth starts at 1 and increases on later chat events.
+          7. PFM interpretive_contribution is included in the sealed relay prompt.
+          8. pfm_relay_evidence_held=true after a successful provider response.
+          9. The evidence token is not shown in the user-facing answer.
+          10. no_feedback_held=true confirms rendering did not mutate Numogram.
           EOF
 
-          cat p310-build-manifest.txt
-          cat p310-source-sha256.txt
+          cat p311-build-manifest.txt
+          cat p311-source-sha256.txt
 
-      - name: Upload Android-P3.10 APK
+      - name: Upload Android-P3.11 APK
         uses: actions/upload-artifact@v4
         with:
-          name: Amelia-Android-P3.10-Numogram-Mediated-Chat
+          name: Amelia-Android-P3.11-ProcessFieldMemory-Relay
           path: |
             app/build/outputs/apk/debug/app-debug.apk
-            p310-build-manifest.txt
-            p310-source-sha256.txt
+            p311-build-manifest.txt
+            p311-source-sha256.txt
           retention-days: 14
