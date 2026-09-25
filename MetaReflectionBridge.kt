@@ -1,5 +1,5 @@
 // MetaReflectionBridge.kt
-package com.antonio.my.ai.girlfriend.free.amelia.meta.reflectionbridge
+package com.amelia.meta.reflectionbridge
 
 import com.chaquo.python.Python
 import org.json.JSONObject
