@@ -1,4 +1,4 @@
-package com.amelia.p310
+package com.amelia.p311
 
 import android.app.Activity
 import android.content.Intent
@@ -17,8 +17,8 @@ import com.amelia.modules.ModuleRecord
 import com.amelia.modules.ModuleRejectedException
 import com.amelia.modules.PythonModuleVault
 import com.amelia.orchestration.EventModulePlanner
-import com.amelia.renderer.MediatedChatMessage
-import com.amelia.renderer.MediatedChatPromptBuilder
+import com.amelia.renderer.P311ChatMessage
+import com.amelia.renderer.P311MediatedChatPromptBuilder
 import com.amelia.renderer.RenderCapsule
 import com.amelia.renderer.RenderTransport
 import org.json.JSONObject
@@ -26,7 +26,7 @@ import java.io.ByteArrayOutputStream
 import java.security.MessageDigest
 
 /**
- * Amelia Android P3.10
+ * Amelia Android P3.11
  *
  * Constitutive chat path:
  * user event -> deterministic Numogram input field -> committed transition ->
@@ -40,8 +40,8 @@ import java.security.MessageDigest
 class MainActivity : Activity() {
 
     companion object {
-        private const val LOG_TAG = "AMELIA_P310"
-        private const val REQUEST_OPEN_PYTHON = 3101
+        private const val LOG_TAG = "AMELIA_P311"
+        private const val REQUEST_OPEN_PYTHON = 3111
         private const val MAX_PICKED_MODULE_BYTES = 128 * 1024
         private const val MAX_CHAT_INPUT_CHARS = 2_400
         private const val NUMOGRAM_SEED = 3606
@@ -56,7 +56,7 @@ class MainActivity : Activity() {
     private lateinit var sendButton: Button
     private lateinit var moduleVaultView: TextView
 
-    private val chatHistory = mutableListOf<MediatedChatMessage>()
+    private val chatHistory = mutableListOf<P311ChatMessage>()
     private var providerCallInFlight = false
     private var currentZone = INITIAL_ZONE
 
@@ -70,12 +70,12 @@ class MainActivity : Activity() {
         }
 
         root.addView(TextView(this).apply {
-            text = "AMELIA · P3.10"
+            text = "AMELIA · P3.11"
             textSize = 25f
             gravity = Gravity.CENTER_HORIZONTAL
         })
         root.addView(TextView(this).apply {
-            text = "Numogram-mediated chat · event synthesis · module enactment"
+            text = "Numogram-mediated chat · ProcessFieldMemory enactment · relay evidence"
             textSize = 14f
             gravity = Gravity.CENTER_HORIZONTAL
             setPadding(0, dp(8), 0, dp(16))
@@ -119,13 +119,20 @@ class MainActivity : Activity() {
         root.addView(sectionHeading("PYTHON MODULE VAULT"))
         root.addView(TextView(this).apply {
             text =
-                "Pick a UTF-8 .py module. The retained P3.9 source audit still applies. " +
-                    "P3.10 may select an audited staged module and invoke one declared " +
-                    "entry point: amelia_event, process, run, or transform. The source " +
-                    "audit reduces capabilities but is not described as a security sandbox."
+                "P3.11 includes one bundled experimental module: ProcessFieldMemory.py. " +
+                    "Stage it explicitly through the same P3.9 source audit used for any " +
+                    "picked UTF-8 .py module. After the Numogram transition, the planner " +
+                    "may select an audited module and invoke one declared entry point: " +
+                    "amelia_event, process, run, or transform. The source audit reduces " +
+                    "capabilities but is not described as a security sandbox."
             textSize = 13f
             setPadding(dp(4), dp(4), dp(4), dp(8))
         })
+        root.addView(
+            actionButton("STAGE PROCESS FIELD MEMORY") {
+                stageBundledProcessFieldMemory()
+            }
+        )
         root.addView(actionButton("PICK PYTHON MODULE") { pickPythonModule() })
         root.addView(actionButton("REFRESH MODULE VAULT") { refreshModuleVault() })
 
@@ -138,12 +145,13 @@ class MainActivity : Activity() {
 
         root.addView(TextView(this).apply {
             text =
-                "P3.10 process boundary:\n\n" +
+                "P3.11 process boundary:\n\n" +
                     "user event → digit-fold zone field → Numogram.transition → " +
-                    "EventModulePlanner → selected module contributions → " +
-                    "MediatedChatPromptBuilder → one sealed provider call → language\n\n" +
-                    "The provider receives an already-produced event. It cannot revise the " +
-                    "transition. A post-render status check verifies that rendering did not " +
+                    "EventModulePlanner → ProcessFieldMemory contribution (when staged) → " +
+                    "P311MediatedChatPromptBuilder → one sealed provider call → language\n\n" +
+                    "When ProcessFieldMemory executes, P3.11 requires a deterministic relay " +
+                    "evidence token. The app verifies and strips that token before display. " +
+                    "A separate post-render status check confirms that rendering did not " +
                     "change Numogram evolution state."
             textSize = 13f
             setPadding(dp(4), dp(10), dp(4), 0)
@@ -181,7 +189,7 @@ class MainActivity : Activity() {
             return
         }
 
-        chatHistory += MediatedChatMessage("user", userText)
+        chatHistory += P311ChatMessage("user", userText)
         trimChatHistory()
         chatInput.setText("")
         renderChatHistory()
@@ -194,7 +202,7 @@ class MainActivity : Activity() {
                 executeMediatedChat(snapshot, userText)
             } catch (error: Throwable) {
                 JSONObject()
-                    .put("schema", "amelia-p3.10-chat-result-v1")
+                    .put("schema", "amelia-p3.11-chat-result-v1")
                     .put("status", "error")
                     .put("error_type", error::class.java.simpleName)
                     .put("message", error.message ?: "Unknown mediated chat error")
@@ -210,7 +218,7 @@ class MainActivity : Activity() {
     }
 
     private fun executeMediatedChat(
-        messages: List<MediatedChatMessage>,
+        messages: List<P311ChatMessage>,
         userText: String
     ): String {
         val bridge = NumogramBridge(applicationContext)
@@ -245,7 +253,7 @@ class MainActivity : Activity() {
 
         val credential = credentialAttestation()
         val result = JSONObject()
-            .put("schema", "amelia-p3.10-chat-result-v1")
+            .put("schema", "amelia-p3.11-chat-result-v1")
             .put("runtime", runtime)
             .put("initialization", initialization)
             .put("before", before)
@@ -263,7 +271,7 @@ class MainActivity : Activity() {
             return result.toString()
         }
 
-        val prompt = MediatedChatPromptBuilder.build(
+        val prompt = P311MediatedChatPromptBuilder.build(
             messages = messages,
             transition = transition,
             eventPlan = plan.toJson(),
@@ -295,11 +303,27 @@ class MainActivity : Activity() {
         val noFeedbackHeld = sameEvolutionState(postTransition, postRenderStatus)
         val sealed = transport.sealed
 
+        val expectedEvidenceToken = prompt.expectedEvidenceToken
+        val evidenceExpected = expectedEvidenceToken != null
+        val rawRenderedText = sealed?.parsedDisplayText ?: ""
+        val moduleIncorporationHeld =
+            expectedEvidenceToken?.let { rawRenderedText.contains(it) } ?: true
+        val displayText = stripEvidenceToken(
+            rawRenderedText,
+            expectedEvidenceToken
+        )
+
         result.put("capsule_digest", capsule.capsuleDigest)
         result.put("attempt_count", transport.attempts.size)
         result.put("transport_archive", transport.archiveJson())
         result.put("post_render_status", postRenderStatus)
         result.put("no_feedback_held", noFeedbackHeld)
+        result.put("pfm_evidence_expected", evidenceExpected)
+        result.put("pfm_relay_evidence_held", moduleIncorporationHeld)
+        result.put(
+            "pfm_interpretive_contribution",
+            prompt.processFieldContribution ?: ""
+        )
         result.put("final", postRenderStatus)
 
         if (sealed == null) {
@@ -307,13 +331,18 @@ class MainActivity : Activity() {
         } else {
             result.put("response_class", sealed.responseClass.name)
             result.put("http_status", sealed.httpStatus)
-            result.put("rendered_text", sealed.parsedDisplayText)
+            result.put("rendered_text", displayText)
             result.put(
                 "status",
                 when {
-                    sealed.responseClass.name != "SUCCESS_TEXT" -> "terminal_response"
-                    !noFeedbackHeld -> "feedback_violation"
-                    else -> "success"
+                    sealed.responseClass.name != "SUCCESS_TEXT" ->
+                        "terminal_response"
+                    !noFeedbackHeld ->
+                        "feedback_violation"
+                    evidenceExpected && !moduleIncorporationHeld ->
+                        "module_incorporation_failure"
+                    else ->
+                        "success"
                 }
             )
         }
@@ -341,6 +370,31 @@ class MainActivity : Activity() {
                     append(plan.optJSONArray("selected_modules")?.toString() ?: "[]")
                     append("\nModule results: ")
                     append(modules?.optJSONArray("results")?.length() ?: 0)
+
+                    val pfm = extractProcessFieldMemoryPayload(modules)
+                    if (pfm != null) {
+                        append("\nPFM history depth: ")
+                        append(pfm.optInt("history_depth", -1))
+                        append("\nPFM dominant zone: Z")
+                        append(pfm.optInt("dominant_zone", -1))
+                        append("\nPFM contribution: ")
+                        append(
+                            pfm.optString(
+                                "interpretive_contribution",
+                                ""
+                            ).take(280)
+                        )
+                        append("\nPFM relay evidence: ")
+                        append(
+                            result.optBoolean(
+                                "pfm_relay_evidence_held",
+                                false
+                            )
+                        )
+                    } else {
+                        append("\nPFM contribution: not staged/executed")
+                    }
+
                     append("\nno_feedback_held: ")
                     append(result.optBoolean("no_feedback_held", false))
                 }
@@ -352,12 +406,12 @@ class MainActivity : Activity() {
                     if (response.isBlank()) {
                         statusView.text = "The language relay returned empty display text."
                     } else {
-                        chatHistory += MediatedChatMessage("assistant", response)
+                        chatHistory += P311ChatMessage("assistant", response)
                         trimChatHistory()
                         renderChatHistory()
                         statusView.text =
-                            "P3.10 event completed: transition committed, module synthesis completed, " +
-                                "and language rendered without substrate feedback."
+                            "P3.11 event completed: transition committed, module synthesis completed, " +
+                                "relay evidence verified when required, and language rendered without substrate feedback."
                     }
                 }
 
@@ -373,7 +427,12 @@ class MainActivity : Activity() {
 
                 "feedback_violation" -> {
                     statusView.text =
-                        "P3.10 FAIL-CLOSED: post-render Numogram state differs from the sealed post-transition state."
+                        "P3.11 FAIL-CLOSED: post-render Numogram state differs from the sealed post-transition state."
+                }
+
+                "module_incorporation_failure" -> {
+                    statusView.text =
+                        "P3.11 FAIL-CLOSED: ProcessFieldMemory executed, but its relay evidence token was absent from the provider response."
                 }
 
                 "terminal_response" -> {
@@ -471,6 +530,84 @@ class MainActivity : Activity() {
         }
     }
 
+    private fun stageBundledProcessFieldMemory() {
+        try {
+            val bytes = assets
+                .open("p311/ProcessFieldMemory.py")
+                .use { it.readBytes() }
+
+            if (bytes.size > MAX_PICKED_MODULE_BYTES) {
+                error("Bundled ProcessFieldMemory exceeds the 128 KiB vault limit.")
+            }
+
+            val record = PythonModuleVault.ingest(
+                applicationContext,
+                "ProcessFieldMemory.py",
+                bytes
+            )
+
+            statusView.text =
+                "ProcessFieldMemory.py staged through the vault audit. " +
+                    "Its session-local field will begin with the next Numogram event."
+            refreshModuleVault()
+        } catch (rejected: ModuleRejectedException) {
+            statusView.text =
+                "Bundled ProcessFieldMemory was rejected: " +
+                    rejected.findings.joinToString(" ")
+        } catch (error: Throwable) {
+            statusView.text =
+                "Unable to stage ProcessFieldMemory: " +
+                    (error.message ?: error::class.java.simpleName)
+        }
+    }
+
+    private fun extractProcessFieldMemoryPayload(
+        modules: JSONObject?
+    ): JSONObject? {
+        val results = modules?.optJSONArray("results") ?: return null
+
+        for (index in 0 until results.length()) {
+            val item = results.optJSONObject(index) ?: continue
+            if (item.optString("file_name", "") != "ProcessFieldMemory.py") {
+                continue
+            }
+            if (item.optString("status", "") != "executed") {
+                continue
+            }
+
+            val output = item.optString("output", "")
+            if (output.isBlank()) continue
+
+            val parsed = try {
+                JSONObject(output)
+            } catch (_: Throwable) {
+                continue
+            }
+
+            if (
+                parsed.optString("schema", "") ==
+                    "amelia-p3.11-process-field-memory-v1" &&
+                parsed.optString("status", "") == "contribution_ready"
+            ) {
+                return parsed
+            }
+        }
+        return null
+    }
+
+    private fun stripEvidenceToken(
+        rawText: String,
+        expectedToken: String?
+    ): String {
+        if (expectedToken.isNullOrBlank()) {
+            return rawText.trim()
+        }
+
+        return rawText
+            .replace(expectedToken, "")
+            .trim()
+    }
+
     private fun pickPythonModule() {
         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
             addCategory(Intent.CATEGORY_OPENABLE)
@@ -494,7 +631,7 @@ class MainActivity : Activity() {
             val bytes = readPickedBytes(uri)
             val record = PythonModuleVault.ingest(applicationContext, displayName, bytes)
             statusView.text =
-                "Module accepted: ${record.fileName}. It is eligible for P3.10 event planning."
+                "Module accepted: ${record.fileName}. It is eligible for P3.11 event planning."
             refreshModuleVault()
         } catch (rejected: ModuleRejectedException) {
             statusView.text = "Module rejected: ${rejected.findings.joinToString(" ")}"
@@ -552,7 +689,7 @@ class MainActivity : Activity() {
         }
 
         moduleVaultView.text = if (records.isEmpty()) {
-            "No audited Python modules are staged. P3.10 will still run the Numogram event and language relay."
+            "No audited Python modules are staged. Tap STAGE PROCESS FIELD MEMORY to begin the P3.11 module assay."
         } else {
             records.joinToString("\n\n") { moduleRecordText(it) }
         }
@@ -566,7 +703,7 @@ class MainActivity : Activity() {
         append(record.byteCount)
         append("\n  source status: ")
         append(record.sourceStatus)
-        append("\n  P3.10: eligible for deterministic event-planner selection")
+        append("\n  P3.11: eligible for deterministic event-planner selection")
     }
 
     private fun setProviderCallInFlight(inFlight: Boolean) {
@@ -594,7 +731,7 @@ class MainActivity : Activity() {
         }
 
         return JSONObject()
-            .put("schema", "amelia-p3.10-credential-attestation-v1")
+            .put("schema", "amelia-p3.11-credential-attestation-v1")
             .put("state", state)
             .put("usable", state == "usable")
             .put("fingerprint", actualFingerprint)
