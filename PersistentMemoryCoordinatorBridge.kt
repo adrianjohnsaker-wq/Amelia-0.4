@@ -1,4 +1,4 @@
-package com.antonio.my.ai.girlfriend.free.bridge
+package com.amelia.persistent.memory.bridge
 
 import android.content.Context
 import android.util.Log
