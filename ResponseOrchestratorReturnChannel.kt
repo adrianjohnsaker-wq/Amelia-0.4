@@ -1,4 +1,4 @@
-package com.antonio.my.ai.girlfriend.free.amelia.bridges
+package com.response.orchestrator.channel.amelia.bridges
 
 object ResponseOrchestratorReturnChannel {
 
