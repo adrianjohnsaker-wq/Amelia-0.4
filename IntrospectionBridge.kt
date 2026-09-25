@@ -1,4 +1,4 @@
-package.com.antonio.my.ai.girlfriend.free.amelia.introspection.bridge
+package.com.amelia.introspection.bridge
 
 import android.content.Context
 import android.util.Log
