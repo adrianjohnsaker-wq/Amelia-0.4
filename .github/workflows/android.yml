@@ -40,7 +40,7 @@ jobs:
           for source in \
             Numogram.py \
             RenderTransport.kt \
-            process_field_memory.py \
+            ProcessFieldMemory.py \
             P312AssayCore.py \
             P312AssayBridge.kt \
             P312PromptBuilder.kt \
@@ -59,7 +59,7 @@ jobs:
           sha256sum \
             Numogram.py \
             RenderTransport.kt \
-            process_field_memory.py \
+            ProcessFieldMemory.py \
             P312AssayCore.py \
             P312AssayBridge.kt \
             P312PromptBuilder.kt \
@@ -107,7 +107,7 @@ jobs:
           python3.8 --version
           python3.8 -m py_compile \
             Numogram.py \
-            process_field_memory.py \
+            ProcessFieldMemory.py \
             P312AssayCore.py
 
           python3.8 - <<'PY'
@@ -116,7 +116,7 @@ jobs:
           from pathlib import Path
 
           core = Path("P312AssayCore.py").read_text(encoding="utf-8")
-          pfm = Path("process_field_memory.py").read_text(encoding="utf-8")
+          pfm = Path("ProcessFieldMemory.py").read_text(encoding="utf-8")
 
           core_tree = ast.parse(core)
           core_functions = {
@@ -183,8 +183,8 @@ jobs:
 
           cp Numogram.py \
             app/src/main/python/Numogram.py
-          cp process_field_memory.py \
-            app/src/main/python/process_field_memory.py
+          cp ProcessFieldMemory.py \
+            app/src/main/python/ProcessFieldMemory.py
           cp P312AssayCore.py \
             app/src/main/python/P312AssayCore.py
 
@@ -430,7 +430,7 @@ jobs:
           sha256sum \
             Numogram.py \
             RenderTransport.kt \
-            process_field_memory.py \
+            ProcessFieldMemory.py \
             P312AssayCore.py \
             P312AssayBridge.kt \
             P312PromptBuilder.kt \
@@ -438,7 +438,7 @@ jobs:
             > p312-source-sha256.txt
 
           APK_SHA="$(sha256sum "$APK" | awk '{print $1}')"
-          PFM_SHA="$(sha256sum process_field_memory.py | awk '{print $1}')"
+          PFM_SHA="$(sha256sum ProcessFieldMemory.py | awk '{print $1}')"
 
           cat > p312-build-manifest.txt <<EOF
           Amelia Android P3.12
