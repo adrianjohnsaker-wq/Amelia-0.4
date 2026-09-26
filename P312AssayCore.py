@@ -12,7 +12,7 @@ C_RESET    : the exact same ProcessFieldMemory module is reloaded before each
 The second event is the predeclared critical comparison.
 
 ProcessFieldMemory is imported from the repository's existing
-process_field_memory.py source. P3.12 does not reimplement its update law.
+ProcessFieldMemory.py source. P3.12 does not reimplement its update law.
 """
 
 import hashlib
@@ -20,7 +20,7 @@ import importlib
 import json
 
 import Numogram
-import process_field_memory as ProcessFieldMemory
+import ProcessFieldMemory
 
 
 ASSAY_SCHEMA = "amelia-p3.12-causal-incorporation-assay-v1"
