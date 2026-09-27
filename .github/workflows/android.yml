@@ -1,8 +1,18 @@
-name: Build Amelia Android-P3.12 Causal Incorporation Assay APK
+name: Build Amelia Android-P3.13 Renderer Faithfulness Side-by-Side APK
 
 on:
   push:
     branches: ["main"]
+    paths:
+      - "P313MainActivity.kt"
+      - "P313RendererFaithfulness.kt"
+      - "P312AssayCore.py"
+      - "P312AssayBridge.kt"
+      - "P312PromptBuilder.kt"
+      - "ProcessFieldMemory.py"
+      - "Numogram.py"
+      - "RenderTransport.kt"
+      - ".github/workflows/p313.yml"
   workflow_dispatch:
 
 permissions:
@@ -32,7 +42,7 @@ jobs:
         with:
           gradle-version: "8.9"
 
-      - name: Verify P3.12 source files exist
+      - name: Verify P3.13 source files exist
         shell: bash
         run: |
           set -euo pipefail
@@ -44,10 +54,11 @@ jobs:
             P312AssayCore.py \
             P312AssayBridge.kt \
             P312PromptBuilder.kt \
-            P312MainActivity.kt
+            P313RendererFaithfulness.kt \
+            P313MainActivity.kt
           do
             if [[ ! -f "$source" ]]; then
-              echo "::error file=$source::Required P3.12 source is absent from repository root."
+              echo "::error file=$source::Required P3.13 source is absent from repository root."
               find . -maxdepth 1 -type f -printf ' - %f\n' | sort
               exit 1
             fi
@@ -55,7 +66,7 @@ jobs:
           done
 
           echo
-          echo "P3.12 source fingerprints:"
+          echo "P3.13 source fingerprints:"
           sha256sum \
             Numogram.py \
             RenderTransport.kt \
@@ -63,43 +74,44 @@ jobs:
             P312AssayCore.py \
             P312AssayBridge.kt \
             P312PromptBuilder.kt \
-            P312MainActivity.kt
+            P313RendererFaithfulness.kt \
+            P313MainActivity.kt
 
-      - name: Seal P3.12 credential attestation
+      - name: Seal P3.13 credential attestation
         shell: bash
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
           set -euo pipefail
 
-          P312_KEY="${ANTHROPIC_API_KEY:-}"
+          P313_KEY="${ANTHROPIC_API_KEY:-}"
 
-          if [[ -z "$P312_KEY" ]]; then
+          if [[ -z "$P313_KEY" ]]; then
             {
-              echo "P312_CREDENTIAL_FINGERPRINT=missing"
-              echo "P312_CREDENTIAL_SHAPE=missing"
+              echo "P313_CREDENTIAL_FINGERPRINT=missing"
+              echo "P313_CREDENTIAL_SHAPE=missing"
             } >> "$GITHUB_ENV"
           else
-            P312_FINGERPRINT="$(
-              printf '%s' "$P312_KEY" | sha256sum | awk '{print $1}'
+            P313_FINGERPRINT="$(
+              printf '%s' "$P313_KEY" | sha256sum | awk '{print $1}'
             )"
 
-            if [[ "$P312_KEY" == sk-ant-* ]] && \
-               [[ ! "$P312_KEY" =~ [[:space:]] ]]; then
-              P312_SHAPE=canonical
+            if [[ "$P313_KEY" == sk-ant-* ]] && \
+               [[ ! "$P313_KEY" =~ [[:space:]] ]]; then
+              P313_SHAPE=canonical
             else
-              P312_SHAPE=noncanonical
+              P313_SHAPE=noncanonical
             fi
 
             {
-              echo "P312_CREDENTIAL_FINGERPRINT=$P312_FINGERPRINT"
-              echo "P312_CREDENTIAL_SHAPE=$P312_SHAPE"
+              echo "P313_CREDENTIAL_FINGERPRINT=$P313_FINGERPRINT"
+              echo "P313_CREDENTIAL_SHAPE=$P313_SHAPE"
             } >> "$GITHUB_ENV"
 
-            echo "P3.12 credential sealed: shape=$P312_SHAPE; sha256-prefix=${P312_FINGERPRINT:0:16}."
+            echo "P3.13 credential sealed: shape=$P313_SHAPE; sha256-prefix=${P313_FINGERPRINT:0:16}."
           fi
 
-      - name: Validate P3.12 Python assay contracts
+      - name: Validate frozen P3.12 Python causal contracts
         shell: bash
         run: |
           set -euo pipefail
@@ -140,15 +152,11 @@ jobs:
           }
           assert "amelia_event" in pfm_functions
 
-          # The intervention must be explicit in source:
-          # retained branch reloads once, reset branch reloads again
-          # immediately before the critical second PFM call.
           assert '"B_RETAINED"' in core
           assert '"C_RESET"' in core
           assert "_reload_pfm()" in core
           assert "causal_memory_contrast_held" in core
 
-          # Exact user-visible P3.11 PFM module remains dependency-light.
           forbidden = [
               r"\bsubprocess\b",
               r"\bos\.system\b",
@@ -166,16 +174,16 @@ jobs:
           ]
           assert not hits, hits
 
-          print("P3.12 Python source contracts validated")
+          print("Frozen P3.12 Python source contracts validated")
           PY
 
-      - name: Create Android-P3.12 project
+      - name: Create isolated Android-P3.13 project
         shell: bash
         run: |
           set -euo pipefail
 
           mkdir -p \
-            app/src/main/java/com/amelia/p312 \
+            app/src/main/java/com/amelia/p313 \
             app/src/main/java/com/amelia/assay \
             app/src/main/java/com/amelia/renderer \
             app/src/main/python \
@@ -192,10 +200,12 @@ jobs:
             app/src/main/java/com/amelia/assay/P312AssayBridge.kt
           cp P312PromptBuilder.kt \
             app/src/main/java/com/amelia/renderer/P312PromptBuilder.kt
+          cp P313RendererFaithfulness.kt \
+            app/src/main/java/com/amelia/renderer/P313RendererFaithfulness.kt
           cp RenderTransport.kt \
             app/src/main/java/com/amelia/renderer/RenderTransport.kt
-          cp P312MainActivity.kt \
-            app/src/main/java/com/amelia/p312/MainActivity.kt
+          cp P313MainActivity.kt \
+            app/src/main/java/com/amelia/p313/MainActivity.kt
 
           cat > settings.gradle.kts <<'EOF'
           pluginManagement {
@@ -214,7 +224,7 @@ jobs:
               }
           }
 
-          rootProject.name = "AmeliaAndroidP312"
+          rootProject.name = "AmeliaAndroidP313"
           include(":app")
           EOF
 
@@ -258,22 +268,23 @@ jobs:
           val apiKey =
               System.getenv("ANTHROPIC_API_KEY") ?: ""
           val credentialFingerprint =
-              System.getenv("P312_CREDENTIAL_FINGERPRINT") ?: "missing"
+              System.getenv("P313_CREDENTIAL_FINGERPRINT") ?: "missing"
           val credentialShape =
-              System.getenv("P312_CREDENTIAL_SHAPE") ?: "missing"
+              System.getenv("P313_CREDENTIAL_SHAPE") ?: "missing"
           val revision =
               (System.getenv("GITHUB_SHA") ?: "local").take(12)
 
           android {
-              namespace = "com.amelia.p312"
+              namespace = "com.amelia.p313"
               compileSdk = 34
 
               defaultConfig {
-                  applicationId = "com.amelia.p312"
+                  // CRITICAL: distinct from frozen P3.12 com.amelia.p312.
+                  applicationId = "com.amelia.p313"
                   minSdk = 24
                   targetSdk = 34
-                  versionCode = 1
-                  versionName = "0.14-android-p3.12-causal-incorporation"
+                  versionCode = 13
+                  versionName = "0.15-android-p3.13-renderer-faithfulness-side-by-side"
 
                   ndk {
                       abiFilters += listOf(
@@ -355,62 +366,88 @@ jobs:
 
           cat > app/src/main/res/values/strings.xml <<'EOF'
           <resources>
-              <string name="app_name">Amelia P3.12</string>
+              <string name="app_name">Amelia P3.13</string>
           </resources>
           EOF
 
-      - name: Validate P3.12 Android causal contracts
+      - name: Validate P3.13 side-by-side and faithfulness contracts
         shell: bash
         run: |
           set -euo pipefail
 
+          # P3.12 causal substrate remains the source of the primary endpoint.
           grep -Fq 'A_ABSENT' \
             app/src/main/python/P312AssayCore.py
           grep -Fq 'B_RETAINED' \
             app/src/main/python/P312AssayCore.py
           grep -Fq 'C_RESET' \
             app/src/main/python/P312AssayCore.py
-          grep -Fq 'event_two_identical_across_conditions' \
-            app/src/main/python/P312AssayCore.py
-          grep -Fq 'b_second_history_depth' \
-            app/src/main/python/P312AssayCore.py
-          grep -Fq 'c_second_history_depth' \
+          grep -Fq 'causal_memory_contrast_held' \
             app/src/main/python/P312AssayCore.py
 
-          grep -Fq 'RUN MATCHED A / B / C ASSAY' \
-            app/src/main/java/com/amelia/p312/MainActivity.kt
-          grep -Fq 'primary_endpoint_failed' \
-            app/src/main/java/com/amelia/p312/MainActivity.kt
-          grep -Fq 'P312PromptBuilder.build' \
-            app/src/main/java/com/amelia/p312/MainActivity.kt
-          grep -Fq 'branchStatus(condition)' \
-            app/src/main/java/com/amelia/p312/MainActivity.kt
-          grep -Fq 'maxTokens = 1600' \
-            app/src/main/java/com/amelia/p312/MainActivity.kt
+          # P3.13 package MUST remain separate from P3.12.
+          grep -Fq 'namespace = "com.amelia.p313"' \
+            app/build.gradle.kts
+          grep -Fq 'applicationId = "com.amelia.p313"' \
+            app/build.gradle.kts
 
-          grep -Fq 'matched causal incorporation assay' \
-            app/src/main/java/com/amelia/renderer/P312PromptBuilder.kt
-          grep -Fq 'do not invent retained ProcessFieldMemory history' \
-            app/src/main/java/com/amelia/renderer/P312PromptBuilder.kt
-          grep -Fq '[[PFM-EVIDENCE:' \
-            app/src/main/java/com/amelia/renderer/P312PromptBuilder.kt
+          if grep -Fq 'applicationId = "com.amelia.p312"' \
+            app/build.gradle.kts
+          then
+            echo "FAIL: P3.13 would collide with frozen P3.12."
+            exit 1
+          fi
 
+          # Pre-render seal must occur before transport execution in source.
+          PRE_LINE="$(
+            grep -n 'archivePreRender' \
+              app/src/main/java/com/amelia/p313/MainActivity.kt \
+              | head -1 | cut -d: -f1
+          )"
+          SEND_LINE="$(
+            grep -n 'RenderTransport.execute' \
+              app/src/main/java/com/amelia/p313/MainActivity.kt \
+              | head -1 | cut -d: -f1
+          )"
+          POST_LINE="$(
+            grep -n 'auditAndArchive' \
+              app/src/main/java/com/amelia/p313/MainActivity.kt \
+              | head -1 | cut -d: -f1
+          )"
+
+          test -n "$PRE_LINE"
+          test -n "$SEND_LINE"
+          test -n "$POST_LINE"
+          test "$PRE_LINE" -lt "$SEND_LINE"
+          test "$SEND_LINE" -lt "$POST_LINE"
+
+          grep -Fq 'positiveControl()' \
+            app/src/main/java/com/amelia/p313/MainActivity.kt
+          grep -Fq 'verifyArchiveChain' \
+            app/src/main/java/com/amelia/p313/MainActivity.kt
+          grep -Fq 'CONTRADICTION' \
+            app/src/main/java/com/amelia/renderer/P313RendererFaithfulness.kt
+          grep -Fq 'POST_RENDER_AUDIT' \
+            app/src/main/java/com/amelia/renderer/P313RendererFaithfulness.kt
+          grep -Fq 'PRE_RENDER' \
+            app/src/main/java/com/amelia/renderer/P313RendererFaithfulness.kt
+
+          # Preserve provider-default sealed transport policy.
           if rg -n 'put\("temperature"|put\("top_p"|put\("top_k"' \
             app/src/main/java/com/amelia/renderer/RenderTransport.kt
           then
-            echo "FAIL: P3.12 retains the sealed provider-default transport."
+            echo "FAIL: P3.13 must retain sealed provider-default transport."
             exit 1
           fi
 
           echo
-          echo "P3.12 pre-build causal contract validation passed."
-          echo "A: PFM absent."
-          echo "B: exact PFM source retained across event 1 -> event 2."
-          echo "C: exact PFM source reloaded before each event."
-          echo "All three use fresh TensorBasedNumogramSystem instances."
-          echo "Provider calls occur only after the deterministic primary endpoint passes."
+          echo "P3.13 pre-build contract validation passed."
+          echo "Side-by-side package: com.amelia.p313"
+          echo "Frozen package retained: com.amelia.p312"
+          echo "Ordering: PRE_RENDER seal -> provider -> POST_RENDER audit"
+          echo "Positive control and hash-chain verification are required."
 
-      - name: Build Android-P3.12 APK
+      - name: Build Android-P3.13 side-by-side APK
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
@@ -419,13 +456,15 @@ jobs:
             :app:assembleDebug \
             --stacktrace
 
-      - name: Record P3.12 build manifest
+      - name: Record P3.13 build manifest
         shell: bash
         run: |
           set -euo pipefail
 
           APK="app/build/outputs/apk/debug/app-debug.apk"
           test -f "$APK"
+
+          cp "$APK" Amelia-P3.13-Side-by-Side.apk
 
           sha256sum \
             Numogram.py \
@@ -434,74 +473,59 @@ jobs:
             P312AssayCore.py \
             P312AssayBridge.kt \
             P312PromptBuilder.kt \
-            P312MainActivity.kt \
-            > p312-source-sha256.txt
+            P313RendererFaithfulness.kt \
+            P313MainActivity.kt \
+            > p313-source-sha256.txt
 
-          APK_SHA="$(sha256sum "$APK" | awk '{print $1}')"
+          APK_SHA="$(sha256sum Amelia-P3.13-Side-by-Side.apk | awk '{print $1}')"
           PFM_SHA="$(sha256sum ProcessFieldMemory.py | awk '{print $1}')"
 
-          cat > p312-build-manifest.txt <<EOF
-          Amelia Android P3.12
+          cat > p313-build-manifest.txt <<EOF
+          Amelia Android P3.13
           ====================
 
           Revision:
           ${GITHUB_SHA}
 
           Purpose:
-          Matched causal incorporation assay for ProcessFieldMemory.
+          Renderer-faithfulness validation layered downstream of the frozen
+          P3.12 matched causal incorporation assay.
 
-          Conditions:
-          A_ABSENT
-            Same fresh Numogram chassis; no PFM call.
+          Installation isolation:
+          P3.12 application ID: com.amelia.p312
+          P3.13 application ID: com.amelia.p313
 
-          B_RETAINED
-            Same fresh Numogram chassis; exact repository PFM source retains
-            event 1 state into event 2.
+          The two APKs are intentionally installable side by side.
 
-          C_RESET
-            Same fresh Numogram chassis; exact repository PFM source is
-            reloaded before each event, zeroing PFM state while preserving the
-            matched Numogram prompt sequence.
+          P3.13 sequence:
+          frozen P3.12 primary endpoint
+          -> exact Event-2 relay payload PRE_RENDER archive
+          -> one sealed provider call
+          -> returned prose POST_RENDER archive
+          -> deterministic closed-set contradiction audit
+          -> deliberate-false-text positive control
+          -> SHA-256 archive-chain verification
+          -> existing post-render Numogram-isolation check
 
           Seed:
           3606
 
-          Primary endpoint:
-          Event 1 must be identical across A/B/C.
-          Event 2 must be identical across A/B/C.
-          A must have no PFM payload.
-          B event-2 history_depth must equal 2.
-          C event-2 history_depth must equal 1.
-
-          Provider:
-          Called only for the critical second event after the deterministic
-          primary endpoint passes. Natural-language differences are descriptive
-          downstream evidence, not the sole causal endpoint.
-
-          Renderer isolation:
-          Each throwaway Numogram branch is retained in memory and its full
-          transition-relevant state digest is recomputed after rendering.
-          state_unchanged_from_seal must remain true.
-
           ProcessFieldMemory SHA-256:
           ${PFM_SHA}
-
-          Application ID:
-          com.amelia.p312
 
           APK SHA-256:
           ${APK_SHA}
           EOF
 
-          cat p312-build-manifest.txt
-          cat p312-source-sha256.txt
+          cat p313-build-manifest.txt
+          cat p313-source-sha256.txt
 
-      - name: Upload Android-P3.12 APK
+      - name: Upload Android-P3.13 side-by-side APK
         uses: actions/upload-artifact@v4
         with:
-          name: Amelia-Android-P3.12-Causal-Incorporation-Assay
+          name: Amelia-Android-P3.13-Renderer-Faithfulness-Side-by-Side
           path: |
-            app/build/outputs/apk/debug/app-debug.apk
-            p312-build-manifest.txt
-            p312-source-sha256.txt
+            Amelia-P3.13-Side-by-Side.apk
+            p313-build-manifest.txt
+            p313-source-sha256.txt
           retention-days: 14
