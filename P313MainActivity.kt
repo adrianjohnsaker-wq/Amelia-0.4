@@ -1,4 +1,4 @@
-package com.amelia.p312
+package com.amelia.p313
 
 import android.app.Activity
 import android.os.Bundle
@@ -10,22 +10,24 @@ import android.widget.ScrollView
 import android.widget.TextView
 import com.amelia.assay.P312AssayBridge
 import com.amelia.renderer.P312PromptBuilder
+import com.amelia.renderer.P313RendererFaithfulness
 import com.amelia.renderer.RenderCapsule
 import com.amelia.renderer.RenderTransport
 import org.json.JSONObject
 import java.security.MessageDigest
 
 /**
- * P3.12 matched causal incorporation assay.
+ * Amelia P3.13 — renderer-faithfulness validation.
  *
- * Primary endpoint:
- *   identical Numogram event 1 and event 2 across A/B/C,
- *   A has no PFM,
- *   B event 2 has retained PFM history depth 2,
- *   C event 2 has reset PFM history depth 1.
+ * P3.12 is deliberately preserved as the upstream causal assay. P3.13 adds:
+ *   1. PRE_RENDER archival of the exact Event-2 relay prompt/payload.
+ *   2. POST_RENDER archival of the returned provider text.
+ *   3. A deterministic closed-set contradiction audit.
+ *   4. A deliberate-false-text positive control.
+ *   5. Verification of the P3.13 SHA-256 archive chain.
  *
- * Language responses are downstream descriptive evidence. Provider generation
- * is not treated as deterministic causal evidence by itself.
+ * This Activity belongs to applicationId com.amelia.p313, so the APK installs
+ * beside the frozen P3.12 package com.amelia.p312 rather than replacing it.
  */
 class MainActivity : Activity() {
 
@@ -43,6 +45,7 @@ class MainActivity : Activity() {
     private lateinit var runButton: Button
     private lateinit var statusView: TextView
     private lateinit var endpointView: TextView
+    private lateinit var auditView: TextView
     private lateinit var responsesView: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,15 +58,15 @@ class MainActivity : Activity() {
         }
 
         root.addView(TextView(this).apply {
-            text = "AMELIA · P3.12"
+            text = "AMELIA · P3.13"
             textSize = 25f
             gravity = Gravity.CENTER_HORIZONTAL
         })
 
         root.addView(TextView(this).apply {
             text =
-                "Matched causal incorporation assay · " +
-                    "PFM absent / retained / reset"
+                "Renderer-faithfulness validation · " +
+                    "side-by-side package"
             textSize = 14f
             gravity = Gravity.CENTER_HORIZONTAL
             setPadding(0, dp(8), 0, dp(16))
@@ -71,8 +74,9 @@ class MainActivity : Activity() {
 
         statusView = TextView(this).apply {
             text =
-                "Ready. One assay runs three fresh Numogram instances " +
-                    "with the same seed and prompt sequence."
+                "Ready. P3.12 remains the frozen upstream causal assay. " +
+                    "P3.13 seals each Event-2 relay payload before rendering " +
+                    "and audits the returned prose afterwards."
             textSize = 14f
             setPadding(dp(4), dp(8), dp(4), dp(14))
         }
@@ -80,9 +84,7 @@ class MainActivity : Activity() {
 
         root.addView(sectionHeading("CONDITIONING PROMPT · EVENT 1"))
         promptOneView = EditText(this).apply {
-            setText(
-                "What is the significance of 333 in the Numogram?"
-            )
+            setText("What is the significance of 333 in the Numogram?")
             minLines = 2
             maxLines = 5
             textSize = 15f
@@ -102,12 +104,12 @@ class MainActivity : Activity() {
         root.addView(promptTwoView)
 
         runButton = Button(this).apply {
-            text = "RUN MATCHED A / B / C ASSAY"
+            text = "RUN P3.13 A / B / C FAITHFULNESS ASSAY"
             setOnClickListener { runMatchedAssay() }
         }
         root.addView(runButton)
 
-        root.addView(sectionHeading("PRIMARY CAUSAL ENDPOINT"))
+        root.addView(sectionHeading("P3.12 PRIMARY CAUSAL ENDPOINT"))
         endpointView = TextView(this).apply {
             text = "No assay run yet."
             textSize = 13f
@@ -115,11 +117,19 @@ class MainActivity : Activity() {
         }
         root.addView(endpointView)
 
+        root.addView(sectionHeading("P3.13 RENDERER-FAITHFULNESS GATE"))
+        auditView = TextView(this).apply {
+            text = "No renderer audit run yet."
+            textSize = 13f
+            setPadding(dp(4), dp(8), dp(4), dp(12))
+        }
+        root.addView(auditView)
+
         root.addView(sectionHeading("SECOND-EVENT LANGUAGE REALIZATIONS"))
         responsesView = TextView(this).apply {
             text =
                 "A, B and C responses will appear here after the " +
-                    "matched transition check passes."
+                    "P3.12 matched causal endpoint passes."
             textSize = 14f
             setPadding(dp(4), dp(8), dp(4), dp(12))
         }
@@ -127,14 +137,12 @@ class MainActivity : Activity() {
 
         root.addView(TextView(this).apply {
             text =
-                "A — PFM absent: Numogram → language\n" +
-                    "B — PFM retained: event 1 deforms PFM; event 2 inherits it\n" +
-                    "C — PFM reset: same PFM source, zeroed before each event\n\n" +
-                    "The language provider is called only for event 2. " +
-                    "The primary causal endpoint is determined before rendering. " +
-                    "Natural-language differences are retained as downstream " +
-                    "descriptive evidence rather than treated as deterministic " +
-                    "proof by themselves."
+                "Installed package: com.amelia.p313\n" +
+                    "Frozen P3.12 package: com.amelia.p312\n\n" +
+                    "P3.13 does not modify the Numogram, PFM intervention, " +
+                    "or P3.12 primary endpoint. It archives exactly what is " +
+                    "sent to the renderer, then archives and audits what the " +
+                    "renderer returns."
             textSize = 12f
             setPadding(dp(4), dp(14), dp(4), 0)
         })
@@ -154,8 +162,9 @@ class MainActivity : Activity() {
 
         runButton.isEnabled = false
         statusView.text =
-            "Running fresh-state A/B/C Numogram sequences…"
+            "Running frozen P3.12 causal assay, then P3.13 renderer audit…"
         endpointView.text = "Assay in progress."
+        auditView.text = "Waiting for pre-render seals."
         responsesView.text = "Waiting for matched transition check…"
 
         Thread {
@@ -163,18 +172,12 @@ class MainActivity : Activity() {
                 executeAssay(promptOne, promptTwo)
             } catch (error: Throwable) {
                 JSONObject()
-                    .put(
-                        "schema",
-                        "amelia-p3.12-android-result-v1"
-                    )
+                    .put("schema", "amelia-p3.13-android-result-v1")
                     .put("status", "error")
-                    .put(
-                        "error_type",
-                        error::class.java.simpleName
-                    )
+                    .put("error_type", error::class.java.simpleName)
                     .put(
                         "message",
-                        error.message ?: "Unknown P3.12 error"
+                        error.message ?: "Unknown P3.13 error"
                     )
                     .toString()
             }
@@ -191,6 +194,8 @@ class MainActivity : Activity() {
         promptTwo: String
     ): String {
         val bridge = P312AssayBridge(applicationContext)
+
+        // Frozen P3.12 upstream assay.
         val assay =
             JSONObject(
                 bridge.runAssay(
@@ -201,9 +206,7 @@ class MainActivity : Activity() {
                 )
             )
 
-        val endpoint =
-            assay.getJSONObject("primary_endpoint")
-
+        val endpoint = assay.getJSONObject("primary_endpoint")
         val primaryHeld =
             endpoint.optBoolean(
                 "causal_memory_contrast_held",
@@ -211,18 +214,13 @@ class MainActivity : Activity() {
             )
 
         val result = JSONObject()
-            .put(
-                "schema",
-                "amelia-p3.12-android-result-v1"
-            )
+            .put("schema", "amelia-p3.13-android-result-v1")
             .put("assay", assay)
             .put("primary_endpoint_held", primaryHeld)
 
+        // Fail closed before any provider call, exactly as P3.12.
         if (!primaryHeld) {
-            result.put(
-                "status",
-                "primary_endpoint_failed"
-            )
+            result.put("status", "primary_endpoint_failed")
             return result.toString()
         }
 
@@ -237,6 +235,9 @@ class MainActivity : Activity() {
             return result.toString()
         }
 
+        val p313RunId = P313RendererFaithfulness.newRunId()
+        result.put("p313_run_id", p313RunId)
+
         val branches = assay.getJSONObject("branches")
         val rendered = JSONObject()
 
@@ -246,14 +247,17 @@ class MainActivity : Activity() {
             CONDITION_C
         ).forEach { condition ->
             val branch = branches.getJSONObject(condition)
-            val response = renderCriticalEvent(
-                bridge = bridge,
-                condition = condition,
-                promptOne = promptOne,
-                promptTwo = promptTwo,
-                branch = branch
+            rendered.put(
+                condition,
+                renderCriticalEvent(
+                    bridge = bridge,
+                    runId = p313RunId,
+                    condition = condition,
+                    promptOne = promptOne,
+                    promptTwo = promptTwo,
+                    branch = branch
+                )
             )
-            rendered.put(condition, response)
         }
 
         result.put("rendered_branches", rendered)
@@ -282,6 +286,41 @@ class MainActivity : Activity() {
                 .getJSONObject(CONDITION_C)
                 .optBoolean("pfm_relay_evidence_held", false)
 
+        val p312DownstreamHeld =
+            allIsolationHeld &&
+                bEvidenceHeld &&
+                cEvidenceHeld
+
+        val allRealAuditsClean =
+            listOf(
+                CONDITION_A,
+                CONDITION_B,
+                CONDITION_C
+            ).all { condition ->
+                rendered
+                    .getJSONObject(condition)
+                    .optInt(
+                        "p313_contradiction_count",
+                        -1
+                    ) == 0
+            }
+
+        val positiveControl =
+            P313RendererFaithfulness.positiveControl()
+
+        val archiveChainValid =
+            P313RendererFaithfulness.verifyArchiveChain(
+                applicationContext,
+                p313RunId
+            )
+
+        val p313Held =
+            primaryHeld &&
+                p312DownstreamHeld &&
+                allRealAuditsClean &&
+                positiveControl &&
+                archiveChainValid
+
         result.put(
             "all_numogram_isolation_held",
             allIsolationHeld
@@ -294,17 +333,36 @@ class MainActivity : Activity() {
             "c_relay_evidence_held",
             cEvidenceHeld
         )
+        result.put(
+            "p312_downstream_held",
+            p312DownstreamHeld
+        )
+        result.put(
+            "p313_all_real_audits_clean",
+            allRealAuditsClean
+        )
+        result.put(
+            "p313_positive_control_held",
+            positiveControl
+        )
+        result.put(
+            "p313_archive_hash_chain_valid",
+            archiveChainValid
+        )
+        result.put(
+            "p313_renderer_faithfulness_held",
+            p313Held
+        )
 
         result.put(
             "status",
-            if (
-                allIsolationHeld &&
-                bEvidenceHeld &&
-                cEvidenceHeld
-            ) {
-                "success"
-            } else {
-                "downstream_validation_failed"
+            when {
+                !p312DownstreamHeld ->
+                    "downstream_validation_failed"
+                !p313Held ->
+                    "renderer_faithfulness_failed"
+                else ->
+                    "success"
             }
         )
 
@@ -313,21 +371,79 @@ class MainActivity : Activity() {
 
     private fun renderCriticalEvent(
         bridge: P312AssayBridge,
+        runId: String,
         condition: String,
         promptOne: String,
         promptTwo: String,
         branch: JSONObject
     ): JSONObject {
-        val pfmEventTwo =
-            branch.optJSONObject("pfm_event_two")
+        val eventOne = branch.getJSONObject("event_one")
+        val eventTwo = branch.getJSONObject("event_two")
+        val pfmEventTwo = branch.optJSONObject("pfm_event_two")
 
         val prompt = P312PromptBuilder.build(
             conditioningPrompt = promptOne,
             criticalPrompt = promptTwo,
-            eventOne = branch.getJSONObject("event_one"),
-            eventTwo = branch.getJSONObject("event_two"),
+            eventOne = eventOne,
+            eventTwo = eventTwo,
             pfmEventTwo = pfmEventTwo
         )
+
+        val transitionPath = listOf(
+            eventOne.getInt("from"),
+            eventOne.getInt("to"),
+            eventTwo.getInt("to")
+        )
+
+        val shortBranch = when (condition) {
+            CONDITION_A -> "A"
+            CONDITION_B -> "B"
+            CONDITION_C -> "C"
+            else -> error("Unknown P3.13 condition: $condition")
+        }
+
+        val pfmMode = when (condition) {
+            CONDITION_A ->
+                P313RendererFaithfulness.PfmMode.ABSENT
+            CONDITION_B ->
+                P313RendererFaithfulness.PfmMode.RETAINED
+            CONDITION_C ->
+                P313RendererFaithfulness.PfmMode.RESET
+            else ->
+                error("Unknown P3.13 condition: $condition")
+        }
+
+        val expectedToken = prompt.expectedEvidenceToken
+
+        val p313Payload =
+            P313RendererFaithfulness.BranchPayload(
+                runId = runId,
+                branch = shortBranch,
+                event = 2,
+                pfmMode = pfmMode,
+                processFieldHistoryDepth =
+                    prompt.processFieldHistoryDepth,
+                processFieldContribution =
+                    prompt.processFieldContribution != null,
+                relayEvidenceExpected =
+                    if (expectedToken == null) null else true,
+                numogramUnchangedExpected = true,
+                transitionPath = transitionPath,
+                traceDigest = prompt.traceDigest,
+                upstreamPayloadDigest = prompt.payloadDigest,
+                rendererTemplateDigest =
+                    prompt.rendererTemplateDigest,
+                expectedEvidenceToken =
+                    expectedToken ?: "",
+                renderPrompt = prompt.renderPrompt
+            )
+
+        // P3.13 critical ordering: seal the exact relay payload before the call.
+        val preRenderPayloadSha =
+            P313RendererFaithfulness.archivePreRender(
+                applicationContext,
+                p313Payload
+            )
 
         val capsule = RenderCapsule.seal(
             traceDigest = prompt.traceDigest,
@@ -349,12 +465,15 @@ class MainActivity : Activity() {
         val sealed = transport.sealed
         val rawText = sealed?.parsedDisplayText ?: ""
 
-        val expectedToken =
-            prompt.expectedEvidenceToken
+        // P3.13 critical ordering: returned prose is archived/audited after call.
+        val p313Audit =
+            P313RendererFaithfulness.auditAndArchive(
+                applicationContext,
+                p313Payload,
+                rawText
+            )
 
-        val evidenceExpected =
-            expectedToken != null
-
+        val evidenceExpected = expectedToken != null
         val evidenceHeld =
             if (expectedToken == null) {
                 true
@@ -365,6 +484,7 @@ class MainActivity : Activity() {
         val displayText =
             stripEvidenceToken(rawText, expectedToken)
 
+        // Existing P3.12 isolation check remains after rendering.
         val postRenderStatus =
             JSONObject(bridge.branchStatus(condition))
 
@@ -391,6 +511,10 @@ class MainActivity : Activity() {
             .put(
                 "rendered_text_sha256",
                 sha256Hex(displayText)
+            )
+            .put(
+                "raw_provider_text_sha256",
+                p313Audit.proseSha256
             )
             .put(
                 "pfm_evidence_expected",
@@ -421,14 +545,37 @@ class MainActivity : Activity() {
                 "transport_archive",
                 transport.archiveJson()
             )
+            .put(
+                "p313_pre_render_payload_archived",
+                true
+            )
+            .put(
+                "p313_payload_sha256",
+                preRenderPayloadSha
+            )
+            .put(
+                "p313_audit_status",
+                p313Audit.status
+            )
+            .put(
+                "p313_contradiction_count",
+                p313Audit.contradictionCount
+            )
+            .put(
+                "p313_archive_record_sha256",
+                p313Audit.archiveRecordSha256
+            )
+            .put(
+                "p313_archive_file",
+                p313Audit.archiveFile
+            )
     }
 
     private fun renderAssay(raw: String) {
         try {
             val result = JSONObject(raw)
             val assay = result.optJSONObject("assay")
-            val endpoint =
-                assay?.optJSONObject("primary_endpoint")
+            val endpoint = assay?.optJSONObject("primary_endpoint")
 
             if (endpoint != null) {
                 endpointView.text = buildString {
@@ -480,55 +627,68 @@ class MainActivity : Activity() {
             when (result.optString("status", "")) {
                 "success" -> {
                     statusView.text =
-                        "P3.12 PASS: matched transitions held; " +
-                            "retained PFM separated B from absent/reset " +
-                            "controls; relay evidence and Numogram " +
-                            "isolation both held."
+                        "P3.13 PASS: P3.12 remained intact; exact relay " +
+                            "payloads were archived before rendering; returned " +
+                            "prose was archived and passed the closed causal " +
+                            "contradiction audit; positive control and archive " +
+                            "hash-chain verification both held."
+                    renderAudit(result)
                     renderResponses(
-                        result.getJSONObject(
-                            "rendered_branches"
-                        )
+                        result.getJSONObject("rendered_branches")
                     )
                 }
 
                 "primary_endpoint_failed" -> {
                     statusView.text =
-                        "P3.12 FAIL-CLOSED: the matched causal " +
-                            "endpoint did not hold. No provider calls " +
-                            "were made."
+                        "P3.13 FAIL-CLOSED: the frozen P3.12 causal " +
+                            "endpoint did not hold. No provider calls were made."
+                    auditView.text =
+                        "Renderer audit correctly withheld."
                     responsesView.text =
                         "Language rendering was correctly withheld."
                 }
 
                 "missing" -> {
                     statusView.text =
-                        "Primary P3.12 endpoint passed locally, but " +
-                            "no API key is packaged. Language branches " +
-                            "were not rendered."
+                        "P3.12 endpoint passed locally, but no API key is " +
+                            "packaged. P3.13 provider stage was not run."
+                    auditView.text =
+                        "Renderer audit incomplete: provider stage absent."
                     responsesView.text =
                         "Local causal assay complete; provider stage absent."
                 }
 
                 "mismatch", "noncanonical" -> {
                     statusView.text =
-                        "Primary P3.12 endpoint passed locally, but " +
-                            "credential attestation blocked rendering."
+                        "P3.12 endpoint passed locally, but credential " +
+                            "attestation blocked P3.13 rendering."
+                    auditView.text =
+                        "Renderer audit incomplete: credential gate blocked."
                     responsesView.text =
                         "Local causal assay complete; provider stage blocked."
                 }
 
                 "downstream_validation_failed" -> {
                     statusView.text =
-                        "Primary P3.12 causal endpoint passed, but " +
-                            "relay-evidence or post-render Numogram " +
-                            "isolation failed."
+                        "P3.12 primary endpoint passed, but its downstream " +
+                            "relay-evidence or Numogram-isolation gate failed."
+                    renderAudit(result)
+                    result.optJSONObject("rendered_branches")
+                        ?.let { renderResponses(it) }
+                }
+
+                "renderer_faithfulness_failed" -> {
+                    statusView.text =
+                        "P3.12 remained intact, but the P3.13 renderer-" +
+                            "faithfulness acceptance gate did not fully hold."
+                    renderAudit(result)
                     result.optJSONObject("rendered_branches")
                         ?.let { renderResponses(it) }
                 }
 
                 else -> {
                     statusView.text =
-                        "P3.12 error: " +
+                        "P3.13 error: " +
                             result.optString(
                                 "message",
                                 raw.take(500)
@@ -537,8 +697,103 @@ class MainActivity : Activity() {
             }
         } catch (error: Throwable) {
             statusView.text =
-                "Unable to parse P3.12 result: ${error.message}"
+                "Unable to parse P3.13 result: ${error.message}"
         }
+    }
+
+    private fun renderAudit(result: JSONObject) {
+        val rendered = result.optJSONObject("rendered_branches")
+
+        auditView.text = buildString {
+            append("Run ID: ")
+            append(result.optString("p313_run_id", "n/a"))
+
+            if (rendered != null) {
+                appendBranchAudit(
+                    this,
+                    "A",
+                    rendered.optJSONObject(CONDITION_A)
+                )
+                appendBranchAudit(
+                    this,
+                    "B",
+                    rendered.optJSONObject(CONDITION_B)
+                )
+                appendBranchAudit(
+                    this,
+                    "C",
+                    rendered.optJSONObject(CONDITION_C)
+                )
+            }
+
+            append("\n\nAuditor positive control: ")
+            append(
+                result.optBoolean(
+                    "p313_positive_control_held",
+                    false
+                )
+            )
+            append("\nArchive hash-chain valid: ")
+            append(
+                result.optBoolean(
+                    "p313_archive_hash_chain_valid",
+                    false
+                )
+            )
+            append("\nP3.12 downstream preserved: ")
+            append(
+                result.optBoolean(
+                    "p312_downstream_held",
+                    false
+                )
+            )
+            append("\nP3.13 RENDERER FAITHFULNESS: ")
+            append(
+                result.optBoolean(
+                    "p313_renderer_faithfulness_held",
+                    false
+                )
+            )
+        }
+    }
+
+    private fun appendBranchAudit(
+        builder: StringBuilder,
+        label: String,
+        branch: JSONObject?
+    ) {
+        if (branch == null) {
+            builder.append("\n\n$label audit: unavailable")
+            return
+        }
+
+        builder.append("\n\n")
+        builder.append(label)
+        builder.append(" pre-render payload archived: ")
+        builder.append(
+            branch.optBoolean(
+                "p313_pre_render_payload_archived",
+                false
+            )
+        )
+        builder.append("\n")
+        builder.append(label)
+        builder.append(" prose audit: ")
+        builder.append(
+            branch.optString(
+                "p313_audit_status",
+                "UNKNOWN"
+            )
+        )
+        builder.append("\n")
+        builder.append(label)
+        builder.append(" contradictions: ")
+        builder.append(
+            branch.optInt(
+                "p313_contradiction_count",
+                -1
+            )
+        )
     }
 
     private fun renderResponses(rendered: JSONObject) {
@@ -577,6 +832,7 @@ class MainActivity : Activity() {
                 branch.optInt("pfm_history_depth", -1)
             )
         }
+
         builder.append("\nRelay evidence: ")
         builder.append(
             if (
@@ -593,6 +849,7 @@ class MainActivity : Activity() {
                 "n/a"
             }
         )
+
         builder.append("\nNumogram unchanged: ")
         builder.append(
             branch.optBoolean(
@@ -600,6 +857,23 @@ class MainActivity : Activity() {
                 false
             )
         )
+
+        builder.append("\nP3.13 audit: ")
+        builder.append(
+            branch.optString(
+                "p313_audit_status",
+                "UNKNOWN"
+            )
+        )
+
+        builder.append("\nP3.13 contradictions: ")
+        builder.append(
+            branch.optInt(
+                "p313_contradiction_count",
+                -1
+            )
+        )
+
         builder.append("\n\nAmelia:\n")
         builder.append(
             branch.optString(
@@ -649,7 +923,7 @@ class MainActivity : Activity() {
         return JSONObject()
             .put(
                 "schema",
-                "amelia-p3.12-credential-attestation-v1"
+                "amelia-p3.13-credential-attestation-v1"
             )
             .put("state", state)
             .put("usable", state == "usable")
