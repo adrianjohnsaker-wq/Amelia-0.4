@@ -1,15 +1,15 @@
-name: Build Amelia Android-P3.14 Experiment-1A Side-by-Side APK
+name: Build Amelia Android-P3.14R 666 Replication APK
 
 on:
   push:
     branches: ["main"]
     paths:
       - "Numogram.py"
-      - "P314Experiment1.py"
-      - "P314Experiment1Bridge.kt"
-      - "P314MainActivity.kt"
-      - "P314_Experiment1_Protocol.md"
-      - ".github/workflows/p314.yml"
+      - "P314RExperiment.py"
+      - "P314RExperimentBridge.kt"
+      - "P314RMainActivity.kt"
+      - "P314R_666_Replication_Protocol.md"
+      - ".github/workflows/p314r.yml"
   workflow_dispatch:
 
 permissions:
@@ -39,49 +39,37 @@ jobs:
         with:
           gradle-version: "8.9"
 
-      - name: Verify P3.14 source files exist
+      - name: Verify P3.14R source files
         shell: bash
         run: |
           set -euo pipefail
 
           for source in \
             Numogram.py \
-            P314Experiment1.py \
-            P314Experiment1Bridge.kt \
-            P314MainActivity.kt \
-            P314_Experiment1_Protocol.md
+            P314RExperiment.py \
+            P314RExperimentBridge.kt \
+            P314RMainActivity.kt \
+            P314R_666_Replication_Protocol.md
           do
-            if [[ ! -f "$source" ]]; then
-              echo "::error file=$source::Required P3.14 source is absent from repository root."
-              find . -maxdepth 1 -type f -printf ' - %f\n' | sort
+            test -f "$source" || {
+              echo "::error file=$source::Required P3.14R source is absent from repository root."
               exit 1
-            fi
+            }
             echo "Present: $source ($(wc -c < "$source") bytes)"
           done
 
-          echo
-          echo "P3.14 source fingerprints:"
-          sha256sum \
-            Numogram.py \
-            P314Experiment1.py \
-            P314Experiment1Bridge.kt \
-            P314MainActivity.kt \
-            P314_Experiment1_Protocol.md
+          python3.8 -m py_compile Numogram.py P314RExperiment.py
 
-      - name: Validate Experiment 1A Python protocol
+      - name: Validate locked replication contract
         shell: bash
         run: |
           set -euo pipefail
 
-          python3.8 --version
-          python3.8 -m py_compile Numogram.py P314Experiment1.py
-
           python3.8 - <<'PY'
           import ast
-          import re
           from pathlib import Path
 
-          source = Path("P314Experiment1.py").read_text(encoding="utf-8")
+          source = Path("P314RExperiment.py").read_text(encoding="utf-8")
           tree = ast.parse(source)
 
           functions = {
@@ -91,20 +79,29 @@ jobs:
           }
           required = {
               "protocol_manifest",
-              "run_experiment",
+              "checkpoint_status",
+              "run_next",
               "digital_root",
           }
           missing = required - functions
           assert not missing, sorted(missing)
 
-          assert "TARGET_CODES: Tuple[int, ...] = (333, 137, 666, 360)" in source
-          assert "PULSE_AMPLITUDE = 0.20" in source
-          assert "BURN_IN_STEPS = 32" in source
-          assert "PULSE_STEPS = 24" in source
-          assert "WASHOUT_STEPS = 32" in source
-          assert "OBSERVATION_STEPS = 64" in source
-          assert "FAMILY_RANDOMIZATION_DRAWS = 50_000" in source
-          assert "from Numogram import TensorBasedNumogramSystem" in source
+          exact_strings = [
+              "TARGET_CODE = 666",
+              "tuple(range(3001, 3041))",
+              "tuple(range(3001, 3021))",
+              "tuple(range(3021, 3041))",
+              "PULSE_AMPLITUDE = 0.20",
+              "BURN_IN_STEPS = 32",
+              "PULSE_STEPS = 24",
+              "WASHOUT_STEPS = 32",
+              "OBSERVATION_STEPS = 64",
+              "SCHEDULE_SEED = 666314",
+              "from Numogram import TensorBasedNumogramSystem",
+              "fda4127884f25d679fe563a7a70d56b63d5e33ff295fd53c38ef241bb002a391",
+          ]
+          for item in exact_strings:
+              assert item in source, item
 
           imported = set()
           for node in ast.walk(tree):
@@ -113,7 +110,7 @@ jobs:
               elif isinstance(node, ast.ImportFrom) and node.module:
                   imported.add(node.module.split(".")[0])
 
-          forbidden_imports = {
+          forbidden = {
               "requests",
               "socket",
               "urllib",
@@ -123,31 +120,48 @@ jobs:
               "anthropic",
               "openai",
           }
-          hits = sorted(imported & forbidden_imports)
+          hits = sorted(imported & forbidden)
           assert not hits, hits
 
-          print("P3.14 Experiment 1A protocol source contract validated")
+          print("P3.14R locked replication contract validated")
           PY
 
-      - name: Create isolated Android-P3.14 project
+      - name: Seal build-time source fingerprints
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          NUMOGRAM_SHA="$(sha256sum Numogram.py | awk '{print $1}')"
+          EXPERIMENT_SHA="$(sha256sum P314RExperiment.py | awk '{print $1}')"
+          PROTOCOL_FILE_SHA="$(sha256sum P314R_666_Replication_Protocol.md | awk '{print $1}')"
+
+          {
+            echo "P314R_NUMOGRAM_SHA=$NUMOGRAM_SHA"
+            echo "P314R_EXPERIMENT_SHA=$EXPERIMENT_SHA"
+            echo "P314R_PROTOCOL_FILE_SHA=$PROTOCOL_FILE_SHA"
+          } >> "$GITHUB_ENV"
+
+          echo "Numogram SHA-256: $NUMOGRAM_SHA"
+          echo "Experiment SHA-256: $EXPERIMENT_SHA"
+          echo "Protocol-file SHA-256: $PROTOCOL_FILE_SHA"
+
+      - name: Create isolated Android-P3.14R project
         shell: bash
         run: |
           set -euo pipefail
 
           mkdir -p \
-            app/src/main/java/com/amelia/p314 \
-            app/src/main/java/com/amelia/exp1 \
+            app/src/main/java/com/amelia/p314r \
+            app/src/main/java/com/amelia/exp1r \
             app/src/main/python \
             app/src/main/res/values
 
-          cp Numogram.py \
-            app/src/main/python/Numogram.py
-          cp P314Experiment1.py \
-            app/src/main/python/P314Experiment1.py
-          cp P314Experiment1Bridge.kt \
-            app/src/main/java/com/amelia/exp1/P314Experiment1Bridge.kt
-          cp P314MainActivity.kt \
-            app/src/main/java/com/amelia/p314/MainActivity.kt
+          cp Numogram.py app/src/main/python/Numogram.py
+          cp P314RExperiment.py app/src/main/python/P314RExperiment.py
+          cp P314RExperimentBridge.kt \
+            app/src/main/java/com/amelia/exp1r/P314RExperimentBridge.kt
+          cp P314RMainActivity.kt \
+            app/src/main/java/com/amelia/p314r/MainActivity.kt
 
           cat > settings.gradle.kts <<'EOF'
           pluginManagement {
@@ -166,7 +180,7 @@ jobs:
               }
           }
 
-          rootProject.name = "AmeliaAndroidP314"
+          rootProject.name = "AmeliaAndroidP314R"
           include(":app")
           EOF
 
@@ -192,19 +206,28 @@ jobs:
               id("com.chaquo.python")
           }
 
+          fun quoted(value: String): String =
+              "\"" + value.replace("\\", "\\\\").replace("\"", "\\\"") + "\""
+
           val revision =
               (System.getenv("GITHUB_SHA") ?: "local").take(12)
+          val numogramSha =
+              System.getenv("P314R_NUMOGRAM_SHA") ?: "missing"
+          val experimentSha =
+              System.getenv("P314R_EXPERIMENT_SHA") ?: "missing"
+          val protocolFileSha =
+              System.getenv("P314R_PROTOCOL_FILE_SHA") ?: "missing"
 
           android {
-              namespace = "com.amelia.p314"
+              namespace = "com.amelia.p314r"
               compileSdk = 34
 
               defaultConfig {
-                  applicationId = "com.amelia.p314"
+                  applicationId = "com.amelia.p314r"
                   minSdk = 24
                   targetSdk = 34
-                  versionCode = 14
-                  versionName = "0.16-android-p3.14-exp1a"
+                  versionCode = 15
+                  versionName = "0.17-android-p3.14r-666-replication"
 
                   ndk {
                       abiFilters += listOf(
@@ -216,7 +239,22 @@ jobs:
                   buildConfigField(
                       "String",
                       "BUILD_REVISION",
-                      "\"$revision\""
+                      quoted(revision)
+                  )
+                  buildConfigField(
+                      "String",
+                      "NUMOGRAM_SHA256",
+                      quoted(numogramSha)
+                  )
+                  buildConfigField(
+                      "String",
+                      "EXPERIMENT_SHA256",
+                      quoted(experimentSha)
+                  )
+                  buildConfigField(
+                      "String",
+                      "PROTOCOL_FILE_SHA256",
+                      quoted(protocolFileSha)
                   )
               }
 
@@ -268,115 +306,110 @@ jobs:
 
           cat > app/src/main/res/values/strings.xml <<'EOF'
           <resources>
-              <string name="app_name">Amelia P3.14</string>
+              <string name="app_name">Amelia P3.14R</string>
           </resources>
           EOF
 
-      - name: Validate P3.14 isolation contracts
+      - name: Validate P3.14R Android isolation
         shell: bash
         run: |
           set -euo pipefail
 
-          grep -Fq 'namespace = "com.amelia.p314"' app/build.gradle.kts
-          grep -Fq 'applicationId = "com.amelia.p314"' app/build.gradle.kts
+          grep -Fq 'applicationId = "com.amelia.p314r"' app/build.gradle.kts
 
-          if grep -Eq 'com\.amelia\.p31(2|3)"' app/build.gradle.kts
-          then
-            echo "FAIL: P3.14 package collides with frozen P3.12/P3.13."
-            exit 1
-          fi
-
-          # Experiment 1A must be offline.
           if grep -Fq 'android.permission.INTERNET' app/src/main/AndroidManifest.xml
           then
-            echo "FAIL: P3.14 Experiment 1A must not request INTERNET permission."
+            echo "FAIL: P3.14R must remain offline."
             exit 1
           fi
 
-          # Frozen Numogram source is copied unchanged.
           cmp -s Numogram.py app/src/main/python/Numogram.py
 
-          grep -Fq 'RUN SEALED EXPERIMENT 1A' \
-            app/src/main/java/com/amelia/p314/MainActivity.kt
+          grep -Fq 'START / RESUME SEALED 666 REPLICATION' \
+            app/src/main/java/com/amelia/p314r/MainActivity.kt
+          grep -Fq 'Partial statistics: WITHHELD' \
+            app/src/main/java/com/amelia/p314r/MainActivity.kt
           grep -Fq 'P3.14B topology/label-shuffle falsification' \
-            app/src/main/python/P314Experiment1.py
+            app/src/main/python/P314RExperiment.py
 
-          echo "P3.14 isolation contracts passed."
-          echo "P3.12/P3.13 remain side-by-side and untouched."
-          echo "Experiment 1A has no renderer, PFM, provider key or network permission."
+          echo "P3.14R Android isolation contracts passed."
 
-      - name: Build Android-P3.14 side-by-side APK
+      - name: Build Android-P3.14R APK
         run: |
           gradle \
             --no-daemon \
             :app:assembleDebug \
             --stacktrace
 
-      - name: Record P3.14 build manifest
+      - name: Record P3.14R build manifest
         shell: bash
         run: |
           set -euo pipefail
 
           APK="app/build/outputs/apk/debug/app-debug.apk"
           test -f "$APK"
+          cp "$APK" Amelia-P3.14R-666-Replication.apk
 
-          cp "$APK" Amelia-P3.14-Experiment1A.apk
+          APK_SHA="$(sha256sum Amelia-P3.14R-666-Replication.apk | awk '{print $1}')"
 
           sha256sum \
             Numogram.py \
-            P314Experiment1.py \
-            P314Experiment1Bridge.kt \
-            P314MainActivity.kt \
-            P314_Experiment1_Protocol.md \
-            > p314-source-sha256.txt
+            P314RExperiment.py \
+            P314RExperimentBridge.kt \
+            P314RMainActivity.kt \
+            P314R_666_Replication_Protocol.md \
+            > p314r-source-sha256.txt
 
-          APK_SHA="$(sha256sum Amelia-P3.14-Experiment1A.apk | awk '{print $1}')"
-          NUMOGRAM_SHA="$(sha256sum Numogram.py | awk '{print $1}')"
-          PROTOCOL_FILE_SHA="$(sha256sum P314_Experiment1_Protocol.md | awk '{print $1}')"
-
-          cat > p314-build-manifest.txt <<EOF
-          Amelia Android P3.14 — Experiment 1A
-          =====================================
+          cat > p314r-build-manifest.txt <<EOF
+          Amelia Android P3.14R — 666 Fresh-Seed Replication
+          ==================================================
 
           Revision:
           ${GITHUB_SHA}
 
-          Purpose:
-          Prospective numerical-operator specificity assay.
+          Antecedent P3.14A evidence:
+          fda4127884f25d679fe563a7a70d56b63d5e33ff295fd53c38ef241bb002a391
 
-          Frozen upstream packages:
-          com.amelia.p312
-          com.amelia.p313
+          Package:
+          com.amelia.p314r
 
-          New side-by-side package:
-          com.amelia.p314
+          Fresh seeds:
+          3001-3040
 
-          Target codes:
-          333, 137, 666, 360
+          Cohort A:
+          3001-3020
 
-          Primary reference:
-          exhaustive same-digital-root three-digit population
+          Cohort B:
+          3021-3040
+
+          Target:
+          666
+
+          Root-9 controls:
+          all three-digit digital-root-9 integers excluding 333, 360 and 666
 
           Numogram SHA-256:
-          ${NUMOGRAM_SHA}
+          ${P314R_NUMOGRAM_SHA}
 
-          Human-readable protocol file SHA-256:
-          ${PROTOCOL_FILE_SHA}
+          Experiment SHA-256:
+          ${P314R_EXPERIMENT_SHA}
+
+          Protocol-file SHA-256:
+          ${P314R_PROTOCOL_FILE_SHA}
 
           APK SHA-256:
           ${APK_SHA}
           EOF
 
-          cat p314-build-manifest.txt
-          cat p314-source-sha256.txt
+          cat p314r-build-manifest.txt
 
-      - name: Upload Android-P3.14 side-by-side APK
+      - name: Upload Android-P3.14R artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Amelia-Android-P3.14-Experiment1A
+          name: Amelia-Android-P3.14R-666-Replication
           path: |
-            Amelia-P3.14-Experiment1A.apk
-            p314-build-manifest.txt
-            p314-source-sha256.txt
-            P314_Experiment1_Protocol.md
+            Amelia-P3.14R-666-Replication.apk
+            p314r-build-manifest.txt
+            p314r-source-sha256.txt
+            P314R_666_Replication_Protocol.md
           retention-days: 14
