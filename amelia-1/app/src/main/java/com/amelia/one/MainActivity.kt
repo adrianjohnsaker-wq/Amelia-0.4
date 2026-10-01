@@ -10,9 +10,9 @@ import com.chaquo.python.Python
 import org.json.JSONObject
 
 /**
- * Android Amelia 1.0, milestone M1.
- * Runs the canonical integrity check on start. Only if it is ACCEPTED does it run the
- * reference substrate lineage and compare its state digests with CI's (MATCH or MISMATCH).
+ * Android Amelia 1.0, milestone M1.1.
+ * ACCEPTED now requires exact source-byte identity for the three canonical modules,
+ * followed by canonical graph identity. Only then is the CI reference lineage reproduced.
  */
 class MainActivity : Activity() {
     private lateinit var status: TextView
@@ -25,10 +25,10 @@ class MainActivity : Activity() {
             setPadding(dp(16), dp(16), dp(16), dp(16))
         }
         root.addView(TextView(this).apply {
-            text = "AMELIA 1.0 · M1"; textSize = 23f; gravity = Gravity.CENTER_HORIZONTAL
+            text = "AMELIA 1.0 · M1.1"; textSize = 23f; gravity = Gravity.CENTER_HORIZONTAL
         })
         root.addView(TextView(this).apply {
-            text = "Canonical integrity · substrate reproduction · offline"
+            text = "Canonical byte integrity · substrate reproduction · offline"
             textSize = 12f; gravity = Gravity.CENTER_HORIZONTAL; setPadding(0, dp(4), 0, dp(12))
         })
         status = TextView(this).apply { text = "Checking…"; textSize = 20f; gravity = Gravity.CENTER_HORIZONTAL }
@@ -72,20 +72,31 @@ class MainActivity : Activity() {
         }
         val modules = r.optJSONObject("modules")
         if (modules != null) {
-            sb.append("\nModules:\n")
+            sb.append("\nModules (exact source bytes):\n")
             val keys = modules.keys()
             while (keys.hasNext()) {
                 val k = keys.next()
                 val m = modules.getJSONObject(k)
-                val actual = m.optString("actual")
-                val verification = m.optString("verification")
                 sb.append(if (m.optBoolean("match")) "  ✓ " else "  ✗ ").append(k)
+                val actual = m.optString("actual")
                 if (actual.isNotBlank() && actual != "null") {
                     sb.append("  ").append(actual.take(16))
-                } else if (verification.isNotBlank()) {
-                    sb.append("  [").append(verification).append("]")
                 }
+                val source = m.optString("source")
+                if (source.isNotBlank()) sb.append("  (").append(source).append(")")
                 sb.append('\n')
+            }
+        }
+        if (r.has("packaged_operational")) {
+            sb.append("\nPackaged-operational diagnostic retained (not acceptance):\n")
+            val packaged = r.optJSONObject("packaged_operational")
+            if (packaged != null) {
+                val keys = packaged.keys()
+                while (keys.hasNext()) {
+                    val k = keys.next()
+                    val m = packaged.getJSONObject(k)
+                    sb.append(if (m.optBoolean("match")) "  ✓ " else "  ✗ ").append(k).append(" [packaged-import]\n")
+                }
             }
         }
         detail.text = sb.toString()
