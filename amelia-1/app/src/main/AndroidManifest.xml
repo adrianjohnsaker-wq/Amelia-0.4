@@ -1,0 +1,13 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+  <!-- No INTERNET permission: assay builds are offline. The language layer, when activated
+       in a later milestone, is added behind an explicit build flag. -->
+  <application android:name="com.chaquo.python.android.PyApplication" android:allowBackup="false"
+      android:label="@string/app_name" android:theme="@android:style/Theme.Material.Light.NoActionBar">
+    <activity android:name=".MainActivity" android:exported="true">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN"/>
+        <category android:name="android.intent.category.LAUNCHER"/>
+      </intent-filter>
+    </activity>
+  </application>
+</manifest>

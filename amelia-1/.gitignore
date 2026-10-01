@@ -1,0 +1,10 @@
+app/src/main/python/reference_run.json
+**/__pycache__/
+build/
+app/build/
+.gradle/
+out/
+
+# Never commit signing keys; CI may use repository secrets.
+app/*.keystore
+*.jks
