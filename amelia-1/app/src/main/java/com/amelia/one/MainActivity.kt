@@ -61,6 +61,9 @@ class MainActivity : Activity() {
         val sb = StringBuilder()
         sb.append("Version: ").append(r.optString("version")).append('\n')
         sb.append("Python: ").append(r.optString("python")).append('\n')
+        if (r.has("integrity_mode")) {
+            sb.append("Integrity: ").append(r.optString("integrity_mode")).append('\n')
+        }
         if (!r.optBoolean("ok", false)) sb.append("Reason: ").append(r.optString("reason")).append('\n')
         if (r.has("canonical_digest")) {
             sb.append("\nCanonical digest:\n").append(r.optString("canonical_digest")).append('\n')
@@ -74,8 +77,15 @@ class MainActivity : Activity() {
             while (keys.hasNext()) {
                 val k = keys.next()
                 val m = modules.getJSONObject(k)
-                sb.append(if (m.optBoolean("match")) "  ✓ " else "  ✗ ").append(k).append("  ")
-                    .append(m.optString("actual").take(16)).append('\n')
+                val actual = m.optString("actual")
+                val verification = m.optString("verification")
+                sb.append(if (m.optBoolean("match")) "  ✓ " else "  ✗ ").append(k)
+                if (actual.isNotBlank() && actual != "null") {
+                    sb.append("  ").append(actual.take(16))
+                } else if (verification.isNotBlank()) {
+                    sb.append("  [").append(verification).append("]")
+                }
+                sb.append('\n')
             }
         }
         detail.text = sb.toString()
