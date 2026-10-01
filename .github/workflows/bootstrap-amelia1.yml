@@ -4,7 +4,6 @@ on:
   push:
     branches: ["amelia-1.0"]
     paths:
-      - ".bootstrap/**"
       - ".github/workflows/bootstrap-amelia1.yml"
   workflow_dispatch:
 
@@ -27,8 +26,8 @@ jobs:
           echo "cc5078306c5d18334a8ea25dbd8df6e5c69469a3627afd48746497588c2b6faf  $RUNNER_TEMP/amelia-1.0-M1-public.zip" | sha256sum -c -
           unzip -oq "$RUNNER_TEMP/amelia-1.0-M1-public.zip" -d .
           test ! -e amelia-1/app/amelia-dev.keystore
+          rm -f .github/workflows/amelia1.yml
           rm -rf .bootstrap
-          rm -f .github/workflows/bootstrap-amelia1.yml
 
       - name: Commit M1 source to amelia-1.0
         shell: bash
