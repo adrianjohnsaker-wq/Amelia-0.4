@@ -1,4 +1,5 @@
 name: Amelia 1.0 - M1 + Android
+# Permanent M1 CI after one-time source bootstrap.
 
 on:
   push:
