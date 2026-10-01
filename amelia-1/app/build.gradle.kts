@@ -17,7 +17,7 @@ android {
         minSdk = 24
         targetSdk = 34
         versionCode = (System.getenv("GITHUB_RUN_NUMBER") ?: "1").toInt()
-        versionName = "1.0-M1"
+        versionName = "1.0-M1.1"
         ndk { abiFilters += listOf("armeabi-v7a", "arm64-v8a") }
     }
     signingConfigs {
@@ -38,4 +38,7 @@ android {
     compileOptions { sourceCompatibility = JavaVersion.VERSION_17; targetCompatibility = JavaVersion.VERSION_17 }
 }
 kotlin { jvmToolchain(17) }
-chaquopy { defaultConfig { version = "3.11" } }
+
+// M1.1 keeps canonical .py source inside the APK. Startup hashes the exact source bytes
+// returned by the import loader; compiled-only .pyc packaging would make that impossible.
+chaquopy { defaultConfig { version = "3.11"; pyc { src = false } } }
