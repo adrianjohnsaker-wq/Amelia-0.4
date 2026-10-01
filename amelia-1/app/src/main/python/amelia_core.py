@@ -1,35 +1,43 @@
 """
-amelia_core.py -- Android Amelia 1.0, milestone M1.
+amelia_core.py -- Android Amelia 1.0, milestone M1.1.
 
-Two-layer integrity model:
-- CI/source checkout: canonical Python source files must be byte-identical to the sealed
-  programme copies recorded in canonical_manifest.json.
-- Packaged Android runtime: Chaquopy ships Python modules as compiled bytecode, so the
-  original .py files are intentionally absent. The device therefore verifies that every
-  canonical module is importable and then verifies the canonical Numogram digest, graph
-  digest, edge counts, and the fixed reference lineage.
+Startup integrity has two distinct layers which must not be conflated:
 
-This preserves strict source-byte provenance in CI without falsely refusing a correct
-Chaquopy APK merely because source files were compiled to .pyc.
+1. Exact canonical-source verification (required for ACCEPTED).  The three canonical
+   modules must hash byte-for-byte to canonical_manifest.json.  In CI/desktop the bytes
+   are read from ordinary files.  In the Android APK, Chaquopy keeps .py sources and the
+   bytes are read through each module's import loader, i.e. from the same source object
+   the interpreter loads.
+2. Packaged-operational diagnostics (retained from M1).  If exact source bytes cannot be
+   recovered, the code can still report whether the packaged modules import and whether
+   their canonical graph identities are operationally correct.  This diagnostic path is
+   intentionally NOT sufficient for startup acceptance in M1.1.
+
+Standard library only.
 """
 
 from __future__ import annotations
 
 import hashlib
 import importlib
+import importlib.util
 import json
 import os
 import platform
 import sys
 
-VERSION = "amelia-1.0-M1"
+VERSION = "amelia-1.0-M1.1"
 HERE = os.path.dirname(os.path.abspath(__file__))
 MANIFEST_FILE = "canonical_manifest.json"
 
 
+def _sha256_bytes(data: bytes) -> str:
+    return hashlib.sha256(data).hexdigest()
+
+
 def _sha256(path: str) -> str:
     with open(path, "rb") as fh:
-        return hashlib.sha256(fh.read()).hexdigest()
+        return _sha256_bytes(fh.read())
 
 
 def load_manifest(root: str = HERE) -> dict:
@@ -37,96 +45,93 @@ def load_manifest(root: str = HERE) -> dict:
         return json.load(fh)
 
 
-def _source_module_status(root: str, manifest: dict) -> tuple[dict, str | None]:
-    """Return module status and integrity mode.
+def module_bytes(name: str, root: str = HERE):
+    """Return "(bytes, source)" for a canonical module source file.
 
-    All source files present -> verify source bytes.
-    No source files present -> Android/compiled-package mode: verify imports.
-    Partial source set -> refuse, because this is neither a sealed source checkout nor a
-    normal Chaquopy package.
+    Source checkout / CI:
+      read the real "root/name" file directly.
+
+    Packaged Android runtime:
+      resolve the import spec and ask its loader for "spec.origin" bytes.  M1.1 builds
+      set Chaquopy "pyc.src = false", so a valid packaged origin must still be the named
+      ".py" source rather than ".pyc" bytecode.
+
+    Returns "(None, reason)" if exact source bytes cannot be established.
     """
-    names = sorted(manifest["modules"])
-    present = [os.path.isfile(os.path.join(root, name)) for name in names]
-    count = sum(1 for x in present if x)
+    path = os.path.join(root, name)
+    if os.path.isfile(path):
+        with open(path, "rb") as fh:
+            return fh.read(), "file"
 
-    if count == len(names):
-        modules = {}
-        for name in names:
-            want = manifest["modules"][name]
-            got = _sha256(os.path.join(root, name))
-            modules[name] = {
-                "expected": want,
-                "actual": got,
-                "match": got == want,
-                "verification": "source-bytes",
-            }
-        return modules, "source-bytes"
+    stem = name[:-3] if name.endswith(".py") else name
+    if root not in sys.path:
+        sys.path.insert(0, root)
 
-    if count != 0:
-        modules = {}
-        for name, exists in zip(names, present):
-            modules[name] = {
-                "expected": manifest["modules"][name],
-                "actual": None,
-                "match": False,
-                "verification": "partial-source-set",
-                "present": exists,
-            }
-        return modules, None
+    spec = importlib.util.find_spec(stem)
+    if spec is None or spec.origin is None or spec.loader is None:
+        return None, "module not found"
 
-    # Chaquopy packages app Python as bytecode in app.imy. Raw .py hashes cannot be
-    # meaningfully re-read on device, so verify importability and then operational
-    # canonical identities below.
+    if os.path.basename(spec.origin) != name:
+        return None, "loader origin is %s, not sealed source %s" % (
+            os.path.basename(spec.origin), name
+        )
+
+    get_data = getattr(spec.loader, "get_data", None)
+    if get_data is None:
+        return None, "loader cannot return source bytes"
+
+    try:
+        return get_data(spec.origin), "loader"
+    except Exception as exc:
+        return None, "%s: %s" % (type(exc).__name__, exc)
+
+
+def _exact_module_status(root: str, manifest: dict) -> dict:
     modules = {}
-    for name in names:
-        module_name = name[:-3] if name.endswith(".py") else name
+    for name, want in sorted(manifest["modules"].items()):
+        data, source = module_bytes(name, root)
+        got = _sha256_bytes(data) if data is not None else None
+        modules[name] = {
+            "expected": want,
+            "actual": got,
+            "match": got == want,
+            "source": source,
+            "verification": "exact-source-bytes",
+        }
+    return modules
+
+
+def packaged_operational_status(root: str = HERE) -> dict:
+    """Retained M1 diagnostic; importability only, never sufficient for ACCEPTED in M1.1."""
+    manifest = load_manifest(root)
+    modules = {}
+    if root not in sys.path:
+        sys.path.insert(0, root)
+    for name in sorted(manifest["modules"]):
+        stem = name[:-3] if name.endswith(".py") else name
         try:
-            mod = importlib.import_module(module_name)
+            mod = importlib.import_module(stem)
             modules[name] = {
-                "expected": manifest["modules"][name],
-                "actual": None,
                 "match": True,
                 "verification": "packaged-import",
                 "origin": getattr(mod, "__file__", None),
             }
         except Exception as exc:
             modules[name] = {
-                "expected": manifest["modules"][name],
-                "actual": None,
                 "match": False,
                 "verification": "packaged-import",
                 "reason": "%s: %s" % (type(exc).__name__, exc),
             }
-    return modules, "packaged-operational"
+    return modules
 
 
-def check(root: str = HERE) -> dict:
-    """Verify source provenance or packaged imports, then canonical operational identity."""
-    manifest = load_manifest(root)
-    modules, mode = _source_module_status(root, manifest)
-    result = {
-        "version": VERSION,
-        "modules": modules,
-        "integrity_mode": mode or "invalid",
-        "python": sys.version.split()[0],
-        "platform": platform.platform(),
-    }
-
-    if mode is None:
-        result.update(ok=False, status="REFUSED", reason="canonical module source set incomplete")
-        return result
-
-    if not all(m["match"] for m in modules.values()):
-        reason = "canonical module digest mismatch" if mode == "source-bytes" else "canonical packaged module import failure"
-        result.update(ok=False, status="REFUSED", reason=reason)
-        return result
-
+def _canonical_operational_identity(root: str, manifest: dict) -> dict:
     if root not in sys.path:
         sys.path.insert(0, root)
 
     import CanonicalNumogram as C
     import NumogramDynamics as D
-    import NumogramInterface as I  # noqa: F401 -- import itself is part of runtime validation
+    import NumogramInterface as I  # noqa: F401 -- import is part of runtime validation
 
     digest = C.CanonicalNumogram().digest()
     graph = D.canonical_graph()
@@ -134,21 +139,50 @@ def check(root: str = HERE) -> dict:
     for e in graph.edges:
         counts[e.type] = counts.get(e.type, 0) + 1
 
-    result.update(
-        canonical_digest=digest,
-        edge_counts=counts,
-        edges=len(graph.edges),
-        graph_digest=graph.digest(),
-    )
+    graph_digest = graph.digest()
     ok = (
         digest == manifest["canonical_digest"]
         and counts == manifest["edge_counts"]
-        and result["graph_digest"] == manifest["graph_digest"]
+        and graph_digest == manifest["graph_digest"]
     )
+    return {
+        "ok": ok,
+        "canonical_digest": digest,
+        "edge_counts": counts,
+        "edges": len(graph.edges),
+        "graph_digest": graph_digest,
+    }
+
+
+def check(root: str = HERE) -> dict:
+    """Require exact module bytes, then verify canonical operational identity."""
+    manifest = load_manifest(root)
+    modules = _exact_module_status(root, manifest)
+    exact_ok = all(m["match"] for m in modules.values())
+
+    result = {
+        "version": VERSION,
+        "modules": modules,
+        "integrity_mode": "exact-source-bytes",
+        "python": sys.version.split()[0],
+        "platform": platform.platform(),
+    }
+
+    if not exact_ok:
+        result["packaged_operational"] = packaged_operational_status(root)
+        result.update(
+            ok=False,
+            status="REFUSED",
+            reason="canonical module digest mismatch or exact source bytes unavailable",
+        )
+        return result
+
+    identity = _canonical_operational_identity(root, manifest)
+    result.update({k: v for k, v in identity.items() if k != "ok"})
     result.update(
-        ok=ok,
-        status="ACCEPTED" if ok else "REFUSED",
-        reason=None if ok else "canonical Numogram digest, graph digest or edge counts differ",
+        ok=identity["ok"],
+        status="ACCEPTED" if identity["ok"] else "REFUSED",
+        reason=None if identity["ok"] else "canonical Numogram digest, graph digest or edge counts differ",
     )
     return result
 
@@ -157,7 +191,7 @@ def startup_check() -> str:
     """Entry point for the Android layer; returns JSON."""
     try:
         return json.dumps(check(), sort_keys=True)
-    except Exception as exc:  # the app must show a refusal, never crash silently
+    except Exception as exc:
         return json.dumps({
             "ok": False,
             "status": "REFUSED",
