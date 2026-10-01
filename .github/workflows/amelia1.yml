@@ -1,0 +1,107 @@
+name: Amelia 1.0 - M1 + Android
+
+on:
+  push:
+    branches: ["amelia-1.0", "main"]
+    paths:
+      - "amelia-1/**"
+      - ".github/workflows/amelia1.yml"
+  pull_request:
+    branches: ["main"]
+    paths:
+      - "amelia-1/**"
+      - ".github/workflows/amelia1.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: amelia-1
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Unit tests (canonical modules, startup check, substrate)
+        run: |
+          set -euo pipefail
+          T="$(mktemp -d)"
+          cp app/src/main/python/*.py app/src/main/python/*.json tests/*.py tests/support/*.py "$T"/
+          (cd "$T" && python -m unittest -v 2>&1 | tee unittest.log)
+          cp "$T/unittest.log" unittest.log
+
+      - name: Offline check (no INTERNET permission, no API key)
+        run: |
+          set -euo pipefail
+          if grep -q "android.permission.INTERNET" app/src/main/AndroidManifest.xml; then echo "INTERNET permission present"; exit 1; fi
+          if grep -rqi "api_key\|ANTHROPIC" app/src app/build.gradle.kts; then echo "API key reference present"; exit 1; fi
+
+      - name: Reference run (shipped in APK for on-device reproduction)
+        run: |
+          set -euo pipefail
+          (cd app/src/main/python && python amelia_core.py --write-reference > /dev/null && cat reference_run.json)
+
+      - name: Build manifest
+        run: |
+          set -euo pipefail
+          {
+            echo "commit: ${GITHUB_SHA}"
+            echo "run: ${GITHUB_RUN_NUMBER}"
+            echo "reference_run: $(tr -d '\n ' < app/src/main/python/reference_run.json)"
+            echo "startup_check: $(cd app/src/main/python && python -c 'import amelia_core as A; r=A.check(); print(r["status"], r["canonical_digest"], r["graph_digest"])')"
+            echo "sources:"
+            find app/src tests -type f \( -name '*.py' -o -name '*.kt' -o -name '*.json' -o -name '*.xml' \) | sort | xargs sha256sum
+          } > build-manifest.txt
+          cat build-manifest.txt
+          grep -q "startup_check: ACCEPTED" build-manifest.txt
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.9"
+
+      - name: Signing key from repository secrets (optional)
+        env:
+          KS_B64: ${{ secrets.AMELIA_KEYSTORE_B64 }}
+          KS_PASS: ${{ secrets.AMELIA_KEYSTORE_PASSWORD }}
+          KS_ALIAS: ${{ secrets.AMELIA_KEY_ALIAS }}
+        run: |
+          set -euo pipefail
+          if [ -n "${KS_B64}" ]; then
+            echo "${KS_B64}" | base64 -d > "$RUNNER_TEMP/amelia.keystore"
+            echo "AMELIA_KEYSTORE_PATH=$RUNNER_TEMP/amelia.keystore" >> "$GITHUB_ENV"
+            echo "AMELIA_KEYSTORE_PASSWORD=${KS_PASS}" >> "$GITHUB_ENV"
+            echo "AMELIA_KEY_PASSWORD=${KS_PASS}" >> "$GITHUB_ENV"
+            echo "AMELIA_KEY_ALIAS=${KS_ALIAS}" >> "$GITHUB_ENV"
+            echo "signing: repository secret"
+          else
+            echo "signing: Android default debug key (ephemeral CI fallback)"
+          fi
+
+      - name: Build APK
+        run: gradle --no-daemon :app:assembleDebug --stacktrace
+
+      - name: Collect artifact
+        run: |
+          set -euo pipefail
+          mkdir -p out
+          cp app/build/outputs/apk/debug/app-debug.apk out/amelia-1.0.apk
+          cp build-manifest.txt unittest.log out/
+          (cd out && sha256sum amelia-1.0.apk >> build-manifest.txt)
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Amelia-1.0
+          path: amelia-1/out/
+          retention-days: 30
