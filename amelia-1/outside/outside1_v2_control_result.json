@@ -1,0 +1,114 @@
+{
+  "criterion": 10,
+  "hits_first": 20,
+  "mean_rank": 1,
+  "pass": true,
+  "rows": [
+    {
+      "id": "C01",
+      "rank": 1,
+      "signal_word": "steam"
+    },
+    {
+      "id": "C02",
+      "rank": 1,
+      "signal_word": "crates"
+    },
+    {
+      "id": "C03",
+      "rank": 1,
+      "signal_word": "marsh"
+    },
+    {
+      "id": "C04",
+      "rank": 1,
+      "signal_word": "oranges"
+    },
+    {
+      "id": "C05",
+      "rank": 1,
+      "signal_word": "compass"
+    },
+    {
+      "id": "C06",
+      "rank": 1,
+      "signal_word": "woodland"
+    },
+    {
+      "id": "C07",
+      "rank": 1,
+      "signal_word": "railway"
+    },
+    {
+      "id": "C08",
+      "rank": 1,
+      "signal_word": "table"
+    },
+    {
+      "id": "C09",
+      "rank": 1,
+      "signal_word": "market"
+    },
+    {
+      "id": "C10",
+      "rank": 1,
+      "signal_word": "flamingos"
+    },
+    {
+      "id": "C11",
+      "rank": 1,
+      "signal_word": "hail"
+    },
+    {
+      "id": "C12",
+      "rank": 1,
+      "signal_word": "bowl"
+    },
+    {
+      "id": "C13",
+      "rank": 1,
+      "signal_word": "watch"
+    },
+    {
+      "id": "C14",
+      "rank": 1,
+      "signal_word": "waterspout"
+    },
+    {
+      "id": "C15",
+      "rank": 1,
+      "signal_word": "volcanic"
+    },
+    {
+      "id": "C16",
+      "rank": 1,
+      "signal_word": "avalanche"
+    },
+    {
+      "id": "C17",
+      "rank": 1,
+      "signal_word": "horses"
+    },
+    {
+      "id": "C18",
+      "rank": 1,
+      "signal_word": "avalanche"
+    },
+    {
+      "id": "C19",
+      "rank": 1,
+      "signal_word": "railway"
+    },
+    {
+      "id": "C20",
+      "rank": 1,
+      "signal_word": "avalanche"
+    }
+  ],
+  "resolution": {
+    "responses_commit": "467428ec9473008e0d3f4d026c16deba4d8a7ecb",
+    "resolver_run": 37132102002,
+    "resolver_commit": "fc3ae1beb64189347ac9527070ca183a49cb483b",
+    "target_reveal_after_rankings_sealed": true
+  }
+}
