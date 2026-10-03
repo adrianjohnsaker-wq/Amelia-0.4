@@ -1,0 +1,20 @@
+{
+  "diagnostic": "D2 composition fidelity",
+  "version": "OUTSIDE-1-2.0.0",
+  "generated_after_D1": true,
+  "method": "configured language layer constrained to preserve every dealt fragment verbatim; independent deterministic multiset source-list identification",
+  "readings": {
+    "D2_0": "There is swirling nebulae; ‘delta-phase’ or terminal deliria; Hyperborean or Wendigo mythology; the plane of the third-eye; turbular erosion; alien pattern; unexpected messages; geoconvulsions; missing time and alien abduction; continental subsidence; (meta)static pod-deliria and techno-immortalism; limbic drift.",
+    "D2_1": "There is swirling nebulae; the plane of the third-eye; the dense void of the cosmic hypermatrix; flatline and loss of signal; the protocosmic abyss; the ultimate gulfs of chaotic unbeing; ‘delta-phase’ or terminal deliria; the dense void of the cosmic hypermatrix; flatline and loss of signal; the protocosmic abyss; geoconvulsions; the ultimate gulfs of chaotic unbeing.",
+    "D2_2": "There is (meta)static pod-deliria and techno-immortalism; shallow seas; armored fish creatures; limbic drift; enduring ideas, historical time and remembrance; dreams; cosmic swamp-labyrinths; crypt-navigation; swirling nebulae; ‘delta-phase’ or terminal deliria; Hyperborean or Wendigo mythology; (meta)static pod-deliria and techno-immortalism.",
+    "D2_3": "There is (meta)static pod-deliria and techno-immortalism; shallow seas; armored fish creatures; Hyperborean or Wendigo mythology; the dense void of the cosmic hypermatrix; crypt-navigation; the metallic ocean of the earth’s iron core; flatline and loss of signal; the protocosmic abyss; occulted cyberspace; ‘delta-phase’ or terminal deliria; enduring ideas, historical time and remembrance.",
+    "D2_4": "There is Hyperborean or Wendigo mythology; the plane of the third-eye; missing time and alien abduction; turbular erosion; (meta)static pod-deliria and techno-immortalism; shallow seas; armored fish creatures; enduring ideas, historical time and remembrance; limbic drift; cosmic swamp-labyrinths; (meta)static pod-deliria and techno-immortalism; dreams.",
+    "D2_5": "There is cosmic swamp-labyrinths; (meta)static pod-deliria and techno-immortalism; the dense void of the cosmic hypermatrix; ‘fold-type’ time-anomalies; shallow seas; armored fish creatures; enduring ideas, historical time and remembrance; (meta)static pod-deliria and techno-immortalism; shallow seas; armored fish creatures; flatline and loss of signal; emergence from the depths.",
+    "D2_6": "There is (meta)static pod-deliria and techno-immortalism; limbic drift; shallow seas; dreams; cosmic swamp-labyrinths; armored fish creatures; trance-states; ‘fold-type’ time-anomalies; crypt-navigation; swirling nebulae; alien pattern; ‘delta-phase’ or terminal deliria.",
+    "D2_7": "There is the metallic ocean of the earth’s iron core; Hyperborean or Wendigo mythology; cosmic swamp-labyrinths; crypt-navigation; (meta)static pod-deliria and techno-immortalism; shallow seas; limbic drift; missing time and alien abduction; ‘fold-type’ time-anomalies; armored fish creatures; enduring ideas, historical time and remembrance; (meta)static pod-deliria and techno-immortalism."
+  },
+  "identified_correctly": 8,
+  "total": 8,
+  "required": 6,
+  "pass": true
+}
