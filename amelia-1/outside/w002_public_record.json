@@ -1,0 +1,16 @@
+{
+  "version": "OUTSIDE-1-v2-working-runner-1.0.0",
+  "working": "W002",
+  "operator_cast": "HTTHHHTHTTTTHHHTHTTTTHHHHTHTHTHT",
+  "resolved": true,
+  "chain_ok": true,
+  "analysis_locked": true,
+  "target_scene": "a sewing table holding three fossils beside a magnifying glass, under a green desk lamp, with reflections in polished metal.",
+  "prepare_run": 37153296704,
+  "readings_run": 37153343292,
+  "resolve_run": 37153382606,
+  "feedback_artifact_id": 11283729679,
+  "private_state_artifact_id": 11284616723,
+  "private_state_artifact_sha256": "ef57761518e49fbc5cdf1d480995b0e2749d73675dcf13d8cde59db4c99964a8",
+  "arm_identity": "sealed until final analysis after W100"
+}
