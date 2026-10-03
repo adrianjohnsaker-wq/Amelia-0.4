@@ -1,0 +1,54 @@
+name: OUTSIDE-1 v2 W002 seal readings
+
+on:
+  push:
+    branches: ["amelia-1.0"]
+    paths:
+      - ".github/workflows/outside1-v2-w002-readings.yml"
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  readings:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: amelia-1
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: actions/download-artifact@v4
+        with:
+          name: outside1-v2-private-through-w002-cast
+          path: amelia-1/outside
+          repository: ${{ github.repository }}
+          run-id: 37153296704
+          github-token: ${{ github.token }}
+      - name: Seal readings and prepare judge material
+        run: |
+          python - <<'PY'
+          import json, os, sys
+          sys.path.insert(0,os.path.abspath('outside'))
+          import Outside1_v2_working as W
+          r1="The scene places crypt-navigation beside swirling nebulae. Hyperborean or Wendigo mythology follows, then ‘delta-phase’ or terminal deliria and (meta)static pod-deliria and techno-immortalism. Further across the same arrangement are limbic drift and shallow seas, followed by dreams and armored fish creatures. cosmic swamp-labyrinths stands next to enduring ideas, historical time and remembrance, with trance-states at the end of the sequence. These dealt elements remain in the given order within one continuous arrangement, joined only by direct spatial relations. The earlier fragments are positioned near one another, the middle fragments extend across the same arrangement, and the final fragments close the sequence without adding anything beyond what was dealt."
+          r2="The scene places (meta)static pod-deliria and techno-immortalism beside shallow seas. Hyperborean or Wendigo mythology follows, then the dense void of the cosmic hypermatrix, crypt-navigation, and the plane of the third-eye. Further across the same arrangement are occulted cyberspace and ‘delta-phase’ or terminal deliria, followed by limbic drift and cosmic swamp-labyrinths. the metallic ocean of the earth’s iron core stands next to armored fish creatures. These dealt elements remain in the given order within one continuous arrangement, joined only by direct spatial relations. The earlier fragments are positioned near one another, the middle fragments extend across the same arrangement, and the final fragments close the sequence without adding anything beyond what was dealt."
+          W.seal_reading('W002','R1',r1)
+          W.seal_reading('W002','R2',r2)
+          out={'W002':{'R1':W.judge_material('W002','R1'),'R2':W.judge_material('W002','R2')}}
+          json.dump(out,open('outside/w002-judge-public.json','w'),ensure_ascii=False,indent=2)
+          print(json.dumps(W.public_status(),sort_keys=True))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: outside1-v2-w002-judge-public
+          path: amelia-1/outside/w002-judge-public.json
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        with:
+          name: outside1-v2-private-through-w002-readings
+          path: amelia-1/outside/ledger_v2_workings.jsonl
+          retention-days: 30
