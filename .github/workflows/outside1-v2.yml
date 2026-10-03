@@ -1,0 +1,58 @@
+name: OUTSIDE-1 v2 preflight
+
+on:
+  push:
+    branches: ["amelia-1.0"]
+    paths:
+      - "amelia-1/outside/**"
+      - "amelia-1/tests/test_outside1_v2_registration.py"
+      - ".github/workflows/outside1-v2.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: amelia-1
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Verify registration
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import os, sys, json
+          sys.path.insert(0, os.path.abspath("outside"))
+          import Outside1_v2 as O
+          r=O.check_registered()
+          print("REGISTERED", r["protocol_sha256"], r["canonical_runtime_digest"], r["graph_digest"])
+          PY
+      - name: D1 trace sensitivity
+        run: |
+          set -euo pipefail
+          python outside/Outside1_v2.py d1 | tee outside/outside-v2-d1.json
+      - name: Prepare D2 blinded panel
+        run: |
+          set -euo pipefail
+          python outside/Outside1_v2.py d2 > outside/outside-v2-d2.json
+          python - <<'PY'
+          import json
+          x=json.load(open("outside/outside-v2-d2.json"))
+          print("D2_PANEL", len(x))
+          for i,r in enumerate(x):
+              print("D2_%d fragments=%d" % (i, len(r["fragments"])))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: outside1-v2-preflight
+          path: |
+            amelia-1/outside/outside1_v2_registration.json
+            amelia-1/outside/outside-v2-d1.json
+            amelia-1/outside/outside-v2-d2.json
+          retention-days: 30
