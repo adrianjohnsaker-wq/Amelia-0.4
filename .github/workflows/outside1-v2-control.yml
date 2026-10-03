@@ -1,0 +1,54 @@
+name: OUTSIDE-1 v2 positive-control material
+
+on:
+  push:
+    branches: ["amelia-1.0"]
+    paths:
+      - "amelia-1/outside/outside1_v2_d2_results.json"
+      - ".github/workflows/outside1-v2-control.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  prepare-control:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: amelia-1
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Verify registration and D2 gate
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import os,sys,json
+          sys.path.insert(0,os.path.abspath("outside"))
+          import Outside1_v2 as O
+          O.check_registered()
+          d=json.load(open("outside/outside1_v2_d2_results.json"))
+          assert d["pass"] and d["identified_correctly"] >= d["required"]
+          print("D2_PASS",d["identified_correctly"],"/",d["total"])
+          PY
+      - name: Prepare 20 blinded control trials
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import os,sys,json
+          sys.path.insert(0,os.path.abspath("outside"))
+          import Outside1_v2 as O
+          out=[O.control_public(i) for i in range(1,21)]
+          json.dump(out,open("outside/outside-v2-control-public.json","w"),ensure_ascii=False,indent=2)
+          print("CONTROL_TRIALS",len(out))
+          for x in out:
+              print(x["id"],"fragments",len(x["fragments"]),"candidates",len(x["candidates"]))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: outside1-v2-control-public
+          path: amelia-1/outside/outside-v2-control-public.json
+          retention-days: 30
