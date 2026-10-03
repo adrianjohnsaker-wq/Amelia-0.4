@@ -1,0 +1,57 @@
+name: OUTSIDE-1 v2 W001 seal readings
+
+on:
+  push:
+    branches: ["amelia-1.0"]
+    paths:
+      - ".github/workflows/outside1-v2-w001-readings.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  readings:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: amelia-1
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: actions/download-artifact@v4
+        with:
+          name: outside1-v2-w001-private-state
+          path: amelia-1/outside
+          repository: ${{ github.repository }}
+          run-id: 37145757584
+          github-token: ${{ github.token }}
+      - name: Seal W001 readings and prepare blinded judge material
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, os, sys
+          sys.path.insert(0, os.path.abspath("outside"))
+          import Outside1_v2_working as W
+          r1="""The scene places (meta)static pod-deliria and techno-immortalism beside the metallic ocean of the earth’s iron core and shallow seas. Beyond them, ‘delta-phase’ or terminal deliria extends across armored fish creatures, while the dense void of the cosmic hypermatrix remains beside geoconvulsions. enduring ideas, historical time and remembrance follow next to (meta)static pod-deliria and techno-immortalism; from there, crypt-navigation connects with swirling nebulae and then with shallow seas. These dealt elements remain in their given order within one continuous scene, joined only by direct spatial relations, with each phrase retained as the structure of what is shown."""
+          r2="""The scene places (meta)static pod-deliria and techno-immortalism beside shallow seas and armored fish creatures. enduring ideas, historical time and remembrance follows them, next to (meta)static pod-deliria and techno-immortalism and then limbic drift. Further across the same scene are shallow seas and armored fish creatures, followed by dreams and enduring ideas, historical time and remembrance. trance-states lie next to the metallic ocean of the earth’s iron core. These dealt elements remain in their given order within one continuous arrangement, joined only by direct spatial relations, with each phrase retained as the structure of what is shown."""
+          W.seal_reading("W001","R1",r1)
+          W.seal_reading("W001","R2",r2)
+          public={"W001":{"R1":W.judge_material("W001","R1"),"R2":W.judge_material("W001","R2")}}
+          json.dump(public,open("outside/w001-judge-public.json","w"),ensure_ascii=False,indent=2)
+          print("W001_READINGS_SEALED")
+          print("STATUS",json.dumps(W.public_status(),sort_keys=True))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: outside1-v2-w001-judge-public
+          path: amelia-1/outside/w001-judge-public.json
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        with:
+          name: outside1-v2-w001-private-after-readings
+          path: amelia-1/outside/ledger_v2_workings.jsonl
+          retention-days: 30
