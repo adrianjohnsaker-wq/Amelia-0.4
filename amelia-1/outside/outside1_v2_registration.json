@@ -1,0 +1,63 @@
+{
+  "canonical_runtime_digest": "df164ce751d53db17ba16049f656d98806c806df5cf558cef0e49ea782f864ff",
+  "graph_digest": "9760268dd784186434ea3d86efd2f8ae9f861b245f64f58c97f70f1e75fb3087",
+  "lexicon_sha256": "2add52c70f7c4d3697fb26ebc68c617299a22297d906acfbf057e00096480b5f",
+  "protocol": {
+    "canonical_digest": "df164ce751d53db17ba16049f656d98806c806df5cf558cef0e49ea782f864ff",
+    "cast": "32 physical coin tosses H/T; working seed SHA-256(working id + ':' + toss string)",
+    "date": "2026-10-03",
+    "diagnostic_D1": {
+      "casts": [
+        196001,
+        197000
+      ],
+      "pass_max": 0.5,
+      "statistic": "mean Jaccard overlap of canonical/null dealt fragment text sets"
+    },
+    "diagnostic_D2": {
+      "criterion": "independent source-list identification >= 6/8",
+      "panel": "4 seeds x canonical/null = 8 source lists"
+    },
+    "id": "OUTSIDE-1-v2.0.0",
+    "law": "D3 Lemurian traversal",
+    "null": "N1 degree-matched typed rewiring, fresh instance per working/control",
+    "parent": "M1.1 canonical Android version of record, commit 6ca681e...",
+    "passages": 12,
+    "positive_control": {
+      "criterion_first_place_min": 10,
+      "role": "instrument sensitivity only; not evidence of contact",
+      "signal": "one preregistered concrete signal word from target added as a dealt fragment",
+      "target": "chosen before composition by fixed sealed control randomization",
+      "trials": 20
+    },
+    "primary": {
+      "P1": "one-sided exact target-draw randomization, canonical rank sum",
+      "P2": "one-sided exact target-draw randomization, sum(null rank - canonical rank)",
+      "alpha": 0.05,
+      "no_interim": true
+    },
+    "question": "what is the scene that will be shown at the close of this working?",
+    "reader": {
+      "composer": "fresh language-model composition; every dealt fragment verbatim; grammar/connectives only",
+      "lexicon": "lexicon_v2.json",
+      "repeat": "repeated visits cycle through that zone's registered fragments in order",
+      "rule": "one fragment per recorded passage, destination zone only; preserve passage order",
+      "unmapped": "deal nothing"
+    },
+    "stop_rule": "If v2 fails D1, D2, or the >=10/20 positive-control gate, no working begins; the language-mediated reader is retired and a direct Numogram-as-reader assay requires separate registration.",
+    "working_target": {
+      "draw": "OS entropy only after both arm readings and rankings are sealed",
+      "generator": "deterministic frozen target generator in this source",
+      "quartets": 100
+    }
+  },
+  "protocol_sha256": "056ab407d4833232af540aff965c179762103f967370d2e7bae16bb25378cceb",
+  "sources": {
+    "CanonicalNumogram.py": "f7c4e9a7ca928b9db6e12f650a2249eeb0eb4995056dd4940d781b6e9a4b569d",
+    "NullInterfaces.py": "7c97a5119587bc95dbc8d60fc1004cdabfefb54ee29ac0e31d1b93da70debfa3",
+    "NumogramDynamics.py": "dbc034e41a8d2c84658494a8c15cc7c41c2e629a325a3d34044f28e39c7b8cae",
+    "NumogramInterface.py": "e2091e17ee62c8bcb8f3bb6db512c63b97111be3043f4e69d322b4a11b5a2d39",
+    "Outside1_v2.py": "595bde884be28d279fc2765ee052e9140258bf0e0e988f9e9e5a358ce9f2fbe3"
+  },
+  "version": "OUTSIDE-1-2.0.0"
+}
