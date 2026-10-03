@@ -1,0 +1,16 @@
+{
+  "version": "OUTSIDE-1-v2-working-runner-1.0.0",
+  "working": "W001",
+  "operator_cast": "HHHHHTTHTHHTHTTHTTHHHTTHTHHTTHTT",
+  "resolved": true,
+  "chain_ok": true,
+  "analysis_locked": true,
+  "target_scene": "forked lightning over an empty field, with a moment of stillness before motion, in violet twilight.",
+  "prepare_run": 37145757584,
+  "readings_run": 37145813461,
+  "resolve_run": 37145861770,
+  "public_feedback_artifact_id": 11282300378,
+  "private_state_artifact_id": 11282083616,
+  "private_state_artifact_sha256": "86f80b4ade474f04fe938020af8e2d0fcbf4e9871cb4fabefe8928c2077129c9",
+  "arm_identity": "sealed until final analysis after W100"
+}
