@@ -1,0 +1,54 @@
+name: OUTSIDE-1 v2 W003 seal readings
+
+on:
+  push:
+    branches: ["amelia-1.0"]
+    paths:
+      - ".github/workflows/outside1-v2-w003-readings.yml"
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  readings:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: amelia-1
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: actions/download-artifact@v4
+        with:
+          name: outside1-v2-private-through-w003-cast
+          path: amelia-1/outside
+          repository: ${{ github.repository }}
+          run-id: 37153419466
+          github-token: ${{ github.token }}
+      - name: Seal readings and prepare judge material
+        run: |
+          python - <<'PY'
+          import json, os, sys
+          sys.path.insert(0,os.path.abspath('outside'))
+          import Outside1_v2_working as W
+          r1="The scene places the dense void of the cosmic hypermatrix beside flatline and loss of signal, while the metallic ocean of the earth’s iron core extends beyond them. the Gate of Pandemonium stands next to Hyperborean or Wendigo mythology, with (meta)static pod-deliria and techno-immortalism further across. the protocosmic abyss adjoins cosmic swamp-labyrinths, followed by shallow seas and armored fish creatures. the ultimate gulfs of chaotic unbeing remain beside the dense void of the cosmic hypermatrix. These dealt elements occupy one continuous arrangement in their given order, joined only by direct spatial relations, with the earlier fragments nearer and the later fragments extending across the same scene without adding anything beyond what was dealt."
+          r2="The scene places the metallic ocean of the earth’s iron core beside swirling nebulae, while (meta)static pod-deliria and techno-immortalism extends beyond them. cosmic swamp-labyrinths adjoins crypt-navigation, followed by Hyperborean or Wendigo mythology and the plane of the third-eye. Further across the same arrangement are occulted cyberspace and alien pattern, with missing time and alien abduction beside ‘delta-phase’ or terminal deliria. shallow seas closes the sequence. These dealt elements occupy one continuous arrangement in their given order, joined only by direct spatial relations, with the earlier fragments nearer and the later fragments extending across the same scene without adding anything beyond what was dealt."
+          W.seal_reading('W003','R1',r1)
+          W.seal_reading('W003','R2',r2)
+          out={'W003':{'R1':W.judge_material('W003','R1'),'R2':W.judge_material('W003','R2')}}
+          json.dump(out,open('outside/w003-judge-public.json','w'),ensure_ascii=False,indent=2)
+          print(json.dumps(W.public_status(),sort_keys=True))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: outside1-v2-w003-judge-public
+          path: amelia-1/outside/w003-judge-public.json
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        with:
+          name: outside1-v2-private-through-w003-readings
+          path: amelia-1/outside/ledger_v2_workings.jsonl
+          retention-days: 30
