@@ -1,0 +1,47 @@
+name: OUTSIDE-1 v2 working-runner seal
+
+on:
+  push:
+    branches: ["amelia-1.0"]
+    paths:
+      - "amelia-1/outside/Outside1_v2_working.py"
+      - ".github/workflows/outside1-v2-working-seal.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  seal:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: amelia-1
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Seal working runner before W001
+        run: |
+          set -euo pipefail
+          test -f outside/outside1_v2_registration.json
+          test -f outside/outside1_v2_control_result.json
+          python - <<'PY'
+          import json
+          r=json.load(open("outside/outside1_v2_control_result.json"))
+          assert r["pass"] and r["hits_first"] >= r["criterion"]
+          PY
+          echo "runner_sha256=$(sha256sum outside/Outside1_v2_working.py | awk '{print $1}')"
+          echo "apparatus_sha256=$(sha256sum outside/Outside1_v2.py | awk '{print $1}')"
+          echo "registration_sha256=$(sha256sum outside/outside1_v2_registration.json | awk '{print $1}')"
+          echo "control_result_sha256=$(sha256sum outside/outside1_v2_control_result.json | awk '{print $1}')"
+          python - <<'PY'
+          import os,sys,json
+          sys.path.insert(0,os.path.abspath("outside"))
+          import Outside1_v2 as O
+          import Outside1_v2_working as W
+          O.check_registered()
+          print("RUNNER_STATUS",json.dumps(W.public_status(),sort_keys=True))
+          assert W.public_status()["workings_cast"] == 0
+          PY
