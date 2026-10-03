@@ -1,0 +1,34 @@
+name: OUTSIDE runtime source bundle
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["amelia-1.0"]
+    paths:
+      - ".github/workflows/outside-runtime-source-bundle.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  bundle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Stage files
+        run: |
+          mkdir -p runtime/amelia-1/outside runtime/amelia-1/app/src/main/python runtime/amelia-1/tests/support
+          cp amelia-1/outside/Outside1_v2.py runtime/amelia-1/outside/
+          cp amelia-1/outside/Outside1_v2_working.py runtime/amelia-1/outside/
+          cp amelia-1/outside/lexicon_v2.json runtime/amelia-1/outside/
+          cp amelia-1/outside/outside1_v2_registration.json runtime/amelia-1/outside/
+          cp amelia-1/outside/outside1_v2_control_result.json runtime/amelia-1/outside/
+          cp amelia-1/app/src/main/python/CanonicalNumogram.py runtime/amelia-1/app/src/main/python/
+          cp amelia-1/app/src/main/python/NumogramDynamics.py runtime/amelia-1/app/src/main/python/
+          cp amelia-1/app/src/main/python/NumogramInterface.py runtime/amelia-1/app/src/main/python/
+          cp amelia-1/tests/support/NullInterfaces.py runtime/amelia-1/tests/support/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: outside-runtime-source-bundle
+          path: runtime
+          retention-days: 30
