@@ -1,0 +1,20 @@
+{
+  "version": "OUTSIDE-1-v2-working-runner-1.0.0",
+  "sealed_before_working_data": true,
+  "working_runner_sha256": "c3ec0b31fde4968585046c5ef130afdc29ae6d824bebe1de7e01c1d395d8193f",
+  "apparatus_sha256": "595bde884be28d279fc2765ee052e9140258bf0e0e988f9e9e5a358ce9f2fbe3",
+  "registration_sha256": "9c37dd70f8f23a9237509a71f5221cb8bcb8c1f14dc138d6748eb10d2c1cef46",
+  "control_result_sha256": "8f8852594ebc867f3eb0d392eef4f6582dd91f5a9f111e5281d60cf1e5980012",
+  "control": {
+    "hits_first": 20,
+    "criterion": 10,
+    "pass": true
+  },
+  "initial_status": {
+    "workings_cast": 0,
+    "workings_resolved": 0,
+    "chain_ok": true,
+    "analysis_locked": true
+  },
+  "seal_run": 37132332711
+}
