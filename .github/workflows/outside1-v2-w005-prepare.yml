@@ -1,0 +1,54 @@
+name: OUTSIDE-1 v2 W005 prepare
+
+on:
+  push:
+    branches: ["amelia-1.0"]
+    paths:
+      - ".github/workflows/outside1-v2-w005-prepare.yml"
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: amelia-1
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: actions/download-artifact@v4
+        with:
+          name: outside1-v2-private-through-w004
+          path: amelia-1/outside
+          repository: ${{ github.repository }}
+          run-id: 37155872604
+          github-token: ${{ github.token }}
+      - name: Prepare W005
+        run: |
+          python - <<'PY'
+          import json, os, sys
+          sys.path.insert(0, os.path.abspath('outside'))
+          import Outside1_v2 as O
+          import Outside1_v2_working as W
+          O.check_registered()
+          cast='THHTHHHHTTTHTHTHTTHHTHTTHHTHTHTH'
+          assert len(cast)==32
+          p=W.prepare('W005',cast)
+          json.dump(p,open('outside/w005-public.json','w'),ensure_ascii=False,indent=2)
+          print(json.dumps(W.public_status(),sort_keys=True))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: outside1-v2-w005-public
+          path: amelia-1/outside/w005-public.json
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        with:
+          name: outside1-v2-private-through-w005-cast
+          path: amelia-1/outside/ledger_v2_workings.jsonl
+          retention-days: 30
