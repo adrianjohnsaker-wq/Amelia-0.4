@@ -1,0 +1,16 @@
+{
+  "version": "OUTSIDE-1-v2-working-runner-1.0.0",
+  "working": "W003",
+  "operator_cast": "HTHHHTHHTTTTHHHHTTHTHHTTHHTTTHHT",
+  "resolved": true,
+  "chain_ok": true,
+  "analysis_locked": true,
+  "target_scene": "a sewing table holding a blue ceramic bowl beside a silver spoon, lit by a single window, with paper labels curling at the corners.",
+  "prepare_run": 37153419466,
+  "readings_run": 37153467014,
+  "resolve_run": 37153511837,
+  "feedback_artifact_id": 11284862477,
+  "private_state_artifact_id": 11284777624,
+  "private_state_artifact_sha256": "a0f7283dcc81c0757cbbbe2c4fb582e72c5f57495dea239d07b270f96bb4a3d2",
+  "arm_identity": "sealed until final analysis after W100"
+}
