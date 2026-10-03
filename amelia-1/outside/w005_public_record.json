@@ -1,0 +1,12 @@
+{
+  "version": "OUTSIDE-1-v2-working-runner-1.0.0",
+  "working": "W005",
+  "operator_cast": "THHTHHHHTTTHTHTHTTHHTHTTHHTHTHTH",
+  "resolved": true,
+  "chain_ok": true,
+  "analysis_locked": true,
+  "target_scene": "a pine forest clearing, a frozen pool, under pale morning light, waves breaking below.",
+  "ledger_sha256": "d09bbee7be25119362724146e2b10622c2570b3bfbca19fd9d40870e491b49ac",
+  "private_snapshot_sha256": "da6782cba01dead986a63ef5520e0034fa7b615b4c9a173bdd27f61c3eb00b51",
+  "arm_identity": "sealed until final analysis after W100"
+}
