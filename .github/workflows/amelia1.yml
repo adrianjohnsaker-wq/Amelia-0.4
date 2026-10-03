@@ -34,7 +34,7 @@ jobs:
         run: |
           set -euo pipefail
           T="$(mktemp -d)"
-          cp app/src/main/python/*.py app/src/main/python/*.json tests/*.py tests/support/*.py "$T"/
+          cp app/src/main/python/*.py app/src/main/python/*.json tests/*.py tests/support/*.py outside/*.py outside/*.json "$T"/
           (cd "$T" && python -m unittest -v 2>&1 | tee unittest.log)
           cp "$T/unittest.log" unittest.log
 
@@ -58,7 +58,7 @@ jobs:
             echo "reference_run: $(tr -d '\n ' < app/src/main/python/reference_run.json)"
             echo "startup_check: $(cd app/src/main/python && python -c 'import amelia_core as A; r=A.check(); print(r["status"], r["canonical_digest"], r["graph_digest"])')"
             echo "sources:"
-            find app/src tests -type f \( -name '*.py' -o -name '*.kt' -o -name '*.json' -o -name '*.xml' \) | sort | xargs sha256sum
+            find app/src tests outside -type f \( -name '*.py' -o -name '*.kt' -o -name '*.json' -o -name '*.xml' \) | sort | xargs sha256sum
           } > build-manifest.txt
           cat build-manifest.txt
           grep -q "startup_check: ACCEPTED" build-manifest.txt
