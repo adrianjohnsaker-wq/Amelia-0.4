@@ -162,10 +162,10 @@ def registration_payload() -> dict:
         "graph_digest": D.canonical_graph().digest(),
         "lexicon_sha256": file_sha256(os.path.join(HERE, LEXICON_FILE)),
         "sources": {
-            "CanonicalNumogram.py": file_sha256(os.path.join(PY, "CanonicalNumogram.py")),
-            "NumogramDynamics.py": file_sha256(os.path.join(PY, "NumogramDynamics.py")),
-            "NumogramInterface.py": file_sha256(os.path.join(PY, "NumogramInterface.py")),
-            "NullInterfaces.py": file_sha256(os.path.join(SUPPORT, "NullInterfaces.py")),
+            "CanonicalNumogram.py": file_sha256(C.__file__),
+            "NumogramDynamics.py": file_sha256(D.__file__),
+            "NumogramInterface.py": file_sha256(I.__file__),
+            "NullInterfaces.py": file_sha256(N.__file__),
             "Outside1_v2.py": file_sha256(__file__),
         },
     }
