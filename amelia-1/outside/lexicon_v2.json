@@ -1,0 +1,231 @@
+{
+  "version": "OUTSIDE-1 lexicon 2.0.0",
+  "rule": [
+    "Source-locked short fragments from CCRU Zone system notes.",
+    "One fragment is dealt per recorded passage from the destination zone only.",
+    "Repeated visits cycle through that zone's fragments in registered order.",
+    "Demon names and lore are excluded."
+  ],
+  "zones": {
+    "0": [
+      {
+        "text": "the dense void of the cosmic hypermatrix",
+        "source": "https://www.ccru.net/zones/Zn0.htm",
+        "prov": "EXPLICIT"
+      },
+      {
+        "text": "flatline and loss of signal",
+        "source": "https://www.ccru.net/zones/Zn0.htm",
+        "prov": "EXPLICIT"
+      },
+      {
+        "text": "the protocosmic abyss",
+        "source": "https://www.ccru.net/zones/Zn0.htm",
+        "prov": "EXPLICIT"
+      },
+      {
+        "text": "the ultimate gulfs of chaotic unbeing",
+        "source": "https://www.ccru.net/zones/Zn0.htm",
+        "prov": "EXPLICIT"
+      }
+    ],
+    "1": [
+      {
+        "text": "(meta)static pod-deliria and techno-immortalism",
+        "source": "https://www.ccru.net/zones/Zn1.htm",
+        "prov": "EXPLICIT"
+      },
+      {
+        "text": "shallow seas",
+        "source": "https://www.ccru.net/zones/Zn1.htm",
+        "prov": "EXPLICIT"
+      },
+      {
+        "text": "armored fish creatures",
+        "source": "https://www.ccru.net/zones/Zn1.htm",
+        "prov": "EXPLICIT"
+      },
+      {
+        "text": "enduring ideas, historical time and remembrance",
+        "source": "https://www.ccru.net/zones/Zn1.htm",
+        "prov": "EXPLICIT"
+      }
+    ],
+    "2": [
+      {
+        "text": "crypt-navigation",
+        "source": "https://www.ccru.net/zones/Zn2.htm",
+        "prov": "EXPLICIT"
+      },
+      {
+        "text": "occulted cyberspace",
+        "source": "https://www.ccru.net/zones/Zn2.htm",
+        "prov": "EXPLICIT"
+      },
+      {
+        "text": "time fragmentation",
+        "source": "https://www.ccru.net/zones/Zn2.htm",
+        "prov": "EXPLICIT"
+      },
+      {
+        "text": "mist, vaporization and hazing",
+        "source": "https://www.ccru.net/zones/Zn2.htm",
+        "prov": "EXPLICIT"
+      }
+    ],
+    "3": [
+      {
+        "text": "swirling nebulae",
+        "source": "https://www.ccru.net/zones/Zn3.htm",
+        "prov": "EXPLICIT"
+      },
+      {
+        "text": "alien pattern",
+        "source": "https://www.ccru.net/zones/Zn3.htm",
+        "prov": "EXPLICIT"
+      },
+      {
+        "text": "unexpected messages",
+        "source": "https://www.ccru.net/zones/Zn3.htm",
+        "prov": "EXPLICIT"
+      },
+      {
+        "text": "xenosignal",
+        "source": "https://www.ccru.net/zones/Zn3.htm",
+        "prov": "EXPLICIT"
+      }
+    ],
+    "4": [
+      {
+        "text": "‘delta-phase’ or terminal deliria",
+        "source": "https://www.ccru.net/zones/Zn4.htm",
+        "prov": "EXPLICIT"
+      },
+      {
+        "text": "geoconvulsions",
+        "source": "https://www.ccru.net/zones/Zn4.htm",
+        "prov": "EXPLICIT"
+      },
+      {
+        "text": "continental subsidence",
+        "source": "https://www.ccru.net/zones/Zn4.htm",
+        "prov": "EXPLICIT"
+      },
+      {
+        "text": "riverine flow",
+        "source": "https://www.ccru.net/zones/Zn4.htm",
+        "prov": "EXPLICIT"
+      }
+    ],
+    "5": [
+      {
+        "text": "Hyperborean or Wendigo mythology",
+        "source": "https://www.ccru.net/zones/Zn5.htm",
+        "prov": "EXPLICIT"
+      },
+      {
+        "text": "missing time and alien abduction",
+        "source": "https://www.ccru.net/zones/Zn5.htm",
+        "prov": "EXPLICIT"
+      },
+      {
+        "text": "upland rain forests",
+        "source": "https://www.ccru.net/zones/Zn5.htm",
+        "prov": "EXPLICIT"
+      },
+      {
+        "text": "the monsoon",
+        "source": "https://www.ccru.net/zones/Zn5.htm",
+        "prov": "EXPLICIT"
+      }
+    ],
+    "6": [
+      {
+        "text": "the plane of the third-eye",
+        "source": "https://www.ccru.net/zones/Zn6.htm",
+        "prov": "EXPLICIT"
+      },
+      {
+        "text": "turbular erosion",
+        "source": "https://www.ccru.net/zones/Zn6.htm",
+        "prov": "EXPLICIT"
+      },
+      {
+        "text": "the dead eye of the cyclone",
+        "source": "https://www.ccru.net/zones/Zn6.htm",
+        "prov": "EXPLICIT"
+      },
+      {
+        "text": "the absolutely unexpected",
+        "source": "https://www.ccru.net/zones/Zn6.htm",
+        "prov": "EXPLICIT"
+      }
+    ],
+    "7": [
+      {
+        "text": "cosmic swamp-labyrinths",
+        "source": "https://www.ccru.net/zones/Zn7.htm",
+        "prov": "EXPLICIT"
+      },
+      {
+        "text": "‘fold-type’ time-anomalies",
+        "source": "https://www.ccru.net/zones/Zn7.htm",
+        "prov": "EXPLICIT"
+      },
+      {
+        "text": "emergence from the depths",
+        "source": "https://www.ccru.net/zones/Zn7.htm",
+        "prov": "EXPLICIT"
+      },
+      {
+        "text": "salt-water marshes",
+        "source": "https://www.ccru.net/zones/Zn7.htm",
+        "prov": "EXPLICIT"
+      }
+    ],
+    "8": [
+      {
+        "text": "limbic drift",
+        "source": "https://www.ccru.net/zones/Zn8.htm",
+        "prov": "EXPLICIT"
+      },
+      {
+        "text": "dreams",
+        "source": "https://www.ccru.net/zones/Zn8.htm",
+        "prov": "EXPLICIT"
+      },
+      {
+        "text": "trance-states",
+        "source": "https://www.ccru.net/zones/Zn8.htm",
+        "prov": "EXPLICIT"
+      },
+      {
+        "text": "the deep sea",
+        "source": "https://www.ccru.net/zones/Zn8.htm",
+        "prov": "EXPLICIT"
+      }
+    ],
+    "9": [
+      {
+        "text": "the metallic ocean of the earth’s iron core",
+        "source": "https://www.ccru.net/zones/Zn9.htm",
+        "prov": "EXPLICIT"
+      },
+      {
+        "text": "the Gate of Pandemonium",
+        "source": "https://www.ccru.net/zones/Zn9.htm",
+        "prov": "EXPLICIT"
+      },
+      {
+        "text": "prehuman cultures of the Old Ones",
+        "source": "https://www.ccru.net/zones/Zn9.htm",
+        "prov": "EXPLICIT"
+      },
+      {
+        "text": "the ultimate unutterable mystery of vocal nullity",
+        "source": "https://www.ccru.net/zones/Zn9.htm",
+        "prov": "EXPLICIT"
+      }
+    ]
+  }
+}
