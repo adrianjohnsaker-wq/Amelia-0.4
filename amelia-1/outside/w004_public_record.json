@@ -1,0 +1,16 @@
+{
+  "version": "OUTSIDE-1-v2-working-runner-1.0.0",
+  "working": "W004",
+  "operator_cast": "HHHHTTTHHTTTTHHTTTHHTHTTHHHHTTTH",
+  "resolved": true,
+  "chain_ok": true,
+  "analysis_locked": true,
+  "target_scene": "a tornado crossing distant farmland, with debris moving in the wind, under a black storm sky.",
+  "prepare_run": 37155782574,
+  "readings_run": 37155830484,
+  "resolve_run": 37155872604,
+  "feedback_artifact_id": 11285826146,
+  "private_state_artifact_id": 11285362176,
+  "private_state_artifact_sha256": "aa329c00640d03469b9fb1f36cc2e00abc6185adf1f38de4c06f2a49e32ab20b",
+  "arm_identity": "sealed until final analysis after W100"
+}
