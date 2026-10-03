@@ -1,0 +1,58 @@
+name: OUTSIDE-1 v2 W001 resolve
+
+on:
+  push:
+    branches: ["amelia-1.0"]
+    paths:
+      - ".github/workflows/outside1-v2-w001-resolve.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  resolve:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: amelia-1
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: actions/download-artifact@v4
+        with:
+          name: outside1-v2-w001-private-after-readings
+          path: amelia-1/outside
+          repository: ${{ github.repository }}
+          run-id: 37145813461
+          github-token: ${{ github.token }}
+      - name: Seal W001 rankings, then draw target
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, os, sys
+          sys.path.insert(0, os.path.abspath("outside"))
+          import Outside1_v2_working as W
+          W.seal_ranking("W001","R1",["A","B","D","C"])
+          W.seal_ranking("W001","R2",["D","C","A","B"])
+          feedback=W.draw("W001")
+          json.dump(feedback,open("outside/w001-feedback.json","w"),ensure_ascii=False,indent=2)
+          json.dump(W.public_status(),open("outside/w001-status.json","w"),sort_keys=True,indent=2)
+          print("W001_RESOLVED")
+          print("STATUS",json.dumps(W.public_status(),sort_keys=True))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: outside1-v2-w001-feedback
+          path: |
+            amelia-1/outside/w001-feedback.json
+            amelia-1/outside/w001-status.json
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        with:
+          name: outside1-v2-private-through-w001
+          path: amelia-1/outside/ledger_v2_workings.jsonl
+          retention-days: 30
