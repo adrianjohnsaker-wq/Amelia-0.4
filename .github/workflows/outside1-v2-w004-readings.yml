@@ -1,0 +1,54 @@
+name: OUTSIDE-1 v2 W004 seal readings
+
+on:
+  push:
+    branches: ["amelia-1.0"]
+    paths:
+      - ".github/workflows/outside1-v2-w004-readings.yml"
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  readings:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: amelia-1
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: actions/download-artifact@v4
+        with:
+          name: outside1-v2-private-through-w004-cast
+          path: amelia-1/outside
+          repository: ${{ github.repository }}
+          run-id: 37155782574
+          github-token: ${{ github.token }}
+      - name: Seal readings and prepare judge material
+        run: |
+          python - <<'PY'
+          import json, os, sys
+          sys.path.insert(0,os.path.abspath('outside'))
+          import Outside1_v2_working as W
+          r1="Hyperborean or Wendigo mythology stands beside cosmic swamp-labyrinths, followed by (meta)static pod-deliria and techno-immortalism beside shallow seas. limbic drift extends toward the metallic ocean of the earth’s iron core, while missing time and alien abduction lies beyond armored fish creatures. enduring ideas, historical time and remembrance occupies the next position, followed by dreams, the Gate of Pandemonium, and prehuman cultures of the Old Ones. These dealt elements remain in their given order within one continuous arrangement, joined only by direct spatial relations, with the earlier fragments nearer, the middle fragments extending across the same scene, and the final fragments closing the sequence without adding anything beyond what was dealt."
+          r2="the dense void of the cosmic hypermatrix stands beside (meta)static pod-deliria and techno-immortalism, followed by shallow seas and limbic drift. the metallic ocean of the earth’s iron core lies next to Hyperborean or Wendigo mythology, while the plane of the third-eye adjoins cosmic swamp-labyrinths. armored fish creatures follows, then dreams and enduring ideas, historical time and remembrance, with ‘fold-type’ time-anomalies at the end of the sequence. These dealt elements remain in their given order within one continuous arrangement, joined only by direct spatial relations, with the earlier fragments nearer, the middle fragments extending across the same scene, and the final fragments closing the sequence without adding anything beyond what was dealt."
+          W.seal_reading('W004','R1',r1)
+          W.seal_reading('W004','R2',r2)
+          out={'W004':{'R1':W.judge_material('W004','R1'),'R2':W.judge_material('W004','R2')}}
+          json.dump(out,open('outside/w004-judge-public.json','w'),ensure_ascii=False,indent=2)
+          print(json.dumps(W.public_status(),sort_keys=True))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: outside1-v2-w004-judge-public
+          path: amelia-1/outside/w004-judge-public.json
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        with:
+          name: outside1-v2-private-through-w004-readings
+          path: amelia-1/outside/ledger_v2_workings.jsonl
+          retention-days: 30
