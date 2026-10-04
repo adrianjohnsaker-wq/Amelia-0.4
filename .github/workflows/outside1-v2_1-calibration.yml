@@ -5,6 +5,7 @@ on:
     branches: ["amelia-1.0"]
     paths:
       - ".github/workflows/outside1-v2_1-calibration.yml"
+      - "amelia-1/outside/outside1_v2_1_registration.json"
   workflow_dispatch:
 
 permissions:
