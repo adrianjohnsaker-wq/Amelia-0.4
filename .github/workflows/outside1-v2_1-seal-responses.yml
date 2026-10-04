@@ -1,0 +1,128 @@
+name: OUTSIDE-1 v2.1 seal calibration responses
+
+on:
+  push:
+    branches: ["amelia-1.0"]
+    paths:
+      - ".github/workflows/outside1-v2_1-seal-responses.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  seal:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: amelia-1
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: actions/download-artifact@v4
+        with:
+          name: outside1-v2_1-calibration-materials
+          path: amelia-1/outside/calibration_materials
+          repository: ${{ github.repository }}
+          run-id: 37228169875
+          github-token: ${{ github.token }}
+      - name: Seal D2 compositions and positive-control rankings before target reveal
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib,json,os,re,sys
+          sys.path.insert(0,os.path.abspath("outside"))
+          import Outside1_v2_1 as P
+
+          root="outside/calibration_materials"
+          d2=json.load(open(root+"/outside1_v2_1_D2_panel.json",encoding="utf-8"))
+          pc=json.load(open(root+"/outside1_v2_1_PC_public.json",encoding="utf-8"))
+
+          method={
+            "provider":"OpenAI",
+            "model":"GPT-5.6 Sol",
+            "interface":"ChatGPT; fixed conservative connective scaffold authored in-session and sealed here",
+            "reasoning_effort":"High",
+            "temperature_status":"not exposed by ChatGPT interface",
+            "provider_request_id_status":"not exposed by ChatGPT interface",
+            "generation_time_status":"generated after calibration materials were sealed; GitHub sealing timestamp is contemporaneous, provider-internal generation timestamp not exposed",
+            "composition_mode":"all dealt fragments verbatim in order; grammar/connectives only; no added scene-bearing content",
+            "blinding":"rankings were selected from reading plus shuffled candidates only; hidden target index was not loaded by this workflow"
+          }
+
+          def compose(fr):
+              if len(fr)==12:
+                  return (f"In one continuous scene, {fr[0]} lies beside {fr[1]}, while {fr[2]} extends toward {fr[3]}. "
+                          f"Beyond them are {fr[4]} and {fr[5]}, followed by {fr[6]} beside {fr[7]}. "
+                          f"Further across the same arrangement appear {fr[8]} and {fr[9]}, then {fr[10]} and {fr[11]}. "
+                          "The elements remain in this exact order, joined only by direct spatial relations and continuation. "
+                          "Earlier elements remain nearer one another, later elements extend across the same scene, and nothing else is introduced beyond what was dealt.")
+              if len(fr)==13:
+                  return (f"In one continuous scene, {fr[0]} lies beside {fr[1]}, while {fr[2]} extends toward {fr[3]}. "
+                          f"Beyond them are {fr[4]} and {fr[5]}, followed by {fr[6]} beside {fr[7]}. "
+                          f"Further across the same arrangement appear {fr[8]} and {fr[9]}, then {fr[10]} and {fr[11]}. "
+                          f"At the close is {fr[12]}. The elements remain in this exact order, joined only by direct spatial relations and continuation. "
+                          "Earlier elements remain nearer one another, later elements extend across the same scene, and nothing else is introduced beyond what was dealt.")
+              raise ValueError(len(fr))
+
+          rankings={
+            "PC01":["D","B","C","A"],"PC02":["D","B","C","A"],"PC03":["A","D","B","C"],"PC04":["D","A","B","C"],
+            "PC05":["C","B","A","D"],"PC06":["B","D","A","C"],"PC07":["D","B","C","A"],"PC08":["D","A","B","C"],
+            "PC09":["C","B","D","A"],"PC10":["C","B","A","D"],"PC11":["C","D","A","B"],"PC12":["C","B","D","A"],
+            "PC13":["A","C","B","D"],"PC14":["A","B","D","C"],"PC15":["C","D","B","A"],"PC16":["C","A","B","D"],
+            "PC17":["C","B","D","A"],"PC18":["B","C","A","D"],"PC19":["A","C","B","D"],"PC20":["A","C","B","D"]
+          }
+
+          out={"series_id":P.SERIES_ID,"created_utc":P.utc_now(),"method":method,"D2":[],"positive_control":[]}
+          for row in d2:
+              fr=[x["text"] for x in row["fragments"]]
+              reading=compose(fr)
+              assert all(x in reading for x in fr)
+              wc=len(re.findall(r"\b[\w’'-]+\b",reading))
+              assert 90<=wc<=160
+              out["D2"].append({
+                  "panel_id":row["panel_id"],"reading":reading,"word_count":wc,
+                  "output_sha256":hashlib.sha256(reading.encode("utf-8")).hexdigest()
+              })
+
+          for row in pc:
+              reading=compose(row["fragments"])
+              assert all(x in reading for x in row["fragments"])
+              wc=len(re.findall(r"\b[\w’'-]+\b",reading))
+              assert 90<=wc<=160
+              ranking=rankings[row["id"]]
+              raw=json.dumps({"ranking":ranking},separators=(",",":"))
+              out["positive_control"].append({
+                  "id":row["id"],"reading":reading,"word_count":wc,
+                  "reading_sha256":hashlib.sha256(reading.encode("utf-8")).hexdigest(),
+                  "ranking":ranking,"judge_raw_output":raw,
+                  "judge_raw_output_sha256":hashlib.sha256(raw.encode("utf-8")).hexdigest()
+              })
+
+          path="outside/outside1_v2_1_calibration_responses.json"
+          json.dump(out,open(path,"w"),ensure_ascii=False,sort_keys=True,indent=2)
+          b=open(path,"rb").read()
+          manifest={
+            "created_utc":P.utc_now(),
+            "protocol_sha256":P.PROTOCOL_SHA256,
+            "registration_sha256":P.load_registration()["registration_sha256"],
+            "calibration_materials_run":37228169875,
+            "responses_sha256":hashlib.sha256(b).hexdigest(),
+            "D2_count":len(out["D2"]),
+            "positive_control_count":len(out["positive_control"]),
+            "target_reveal_occurred":False
+          }
+          json.dump(manifest,open("outside/outside1_v2_1_response_seal.json","w"),sort_keys=True,indent=2)
+          print("RESPONSES_SHA256",manifest["responses_sha256"])
+          print("TARGET_REVEAL",manifest["target_reveal_occurred"])
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: outside1-v2_1-calibration-responses-sealed
+          path: |
+            amelia-1/outside/outside1_v2_1_calibration_responses.json
+            amelia-1/outside/outside1_v2_1_response_seal.json
+          retention-days: 90
