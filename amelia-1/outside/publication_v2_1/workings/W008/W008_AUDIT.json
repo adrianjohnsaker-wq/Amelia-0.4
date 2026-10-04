@@ -1,0 +1,66 @@
+{
+  "arm_identity": "not exported",
+  "audit_created_utc": "2026-10-04T22:03:13.001Z",
+  "audit_pass": true,
+  "audit_sha256": "cf73c5126da33dfa6857dc5ab31dec493ee53cb209f5ee34a5884ffe8440f8f9",
+  "calibration_sha256": "7c1c82194020d2163cf9f92511292624f0f70881e5f9796c29e0264e1bd318f3",
+  "event_sequence": [
+    {
+      "created_utc": "2026-10-04T21:59:41.355Z",
+      "event_hash": "88a5fbd903e99883fcf07f6c5038d24d28e97667894c03e8a75f6a66f49c7c5e",
+      "event_id": "W008.000007.CAST",
+      "event_seq": 7,
+      "event_type": "cast",
+      "payload_sha256": "6eea42aeb54de03c86ef624e1833281e67cacc601c41716bf80536b91457cc3a"
+    },
+    {
+      "created_utc": "2026-10-04T22:00:46.961Z",
+      "event_hash": "a56ab74da9f94fc0fd50d6293846071d59e395beb9e24815227eee0f747829e2",
+      "event_id": "W008.000008.READING",
+      "event_seq": 8,
+      "event_type": "reading",
+      "payload_sha256": "5a4cc6602bb13088f7b7554c4be96385f9dbf8e130203a7b5e4a8b93080fdaf1"
+    },
+    {
+      "created_utc": "2026-10-04T22:00:46.963Z",
+      "event_hash": "427d3300dba66dda3edb927ee194e204df026a01666a74cb3f08537e1f4ffc22",
+      "event_id": "W008.000009.READING",
+      "event_seq": 9,
+      "event_type": "reading",
+      "payload_sha256": "4df3791bb5e4a9a3b47622a4248f2418ea8290b0cbd41adebbb1ce452345410a"
+    },
+    {
+      "created_utc": "2026-10-04T22:02:18.364Z",
+      "event_hash": "3819bf8ba794a847fd10e6ab095abf253584c31cb5a0ea9119bd1675bff96903",
+      "event_id": "W008.000010.RANKING",
+      "event_seq": 10,
+      "event_type": "ranking",
+      "payload_sha256": "18b8b057d5b9331a97b5bd789e3d82e3e7eabc7ec6548155b8d9cf6855da4ffc"
+    },
+    {
+      "created_utc": "2026-10-04T22:02:18.367Z",
+      "event_hash": "fa162eb5a9efca61ebfb58b4252a2f32deeb953441c7f36adfe53ded0adaff0a",
+      "event_id": "W008.000011.RANKING",
+      "event_seq": 11,
+      "event_type": "ranking",
+      "payload_sha256": "09bbf136521fa80963419fb2cbf479f843c4ae95145c759417d817585c12d43e"
+    },
+    {
+      "created_utc": "2026-10-04T22:02:18.371Z",
+      "event_hash": "01789c65832e4e2030ec48813256deb5e3f8a6df4f99d70dd8f88e37e5cbc20d",
+      "event_id": "W008.000012.RESOLVED",
+      "event_seq": 12,
+      "event_type": "resolved",
+      "payload_sha256": "6438978279f955443c686333a8be4bf77c3b7b939ee1afa3e197c5798643e3f6"
+    }
+  ],
+  "final_event_hash": "01789c65832e4e2030ec48813256deb5e3f8a6df4f99d70dd8f88e37e5cbc20d",
+  "ledger_sha256": "995585918c577a7c22f67c69b87602fa99b80aa9e14719c4fa623797e70c4c70",
+  "protocol_sha256": "f8f4223f75d9a2df42866bd0eb036246511f86fa3eca09f79be4e5b3f203455f",
+  "registration_sha256": "07d9d78eb08c54497d77cac2c8535600042c84135888126a13d7f0d06e517365",
+  "series_event_count": 12,
+  "series_id": "OUTSIDE-1-v2.1-publication",
+  "target_ranks": "not exported",
+  "working": "W008",
+  "working_event_count": 6
+}

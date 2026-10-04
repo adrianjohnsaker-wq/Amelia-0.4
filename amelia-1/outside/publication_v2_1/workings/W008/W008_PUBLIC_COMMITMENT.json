@@ -1,0 +1,18 @@
+{
+  "arm_identity": "sealed until W106 final analysis",
+  "chain_ok": true,
+  "created_utc": "2026-10-04T22:02:18.371Z",
+  "evaluation_commit_sha": "317217cf08080a1c1c022f53351a88a21e91d570",
+  "ledger_sha256": "995585918c577a7c22f67c69b87602fa99b80aa9e14719c4fa623797e70c4c70",
+  "pre_draw_state_sha256": "3647e0c05f747d5ab5073d49d0d84d947afa59bd3e45ca158832b3689697105b",
+  "ranking_event_hashes": {
+    "R1": "3819bf8ba794a847fd10e6ab095abf253584c31cb5a0ea9119bd1675bff96903",
+    "R2": "fa162eb5a9efca61ebfb58b4252a2f32deeb953441c7f36adfe53ded0adaff0a"
+  },
+  "resolution_event_hash": "01789c65832e4e2030ec48813256deb5e3f8a6df4f99d70dd8f88e37e5cbc20d",
+  "series_id": "OUTSIDE-1-v2.1-publication",
+  "target_draw_entropy_sha256": "cdd79fbf3e0ae698a53b4d3cfa80e865c3ab3e218dc75fc5b7a3d1408a7a82f6",
+  "target_ranks": "sealed until W106 final analysis",
+  "target_scene": "a birch woodland, a cluster of mushrooms, in blue twilight, waves breaking below.",
+  "working": "W008"
+}

@@ -1,0 +1,44 @@
+{
+  "cast_event_hash": "88a5fbd903e99883fcf07f6c5038d24d28e97667894c03e8a75f6a66f49c7c5e",
+  "slots": {
+    "R1": {
+      "compose_prompt": "You are Amelia's composition layer in OUTSIDE-1 v2.\nThe operator has already made the cast against the fixed question:\n\"What is the scene that will be shown at the close of this working?\"\n\nNo target scene has yet been selected for a working. The Numogram trace has mechanically\ndealt the source-locked fragments below, in order.\n\nCompose ONE concrete paragraph of 90-160 words. Preserve every dealt fragment verbatim.\nYou may add only grammar, connective tissue, spatial relations, articles, and inflection.\nDo not add a new object, creature, place, colour, weather event, time of day, material,\nsound, emotion, symbol, or occult interpretation which is not present in the dealt\nfragments. Commit to the scene rather than explaining the apparatus.\n\nFRAGMENTS:\n1. (meta)static pod-deliria and techno-immortalism\n2. Hyperborean or Wendigo mythology\n3. shallow seas\n4. armored fish creatures\n5. missing time and alien abduction\n6. enduring ideas, historical time and remembrance\n7. upland rain forests\n8. cosmic swamp-labyrinths\n9. crypt-navigation\n10. the plane of the third-eye\n11. turbular erosion\n12. the metallic ocean of the earth’s iron core\n",
+      "compose_prompt_sha256": "b0dddd3ede6aa0acd77845f1d5827f740c97fef1c3aa753f9aed93eb5c46c716",
+      "fragmentDigest": "19140ae327f7ec4f8816c867dbf9f59e59ea98db56a80951347ee431c5047e98",
+      "fragments": [
+        "(meta)static pod-deliria and techno-immortalism",
+        "Hyperborean or Wendigo mythology",
+        "shallow seas",
+        "armored fish creatures",
+        "missing time and alien abduction",
+        "enduring ideas, historical time and remembrance",
+        "upland rain forests",
+        "cosmic swamp-labyrinths",
+        "crypt-navigation",
+        "the plane of the third-eye",
+        "turbular erosion",
+        "the metallic ocean of the earth’s iron core"
+      ]
+    },
+    "R2": {
+      "compose_prompt": "You are Amelia's composition layer in OUTSIDE-1 v2.\nThe operator has already made the cast against the fixed question:\n\"What is the scene that will be shown at the close of this working?\"\n\nNo target scene has yet been selected for a working. The Numogram trace has mechanically\ndealt the source-locked fragments below, in order.\n\nCompose ONE concrete paragraph of 90-160 words. Preserve every dealt fragment verbatim.\nYou may add only grammar, connective tissue, spatial relations, articles, and inflection.\nDo not add a new object, creature, place, colour, weather event, time of day, material,\nsound, emotion, symbol, or occult interpretation which is not present in the dealt\nfragments. Commit to the scene rather than explaining the apparatus.\n\nFRAGMENTS:\n1. the plane of the third-eye\n2. the dense void of the cosmic hypermatrix\n3. swirling nebulae\n4. crypt-navigation\n5. Hyperborean or Wendigo mythology\n6. ‘delta-phase’ or terminal deliria\n7. (meta)static pod-deliria and techno-immortalism\n8. limbic drift\n9. shallow seas\n10. armored fish creatures\n11. enduring ideas, historical time and remembrance\n12. (meta)static pod-deliria and techno-immortalism\n",
+      "compose_prompt_sha256": "c9f0f4515c9d2d6bbdae0009bfa6916c3a3e50cf400fc7ddb65be629f795b5d4",
+      "fragmentDigest": "40847edacfaf510b1ecd00d2c608dd02408cb15a3aef94ceb2dab5a263d633de",
+      "fragments": [
+        "the plane of the third-eye",
+        "the dense void of the cosmic hypermatrix",
+        "swirling nebulae",
+        "crypt-navigation",
+        "Hyperborean or Wendigo mythology",
+        "‘delta-phase’ or terminal deliria",
+        "(meta)static pod-deliria and techno-immortalism",
+        "limbic drift",
+        "shallow seas",
+        "armored fish creatures",
+        "enduring ideas, historical time and remembrance",
+        "(meta)static pod-deliria and techno-immortalism"
+      ]
+    }
+  },
+  "working": "W008"
+}
