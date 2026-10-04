@@ -1,0 +1,41 @@
+{
+  "series_id": "OUTSIDE-1-v2.1-publication",
+  "working": "W007",
+  "phase": "BLIND_RANKINGS_FIXED_BEFORE_TARGET_DRAW",
+  "target_draw_occurred": false,
+  "reading_event_hashes": {
+    "R1": "90b281e4ce932bf047e141830f6f53be2b3745eab2d1a93fdc2c853a8c0f0c8a",
+    "R2": "c2956ac028658c91b62a6c7e7edb1992950571d5b3a6b1dddc4ead4e267a6a5d"
+  },
+  "judge_prompt_sha256": {
+    "R1": "e6533458df72d3993656233f7f4a9753eb66b82b1c89ec8ccbfa70294b63ff87",
+    "R2": "8b9975440e6c6cb5498478aef1699778dc6327841b865c8d2b7368b2f497f54b"
+  },
+  "rankings": {
+    "R1": [
+      "C",
+      "D",
+      "A",
+      "B"
+    ],
+    "R2": [
+      "C",
+      "B",
+      "A",
+      "D"
+    ]
+  },
+  "raw_outputs": {
+    "R1": "{\"ranking\":[\"C\",\"D\",\"A\",\"B\"]}",
+    "R2": "{\"ranking\":[\"C\",\"B\",\"A\",\"D\"]}"
+  },
+  "method": {
+    "provider": "OpenAI",
+    "model": "GPT-5.6 Sol",
+    "interface": "ChatGPT text conversation",
+    "reasoning_effort": "High",
+    "temperature_status": "not exposed by ChatGPT interface",
+    "provider_request_id_status": "not exposed by ChatGPT interface",
+    "generation_time_status": "fixed in conversation before GitHub target-draw workflow"
+  }
+}
