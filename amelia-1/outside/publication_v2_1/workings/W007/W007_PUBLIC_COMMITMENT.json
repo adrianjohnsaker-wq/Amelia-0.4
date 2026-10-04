@@ -1,0 +1,18 @@
+{
+  "arm_identity": "sealed until W106 final analysis",
+  "chain_ok": true,
+  "created_utc": "2026-10-04T21:08:28.962Z",
+  "ledger_sha256": "018157c0202347c61f1a046e4aacffeb7353602ce25e7ccfb3e1a2af5823607a",
+  "pre_draw_state_sha256": "d1126eecc111e1f142cd7b80600a533b752cc997fbecd33de35a657b04e5007e",
+  "ranking_commit_sha": "95bdf642e3ed7671d72dac315f5656275f535f97",
+  "ranking_event_hashes": {
+    "R1": "7a80813aaea5390946beadab6ae63cba2b519434b34b931e73be1a379550ecc5",
+    "R2": "49ad162a8e30574d9623fa262eba0a1833e7113c8bccfe9ec5f849e575ce3c5a"
+  },
+  "resolution_event_hash": "6975f7661d1d168ec08943566b6d87ee0b9152789d6f21fd6571e172d1566820",
+  "series_id": "OUTSIDE-1-v2.1-publication",
+  "target_draw_entropy_sha256": "c8dfe31b7e6555aa53ca9d85f17eabd2f289527cc8bd2b416277973232a71751",
+  "target_ranks": "sealed until W106 final analysis",
+  "target_scene": "an avalanche dropping from a mountain face, with a moment of stillness before motion, under a black storm sky.",
+  "working": "W007"
+}

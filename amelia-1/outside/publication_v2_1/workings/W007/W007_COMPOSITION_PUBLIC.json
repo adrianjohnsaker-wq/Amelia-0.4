@@ -1,0 +1,44 @@
+{
+  "cast_event_hash": "bb1688182ac95e835859820908e89cdebe1d1527f3a3d768951deafe618e2668",
+  "slots": {
+    "R1": {
+      "compose_prompt": "You are Amelia's composition layer in OUTSIDE-1 v2.\nThe operator has already made the cast against the fixed question:\n\"What is the scene that will be shown at the close of this working?\"\n\nNo target scene has yet been selected for a working. The Numogram trace has mechanically\ndealt the source-locked fragments below, in order.\n\nCompose ONE concrete paragraph of 90-160 words. Preserve every dealt fragment verbatim.\nYou may add only grammar, connective tissue, spatial relations, articles, and inflection.\nDo not add a new object, creature, place, colour, weather event, time of day, material,\nsound, emotion, symbol, or occult interpretation which is not present in the dealt\nfragments. Commit to the scene rather than explaining the apparatus.\n\nFRAGMENTS:\n1. the plane of the third-eye\n2. the metallic ocean of the earth’s iron core\n3. limbic drift\n4. (meta)static pod-deliria and techno-immortalism\n5. Hyperborean or Wendigo mythology\n6. ‘delta-phase’ or terminal deliria\n7. missing time and alien abduction\n8. geoconvulsions\n9. the Gate of Pandemonium\n10. prehuman cultures of the Old Ones\n11. the ultimate unutterable mystery of vocal nullity\n12. the metallic ocean of the earth’s iron core\n",
+      "compose_prompt_sha256": "aaeb6b183f5d9eda23d7f0f62de3411bef9823371ba7d54ef4fd3fd10635889c",
+      "fragmentDigest": "a23071a8b383516ba749399a577d7c5885cfcbe41ded132e9309bdc81846d28d",
+      "fragments": [
+        "the plane of the third-eye",
+        "the metallic ocean of the earth’s iron core",
+        "limbic drift",
+        "(meta)static pod-deliria and techno-immortalism",
+        "Hyperborean or Wendigo mythology",
+        "‘delta-phase’ or terminal deliria",
+        "missing time and alien abduction",
+        "geoconvulsions",
+        "the Gate of Pandemonium",
+        "prehuman cultures of the Old Ones",
+        "the ultimate unutterable mystery of vocal nullity",
+        "the metallic ocean of the earth’s iron core"
+      ]
+    },
+    "R2": {
+      "compose_prompt": "You are Amelia's composition layer in OUTSIDE-1 v2.\nThe operator has already made the cast against the fixed question:\n\"What is the scene that will be shown at the close of this working?\"\n\nNo target scene has yet been selected for a working. The Numogram trace has mechanically\ndealt the source-locked fragments below, in order.\n\nCompose ONE concrete paragraph of 90-160 words. Preserve every dealt fragment verbatim.\nYou may add only grammar, connective tissue, spatial relations, articles, and inflection.\nDo not add a new object, creature, place, colour, weather event, time of day, material,\nsound, emotion, symbol, or occult interpretation which is not present in the dealt\nfragments. Commit to the scene rather than explaining the apparatus.\n\nFRAGMENTS:\n1. the plane of the third-eye\n2. (meta)static pod-deliria and techno-immortalism\n3. limbic drift\n4. the metallic ocean of the earth’s iron core\n5. Hyperborean or Wendigo mythology\n6. shallow seas\n7. dreams\n8. armored fish creatures\n9. enduring ideas, historical time and remembrance\n10. (meta)static pod-deliria and techno-immortalism\n11. shallow seas\n12. trance-states\n",
+      "compose_prompt_sha256": "f6dd903127714c1ef5c85e5d85f7cf50fe49a7dc76e0d68937c9e1e8180785c8",
+      "fragmentDigest": "75ed2be9cba79898f4d7b24f7a65d799d46997d15b97d4f990e708b401483d22",
+      "fragments": [
+        "the plane of the third-eye",
+        "(meta)static pod-deliria and techno-immortalism",
+        "limbic drift",
+        "the metallic ocean of the earth’s iron core",
+        "Hyperborean or Wendigo mythology",
+        "shallow seas",
+        "dreams",
+        "armored fish creatures",
+        "enduring ideas, historical time and remembrance",
+        "(meta)static pod-deliria and techno-immortalism",
+        "shallow seas",
+        "trance-states"
+      ]
+    }
+  },
+  "working": "W007"
+}
