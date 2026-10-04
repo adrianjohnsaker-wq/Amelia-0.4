@@ -1,0 +1,111 @@
+name: OUTSIDE-1 v2.1 W008 publication audit
+
+on:
+  push:
+    branches: ["amelia-1.0"]
+    paths:
+      - ".github/workflows/outside1-v2_1-w008-audit.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: amelia-1
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: actions/download-artifact@v4
+        with:
+          name: outside1-v2_1-private-through-W008
+          path: amelia-1/outside
+          repository: ${{ github.repository }}
+          run-id: 37238447400
+          github-token: ${{ github.token }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: outside1-v2_1-W008-public-after-cast
+          path: amelia-1/outside/w008_cast_public
+          repository: ${{ github.repository }}
+          run-id: 37238268345
+          github-token: ${{ github.token }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: outside1-v2_1-W008-public-resolved
+          path: amelia-1/outside/w008_resolved_public
+          repository: ${{ github.repository }}
+          run-id: 37238447400
+          github-token: ${{ github.token }}
+      - name: Independently verify W008 event chain
+        run: |
+          set -euo pipefail
+          python outside/audit_outside1_v2_1.py > /tmp/full_audit.json
+          python - <<'PY'
+          import json,os,sys
+          sys.path.insert(0,os.path.abspath("outside"))
+          import Outside1_v2 as O
+          import Outside1_v2_1 as P
+          import Outside1_v2_1_working as W
+
+          full=json.load(open("/tmp/full_audit.json"))
+          assert full["PASS"] is True
+          assert full["ledger"]["events"]==12
+          assert W.status()["workings_cast"]==2
+          assert W.status()["workings_resolved"]==2
+          assert W.status()["next_working"]=="W009"
+
+          es=W.entries()
+          w8=[e for e in es if e["working_id"]=="W008"]
+          assert len(w8)==6
+          summary={
+            "series_id":P.SERIES_ID,
+            "working":"W008",
+            "audit_created_utc":P.utc_now(),
+            "audit_pass":True,
+            "series_event_count":len(es),
+            "working_event_count":len(w8),
+            "event_sequence":[
+              {"event_seq":e["event_seq"],"event_id":e["event_id"],
+               "event_type":e["event_type"],"created_utc":e["created_utc"],
+               "payload_sha256":e["payload_sha256"],"event_hash":e["event_hash"]}
+              for e in w8
+            ],
+            "final_event_hash":es[-1]["event_hash"],
+            "ledger_sha256":O.file_sha256(P.LEDGER),
+            "protocol_sha256":P.PROTOCOL_SHA256,
+            "registration_sha256":P.load_registration()["registration_sha256"],
+            "calibration_sha256":P.calibration_open()["calibration_sha256"],
+            "arm_identity":"not exported",
+            "target_ranks":"not exported"
+          }
+          summary["audit_sha256"]=O.sha(summary)
+          dest="outside/publication_v2_1/workings/W008"
+          os.makedirs(dest,exist_ok=True)
+          json.dump(summary,open(dest+"/W008_AUDIT.json","w"),sort_keys=True,indent=2)
+
+          cast=json.load(open("outside/w008_cast_public/W008_COMPOSITION_PUBLIC.json",encoding="utf-8"))
+          feedback=json.load(open("outside/w008_resolved_public/W008_FEEDBACK_PUBLIC.json",encoding="utf-8"))
+          commitment=json.load(open("outside/w008_resolved_public/W008_PUBLIC_COMMITMENT.json",encoding="utf-8"))
+          json.dump(cast,open(dest+"/W008_COMPOSITION_PUBLIC.json","w"),ensure_ascii=False,sort_keys=True,indent=2)
+          json.dump(feedback,open(dest+"/W008_FEEDBACK_PUBLIC.json","w"),ensure_ascii=False,sort_keys=True,indent=2)
+          json.dump(commitment,open(dest+"/W008_PUBLIC_COMMITMENT.json","w"),ensure_ascii=False,sort_keys=True,indent=2)
+          print(json.dumps(summary,sort_keys=True,indent=2))
+          PY
+      - name: Commit W008 public evidence and audit
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add outside/publication_v2_1/workings/W008/W008_AUDIT.json
+          git add outside/publication_v2_1/workings/W008/W008_COMPOSITION_PUBLIC.json
+          git add outside/publication_v2_1/workings/W008/W008_FEEDBACK_PUBLIC.json
+          git add outside/publication_v2_1/workings/W008/W008_PUBLIC_COMMITMENT.json
+          git commit -m "Archive audited OUTSIDE-1 v2.1 W008 public evidence"
+          git push origin HEAD:amelia-1.0
