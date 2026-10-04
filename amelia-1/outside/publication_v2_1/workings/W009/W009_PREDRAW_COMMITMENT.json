@@ -1,0 +1,37 @@
+{
+  "series_id": "OUTSIDE-1-v2.1-publication",
+  "working": "W009",
+  "phase": "EVALUATION_ORDER_FIXED_BEFORE_OUTCOME_SELECTION",
+  "outcome_selection_occurred": false,
+  "reading_event_hashes": {
+    "R1": "8c17e2ea4aea147e152c7c7f7866a2e2a72eaa6407dc66b9f0bee48f7e31680f",
+    "R2": "17760918a129af6cc60d0481e4abb510cb0c96a336e6b931cfe2b1043d5e7ee2"
+  },
+  "judge_prompt_sha256": {
+    "R1": "de10378f709f8fdd32b63648d8d020d7a4bfadd99b6e009a10a0279500aa1360",
+    "R2": "85326b621712c82f43f1b5e965b97d9f57ab78ca40652aa12062eaa595eb3647"
+  },
+  "evaluation_order": {
+    "R1": [
+      "A",
+      "B",
+      "D",
+      "C"
+    ],
+    "R2": [
+      "D",
+      "C",
+      "B",
+      "A"
+    ]
+  },
+  "method": {
+    "provider": "OpenAI",
+    "model": "GPT-5.6 Sol",
+    "interface": "ChatGPT text conversation",
+    "reasoning_effort": "High",
+    "temperature_status": "not exposed by ChatGPT interface",
+    "provider_request_id_status": "not exposed by ChatGPT interface",
+    "generation_time_status": "fixed before outcome-selection workflow"
+  }
+}
