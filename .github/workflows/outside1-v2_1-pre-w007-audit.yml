@@ -1,0 +1,84 @@
+name: OUTSIDE-1 v2.1 pre-W007 publication audit
+
+on:
+  push:
+    branches: ["amelia-1.0"]
+    paths:
+      - "amelia-1/outside/outside1_v2_1_working_seal.json"
+      - ".github/workflows/outside1-v2_1-pre-w007-audit.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: amelia-1
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Verify publication series is empty, registered and calibrated
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib,json,os,subprocess,sys
+          sys.path.insert(0,os.path.abspath("outside"))
+          import Outside1_v2 as O
+          import Outside1_v2_1 as P
+          import Outside1_v2_1_working as W
+
+          seal=json.load(open("outside/outside1_v2_1_working_seal.json"))
+          reg=P.check_registration()
+          cal=P.calibration_open()
+          assert seal["status"]=="SEALED_READY_FOR_W007"
+          assert seal["protocol_sha256"]==P.PROTOCOL_SHA256
+          assert seal["registration_sha256"]==reg["registration_sha256"]
+          assert seal["calibration_sha256"]==cal["calibration_sha256"]
+          assert seal["gate"]["W007_authorized"] is True
+          assert not os.path.exists(P.LEDGER)
+          assert W.entries()==[]
+          assert W.verify_chain()
+          runner_sha=O.file_sha256("outside/Outside1_v2_1_working.py")
+          assert runner_sha==seal["working_runner_sha256"]
+
+          # Registered verifier must also pass against the empty publication ledger.
+          out=subprocess.check_output([sys.executable,"outside/audit_outside1_v2_1.py"],text=True)
+          verifier=json.loads(out)
+          assert verifier["PASS"] is True
+          assert verifier["ledger"]["events"]==0
+          assert verifier["ledger"]["chain_ok"] is True
+
+          audit={
+            "series_id":P.SERIES_ID,
+            "created_utc":P.utc_now(),
+            "status":"PASS",
+            "publication_event_count":0,
+            "publication_ledger_exists":False,
+            "chain_ok":True,
+            "first_authorized_working":"W007",
+            "last_planned_working":"W106",
+            "protocol_sha256":P.PROTOCOL_SHA256,
+            "registration_sha256":reg["registration_sha256"],
+            "calibration_sha256":cal["calibration_sha256"],
+            "calibration_audit_sha256":seal["calibration_audit_sha256"],
+            "working_runner_sha256":runner_sha,
+            "registered_verifier_output":verifier
+          }
+          audit["audit_sha256"]=O.sha(audit)
+          os.makedirs("outside/publication_v2_1",exist_ok=True)
+          json.dump(audit,open("outside/publication_v2_1/PRE_W007_AUDIT.json","w"),sort_keys=True,indent=2)
+          print(json.dumps(audit,sort_keys=True,indent=2))
+          PY
+      - name: Commit pre-W007 audit
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add outside/publication_v2_1/PRE_W007_AUDIT.json
+          git commit -m "Record OUTSIDE-1 v2.1 pre-W007 publication audit"
+          git push origin HEAD:amelia-1.0
