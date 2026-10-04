@@ -1,0 +1,77 @@
+name: OUTSIDE-1 v2.1 publication registration
+
+on:
+  push:
+    branches: ["amelia-1.0"]
+    paths:
+      - ".github/workflows/outside1-v2_1-register.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  register:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: amelia-1
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Build prospective registration
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib,json,os,sys
+          sys.path.insert(0,os.path.abspath("outside"))
+          import Outside1_v2 as O
+          import Outside1_v2_1 as P
+
+          root=os.getcwd()
+          sources={
+            "Outside1_v2.py":"outside/Outside1_v2.py",
+            "lexicon_v2.json":"outside/lexicon_v2.json",
+            "Outside1_v2_1.py":"outside/Outside1_v2_1.py",
+            "Outside1_v2_1_working.py":"outside/Outside1_v2_1_working.py",
+            "audit_outside1_v2_1.py":"outside/audit_outside1_v2_1.py",
+            "outside1_v2_pilot_freeze.json":"outside/outside1_v2_pilot_freeze.json",
+            "CanonicalNumogram.py":"app/src/main/python/CanonicalNumogram.py",
+            "NumogramDynamics.py":"app/src/main/python/NumogramDynamics.py",
+            "NumogramInterface.py":"app/src/main/python/NumogramInterface.py",
+            "NullInterfaces.py":"tests/support/NullInterfaces.py",
+          }
+          rec={}
+          for name,path in sources.items():
+            b=open(path,"rb").read()
+            rec[name]={"path":os.path.relpath(os.path.abspath(path),os.path.abspath("outside")),
+                       "sha256":hashlib.sha256(b).hexdigest()}
+          pilot=json.load(open("outside/outside1_v2_pilot_freeze.json",encoding="utf-8"))
+          payload={
+            "series_id":P.SERIES_ID,
+            "version":P.VERSION,
+            "registered_before_publication_data":True,
+            "registration_source_commit":os.environ["GITHUB_SHA"],
+            "serialization":P.SERIALIZATION,
+            "protocol":P.PROTOCOL,
+            "protocol_sha256":P.PROTOCOL_SHA256,
+            "parent_protocol_sha256":O.PROTOCOL_SHA256,
+            "canonical_runtime_digest":O.CANONICAL_DIGEST,
+            "graph_digest":"9760268dd784186434ea3d86efd2f8ae9f861b245f64f58c97f70f1e75fb3087",
+            "pilot_freeze_sha256":hashlib.sha256(O.canonical_json(pilot).encode("utf-8")).hexdigest(),
+            "sources":rec,
+          }
+          payload["registration_sha256"]=O.sha(payload)
+          json.dump(payload,open("outside/outside1_v2_1_registration.generated.json","w"),
+                    ensure_ascii=False,sort_keys=True,indent=2)
+          print("PROTOCOL_SHA256",P.PROTOCOL_SHA256)
+          print("REGISTRATION_SHA256",payload["registration_sha256"])
+          print("SOURCE_COMMIT",payload["registration_source_commit"])
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: outside1-v2_1-registration
+          path: amelia-1/outside/outside1_v2_1_registration.generated.json
+          retention-days: 90
