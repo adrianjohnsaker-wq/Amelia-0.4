@@ -1,6 +1,6 @@
 {
   "D1": {
-    "mean_fragments_per_trace": 12,
+    "mean_fragments_per_trace": 12.0,
     "mean_jaccard_canonical_null": 0.3828536239946851,
     "n": 1000,
     "pass": true,
@@ -119,7 +119,7 @@
     "created_utc": "2026-10-04T19:31:25.430Z",
     "criterion": 10,
     "hits_first": 20,
-    "mean_rank": 1,
+    "mean_rank": 1.0,
     "pass": true,
     "rank_distribution": {
       "1": 20,
