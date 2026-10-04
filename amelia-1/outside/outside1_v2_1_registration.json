@@ -86,7 +86,7 @@
     "Outside1_v2_1.py": {"path": "Outside1_v2_1.py","sha256": "11e74fcd053be0481cabd9d81e7bca7b7c021021cbc4297bbf85a85160de9ef2"},
     "Outside1_v2_1_working.py": {"path": "Outside1_v2_1_working.py","sha256": "262f1109dc2beeb07bdbcf3f72d6d388cf93c1af21a44b003ee8b0b1f7c2fb0e"},
     "audit_outside1_v2_1.py": {"path": "audit_outside1_v2_1.py","sha256": "473c2e240f2af5e73decc32383dc57e03aad68edc4d76f1c65f89e32220970ec"},
-    "lexicon_v2.json": {"path": "lexicon_v2.json","sha256": "2add52c70f7c4d3697fb26ebc68c617299a22297d906acfb057e00096480b5f"},
+    "lexicon_v2.json": {"path": "lexicon_v2.json","sha256": "2add52c70f7c4d3697fb26ebc68c617299a22297d906acfbf057e00096480b5f"},
     "outside1_v2_pilot_freeze.json": {"path": "outside1_v2_pilot_freeze.json","sha256": "86e31d87241a8e1c9a0e9b9c62297f86779b53cd7e4e36101ce250e0688a4068"}
   },
   "version": "2.1.0"
