@@ -1,0 +1,112 @@
+name: OUTSIDE-1 v2.1 archive publication calibration
+
+on:
+  push:
+    branches: ["amelia-1.0"]
+    paths:
+      - ".github/workflows/outside1-v2_1-archive-calibration.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: actions/download-artifact@v4
+        with:
+          name: outside1-v2_1-calibration-materials
+          path: downloaded/materials
+          repository: ${{ github.repository }}
+          run-id: 37228169875
+          github-token: ${{ github.token }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: outside1-v2_1-calibration-responses-sealed
+          path: downloaded/responses
+          repository: ${{ github.repository }}
+          run-id: 37228511566
+          github-token: ${{ github.token }}
+      - name: Archive and independently verify
+        run: |
+          set -euo pipefail
+          DEST=amelia-1/outside/publication_v2_1/calibration
+          mkdir -p "$DEST/raw"
+          cp downloaded/materials/*.json "$DEST/raw/"
+          cp downloaded/responses/*.json "$DEST/raw/"
+          cp amelia-1/outside/outside1_v2_1_calibration_seal.json "$DEST/"
+          python - <<'PY'
+          import hashlib,json,os,sys
+          root=os.path.abspath("amelia-1")
+          sys.path.insert(0,os.path.join(root,"outside"))
+          import Outside1_v2 as O
+          import Outside1_v2_1 as P
+
+          dest=os.path.join(root,"outside","publication_v2_1","calibration")
+          raw=os.path.join(dest,"raw")
+          seal=json.load(open(os.path.join(dest,"outside1_v2_1_calibration_seal.json"),encoding="utf-8"))
+          claimed=seal["calibration_sha256"]
+          tmp=dict(seal); tmp.pop("calibration_sha256")
+          recomputed=O.sha(tmp)
+          assert recomputed==claimed,(recomputed,claimed)
+
+          d1=json.load(open(os.path.join(raw,"outside1_v2_1_D1.json"),encoding="utf-8"))
+          assert P.channel_digest(d1["rows"])==d1["rows_sha256"]
+          assert d1["rows_sha256"]==seal["D1"]["rows_sha256"]
+
+          d2rows=seal["D2"]["rows"]
+          assert P.channel_digest(d2rows)==seal["D2"]["rows_sha256"]
+          pcrows=seal["positive_control"]["rows"]
+          assert P.channel_digest(pcrows)==seal["positive_control"]["rows_sha256"]
+
+          mat=json.load(open(os.path.join(raw,"outside1_v2_1_calibration_materials_manifest.json")))
+          for key,fn in [
+            ("D1_sha256","outside1_v2_1_D1.json"),
+            ("D2_panel_sha256","outside1_v2_1_D2_panel.json"),
+            ("PC_public_sha256","outside1_v2_1_PC_public.json")]:
+              got=hashlib.sha256(open(os.path.join(raw,fn),"rb").read()).hexdigest()
+              assert got==mat[key],(key,got,mat[key])
+
+          rs=json.load(open(os.path.join(raw,"outside1_v2_1_response_seal.json")))
+          got=hashlib.sha256(open(os.path.join(raw,"outside1_v2_1_calibration_responses.json"),"rb").read()).hexdigest()
+          assert got==rs["responses_sha256"]
+
+          files={}
+          for base,_,names in os.walk(dest):
+              for n in sorted(names):
+                  p=os.path.join(base,n)
+                  rel=os.path.relpath(p,dest)
+                  files[rel]=hashlib.sha256(open(p,"rb").read()).hexdigest()
+          audit={
+            "series_id":P.SERIES_ID,
+            "created_utc":P.utc_now(),
+            "protocol_sha256":P.PROTOCOL_SHA256,
+            "registration_sha256":P.load_registration()["registration_sha256"],
+            "calibration_sha256":claimed,
+            "calibration_hash_recomputed":True,
+            "D1_rows_digest_recomputed":True,
+            "D2_rows_digest_recomputed":True,
+            "positive_control_rows_digest_recomputed":True,
+            "artifact_files_recomputed":True,
+            "publication_gate_pass":seal["publication_gate_pass"],
+            "W007_authorized":seal["W007_authorized"],
+            "files":files
+          }
+          audit["audit_sha256"]=O.sha(audit)
+          json.dump(audit,open(os.path.join(dest,"CALIBRATION_AUDIT.json"),"w"),sort_keys=True,indent=2)
+          print(json.dumps(audit,sort_keys=True,indent=2))
+          PY
+      - name: Commit immutable calibration archive
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add amelia-1/outside/publication_v2_1/calibration
+          git commit -m "Archive OUTSIDE-1 v2.1 publication calibration evidence"
+          git push origin HEAD:amelia-1.0
