@@ -1,0 +1,53 @@
+{
+  "series_id": "OUTSIDE-1-v2.1-publication",
+  "version": "2.1.0",
+  "status": "SEALED_READY_FOR_W007",
+  "sealed_before_publication_working_data": true,
+  "pilot_block": {
+    "designation": "OUTSIDE-1 v2 pilot/procedural evidence",
+    "workings": "W001-W006",
+    "inferential_use": "excluded",
+    "freeze_file": "outside1_v2_pilot_freeze.json",
+    "canonical_freeze_sha256": "352ca3b0a644c2e27dd505cbde87c4c62cdb254e1f4c5f8f781b850e82b89493"
+  },
+  "publication_block": {
+    "first_working": "W007",
+    "last_working": "W106",
+    "n_workings": 100,
+    "initial_event_count": 0,
+    "initial_ledger_exists": false,
+    "arm_identity_release": "after W106 final analysis only",
+    "no_interim_analysis": true
+  },
+  "protocol_sha256": "f8f4223f75d9a2df42866bd0eb036246511f86fa3eca09f79be4e5b3f203455f",
+  "registration_sha256": "07d9d78eb08c54497d77cac2c8535600042c84135888126a13d7f0d06e517365",
+  "calibration_sha256": "7c1c82194020d2163cf9f92511292624f0f70881e5f9796c29e0264e1bd318f3",
+  "calibration_audit_sha256": "7397ccf24b5f8db71f2643593be30cf8f30852afac02be9ba48ff281a1c4314d",
+  "working_runner_sha256": "262f1109dc2beeb07bdbcf3f72d6d388cf93c1af21a44b003ee8b0b1f7c2fb0e",
+  "apparatus_sha256": "595bde884be28d279fc2765ee052e9140258bf0e0e988f9e9e5a358ce9f2fbe3",
+  "canonical_runtime_digest": "df164ce751d53db17ba16049f656d98806c806df5cf558cef0e49ea782f864ff",
+  "graph_digest": "9760268dd784186434ea3d86efd2f8ae9f861b245f64f58c97f70f1e75fb3087",
+  "source_archive_commit": "f0860df12be0c3c211cc386b0ee18b0c4df22786",
+  "gate": {
+    "D1": "PASS",
+    "D2": "PASS",
+    "positive_control": "PASS",
+    "W007_authorized": true
+  },
+  "evidence_policy": {
+    "serialization": "canonical-json-v1-sorted-keys-utf8",
+    "UTC_timestamp_per_event": true,
+    "event_id_per_event": true,
+    "parent_hash_chain": true,
+    "raw_trace_digest_per_arm": true,
+    "fragment_digest_per_arm": true,
+    "exact_prompt_and_output_recording": true,
+    "language_method_transcript": true,
+    "blind_entropy_recording": true,
+    "judge_order_entropy_recording": true,
+    "pre_draw_commitment": true,
+    "target_draw_entropy_recording": true,
+    "external_recomputation": true,
+    "no_backfill": true
+  }
+}
