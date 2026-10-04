@@ -1,0 +1,24 @@
+{
+  "D1_rows_digest_recomputed": true,
+  "D2_rows_digest_recomputed": true,
+  "W007_authorized": true,
+  "artifact_files_recomputed": true,
+  "audit_sha256": "7397ccf24b5f8db71f2643593be30cf8f30852afac02be9ba48ff281a1c4314d",
+  "calibration_hash_recomputed": true,
+  "calibration_sha256": "7c1c82194020d2163cf9f92511292624f0f70881e5f9796c29e0264e1bd318f3",
+  "created_utc": "2026-10-04T19:34:36.387Z",
+  "files": {
+    "outside1_v2_1_calibration_seal.json": "bb7b8f245d69a60a0724ba4c86e47ef0d169f3b8773ef8409052f2f557d84f90",
+    "raw/outside1_v2_1_D1.json": "17cc94dfb673155f3ed133358753f9cfaee77496f17286c9fa5e7c2f938f6994",
+    "raw/outside1_v2_1_D2_panel.json": "8a4f7d36de45e24db6b69ae8de4e9afe85b6a5aec18045a4b9654ab5158c5165",
+    "raw/outside1_v2_1_PC_public.json": "f9242b5a90f978654a93baac0fd05bd17b56796e8be4bffa07cd07828e11465d",
+    "raw/outside1_v2_1_calibration_materials_manifest.json": "1f6491e8c1e6b8b7006830be879d347cee92a325475179a49916a117766e6be9",
+    "raw/outside1_v2_1_calibration_responses.json": "392ca7e05a7341544382f9c30779f0eab3119a7719e48ff46905b66f165c01a4",
+    "raw/outside1_v2_1_response_seal.json": "07378440c81797e3a0aa4e11dc4de8307a14f053543cb11b3d1181ef39372418"
+  },
+  "positive_control_rows_digest_recomputed": true,
+  "protocol_sha256": "f8f4223f75d9a2df42866bd0eb036246511f86fa3eca09f79be4e5b3f203455f",
+  "publication_gate_pass": true,
+  "registration_sha256": "07d9d78eb08c54497d77cac2c8535600042c84135888126a13d7f0d06e517365",
+  "series_id": "OUTSIDE-1-v2.1-publication"
+}

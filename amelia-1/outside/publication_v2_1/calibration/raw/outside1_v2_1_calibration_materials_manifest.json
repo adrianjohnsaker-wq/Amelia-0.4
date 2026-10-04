@@ -1,0 +1,9 @@
+{
+  "D1_sha256": "17cc94dfb673155f3ed133358753f9cfaee77496f17286c9fa5e7c2f938f6994",
+  "D2_panel_sha256": "8a4f7d36de45e24db6b69ae8de4e9afe85b6a5aec18045a4b9654ab5158c5165",
+  "PC_public_sha256": "f9242b5a90f978654a93baac0fd05bd17b56796e8be4bffa07cd07828e11465d",
+  "created_utc": "2026-10-04T19:25:41.187Z",
+  "protocol_sha256": "f8f4223f75d9a2df42866bd0eb036246511f86fa3eca09f79be4e5b3f203455f",
+  "registration_sha256": "07d9d78eb08c54497d77cac2c8535600042c84135888126a13d7f0d06e517365",
+  "series_id": "OUTSIDE-1-v2.1-publication"
+}

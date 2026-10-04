@@ -1,0 +1,762 @@
+[
+  {
+    "candidates": [
+      {
+        "label": "A",
+        "scene": "a laboratory bench holding tiny springs beside brass tweezers, in cold white light, with small scratches in the wood."
+      },
+      {
+        "label": "B",
+        "scene": "a birch woodland, a driftwood trunk, in late amber light, reeds bending in wind."
+      },
+      {
+        "label": "C",
+        "scene": "a university courtyard, musicians beside open cases, under neon signs, with gulls and engines."
+      },
+      {
+        "label": "D",
+        "scene": "a heron striking at a fish, with debris moving in the wind, under a black storm sky."
+      }
+    ],
+    "compose_prompt": "You are Amelia's composition layer in OUTSIDE-1 v2.\nThe operator has already made the cast against the fixed question:\n\"What is the scene that will be shown at the close of this working?\"\n\nNo target scene has yet been selected for a working. The Numogram trace has mechanically\ndealt the source-locked fragments below, in order.\n\nCompose ONE concrete paragraph of 90-160 words. Preserve every dealt fragment verbatim.\nYou may add only grammar, connective tissue, spatial relations, articles, and inflection.\nDo not add a new object, creature, place, colour, weather event, time of day, material,\nsound, emotion, symbol, or occult interpretation which is not present in the dealt\nfragments. Commit to the scene rather than explaining the apparatus.\n\nFRAGMENTS:\n1. the metallic ocean of the earth’s iron core\n2. limbic drift\n3. (meta)static pod-deliria and techno-immortalism\n4. shallow seas\n5. armored fish creatures\n6. enduring ideas, historical time and remembrance\n7. (meta)static pod-deliria and techno-immortalism\n8. dreams\n9. cosmic swamp-labyrinths\n10. crypt-navigation\n11. Hyperborean or Wendigo mythology\n12. ‘delta-phase’ or terminal deliria\n13. heron\n",
+    "compose_prompt_sha256": "f73494356b9fa82e60d63984dc2e8afcfdde512f1a4e9ee952f32e7f3ac249f5",
+    "fragments": [
+      "the metallic ocean of the earth’s iron core",
+      "limbic drift",
+      "(meta)static pod-deliria and techno-immortalism",
+      "shallow seas",
+      "armored fish creatures",
+      "enduring ideas, historical time and remembrance",
+      "(meta)static pod-deliria and techno-immortalism",
+      "dreams",
+      "cosmic swamp-labyrinths",
+      "crypt-navigation",
+      "Hyperborean or Wendigo mythology",
+      "‘delta-phase’ or terminal deliria",
+      "heron"
+    ],
+    "id": "PC01"
+  },
+  {
+    "candidates": [
+      {
+        "label": "A",
+        "scene": "a bedside cabinet holding seed packets beside a clay pot, in warm afternoon light, with sharp shadows."
+      },
+      {
+        "label": "B",
+        "scene": "a tornado crossing distant farmland, with spray thrown into the air, under a bright blue sky."
+      },
+      {
+        "label": "C",
+        "scene": "a riverside promenade, cyclists passing a fountain, at golden hour, with footsteps echoing."
+      },
+      {
+        "label": "D",
+        "scene": "a birch woodland, a twisted pine, under hard noon light, mist drifting low."
+      }
+    ],
+    "compose_prompt": "You are Amelia's composition layer in OUTSIDE-1 v2.\nThe operator has already made the cast against the fixed question:\n\"What is the scene that will be shown at the close of this working?\"\n\nNo target scene has yet been selected for a working. The Numogram trace has mechanically\ndealt the source-locked fragments below, in order.\n\nCompose ONE concrete paragraph of 90-160 words. Preserve every dealt fragment verbatim.\nYou may add only grammar, connective tissue, spatial relations, articles, and inflection.\nDo not add a new object, creature, place, colour, weather event, time of day, material,\nsound, emotion, symbol, or occult interpretation which is not present in the dealt\nfragments. Commit to the scene rather than explaining the apparatus.\n\nFRAGMENTS:\n1. (meta)static pod-deliria and techno-immortalism\n2. shallow seas\n3. armored fish creatures\n4. enduring ideas, historical time and remembrance\n5. (meta)static pod-deliria and techno-immortalism\n6. limbic drift\n7. shallow seas\n8. armored fish creatures\n9. enduring ideas, historical time and remembrance\n10. dreams\n11. the metallic ocean of the earth’s iron core\n12. the Gate of Pandemonium\n13. woodland\n",
+    "compose_prompt_sha256": "d31b1f86ec4c9407f9b3e1b14a5f5572c0e0776c395ca5588cfeb773b70dc0f7",
+    "fragments": [
+      "(meta)static pod-deliria and techno-immortalism",
+      "shallow seas",
+      "armored fish creatures",
+      "enduring ideas, historical time and remembrance",
+      "(meta)static pod-deliria and techno-immortalism",
+      "limbic drift",
+      "shallow seas",
+      "armored fish creatures",
+      "enduring ideas, historical time and remembrance",
+      "dreams",
+      "the metallic ocean of the earth’s iron core",
+      "the Gate of Pandemonium",
+      "woodland"
+    ],
+    "id": "PC02"
+  },
+  {
+    "candidates": [
+      {
+        "label": "A",
+        "scene": "a reed-lined river bend, a black sand ridge, under pale morning light, leaves moving in gusts."
+      },
+      {
+        "label": "B",
+        "scene": "a university courtyard, vendors stacking oranges, in clear midday light, with music and clatter."
+      },
+      {
+        "label": "C",
+        "scene": "a greenhouse potting bench holding glass vials beside a small scale, in cold white light, with sharp shadows."
+      },
+      {
+        "label": "D",
+        "scene": "a tornado crossing distant farmland, with debris moving in the wind, at sunset."
+      }
+    ],
+    "compose_prompt": "You are Amelia's composition layer in OUTSIDE-1 v2.\nThe operator has already made the cast against the fixed question:\n\"What is the scene that will be shown at the close of this working?\"\n\nNo target scene has yet been selected for a working. The Numogram trace has mechanically\ndealt the source-locked fragments below, in order.\n\nCompose ONE concrete paragraph of 90-160 words. Preserve every dealt fragment verbatim.\nYou may add only grammar, connective tissue, spatial relations, articles, and inflection.\nDo not add a new object, creature, place, colour, weather event, time of day, material,\nsound, emotion, symbol, or occult interpretation which is not present in the dealt\nfragments. Commit to the scene rather than explaining the apparatus.\n\nFRAGMENTS:\n1. the dense void of the cosmic hypermatrix\n2. swirling nebulae\n3. the metallic ocean of the earth’s iron core\n4. alien pattern\n5. Hyperborean or Wendigo mythology\n6. ‘delta-phase’ or terminal deliria\n7. (meta)static pod-deliria and techno-immortalism\n8. shallow seas\n9. limbic drift\n10. cosmic swamp-labyrinths\n11. armored fish creatures\n12. enduring ideas, historical time and remembrance\n13. river\n",
+    "compose_prompt_sha256": "03725d2f0ce9103330364c1f5844459eee702728aabb83c0f6cd6aa8e43ba520",
+    "fragments": [
+      "the dense void of the cosmic hypermatrix",
+      "swirling nebulae",
+      "the metallic ocean of the earth’s iron core",
+      "alien pattern",
+      "Hyperborean or Wendigo mythology",
+      "‘delta-phase’ or terminal deliria",
+      "(meta)static pod-deliria and techno-immortalism",
+      "shallow seas",
+      "limbic drift",
+      "cosmic swamp-labyrinths",
+      "armored fish creatures",
+      "enduring ideas, historical time and remembrance",
+      "river"
+    ],
+    "id": "PC03"
+  },
+  {
+    "candidates": [
+      {
+        "label": "A",
+        "scene": "a flock of flamingos lifting from shallow water, with debris moving in the wind, in silver morning light."
+      },
+      {
+        "label": "B",
+        "scene": "a volcanic plain, a split limestone slab, under hard noon light, reeds bending in wind."
+      },
+      {
+        "label": "C",
+        "scene": "a street food festival, porters moving crates, under neon signs, with footsteps echoing."
+      },
+      {
+        "label": "D",
+        "scene": "a bakery counter holding a prism beside two labelled magnets, under a green desk lamp, with small scratches in the wood."
+      }
+    ],
+    "compose_prompt": "You are Amelia's composition layer in OUTSIDE-1 v2.\nThe operator has already made the cast against the fixed question:\n\"What is the scene that will be shown at the close of this working?\"\n\nNo target scene has yet been selected for a working. The Numogram trace has mechanically\ndealt the source-locked fragments below, in order.\n\nCompose ONE concrete paragraph of 90-160 words. Preserve every dealt fragment verbatim.\nYou may add only grammar, connective tissue, spatial relations, articles, and inflection.\nDo not add a new object, creature, place, colour, weather event, time of day, material,\nsound, emotion, symbol, or occult interpretation which is not present in the dealt\nfragments. Commit to the scene rather than explaining the apparatus.\n\nFRAGMENTS:\n1. swirling nebulae\n2. the metallic ocean of the earth’s iron core\n3. cosmic swamp-labyrinths\n4. (meta)static pod-deliria and techno-immortalism\n5. limbic drift\n6. the Gate of Pandemonium\n7. the dense void of the cosmic hypermatrix\n8. the plane of the third-eye\n9. alien pattern\n10. shallow seas\n11. armored fish creatures\n12. dreams\n13. prism\n",
+    "compose_prompt_sha256": "88e9ff34769ee37a8eb652b84313983b57e1bc7b206b2ab001b5ce7b91074fa6",
+    "fragments": [
+      "swirling nebulae",
+      "the metallic ocean of the earth’s iron core",
+      "cosmic swamp-labyrinths",
+      "(meta)static pod-deliria and techno-immortalism",
+      "limbic drift",
+      "the Gate of Pandemonium",
+      "the dense void of the cosmic hypermatrix",
+      "the plane of the third-eye",
+      "alien pattern",
+      "shallow seas",
+      "armored fish creatures",
+      "dreams",
+      "prism"
+    ],
+    "id": "PC04"
+  },
+  {
+    "candidates": [
+      {
+        "label": "A",
+        "scene": "a herd of horses running across dry grass, with a dark horizon behind it, in flat winter light."
+      },
+      {
+        "label": "B",
+        "scene": "a mangrove estuary, a fallen cedar, under moonlight, leaves moving in gusts."
+      },
+      {
+        "label": "C",
+        "scene": "a bakery counter holding glass vials beside a small scale, in cold white light, with sharp shadows."
+      },
+      {
+        "label": "D",
+        "scene": "an outdoor produce market, crowds crossing striped paving, in bright morning sun, with gulls and engines."
+      }
+    ],
+    "compose_prompt": "You are Amelia's composition layer in OUTSIDE-1 v2.\nThe operator has already made the cast against the fixed question:\n\"What is the scene that will be shown at the close of this working?\"\n\nNo target scene has yet been selected for a working. The Numogram trace has mechanically\ndealt the source-locked fragments below, in order.\n\nCompose ONE concrete paragraph of 90-160 words. Preserve every dealt fragment verbatim.\nYou may add only grammar, connective tissue, spatial relations, articles, and inflection.\nDo not add a new object, creature, place, colour, weather event, time of day, material,\nsound, emotion, symbol, or occult interpretation which is not present in the dealt\nfragments. Commit to the scene rather than explaining the apparatus.\n\nFRAGMENTS:\n1. the plane of the third-eye\n2. the metallic ocean of the earth’s iron core\n3. the Gate of Pandemonium\n4. (meta)static pod-deliria and techno-immortalism\n5. shallow seas\n6. limbic drift\n7. armored fish creatures\n8. enduring ideas, historical time and remembrance\n9. dreams\n10. prehuman cultures of the Old Ones\n11. (meta)static pod-deliria and techno-immortalism\n12. shallow seas\n13. vials\n",
+    "compose_prompt_sha256": "a94a58955fb58c07fcc612da5a30654c44b23c3111ad5bc28a3b4f8f0bb85943",
+    "fragments": [
+      "the plane of the third-eye",
+      "the metallic ocean of the earth’s iron core",
+      "the Gate of Pandemonium",
+      "(meta)static pod-deliria and techno-immortalism",
+      "shallow seas",
+      "limbic drift",
+      "armored fish creatures",
+      "enduring ideas, historical time and remembrance",
+      "dreams",
+      "prehuman cultures of the Old Ones",
+      "(meta)static pod-deliria and techno-immortalism",
+      "shallow seas",
+      "vials"
+    ],
+    "id": "PC05"
+  },
+  {
+    "candidates": [
+      {
+        "label": "A",
+        "scene": "hail hammering a glass roof, with spray thrown into the air, under a bright blue sky."
+      },
+      {
+        "label": "B",
+        "scene": "a harbour ferry terminal, musicians beside open cases, under neon signs, with music and clatter."
+      },
+      {
+        "label": "C",
+        "scene": "a studio shelf holding charcoal sticks beside a white plaster hand, in cold white light, with condensation on nearby glass."
+      },
+      {
+        "label": "D",
+        "scene": "a waterfall gorge, a split limestone slab, beneath a grey overcast, water running over stone."
+      }
+    ],
+    "compose_prompt": "You are Amelia's composition layer in OUTSIDE-1 v2.\nThe operator has already made the cast against the fixed question:\n\"What is the scene that will be shown at the close of this working?\"\n\nNo target scene has yet been selected for a working. The Numogram trace has mechanically\ndealt the source-locked fragments below, in order.\n\nCompose ONE concrete paragraph of 90-160 words. Preserve every dealt fragment verbatim.\nYou may add only grammar, connective tissue, spatial relations, articles, and inflection.\nDo not add a new object, creature, place, colour, weather event, time of day, material,\nsound, emotion, symbol, or occult interpretation which is not present in the dealt\nfragments. Commit to the scene rather than explaining the apparatus.\n\nFRAGMENTS:\n1. Hyperborean or Wendigo mythology\n2. ‘delta-phase’ or terminal deliria\n3. (meta)static pod-deliria and techno-immortalism\n4. limbic drift\n5. the metallic ocean of the earth’s iron core\n6. the Gate of Pandemonium\n7. prehuman cultures of the Old Ones\n8. geoconvulsions\n9. shallow seas\n10. armored fish creatures\n11. enduring ideas, historical time and remembrance\n12. (meta)static pod-deliria and techno-immortalism\n13. harbour\n",
+    "compose_prompt_sha256": "a8f210a806611026760afa8b27729b7f61c42bef9269edd53fcbf11cac20a604",
+    "fragments": [
+      "Hyperborean or Wendigo mythology",
+      "‘delta-phase’ or terminal deliria",
+      "(meta)static pod-deliria and techno-immortalism",
+      "limbic drift",
+      "the metallic ocean of the earth’s iron core",
+      "the Gate of Pandemonium",
+      "prehuman cultures of the Old Ones",
+      "geoconvulsions",
+      "shallow seas",
+      "armored fish creatures",
+      "enduring ideas, historical time and remembrance",
+      "(meta)static pod-deliria and techno-immortalism",
+      "harbour"
+    ],
+    "id": "PC06"
+  },
+  {
+    "candidates": [
+      {
+        "label": "A",
+        "scene": "a classroom science table holding an open notebook beside a fountain pen, under a hanging bulb, with reflections in polished metal."
+      },
+      {
+        "label": "B",
+        "scene": "a mangrove estuary, a twisted pine, under moonlight, mist drifting low."
+      },
+      {
+        "label": "C",
+        "scene": "a riverside promenade, steam rising from food stalls, under neon signs, with music and clatter."
+      },
+      {
+        "label": "D",
+        "scene": "a tornado crossing distant farmland, with spray thrown into the air, at sunset."
+      }
+    ],
+    "compose_prompt": "You are Amelia's composition layer in OUTSIDE-1 v2.\nThe operator has already made the cast against the fixed question:\n\"What is the scene that will be shown at the close of this working?\"\n\nNo target scene has yet been selected for a working. The Numogram trace has mechanically\ndealt the source-locked fragments below, in order.\n\nCompose ONE concrete paragraph of 90-160 words. Preserve every dealt fragment verbatim.\nYou may add only grammar, connective tissue, spatial relations, articles, and inflection.\nDo not add a new object, creature, place, colour, weather event, time of day, material,\nsound, emotion, symbol, or occult interpretation which is not present in the dealt\nfragments. Commit to the scene rather than explaining the apparatus.\n\nFRAGMENTS:\n1. Hyperborean or Wendigo mythology\n2. ‘delta-phase’ or terminal deliria\n3. (meta)static pod-deliria and techno-immortalism\n4. shallow seas\n5. armored fish creatures\n6. enduring ideas, historical time and remembrance\n7. limbic drift\n8. the metallic ocean of the earth’s iron core\n9. (meta)static pod-deliria and techno-immortalism\n10. cosmic swamp-labyrinths\n11. crypt-navigation\n12. ‘fold-type’ time-anomalies\n13. tornado\n",
+    "compose_prompt_sha256": "a247944ed2412258ee560912e3203ed743852f6705aec30dbd7c0f26f81ae7d8",
+    "fragments": [
+      "Hyperborean or Wendigo mythology",
+      "‘delta-phase’ or terminal deliria",
+      "(meta)static pod-deliria and techno-immortalism",
+      "shallow seas",
+      "armored fish creatures",
+      "enduring ideas, historical time and remembrance",
+      "limbic drift",
+      "the metallic ocean of the earth’s iron core",
+      "(meta)static pod-deliria and techno-immortalism",
+      "cosmic swamp-labyrinths",
+      "crypt-navigation",
+      "‘fold-type’ time-anomalies",
+      "tornado"
+    ],
+    "id": "PC07"
+  },
+  {
+    "candidates": [
+      {
+        "label": "A",
+        "scene": "a heron striking at a fish, with debris moving in the wind, in flat winter light."
+      },
+      {
+        "label": "B",
+        "scene": "a snowy mountain pass, a split limestone slab, beneath a grey overcast, waves breaking below."
+      },
+      {
+        "label": "C",
+        "scene": "a watchmaker's desk holding a blue ceramic bowl beside a silver spoon, in narrow morning light, with dust visible on the surface."
+      },
+      {
+        "label": "D",
+        "scene": "an airport arrivals hall, porters moving crates, beneath rain-dark clouds, with gulls and engines."
+      }
+    ],
+    "compose_prompt": "You are Amelia's composition layer in OUTSIDE-1 v2.\nThe operator has already made the cast against the fixed question:\n\"What is the scene that will be shown at the close of this working?\"\n\nNo target scene has yet been selected for a working. The Numogram trace has mechanically\ndealt the source-locked fragments below, in order.\n\nCompose ONE concrete paragraph of 90-160 words. Preserve every dealt fragment verbatim.\nYou may add only grammar, connective tissue, spatial relations, articles, and inflection.\nDo not add a new object, creature, place, colour, weather event, time of day, material,\nsound, emotion, symbol, or occult interpretation which is not present in the dealt\nfragments. Commit to the scene rather than explaining the apparatus.\n\nFRAGMENTS:\n1. swirling nebulae\n2. ‘delta-phase’ or terminal deliria\n3. (meta)static pod-deliria and techno-immortalism\n4. shallow seas\n5. armored fish creatures\n6. enduring ideas, historical time and remembrance\n7. limbic drift\n8. (meta)static pod-deliria and techno-immortalism\n9. cosmic swamp-labyrinths\n10. shallow seas\n11. armored fish creatures\n12. enduring ideas, historical time and remembrance\n13. crates\n",
+    "compose_prompt_sha256": "eba777692f21a3581bb0c42d238a777953d0f0afed24c4feada10470eaf84860",
+    "fragments": [
+      "swirling nebulae",
+      "‘delta-phase’ or terminal deliria",
+      "(meta)static pod-deliria and techno-immortalism",
+      "shallow seas",
+      "armored fish creatures",
+      "enduring ideas, historical time and remembrance",
+      "limbic drift",
+      "(meta)static pod-deliria and techno-immortalism",
+      "cosmic swamp-labyrinths",
+      "shallow seas",
+      "armored fish creatures",
+      "enduring ideas, historical time and remembrance",
+      "crates"
+    ],
+    "id": "PC08"
+  },
+  {
+    "candidates": [
+      {
+        "label": "A",
+        "scene": "a football concourse, steam rising from food stalls, in clear midday light, with overlapping voices."
+      },
+      {
+        "label": "B",
+        "scene": "a desert canyon, a split limestone slab, in late amber light, snow blowing sideways."
+      },
+      {
+        "label": "C",
+        "scene": "a heron striking at a fish, with a moment of stillness before motion, under a black storm sky."
+      },
+      {
+        "label": "D",
+        "scene": "a small writing desk holding a blue ceramic bowl beside a silver spoon, in narrow morning light, with paper labels curling at the corners."
+      }
+    ],
+    "compose_prompt": "You are Amelia's composition layer in OUTSIDE-1 v2.\nThe operator has already made the cast against the fixed question:\n\"What is the scene that will be shown at the close of this working?\"\n\nNo target scene has yet been selected for a working. The Numogram trace has mechanically\ndealt the source-locked fragments below, in order.\n\nCompose ONE concrete paragraph of 90-160 words. Preserve every dealt fragment verbatim.\nYou may add only grammar, connective tissue, spatial relations, articles, and inflection.\nDo not add a new object, creature, place, colour, weather event, time of day, material,\nsound, emotion, symbol, or occult interpretation which is not present in the dealt\nfragments. Commit to the scene rather than explaining the apparatus.\n\nFRAGMENTS:\n1. crypt-navigation\n2. swirling nebulae\n3. alien pattern\n4. the dense void of the cosmic hypermatrix\n5. unexpected messages\n6. xenosignal\n7. (meta)static pod-deliria and techno-immortalism\n8. shallow seas\n9. limbic drift\n10. cosmic swamp-labyrinths\n11. occulted cyberspace\n12. Hyperborean or Wendigo mythology\n13. heron\n",
+    "compose_prompt_sha256": "9caa248e32c67033b462c4be0d228734778c5859f92f73935b184c971fa22c7b",
+    "fragments": [
+      "crypt-navigation",
+      "swirling nebulae",
+      "alien pattern",
+      "the dense void of the cosmic hypermatrix",
+      "unexpected messages",
+      "xenosignal",
+      "(meta)static pod-deliria and techno-immortalism",
+      "shallow seas",
+      "limbic drift",
+      "cosmic swamp-labyrinths",
+      "occulted cyberspace",
+      "Hyperborean or Wendigo mythology",
+      "heron"
+    ],
+    "id": "PC09"
+  },
+  {
+    "candidates": [
+      {
+        "label": "A",
+        "scene": "a desert canyon, a driftwood trunk, under moonlight, water running over stone."
+      },
+      {
+        "label": "B",
+        "scene": "a jellyfish drifting beneath a pier, with sudden rapid movement, in violet twilight."
+      },
+      {
+        "label": "C",
+        "scene": "a watchmaker's desk holding three fossils beside a magnifying glass, in cold white light, with sharp shadows."
+      },
+      {
+        "label": "D",
+        "scene": "a street food festival, cyclists passing a fountain, in bright morning sun, with music and clatter."
+      }
+    ],
+    "compose_prompt": "You are Amelia's composition layer in OUTSIDE-1 v2.\nThe operator has already made the cast against the fixed question:\n\"What is the scene that will be shown at the close of this working?\"\n\nNo target scene has yet been selected for a working. The Numogram trace has mechanically\ndealt the source-locked fragments below, in order.\n\nCompose ONE concrete paragraph of 90-160 words. Preserve every dealt fragment verbatim.\nYou may add only grammar, connective tissue, spatial relations, articles, and inflection.\nDo not add a new object, creature, place, colour, weather event, time of day, material,\nsound, emotion, symbol, or occult interpretation which is not present in the dealt\nfragments. Commit to the scene rather than explaining the apparatus.\n\nFRAGMENTS:\n1. (meta)static pod-deliria and techno-immortalism\n2. shallow seas\n3. limbic drift\n4. the metallic ocean of the earth’s iron core\n5. crypt-navigation\n6. cosmic swamp-labyrinths\n7. armored fish creatures\n8. enduring ideas, historical time and remembrance\n9. (meta)static pod-deliria and techno-immortalism\n10. shallow seas\n11. armored fish creatures\n12. dreams\n13. fossils\n",
+    "compose_prompt_sha256": "3c0a2c798be9d648de4a839af54b7dbe123fc1fbed636e4646250b2cb6ff38c1",
+    "fragments": [
+      "(meta)static pod-deliria and techno-immortalism",
+      "shallow seas",
+      "limbic drift",
+      "the metallic ocean of the earth’s iron core",
+      "crypt-navigation",
+      "cosmic swamp-labyrinths",
+      "armored fish creatures",
+      "enduring ideas, historical time and remembrance",
+      "(meta)static pod-deliria and techno-immortalism",
+      "shallow seas",
+      "armored fish creatures",
+      "dreams",
+      "fossils"
+    ],
+    "id": "PC10"
+  },
+  {
+    "candidates": [
+      {
+        "label": "A",
+        "scene": "a birch woodland, a driftwood trunk, under pale morning light, water running over stone."
+      },
+      {
+        "label": "B",
+        "scene": "a sewing table holding a wristwatch beside folded spectacles, in narrow morning light, with reflections in polished metal."
+      },
+      {
+        "label": "C",
+        "scene": "an outdoor produce market, crowds crossing striped paving, in clear midday light, with gulls and engines."
+      },
+      {
+        "label": "D",
+        "scene": "a waterspout beneath a dark cloud, with spray thrown into the air, in silver morning light."
+      }
+    ],
+    "compose_prompt": "You are Amelia's composition layer in OUTSIDE-1 v2.\nThe operator has already made the cast against the fixed question:\n\"What is the scene that will be shown at the close of this working?\"\n\nNo target scene has yet been selected for a working. The Numogram trace has mechanically\ndealt the source-locked fragments below, in order.\n\nCompose ONE concrete paragraph of 90-160 words. Preserve every dealt fragment verbatim.\nYou may add only grammar, connective tissue, spatial relations, articles, and inflection.\nDo not add a new object, creature, place, colour, weather event, time of day, material,\nsound, emotion, symbol, or occult interpretation which is not present in the dealt\nfragments. Commit to the scene rather than explaining the apparatus.\n\nFRAGMENTS:\n1. swirling nebulae\n2. alien pattern\n3. (meta)static pod-deliria and techno-immortalism\n4. limbic drift\n5. shallow seas\n6. armored fish creatures\n7. dreams\n8. cosmic swamp-labyrinths\n9. crypt-navigation\n10. ‘fold-type’ time-anomalies\n11. enduring ideas, historical time and remembrance\n12. (meta)static pod-deliria and techno-immortalism\n13. market\n",
+    "compose_prompt_sha256": "0d9f4930351b4e9b7b0b3e63877d4b8b61c0dfc31b98fe9ad22bfd52b5e36b8b",
+    "fragments": [
+      "swirling nebulae",
+      "alien pattern",
+      "(meta)static pod-deliria and techno-immortalism",
+      "limbic drift",
+      "shallow seas",
+      "armored fish creatures",
+      "dreams",
+      "cosmic swamp-labyrinths",
+      "crypt-navigation",
+      "‘fold-type’ time-anomalies",
+      "enduring ideas, historical time and remembrance",
+      "(meta)static pod-deliria and techno-immortalism",
+      "market"
+    ],
+    "id": "PC11"
+  },
+  {
+    "candidates": [
+      {
+        "label": "A",
+        "scene": "a greenhouse potting bench holding a blue ceramic bowl beside a silver spoon, lit by a single window, with paper labels curling at the corners."
+      },
+      {
+        "label": "B",
+        "scene": "a mangrove estuary, a field of tall grass, under pale morning light, waves breaking below."
+      },
+      {
+        "label": "C",
+        "scene": "a heron striking at a fish, with a moment of stillness before motion, at sunset."
+      },
+      {
+        "label": "D",
+        "scene": "a riverside promenade, porters moving crates, under fluorescent light, with rolling wheels and announcements."
+      }
+    ],
+    "compose_prompt": "You are Amelia's composition layer in OUTSIDE-1 v2.\nThe operator has already made the cast against the fixed question:\n\"What is the scene that will be shown at the close of this working?\"\n\nNo target scene has yet been selected for a working. The Numogram trace has mechanically\ndealt the source-locked fragments below, in order.\n\nCompose ONE concrete paragraph of 90-160 words. Preserve every dealt fragment verbatim.\nYou may add only grammar, connective tissue, spatial relations, articles, and inflection.\nDo not add a new object, creature, place, colour, weather event, time of day, material,\nsound, emotion, symbol, or occult interpretation which is not present in the dealt\nfragments. Commit to the scene rather than explaining the apparatus.\n\nFRAGMENTS:\n1. cosmic swamp-labyrinths\n2. crypt-navigation\n3. swirling nebulae\n4. (meta)static pod-deliria and techno-immortalism\n5. ‘fold-type’ time-anomalies\n6. shallow seas\n7. armored fish creatures\n8. enduring ideas, historical time and remembrance\n9. limbic drift\n10. the metallic ocean of the earth’s iron core\n11. alien pattern\n12. the Gate of Pandemonium\n13. heron\n",
+    "compose_prompt_sha256": "185c926a57d66b6a78af3bc2851bfe7850d41fbed2fc0375b03a39aab3becdcb",
+    "fragments": [
+      "cosmic swamp-labyrinths",
+      "crypt-navigation",
+      "swirling nebulae",
+      "(meta)static pod-deliria and techno-immortalism",
+      "‘fold-type’ time-anomalies",
+      "shallow seas",
+      "armored fish creatures",
+      "enduring ideas, historical time and remembrance",
+      "limbic drift",
+      "the metallic ocean of the earth’s iron core",
+      "alien pattern",
+      "the Gate of Pandemonium",
+      "heron"
+    ],
+    "id": "PC12"
+  },
+  {
+    "candidates": [
+      {
+        "label": "A",
+        "scene": "a whale surfacing beside broken ice, with a dark horizon behind it, in silver morning light."
+      },
+      {
+        "label": "B",
+        "scene": "a university courtyard, crowds crossing striped paving, beneath rain-dark clouds, with gulls and engines."
+      },
+      {
+        "label": "C",
+        "scene": "a desert canyon, a granite boulder, in blue twilight, snow blowing sideways."
+      },
+      {
+        "label": "D",
+        "scene": "a watchmaker's desk holding seed packets beside a clay pot, in warm afternoon light, with condensation on nearby glass."
+      }
+    ],
+    "compose_prompt": "You are Amelia's composition layer in OUTSIDE-1 v2.\nThe operator has already made the cast against the fixed question:\n\"What is the scene that will be shown at the close of this working?\"\n\nNo target scene has yet been selected for a working. The Numogram trace has mechanically\ndealt the source-locked fragments below, in order.\n\nCompose ONE concrete paragraph of 90-160 words. Preserve every dealt fragment verbatim.\nYou may add only grammar, connective tissue, spatial relations, articles, and inflection.\nDo not add a new object, creature, place, colour, weather event, time of day, material,\nsound, emotion, symbol, or occult interpretation which is not present in the dealt\nfragments. Commit to the scene rather than explaining the apparatus.\n\nFRAGMENTS:\n1. the metallic ocean of the earth’s iron core\n2. the plane of the third-eye\n3. the Gate of Pandemonium\n4. prehuman cultures of the Old Ones\n5. swirling nebulae\n6. alien pattern\n7. (meta)static pod-deliria and techno-immortalism\n8. shallow seas\n9. limbic drift\n10. cosmic swamp-labyrinths\n11. armored fish creatures\n12. dreams\n13. whale\n",
+    "compose_prompt_sha256": "416b90cb2aecd9903c9120d6c985ebda0d3ff03ec3ad4a3a16cd759afaf1c582",
+    "fragments": [
+      "the metallic ocean of the earth’s iron core",
+      "the plane of the third-eye",
+      "the Gate of Pandemonium",
+      "prehuman cultures of the Old Ones",
+      "swirling nebulae",
+      "alien pattern",
+      "(meta)static pod-deliria and techno-immortalism",
+      "shallow seas",
+      "limbic drift",
+      "cosmic swamp-labyrinths",
+      "armored fish creatures",
+      "dreams",
+      "whale"
+    ],
+    "id": "PC13"
+  },
+  {
+    "candidates": [
+      {
+        "label": "A",
+        "scene": "a tornado crossing distant farmland, with spray thrown into the air, in violet twilight."
+      },
+      {
+        "label": "B",
+        "scene": "a waterfall gorge, a granite boulder, in late amber light, leaves moving in gusts."
+      },
+      {
+        "label": "C",
+        "scene": "a sewing table holding a prism beside two labelled magnets, in cold white light, with sharp shadows."
+      },
+      {
+        "label": "D",
+        "scene": "an airport arrivals hall, children holding balloons, in bright morning sun, with overlapping voices."
+      }
+    ],
+    "compose_prompt": "You are Amelia's composition layer in OUTSIDE-1 v2.\nThe operator has already made the cast against the fixed question:\n\"What is the scene that will be shown at the close of this working?\"\n\nNo target scene has yet been selected for a working. The Numogram trace has mechanically\ndealt the source-locked fragments below, in order.\n\nCompose ONE concrete paragraph of 90-160 words. Preserve every dealt fragment verbatim.\nYou may add only grammar, connective tissue, spatial relations, articles, and inflection.\nDo not add a new object, creature, place, colour, weather event, time of day, material,\nsound, emotion, symbol, or occult interpretation which is not present in the dealt\nfragments. Commit to the scene rather than explaining the apparatus.\n\nFRAGMENTS:\n1. limbic drift\n2. cosmic swamp-labyrinths\n3. (meta)static pod-deliria and techno-immortalism\n4. shallow seas\n5. dreams\n6. the metallic ocean of the earth’s iron core\n7. trance-states\n8. armored fish creatures\n9. enduring ideas, historical time and remembrance\n10. (meta)static pod-deliria and techno-immortalism\n11. shallow seas\n12. armored fish creatures\n13. tornado\n",
+    "compose_prompt_sha256": "39a0ea4f08ce95bf1a6723e4628e35d3302b94bcad773ade33d3479254c4eed5",
+    "fragments": [
+      "limbic drift",
+      "cosmic swamp-labyrinths",
+      "(meta)static pod-deliria and techno-immortalism",
+      "shallow seas",
+      "dreams",
+      "the metallic ocean of the earth’s iron core",
+      "trance-states",
+      "armored fish creatures",
+      "enduring ideas, historical time and remembrance",
+      "(meta)static pod-deliria and techno-immortalism",
+      "shallow seas",
+      "armored fish creatures",
+      "tornado"
+    ],
+    "id": "PC14"
+  },
+  {
+    "candidates": [
+      {
+        "label": "A",
+        "scene": "a greenhouse potting bench holding a loaf beside a serrated knife, in cold white light, with condensation on nearby glass."
+      },
+      {
+        "label": "B",
+        "scene": "a harbour ferry terminal, cyclists passing a fountain, in bright morning sun, with overlapping voices."
+      },
+      {
+        "label": "C",
+        "scene": "a tornado crossing distant farmland, with sudden rapid movement, in flat winter light."
+      },
+      {
+        "label": "D",
+        "scene": "a basalt sea cliff, a frozen pool, under hard noon light, leaves moving in gusts."
+      }
+    ],
+    "compose_prompt": "You are Amelia's composition layer in OUTSIDE-1 v2.\nThe operator has already made the cast against the fixed question:\n\"What is the scene that will be shown at the close of this working?\"\n\nNo target scene has yet been selected for a working. The Numogram trace has mechanically\ndealt the source-locked fragments below, in order.\n\nCompose ONE concrete paragraph of 90-160 words. Preserve every dealt fragment verbatim.\nYou may add only grammar, connective tissue, spatial relations, articles, and inflection.\nDo not add a new object, creature, place, colour, weather event, time of day, material,\nsound, emotion, symbol, or occult interpretation which is not present in the dealt\nfragments. Commit to the scene rather than explaining the apparatus.\n\nFRAGMENTS:\n1. the dense void of the cosmic hypermatrix\n2. (meta)static pod-deliria and techno-immortalism\n3. limbic drift\n4. cosmic swamp-labyrinths\n5. shallow seas\n6. dreams\n7. the metallic ocean of the earth’s iron core\n8. the Gate of Pandemonium\n9. crypt-navigation\n10. Hyperborean or Wendigo mythology\n11. the plane of the third-eye\n12. armored fish creatures\n13. tornado\n",
+    "compose_prompt_sha256": "619b47644d171f33699673990ab7c57197555d58a90d4d168eb4b14b6b9301cb",
+    "fragments": [
+      "the dense void of the cosmic hypermatrix",
+      "(meta)static pod-deliria and techno-immortalism",
+      "limbic drift",
+      "cosmic swamp-labyrinths",
+      "shallow seas",
+      "dreams",
+      "the metallic ocean of the earth’s iron core",
+      "the Gate of Pandemonium",
+      "crypt-navigation",
+      "Hyperborean or Wendigo mythology",
+      "the plane of the third-eye",
+      "armored fish creatures",
+      "tornado"
+    ],
+    "id": "PC15"
+  },
+  {
+    "candidates": [
+      {
+        "label": "A",
+        "scene": "a waterspout beneath a dark cloud, with sudden rapid movement, in silver morning light."
+      },
+      {
+        "label": "B",
+        "scene": "a snowy mountain pass, a twisted pine, in blue twilight, mist drifting low."
+      },
+      {
+        "label": "C",
+        "scene": "a crowded railway platform, travellers pulling suitcases, under fluorescent light, with music and clatter."
+      },
+      {
+        "label": "D",
+        "scene": "a museum display cabinet holding a prism beside two labelled magnets, in warm afternoon light, with small scratches in the wood."
+      }
+    ],
+    "compose_prompt": "You are Amelia's composition layer in OUTSIDE-1 v2.\nThe operator has already made the cast against the fixed question:\n\"What is the scene that will be shown at the close of this working?\"\n\nNo target scene has yet been selected for a working. The Numogram trace has mechanically\ndealt the source-locked fragments below, in order.\n\nCompose ONE concrete paragraph of 90-160 words. Preserve every dealt fragment verbatim.\nYou may add only grammar, connective tissue, spatial relations, articles, and inflection.\nDo not add a new object, creature, place, colour, weather event, time of day, material,\nsound, emotion, symbol, or occult interpretation which is not present in the dealt\nfragments. Commit to the scene rather than explaining the apparatus.\n\nFRAGMENTS:\n1. the plane of the third-eye\n2. the dense void of the cosmic hypermatrix\n3. the metallic ocean of the earth’s iron core\n4. turbular erosion\n5. ‘delta-phase’ or terminal deliria\n6. Hyperborean or Wendigo mythology\n7. (meta)static pod-deliria and techno-immortalism\n8. shallow seas\n9. armored fish creatures\n10. limbic drift\n11. cosmic swamp-labyrinths\n12. enduring ideas, historical time and remembrance\n13. railway\n",
+    "compose_prompt_sha256": "2b71d0c1739cb787ce0dfb09a0303b92f25c41f937f802b3730aadd51fa812c9",
+    "fragments": [
+      "the plane of the third-eye",
+      "the dense void of the cosmic hypermatrix",
+      "the metallic ocean of the earth’s iron core",
+      "turbular erosion",
+      "‘delta-phase’ or terminal deliria",
+      "Hyperborean or Wendigo mythology",
+      "(meta)static pod-deliria and techno-immortalism",
+      "shallow seas",
+      "armored fish creatures",
+      "limbic drift",
+      "cosmic swamp-labyrinths",
+      "enduring ideas, historical time and remembrance",
+      "railway"
+    ],
+    "id": "PC16"
+  },
+  {
+    "candidates": [
+      {
+        "label": "A",
+        "scene": "a sewing table holding seed packets beside a clay pot, in warm afternoon light, with small scratches in the wood."
+      },
+      {
+        "label": "B",
+        "scene": "a jellyfish drifting beneath a pier, with sudden rapid movement, under a bright blue sky."
+      },
+      {
+        "label": "C",
+        "scene": "a harbour ferry terminal, children holding balloons, under fluorescent light, with gulls and engines."
+      },
+      {
+        "label": "D",
+        "scene": "a desert canyon, a field of tall grass, under moonlight, water running over stone."
+      }
+    ],
+    "compose_prompt": "You are Amelia's composition layer in OUTSIDE-1 v2.\nThe operator has already made the cast against the fixed question:\n\"What is the scene that will be shown at the close of this working?\"\n\nNo target scene has yet been selected for a working. The Numogram trace has mechanically\ndealt the source-locked fragments below, in order.\n\nCompose ONE concrete paragraph of 90-160 words. Preserve every dealt fragment verbatim.\nYou may add only grammar, connective tissue, spatial relations, articles, and inflection.\nDo not add a new object, creature, place, colour, weather event, time of day, material,\nsound, emotion, symbol, or occult interpretation which is not present in the dealt\nfragments. Commit to the scene rather than explaining the apparatus.\n\nFRAGMENTS:\n1. the metallic ocean of the earth’s iron core\n2. (meta)static pod-deliria and techno-immortalism\n3. limbic drift\n4. the Gate of Pandemonium\n5. swirling nebulae\n6. the plane of the third-eye\n7. shallow seas\n8. armored fish creatures\n9. dreams\n10. enduring ideas, historical time and remembrance\n11. (meta)static pod-deliria and techno-immortalism\n12. trance-states\n13. harbour\n",
+    "compose_prompt_sha256": "0587949b6769cf176df87029be238792fc77c486031f691f22b0bebadc7057a4",
+    "fragments": [
+      "the metallic ocean of the earth’s iron core",
+      "(meta)static pod-deliria and techno-immortalism",
+      "limbic drift",
+      "the Gate of Pandemonium",
+      "swirling nebulae",
+      "the plane of the third-eye",
+      "shallow seas",
+      "armored fish creatures",
+      "dreams",
+      "enduring ideas, historical time and remembrance",
+      "(meta)static pod-deliria and techno-immortalism",
+      "trance-states",
+      "harbour"
+    ],
+    "id": "PC17"
+  },
+  {
+    "candidates": [
+      {
+        "label": "A",
+        "scene": "a jellyfish drifting beneath a pier, with a moment of stillness before motion, in flat winter light."
+      },
+      {
+        "label": "B",
+        "scene": "a wooden kitchen table holding a wristwatch beside folded spectacles, under a green desk lamp, with reflections in polished metal."
+      },
+      {
+        "label": "C",
+        "scene": "a salt marsh, a split limestone slab, beneath a grey overcast, mist drifting low."
+      },
+      {
+        "label": "D",
+        "scene": "a crowded railway platform, musicians beside open cases, under fluorescent light, with rolling wheels and announcements."
+      }
+    ],
+    "compose_prompt": "You are Amelia's composition layer in OUTSIDE-1 v2.\nThe operator has already made the cast against the fixed question:\n\"What is the scene that will be shown at the close of this working?\"\n\nNo target scene has yet been selected for a working. The Numogram trace has mechanically\ndealt the source-locked fragments below, in order.\n\nCompose ONE concrete paragraph of 90-160 words. Preserve every dealt fragment verbatim.\nYou may add only grammar, connective tissue, spatial relations, articles, and inflection.\nDo not add a new object, creature, place, colour, weather event, time of day, material,\nsound, emotion, symbol, or occult interpretation which is not present in the dealt\nfragments. Commit to the scene rather than explaining the apparatus.\n\nFRAGMENTS:\n1. the metallic ocean of the earth’s iron core\n2. the Gate of Pandemonium\n3. swirling nebulae\n4. (meta)static pod-deliria and techno-immortalism\n5. shallow seas\n6. limbic drift\n7. cosmic swamp-labyrinths\n8. crypt-navigation\n9. ‘fold-type’ time-anomalies\n10. armored fish creatures\n11. enduring ideas, historical time and remembrance\n12. (meta)static pod-deliria and techno-immortalism\n13. table\n",
+    "compose_prompt_sha256": "5ce9dd91d4b8463896fdf88f74bca75805e4e292187b99f205192d58cce12fb3",
+    "fragments": [
+      "the metallic ocean of the earth’s iron core",
+      "the Gate of Pandemonium",
+      "swirling nebulae",
+      "(meta)static pod-deliria and techno-immortalism",
+      "shallow seas",
+      "limbic drift",
+      "cosmic swamp-labyrinths",
+      "crypt-navigation",
+      "‘fold-type’ time-anomalies",
+      "armored fish creatures",
+      "enduring ideas, historical time and remembrance",
+      "(meta)static pod-deliria and techno-immortalism",
+      "table"
+    ],
+    "id": "PC18"
+  },
+  {
+    "candidates": [
+      {
+        "label": "A",
+        "scene": "a salt marsh, a shallow tidal pool, under hard noon light, waves breaking below."
+      },
+      {
+        "label": "B",
+        "scene": "a night market, crowds crossing striped paving, beneath rain-dark clouds, with gulls and engines."
+      },
+      {
+        "label": "C",
+        "scene": "hail hammering a glass roof, with bright reflections on water, in silver morning light."
+      },
+      {
+        "label": "D",
+        "scene": "a laboratory bench holding tiny springs beside brass tweezers, in narrow morning light, with small scratches in the wood."
+      }
+    ],
+    "compose_prompt": "You are Amelia's composition layer in OUTSIDE-1 v2.\nThe operator has already made the cast against the fixed question:\n\"What is the scene that will be shown at the close of this working?\"\n\nNo target scene has yet been selected for a working. The Numogram trace has mechanically\ndealt the source-locked fragments below, in order.\n\nCompose ONE concrete paragraph of 90-160 words. Preserve every dealt fragment verbatim.\nYou may add only grammar, connective tissue, spatial relations, articles, and inflection.\nDo not add a new object, creature, place, colour, weather event, time of day, material,\nsound, emotion, symbol, or occult interpretation which is not present in the dealt\nfragments. Commit to the scene rather than explaining the apparatus.\n\nFRAGMENTS:\n1. crypt-navigation\n2. cosmic swamp-labyrinths\n3. Hyperborean or Wendigo mythology\n4. the plane of the third-eye\n5. swirling nebulae\n6. (meta)static pod-deliria and techno-immortalism\n7. limbic drift\n8. the metallic ocean of the earth’s iron core\n9. shallow seas\n10. dreams\n11. ‘fold-type’ time-anomalies\n12. occulted cyberspace\n13. marsh\n",
+    "compose_prompt_sha256": "d94b00e35acd7fc069e10ecb3b872e55fa694799a541e3f39c864a5adf94118e",
+    "fragments": [
+      "crypt-navigation",
+      "cosmic swamp-labyrinths",
+      "Hyperborean or Wendigo mythology",
+      "the plane of the third-eye",
+      "swirling nebulae",
+      "(meta)static pod-deliria and techno-immortalism",
+      "limbic drift",
+      "the metallic ocean of the earth’s iron core",
+      "shallow seas",
+      "dreams",
+      "‘fold-type’ time-anomalies",
+      "occulted cyberspace",
+      "marsh"
+    ],
+    "id": "PC19"
+  },
+  {
+    "candidates": [
+      {
+        "label": "A",
+        "scene": "a sewing table holding a blue ceramic bowl beside a silver spoon, in narrow morning light, with dust visible on the surface."
+      },
+      {
+        "label": "B",
+        "scene": "an avalanche dropping from a mountain face, with a moment of stillness before motion, in silver morning light."
+      },
+      {
+        "label": "C",
+        "scene": "a basalt sea cliff, a cluster of mushrooms, under moonlight, water running over stone."
+      },
+      {
+        "label": "D",
+        "scene": "a street food festival, cyclists passing a fountain, under fluorescent light, with music and clatter."
+      }
+    ],
+    "compose_prompt": "You are Amelia's composition layer in OUTSIDE-1 v2.\nThe operator has already made the cast against the fixed question:\n\"What is the scene that will be shown at the close of this working?\"\n\nNo target scene has yet been selected for a working. The Numogram trace has mechanically\ndealt the source-locked fragments below, in order.\n\nCompose ONE concrete paragraph of 90-160 words. Preserve every dealt fragment verbatim.\nYou may add only grammar, connective tissue, spatial relations, articles, and inflection.\nDo not add a new object, creature, place, colour, weather event, time of day, material,\nsound, emotion, symbol, or occult interpretation which is not present in the dealt\nfragments. Commit to the scene rather than explaining the apparatus.\n\nFRAGMENTS:\n1. (meta)static pod-deliria and techno-immortalism\n2. shallow seas\n3. armored fish creatures\n4. enduring ideas, historical time and remembrance\n5. (meta)static pod-deliria and techno-immortalism\n6. limbic drift\n7. the metallic ocean of the earth’s iron core\n8. swirling nebulae\n9. the dense void of the cosmic hypermatrix\n10. cosmic swamp-labyrinths\n11. shallow seas\n12. dreams\n13. table\n",
+    "compose_prompt_sha256": "21ae5fd24d1ae33eb5fd23df31ab9dc06003c63c446b2294eb35a8e92644edec",
+    "fragments": [
+      "(meta)static pod-deliria and techno-immortalism",
+      "shallow seas",
+      "armored fish creatures",
+      "enduring ideas, historical time and remembrance",
+      "(meta)static pod-deliria and techno-immortalism",
+      "limbic drift",
+      "the metallic ocean of the earth’s iron core",
+      "swirling nebulae",
+      "the dense void of the cosmic hypermatrix",
+      "cosmic swamp-labyrinths",
+      "shallow seas",
+      "dreams",
+      "table"
+    ],
+    "id": "PC20"
+  }
+]

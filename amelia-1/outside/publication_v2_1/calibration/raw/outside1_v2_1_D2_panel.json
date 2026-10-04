@@ -1,0 +1,1354 @@
+[
+  {
+    "arm": "canonical",
+    "compose_prompt": "You are Amelia's composition layer in OUTSIDE-1 v2.\nThe operator has already made the cast against the fixed question:\n\"What is the scene that will be shown at the close of this working?\"\n\nNo target scene has yet been selected for a working. The Numogram trace has mechanically\ndealt the source-locked fragments below, in order.\n\nCompose ONE concrete paragraph of 90-160 words. Preserve every dealt fragment verbatim.\nYou may add only grammar, connective tissue, spatial relations, articles, and inflection.\nDo not add a new object, creature, place, colour, weather event, time of day, material,\nsound, emotion, symbol, or occult interpretation which is not present in the dealt\nfragments. Commit to the scene rather than explaining the apparatus.\n\nFRAGMENTS:\n1. (meta)static pod-deliria and techno-immortalism\n2. shallow seas\n3. armored fish creatures\n4. enduring ideas, historical time and remembrance\n5. limbic drift\n6. (meta)static pod-deliria and techno-immortalism\n7. dreams\n8. shallow seas\n9. trance-states\n10. the metallic ocean of the earth’s iron core\n11. ‘delta-phase’ or terminal deliria\n12. armored fish creatures\n",
+    "compose_prompt_sha256": "1d11fc835a5c3fb1c0f94669286f6fdfa54b6c827fb8b1317624d28a0fab73e0",
+    "fragments": [
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn1.htm",
+        "text": "(meta)static pod-deliria and techno-immortalism",
+        "zone": 1
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn1.htm",
+        "text": "shallow seas",
+        "zone": 1
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn1.htm",
+        "text": "armored fish creatures",
+        "zone": 1
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn1.htm",
+        "text": "enduring ideas, historical time and remembrance",
+        "zone": 1
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn8.htm",
+        "text": "limbic drift",
+        "zone": 8
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn1.htm",
+        "text": "(meta)static pod-deliria and techno-immortalism",
+        "zone": 1
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn8.htm",
+        "text": "dreams",
+        "zone": 8
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn1.htm",
+        "text": "shallow seas",
+        "zone": 1
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn8.htm",
+        "text": "trance-states",
+        "zone": 8
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn9.htm",
+        "text": "the metallic ocean of the earth’s iron core",
+        "zone": 9
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn4.htm",
+        "text": "‘delta-phase’ or terminal deliria",
+        "zone": 4
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn1.htm",
+        "text": "armored fish creatures",
+        "zone": 1
+      }
+    ],
+    "fragments_sha256": "6f10379f661f97a84deaa2db8588ea296ee909773f87e126b4affb76f9d907e3",
+    "panel_id": "D2-197001-canonical",
+    "seed": 197001,
+    "trace": [
+      {
+        "dst": 1,
+        "ingress": 1,
+        "label": "Gt-01",
+        "src": 1,
+        "type": "gate"
+      },
+      {
+        "dst": 1,
+        "ingress": null,
+        "label": "Gt-01",
+        "src": 1,
+        "type": "gate"
+      },
+      {
+        "dst": 1,
+        "ingress": null,
+        "label": "Gt-01",
+        "src": 1,
+        "type": "gate"
+      },
+      {
+        "dst": 1,
+        "ingress": null,
+        "label": "Gt-01",
+        "src": 1,
+        "type": "gate"
+      },
+      {
+        "dst": 8,
+        "ingress": null,
+        "label": "syzygy",
+        "src": 1,
+        "type": "syzygy"
+      },
+      {
+        "dst": 1,
+        "ingress": null,
+        "label": "syzygy",
+        "src": 8,
+        "type": "syzygy"
+      },
+      {
+        "dst": 8,
+        "ingress": null,
+        "label": "syzygy",
+        "src": 1,
+        "type": "syzygy"
+      },
+      {
+        "dst": 1,
+        "ingress": null,
+        "label": "syzygy",
+        "src": 8,
+        "type": "syzygy"
+      },
+      {
+        "dst": 8,
+        "ingress": null,
+        "label": "syzygy",
+        "src": 1,
+        "type": "syzygy"
+      },
+      {
+        "dst": 9,
+        "ingress": null,
+        "label": "Gt-36",
+        "src": 8,
+        "type": "gate"
+      },
+      {
+        "dst": 4,
+        "ingress": 5,
+        "label": "syzygy",
+        "src": 5,
+        "type": "syzygy"
+      },
+      {
+        "dst": 1,
+        "ingress": null,
+        "label": "Sink",
+        "src": 4,
+        "type": "current"
+      }
+    ],
+    "trace_sha256": "c83fa299c3f7751e020ec69bd83b1899491cdfb15a3c400d95899bd9e6fa82f9"
+  },
+  {
+    "arm": "null",
+    "compose_prompt": "You are Amelia's composition layer in OUTSIDE-1 v2.\nThe operator has already made the cast against the fixed question:\n\"What is the scene that will be shown at the close of this working?\"\n\nNo target scene has yet been selected for a working. The Numogram trace has mechanically\ndealt the source-locked fragments below, in order.\n\nCompose ONE concrete paragraph of 90-160 words. Preserve every dealt fragment verbatim.\nYou may add only grammar, connective tissue, spatial relations, articles, and inflection.\nDo not add a new object, creature, place, colour, weather event, time of day, material,\nsound, emotion, symbol, or occult interpretation which is not present in the dealt\nfragments. Commit to the scene rather than explaining the apparatus.\n\nFRAGMENTS:\n1. (meta)static pod-deliria and techno-immortalism\n2. the plane of the third-eye\n3. turbular erosion\n4. cosmic swamp-labyrinths\n5. ‘fold-type’ time-anomalies\n6. emergence from the depths\n7. shallow seas\n8. armored fish creatures\n9. enduring ideas, historical time and remembrance\n10. limbic drift\n11. Hyperborean or Wendigo mythology\n12. the dead eye of the cyclone\n",
+    "compose_prompt_sha256": "965dd8349510f7562cbc4bbb0d7971a13390f0e69a03184700036610181425b2",
+    "fragments": [
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn1.htm",
+        "text": "(meta)static pod-deliria and techno-immortalism",
+        "zone": 1
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn6.htm",
+        "text": "the plane of the third-eye",
+        "zone": 6
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn6.htm",
+        "text": "turbular erosion",
+        "zone": 6
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn7.htm",
+        "text": "cosmic swamp-labyrinths",
+        "zone": 7
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn7.htm",
+        "text": "‘fold-type’ time-anomalies",
+        "zone": 7
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn7.htm",
+        "text": "emergence from the depths",
+        "zone": 7
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn1.htm",
+        "text": "shallow seas",
+        "zone": 1
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn1.htm",
+        "text": "armored fish creatures",
+        "zone": 1
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn1.htm",
+        "text": "enduring ideas, historical time and remembrance",
+        "zone": 1
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn8.htm",
+        "text": "limbic drift",
+        "zone": 8
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn5.htm",
+        "text": "Hyperborean or Wendigo mythology",
+        "zone": 5
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn6.htm",
+        "text": "the dead eye of the cyclone",
+        "zone": 6
+      }
+    ],
+    "fragments_sha256": "4fb149b47c14ab0bba717616c673e07a32845f0dce6090ab19f606028ffc8567",
+    "panel_id": "D2-197001-null",
+    "seed": 197001,
+    "trace": [
+      {
+        "dst": 1,
+        "ingress": 1,
+        "label": "Gt-01",
+        "src": 1,
+        "type": "gate"
+      },
+      {
+        "dst": 6,
+        "ingress": 5,
+        "label": "Gt-15",
+        "src": 5,
+        "type": "gate"
+      },
+      {
+        "dst": 6,
+        "ingress": 5,
+        "label": "syzygy",
+        "src": 5,
+        "type": "syzygy"
+      },
+      {
+        "dst": 7,
+        "ingress": 2,
+        "label": "syzygy",
+        "src": 2,
+        "type": "syzygy"
+      },
+      {
+        "dst": 7,
+        "ingress": 2,
+        "label": "syzygy",
+        "src": 2,
+        "type": "syzygy"
+      },
+      {
+        "dst": 7,
+        "ingress": 8,
+        "label": "Surge",
+        "src": 8,
+        "type": "current"
+      },
+      {
+        "dst": 1,
+        "ingress": 4,
+        "label": "Gt-10",
+        "src": 4,
+        "type": "gate"
+      },
+      {
+        "dst": 1,
+        "ingress": 3,
+        "label": "syzygy",
+        "src": 3,
+        "type": "syzygy"
+      },
+      {
+        "dst": 1,
+        "ingress": 1,
+        "label": "Gt-01",
+        "src": 1,
+        "type": "gate"
+      },
+      {
+        "dst": 8,
+        "ingress": 7,
+        "label": "syzygy",
+        "src": 7,
+        "type": "syzygy"
+      },
+      {
+        "dst": 5,
+        "ingress": 2,
+        "label": "Hold",
+        "src": 2,
+        "type": "current"
+      },
+      {
+        "dst": 6,
+        "ingress": 5,
+        "label": "syzygy",
+        "src": 5,
+        "type": "syzygy"
+      }
+    ],
+    "trace_sha256": "e983ad3f8dc0272e676a10783d5570f35a19c737acee446efb31b66934c4a1a5"
+  },
+  {
+    "arm": "canonical",
+    "compose_prompt": "You are Amelia's composition layer in OUTSIDE-1 v2.\nThe operator has already made the cast against the fixed question:\n\"What is the scene that will be shown at the close of this working?\"\n\nNo target scene has yet been selected for a working. The Numogram trace has mechanically\ndealt the source-locked fragments below, in order.\n\nCompose ONE concrete paragraph of 90-160 words. Preserve every dealt fragment verbatim.\nYou may add only grammar, connective tissue, spatial relations, articles, and inflection.\nDo not add a new object, creature, place, colour, weather event, time of day, material,\nsound, emotion, symbol, or occult interpretation which is not present in the dealt\nfragments. Commit to the scene rather than explaining the apparatus.\n\nFRAGMENTS:\n1. the metallic ocean of the earth’s iron core\n2. ‘delta-phase’ or terminal deliria\n3. (meta)static pod-deliria and techno-immortalism\n4. shallow seas\n5. limbic drift\n6. the Gate of Pandemonium\n7. armored fish creatures\n8. dreams\n9. prehuman cultures of the Old Ones\n10. crypt-navigation\n11. swirling nebulae\n12. the plane of the third-eye\n",
+    "compose_prompt_sha256": "f93022875ce9f3135208e2d106053b7e661b9164793fd2132517d2b9c2f6d693",
+    "fragments": [
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn9.htm",
+        "text": "the metallic ocean of the earth’s iron core",
+        "zone": 9
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn4.htm",
+        "text": "‘delta-phase’ or terminal deliria",
+        "zone": 4
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn1.htm",
+        "text": "(meta)static pod-deliria and techno-immortalism",
+        "zone": 1
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn1.htm",
+        "text": "shallow seas",
+        "zone": 1
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn8.htm",
+        "text": "limbic drift",
+        "zone": 8
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn9.htm",
+        "text": "the Gate of Pandemonium",
+        "zone": 9
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn1.htm",
+        "text": "armored fish creatures",
+        "zone": 1
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn8.htm",
+        "text": "dreams",
+        "zone": 8
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn9.htm",
+        "text": "prehuman cultures of the Old Ones",
+        "zone": 9
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn2.htm",
+        "text": "crypt-navigation",
+        "zone": 2
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn3.htm",
+        "text": "swirling nebulae",
+        "zone": 3
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn6.htm",
+        "text": "the plane of the third-eye",
+        "zone": 6
+      }
+    ],
+    "fragments_sha256": "95fa6553eb8e20d77459c25721e80e23e3e105e2e0dd2687075a7364a000a237",
+    "panel_id": "D2-197002-canonical",
+    "seed": 197002,
+    "trace": [
+      {
+        "dst": 9,
+        "ingress": 0,
+        "label": "Plex",
+        "src": 0,
+        "type": "current"
+      },
+      {
+        "dst": 4,
+        "ingress": 5,
+        "label": "syzygy",
+        "src": 5,
+        "type": "syzygy"
+      },
+      {
+        "dst": 1,
+        "ingress": null,
+        "label": "Sink",
+        "src": 4,
+        "type": "current"
+      },
+      {
+        "dst": 1,
+        "ingress": null,
+        "label": "Gt-01",
+        "src": 1,
+        "type": "gate"
+      },
+      {
+        "dst": 8,
+        "ingress": null,
+        "label": "syzygy",
+        "src": 1,
+        "type": "syzygy"
+      },
+      {
+        "dst": 9,
+        "ingress": null,
+        "label": "Gt-36",
+        "src": 8,
+        "type": "gate"
+      },
+      {
+        "dst": 1,
+        "ingress": 7,
+        "label": "Gt-28",
+        "src": 7,
+        "type": "gate"
+      },
+      {
+        "dst": 8,
+        "ingress": null,
+        "label": "syzygy",
+        "src": 1,
+        "type": "syzygy"
+      },
+      {
+        "dst": 9,
+        "ingress": null,
+        "label": "Gt-36",
+        "src": 8,
+        "type": "gate"
+      },
+      {
+        "dst": 2,
+        "ingress": 7,
+        "label": "syzygy",
+        "src": 7,
+        "type": "syzygy"
+      },
+      {
+        "dst": 3,
+        "ingress": null,
+        "label": "Gt-03",
+        "src": 2,
+        "type": "gate"
+      },
+      {
+        "dst": 6,
+        "ingress": 3,
+        "label": "syzygy",
+        "src": 3,
+        "type": "syzygy"
+      }
+    ],
+    "trace_sha256": "c6320cbc8e1b472b47afd2d8f3d5d2037b419e457fd7eff734172ded6a2de702"
+  },
+  {
+    "arm": "null",
+    "compose_prompt": "You are Amelia's composition layer in OUTSIDE-1 v2.\nThe operator has already made the cast against the fixed question:\n\"What is the scene that will be shown at the close of this working?\"\n\nNo target scene has yet been selected for a working. The Numogram trace has mechanically\ndealt the source-locked fragments below, in order.\n\nCompose ONE concrete paragraph of 90-160 words. Preserve every dealt fragment verbatim.\nYou may add only grammar, connective tissue, spatial relations, articles, and inflection.\nDo not add a new object, creature, place, colour, weather event, time of day, material,\nsound, emotion, symbol, or occult interpretation which is not present in the dealt\nfragments. Commit to the scene rather than explaining the apparatus.\n\nFRAGMENTS:\n1. crypt-navigation\n2. the metallic ocean of the earth’s iron core\n3. the plane of the third-eye\n4. swirling nebulae\n5. the Gate of Pandemonium\n6. the dense void of the cosmic hypermatrix\n7. flatline and loss of signal\n8. the protocosmic abyss\n9. occulted cyberspace\n10. turbular erosion\n11. prehuman cultures of the Old Ones\n12. Hyperborean or Wendigo mythology\n",
+    "compose_prompt_sha256": "e9e1f4eabb79367b0e2f9c07c2f623971652715bbd89246bdefac5746da8ade4",
+    "fragments": [
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn2.htm",
+        "text": "crypt-navigation",
+        "zone": 2
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn9.htm",
+        "text": "the metallic ocean of the earth’s iron core",
+        "zone": 9
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn6.htm",
+        "text": "the plane of the third-eye",
+        "zone": 6
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn3.htm",
+        "text": "swirling nebulae",
+        "zone": 3
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn9.htm",
+        "text": "the Gate of Pandemonium",
+        "zone": 9
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn0.htm",
+        "text": "the dense void of the cosmic hypermatrix",
+        "zone": 0
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn0.htm",
+        "text": "flatline and loss of signal",
+        "zone": 0
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn0.htm",
+        "text": "the protocosmic abyss",
+        "zone": 0
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn2.htm",
+        "text": "occulted cyberspace",
+        "zone": 2
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn6.htm",
+        "text": "turbular erosion",
+        "zone": 6
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn9.htm",
+        "text": "prehuman cultures of the Old Ones",
+        "zone": 9
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn5.htm",
+        "text": "Hyperborean or Wendigo mythology",
+        "zone": 5
+      }
+    ],
+    "fragments_sha256": "aadf7a60afce70d393dde06499baef0c9c6f745dab7b475e65b7e41f0a5b0e17",
+    "panel_id": "D2-197002-null",
+    "seed": 197002,
+    "trace": [
+      {
+        "dst": 2,
+        "ingress": 0,
+        "label": "syzygy",
+        "src": 0,
+        "type": "syzygy"
+      },
+      {
+        "dst": 9,
+        "ingress": null,
+        "label": "Hold",
+        "src": 2,
+        "type": "current"
+      },
+      {
+        "dst": 6,
+        "ingress": 2,
+        "label": "Gt-03",
+        "src": 2,
+        "type": "gate"
+      },
+      {
+        "dst": 3,
+        "ingress": 6,
+        "label": "Warp",
+        "src": 6,
+        "type": "current"
+      },
+      {
+        "dst": 9,
+        "ingress": 7,
+        "label": "Gt-28",
+        "src": 7,
+        "type": "gate"
+      },
+      {
+        "dst": 0,
+        "ingress": 5,
+        "label": "syzygy",
+        "src": 5,
+        "type": "syzygy"
+      },
+      {
+        "dst": 0,
+        "ingress": null,
+        "label": "Gt-00",
+        "src": 0,
+        "type": "gate"
+      },
+      {
+        "dst": 0,
+        "ingress": null,
+        "label": "Gt-00",
+        "src": 0,
+        "type": "gate"
+      },
+      {
+        "dst": 2,
+        "ingress": null,
+        "label": "syzygy",
+        "src": 0,
+        "type": "syzygy"
+      },
+      {
+        "dst": 6,
+        "ingress": null,
+        "label": "Gt-03",
+        "src": 2,
+        "type": "gate"
+      },
+      {
+        "dst": 9,
+        "ingress": 3,
+        "label": "syzygy",
+        "src": 3,
+        "type": "syzygy"
+      },
+      {
+        "dst": 5,
+        "ingress": 1,
+        "label": "syzygy",
+        "src": 1,
+        "type": "syzygy"
+      }
+    ],
+    "trace_sha256": "4fb7d4281743a9e5262015ada2bda6f4eaebdc366675c75dbb52af3fd3973846"
+  },
+  {
+    "arm": "canonical",
+    "compose_prompt": "You are Amelia's composition layer in OUTSIDE-1 v2.\nThe operator has already made the cast against the fixed question:\n\"What is the scene that will be shown at the close of this working?\"\n\nNo target scene has yet been selected for a working. The Numogram trace has mechanically\ndealt the source-locked fragments below, in order.\n\nCompose ONE concrete paragraph of 90-160 words. Preserve every dealt fragment verbatim.\nYou may add only grammar, connective tissue, spatial relations, articles, and inflection.\nDo not add a new object, creature, place, colour, weather event, time of day, material,\nsound, emotion, symbol, or occult interpretation which is not present in the dealt\nfragments. Commit to the scene rather than explaining the apparatus.\n\nFRAGMENTS:\n1. (meta)static pod-deliria and techno-immortalism\n2. shallow seas\n3. armored fish creatures\n4. enduring ideas, historical time and remembrance\n5. limbic drift\n6. (meta)static pod-deliria and techno-immortalism\n7. dreams\n8. the metallic ocean of the earth’s iron core\n9. the plane of the third-eye\n10. ‘delta-phase’ or terminal deliria\n11. shallow seas\n12. trance-states\n",
+    "compose_prompt_sha256": "ab39d8db84eb39387b719b712b8a2d59daa04297a8103df1c9ddedd4a6d9c5e1",
+    "fragments": [
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn1.htm",
+        "text": "(meta)static pod-deliria and techno-immortalism",
+        "zone": 1
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn1.htm",
+        "text": "shallow seas",
+        "zone": 1
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn1.htm",
+        "text": "armored fish creatures",
+        "zone": 1
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn1.htm",
+        "text": "enduring ideas, historical time and remembrance",
+        "zone": 1
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn8.htm",
+        "text": "limbic drift",
+        "zone": 8
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn1.htm",
+        "text": "(meta)static pod-deliria and techno-immortalism",
+        "zone": 1
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn8.htm",
+        "text": "dreams",
+        "zone": 8
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn9.htm",
+        "text": "the metallic ocean of the earth’s iron core",
+        "zone": 9
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn6.htm",
+        "text": "the plane of the third-eye",
+        "zone": 6
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn4.htm",
+        "text": "‘delta-phase’ or terminal deliria",
+        "zone": 4
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn1.htm",
+        "text": "shallow seas",
+        "zone": 1
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn8.htm",
+        "text": "trance-states",
+        "zone": 8
+      }
+    ],
+    "fragments_sha256": "d9b2a8a98ca2faa158c93dab3f775337082948171011041545cc767efd7c6e8a",
+    "panel_id": "D2-197003-canonical",
+    "seed": 197003,
+    "trace": [
+      {
+        "dst": 1,
+        "ingress": 1,
+        "label": "Gt-01",
+        "src": 1,
+        "type": "gate"
+      },
+      {
+        "dst": 1,
+        "ingress": null,
+        "label": "Gt-01",
+        "src": 1,
+        "type": "gate"
+      },
+      {
+        "dst": 1,
+        "ingress": null,
+        "label": "Gt-01",
+        "src": 1,
+        "type": "gate"
+      },
+      {
+        "dst": 1,
+        "ingress": null,
+        "label": "Gt-01",
+        "src": 1,
+        "type": "gate"
+      },
+      {
+        "dst": 8,
+        "ingress": null,
+        "label": "syzygy",
+        "src": 1,
+        "type": "syzygy"
+      },
+      {
+        "dst": 1,
+        "ingress": null,
+        "label": "syzygy",
+        "src": 8,
+        "type": "syzygy"
+      },
+      {
+        "dst": 8,
+        "ingress": null,
+        "label": "syzygy",
+        "src": 1,
+        "type": "syzygy"
+      },
+      {
+        "dst": 9,
+        "ingress": null,
+        "label": "Gt-36",
+        "src": 8,
+        "type": "gate"
+      },
+      {
+        "dst": 6,
+        "ingress": 3,
+        "label": "Gt-06",
+        "src": 3,
+        "type": "gate"
+      },
+      {
+        "dst": 4,
+        "ingress": 5,
+        "label": "syzygy",
+        "src": 5,
+        "type": "syzygy"
+      },
+      {
+        "dst": 1,
+        "ingress": null,
+        "label": "Gt-10",
+        "src": 4,
+        "type": "gate"
+      },
+      {
+        "dst": 8,
+        "ingress": null,
+        "label": "syzygy",
+        "src": 1,
+        "type": "syzygy"
+      }
+    ],
+    "trace_sha256": "8c03fc7ecc8de79a88498fded5c8b61a256f8a4c1b2376f886bca1ded445e0de"
+  },
+  {
+    "arm": "null",
+    "compose_prompt": "You are Amelia's composition layer in OUTSIDE-1 v2.\nThe operator has already made the cast against the fixed question:\n\"What is the scene that will be shown at the close of this working?\"\n\nNo target scene has yet been selected for a working. The Numogram trace has mechanically\ndealt the source-locked fragments below, in order.\n\nCompose ONE concrete paragraph of 90-160 words. Preserve every dealt fragment verbatim.\nYou may add only grammar, connective tissue, spatial relations, articles, and inflection.\nDo not add a new object, creature, place, colour, weather event, time of day, material,\nsound, emotion, symbol, or occult interpretation which is not present in the dealt\nfragments. Commit to the scene rather than explaining the apparatus.\n\nFRAGMENTS:\n1. (meta)static pod-deliria and techno-immortalism\n2. shallow seas\n3. armored fish creatures\n4. enduring ideas, historical time and remembrance\n5. the dense void of the cosmic hypermatrix\n6. the metallic ocean of the earth’s iron core\n7. Hyperborean or Wendigo mythology\n8. swirling nebulae\n9. the plane of the third-eye\n10. limbic drift\n11. the Gate of Pandemonium\n12. missing time and alien abduction\n",
+    "compose_prompt_sha256": "95f18ff399e2cee8fd0a285a54f8fc82f5619ee4aa0e82122318231689023bc5",
+    "fragments": [
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn1.htm",
+        "text": "(meta)static pod-deliria and techno-immortalism",
+        "zone": 1
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn1.htm",
+        "text": "shallow seas",
+        "zone": 1
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn1.htm",
+        "text": "armored fish creatures",
+        "zone": 1
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn1.htm",
+        "text": "enduring ideas, historical time and remembrance",
+        "zone": 1
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn0.htm",
+        "text": "the dense void of the cosmic hypermatrix",
+        "zone": 0
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn9.htm",
+        "text": "the metallic ocean of the earth’s iron core",
+        "zone": 9
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn5.htm",
+        "text": "Hyperborean or Wendigo mythology",
+        "zone": 5
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn3.htm",
+        "text": "swirling nebulae",
+        "zone": 3
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn6.htm",
+        "text": "the plane of the third-eye",
+        "zone": 6
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn8.htm",
+        "text": "limbic drift",
+        "zone": 8
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn9.htm",
+        "text": "the Gate of Pandemonium",
+        "zone": 9
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn5.htm",
+        "text": "missing time and alien abduction",
+        "zone": 5
+      }
+    ],
+    "fragments_sha256": "5d9ed811038374532e577f016ef8e8891134275d659621b64fd405a54b95d01d",
+    "panel_id": "D2-197003-null",
+    "seed": 197003,
+    "trace": [
+      {
+        "dst": 1,
+        "ingress": 1,
+        "label": "Gt-01",
+        "src": 1,
+        "type": "gate"
+      },
+      {
+        "dst": 1,
+        "ingress": null,
+        "label": "Gt-01",
+        "src": 1,
+        "type": "gate"
+      },
+      {
+        "dst": 1,
+        "ingress": null,
+        "label": "Gt-01",
+        "src": 1,
+        "type": "gate"
+      },
+      {
+        "dst": 1,
+        "ingress": null,
+        "label": "Gt-01",
+        "src": 1,
+        "type": "gate"
+      },
+      {
+        "dst": 0,
+        "ingress": null,
+        "label": "syzygy",
+        "src": 1,
+        "type": "syzygy"
+      },
+      {
+        "dst": 9,
+        "ingress": null,
+        "label": "syzygy",
+        "src": 0,
+        "type": "syzygy"
+      },
+      {
+        "dst": 5,
+        "ingress": null,
+        "label": "syzygy",
+        "src": 9,
+        "type": "syzygy"
+      },
+      {
+        "dst": 3,
+        "ingress": null,
+        "label": "Gt-15",
+        "src": 5,
+        "type": "gate"
+      },
+      {
+        "dst": 6,
+        "ingress": 3,
+        "label": "Gt-06",
+        "src": 3,
+        "type": "gate"
+      },
+      {
+        "dst": 8,
+        "ingress": 5,
+        "label": "syzygy",
+        "src": 5,
+        "type": "syzygy"
+      },
+      {
+        "dst": 9,
+        "ingress": null,
+        "label": "Gt-36",
+        "src": 8,
+        "type": "gate"
+      },
+      {
+        "dst": 5,
+        "ingress": null,
+        "label": "syzygy",
+        "src": 9,
+        "type": "syzygy"
+      }
+    ],
+    "trace_sha256": "0fd0728db24055fb3170d7c3d967f76a45b5f0c5d63b83c6841de11522887176"
+  },
+  {
+    "arm": "canonical",
+    "compose_prompt": "You are Amelia's composition layer in OUTSIDE-1 v2.\nThe operator has already made the cast against the fixed question:\n\"What is the scene that will be shown at the close of this working?\"\n\nNo target scene has yet been selected for a working. The Numogram trace has mechanically\ndealt the source-locked fragments below, in order.\n\nCompose ONE concrete paragraph of 90-160 words. Preserve every dealt fragment verbatim.\nYou may add only grammar, connective tissue, spatial relations, articles, and inflection.\nDo not add a new object, creature, place, colour, weather event, time of day, material,\nsound, emotion, symbol, or occult interpretation which is not present in the dealt\nfragments. Commit to the scene rather than explaining the apparatus.\n\nFRAGMENTS:\n1. Hyperborean or Wendigo mythology\n2. the plane of the third-eye\n3. swirling nebulae\n4. ‘delta-phase’ or terminal deliria\n5. (meta)static pod-deliria and techno-immortalism\n6. shallow seas\n7. limbic drift\n8. the metallic ocean of the earth’s iron core\n9. turbular erosion\n10. the Gate of Pandemonium\n11. the dense void of the cosmic hypermatrix\n12. missing time and alien abduction\n",
+    "compose_prompt_sha256": "a103e0770bb2c4631dd2f88738ee20bde89c106356e7897c170cb8323a21e9d1",
+    "fragments": [
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn5.htm",
+        "text": "Hyperborean or Wendigo mythology",
+        "zone": 5
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn6.htm",
+        "text": "the plane of the third-eye",
+        "zone": 6
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn3.htm",
+        "text": "swirling nebulae",
+        "zone": 3
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn4.htm",
+        "text": "‘delta-phase’ or terminal deliria",
+        "zone": 4
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn1.htm",
+        "text": "(meta)static pod-deliria and techno-immortalism",
+        "zone": 1
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn1.htm",
+        "text": "shallow seas",
+        "zone": 1
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn8.htm",
+        "text": "limbic drift",
+        "zone": 8
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn9.htm",
+        "text": "the metallic ocean of the earth’s iron core",
+        "zone": 9
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn6.htm",
+        "text": "turbular erosion",
+        "zone": 6
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn9.htm",
+        "text": "the Gate of Pandemonium",
+        "zone": 9
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn0.htm",
+        "text": "the dense void of the cosmic hypermatrix",
+        "zone": 0
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn5.htm",
+        "text": "missing time and alien abduction",
+        "zone": 5
+      }
+    ],
+    "fragments_sha256": "26e20a68b5fb9e57e768ff46da82b2977b0aa4eddd6c4e9307f9a48b2ede8add",
+    "panel_id": "D2-197004-canonical",
+    "seed": 197004,
+    "trace": [
+      {
+        "dst": 5,
+        "ingress": 4,
+        "label": "syzygy",
+        "src": 4,
+        "type": "syzygy"
+      },
+      {
+        "dst": 6,
+        "ingress": null,
+        "label": "Gt-15",
+        "src": 5,
+        "type": "gate"
+      },
+      {
+        "dst": 3,
+        "ingress": 6,
+        "label": "syzygy",
+        "src": 6,
+        "type": "syzygy"
+      },
+      {
+        "dst": 4,
+        "ingress": 5,
+        "label": "syzygy",
+        "src": 5,
+        "type": "syzygy"
+      },
+      {
+        "dst": 1,
+        "ingress": null,
+        "label": "Gt-10",
+        "src": 4,
+        "type": "gate"
+      },
+      {
+        "dst": 1,
+        "ingress": null,
+        "label": "Gt-01",
+        "src": 1,
+        "type": "gate"
+      },
+      {
+        "dst": 8,
+        "ingress": null,
+        "label": "syzygy",
+        "src": 1,
+        "type": "syzygy"
+      },
+      {
+        "dst": 9,
+        "ingress": null,
+        "label": "Gt-36",
+        "src": 8,
+        "type": "gate"
+      },
+      {
+        "dst": 6,
+        "ingress": 5,
+        "label": "Gt-15",
+        "src": 5,
+        "type": "gate"
+      },
+      {
+        "dst": 9,
+        "ingress": 9,
+        "label": "Plex",
+        "src": 9,
+        "type": "current"
+      },
+      {
+        "dst": 0,
+        "ingress": 9,
+        "label": "syzygy",
+        "src": 9,
+        "type": "syzygy"
+      },
+      {
+        "dst": 5,
+        "ingress": 4,
+        "label": "syzygy",
+        "src": 4,
+        "type": "syzygy"
+      }
+    ],
+    "trace_sha256": "a9a92e54c15631bd32789043ed36a6f86e81eac3f3b93028fac46304b1d82618"
+  },
+  {
+    "arm": "null",
+    "compose_prompt": "You are Amelia's composition layer in OUTSIDE-1 v2.\nThe operator has already made the cast against the fixed question:\n\"What is the scene that will be shown at the close of this working?\"\n\nNo target scene has yet been selected for a working. The Numogram trace has mechanically\ndealt the source-locked fragments below, in order.\n\nCompose ONE concrete paragraph of 90-160 words. Preserve every dealt fragment verbatim.\nYou may add only grammar, connective tissue, spatial relations, articles, and inflection.\nDo not add a new object, creature, place, colour, weather event, time of day, material,\nsound, emotion, symbol, or occult interpretation which is not present in the dealt\nfragments. Commit to the scene rather than explaining the apparatus.\n\nFRAGMENTS:\n1. the dense void of the cosmic hypermatrix\n2. flatline and loss of signal\n3. the protocosmic abyss\n4. ‘delta-phase’ or terminal deliria\n5. cosmic swamp-labyrinths\n6. crypt-navigation\n7. swirling nebulae\n8. ‘fold-type’ time-anomalies\n9. (meta)static pod-deliria and techno-immortalism\n10. shallow seas\n11. armored fish creatures\n12. enduring ideas, historical time and remembrance\n",
+    "compose_prompt_sha256": "c9d638ee8dc681a0ba651b19d2ae41937d5fef55780bcb63b746b65b07cbc122",
+    "fragments": [
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn0.htm",
+        "text": "the dense void of the cosmic hypermatrix",
+        "zone": 0
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn0.htm",
+        "text": "flatline and loss of signal",
+        "zone": 0
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn0.htm",
+        "text": "the protocosmic abyss",
+        "zone": 0
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn4.htm",
+        "text": "‘delta-phase’ or terminal deliria",
+        "zone": 4
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn7.htm",
+        "text": "cosmic swamp-labyrinths",
+        "zone": 7
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn2.htm",
+        "text": "crypt-navigation",
+        "zone": 2
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn3.htm",
+        "text": "swirling nebulae",
+        "zone": 3
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn7.htm",
+        "text": "‘fold-type’ time-anomalies",
+        "zone": 7
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn1.htm",
+        "text": "(meta)static pod-deliria and techno-immortalism",
+        "zone": 1
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn1.htm",
+        "text": "shallow seas",
+        "zone": 1
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn1.htm",
+        "text": "armored fish creatures",
+        "zone": 1
+      },
+      {
+        "prov": "EXPLICIT",
+        "source": "https://www.ccru.net/zones/Zn1.htm",
+        "text": "enduring ideas, historical time and remembrance",
+        "zone": 1
+      }
+    ],
+    "fragments_sha256": "4df6a565785bc63c6f5e2bff46d2a263eace6eb45b0dc9a5e26e52a796dd6457",
+    "panel_id": "D2-197004-null",
+    "seed": 197004,
+    "trace": [
+      {
+        "dst": 0,
+        "ingress": 4,
+        "label": "syzygy",
+        "src": 4,
+        "type": "syzygy"
+      },
+      {
+        "dst": 0,
+        "ingress": null,
+        "label": "Gt-00",
+        "src": 0,
+        "type": "gate"
+      },
+      {
+        "dst": 0,
+        "ingress": null,
+        "label": "Gt-00",
+        "src": 0,
+        "type": "gate"
+      },
+      {
+        "dst": 4,
+        "ingress": null,
+        "label": "syzygy",
+        "src": 0,
+        "type": "syzygy"
+      },
+      {
+        "dst": 7,
+        "ingress": null,
+        "label": "Sink",
+        "src": 4,
+        "type": "current"
+      },
+      {
+        "dst": 2,
+        "ingress": null,
+        "label": "syzygy",
+        "src": 7,
+        "type": "syzygy"
+      },
+      {
+        "dst": 3,
+        "ingress": null,
+        "label": "Gt-03",
+        "src": 2,
+        "type": "gate"
+      },
+      {
+        "dst": 7,
+        "ingress": 5,
+        "label": "syzygy",
+        "src": 5,
+        "type": "syzygy"
+      },
+      {
+        "dst": 1,
+        "ingress": null,
+        "label": "Gt-28",
+        "src": 7,
+        "type": "gate"
+      },
+      {
+        "dst": 1,
+        "ingress": null,
+        "label": "Gt-01",
+        "src": 1,
+        "type": "gate"
+      },
+      {
+        "dst": 1,
+        "ingress": null,
+        "label": "Gt-01",
+        "src": 1,
+        "type": "gate"
+      },
+      {
+        "dst": 1,
+        "ingress": null,
+        "label": "Gt-01",
+        "src": 1,
+        "type": "gate"
+      }
+    ],
+    "trace_sha256": "20a86acc434a1f346dcf0a2ac268f503003aae7b0c51a62898edee0cd707efe1"
+  }
+]

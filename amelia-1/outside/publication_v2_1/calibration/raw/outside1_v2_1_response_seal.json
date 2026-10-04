@@ -1,0 +1,10 @@
+{
+  "D2_count": 8,
+  "calibration_materials_run": 37228169875,
+  "created_utc": "2026-10-04T19:30:20.253Z",
+  "positive_control_count": 20,
+  "protocol_sha256": "f8f4223f75d9a2df42866bd0eb036246511f86fa3eca09f79be4e5b3f203455f",
+  "registration_sha256": "07d9d78eb08c54497d77cac2c8535600042c84135888126a13d7f0d06e517365",
+  "responses_sha256": "392ca7e05a7341544382f9c30779f0eab3119a7719e48ff46905b66f165c01a4",
+  "target_reveal_occurred": false
+}
