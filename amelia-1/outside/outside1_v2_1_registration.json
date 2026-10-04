@@ -1,0 +1,93 @@
+{
+  "canonical_runtime_digest": "df164ce751d53db17ba16049f656d98806c806df5cf558cef0e49ea782f864ff",
+  "graph_digest": "9760268dd784186434ea3d86efd2f8ae9f861b245f64f58c97f70f1e75fb3087",
+  "parent_protocol_sha256": "056ab407d4833232af540aff965c179762103f967370d2e7bae16bb25378cceb",
+  "pilot_freeze_sha256": "352ca3b0a644c2e27dd505cbde87c4c62cdb254e1f4c5f8f781b850e82b89493",
+  "protocol": {
+    "calibration": {
+      "D1": {
+        "fresh_casts": [198001, 199000],
+        "n": 1000,
+        "pass_max": 0.5,
+        "statistic": "mean canonical/null Jaccard overlap of dealt fragment-text sets"
+      },
+      "D2": {
+        "criterion": "independent source-list identification >= 6/8",
+        "fresh_seeds": [197001, 197002, 197003, 197004],
+        "panel": "4 fresh seeds x canonical/null = 8 compositions",
+        "supplementary_audit": "all dealt fragments must appear verbatim in each composition"
+      },
+      "gate": "D1 PASS AND D2 PASS AND positive-control >=10/20 before W007",
+      "positive_control": {
+        "criterion_first_place_min": 10,
+        "fresh_trials": 20,
+        "role": "instrument sensitivity only; not contact evidence",
+        "signal": "one concrete target-bearing word appended to dealt fragments",
+        "target": "fixed preregistered control randomization before composition"
+      }
+    },
+    "evidence_schema": {
+      "language_method_required": ["provider","model","interface","reasoning_effort","temperature_status","provider_request_id_status","generation_time_status"],
+      "no_backfill": true,
+      "raw_channels": ["cast input","canonical trace","null trace","canonical fragments","null fragments","slot assignment entropy","judge-order entropy","composition prompt/output/method","judge prompt/output/method","pre-draw state commitment","target-draw entropy","resolution"],
+      "required_event_fields": ["schema_version","series_id","event_seq","event_id","event_type","working_id","created_utc","serialization","protocol_sha256","registration_sha256","parent_event_hash","payload_sha256","payload","event_hash"],
+      "serialization": "canonical-json-v1-sorted-keys-utf8"
+    },
+    "frozen_parent": {
+      "apparatus_protocol_sha256": "056ab407d4833232af540aff965c179762103f967370d2e7bae16bb25378cceb",
+      "canonical_runtime_digest": "df164ce751d53db17ba16049f656d98806c806df5cf558cef0e49ea782f864ff",
+      "compose_prompt": "unchanged from OUTSIDE-1 v2.0.0",
+      "graph_digest": "9760268dd784186434ea3d86efd2f8ae9f861b245f64f58c97f70f1e75fb3087",
+      "judge_prompt": "unchanged from OUTSIDE-1 v2.0.0",
+      "law": "D3 Lemurian traversal",
+      "null": "N1 degree-matched typed rewiring",
+      "passages": 12,
+      "reader_rule": "one source-locked fragment per recorded passage from destination zone only",
+      "target_generator": "unchanged from OUTSIDE-1 v2.0.0"
+    },
+    "pilot_block": {
+      "designation": "OUTSIDE-1 v2 pilot/procedural evidence",
+      "freeze_file": "outside1_v2_pilot_freeze.json",
+      "inferential_use": "excluded",
+      "workings": ["W001","W002","W003","W004","W005","W006"]
+    },
+    "primary": {
+      "P1": "one-sided exact target-draw randomization, canonical rank sum",
+      "P2": "one-sided exact target-draw randomization, sum(null rank - canonical rank)",
+      "alpha": 0.05,
+      "no_interim": true
+    },
+    "publication_series": {
+      "arm_identity_release": "after W106 final analysis only",
+      "cast": "32 physical coin tosses H/T; working seed SHA-256(working id + ':' + toss string)",
+      "first_working": "W007",
+      "last_working": "W106",
+      "n_workings": 100,
+      "no_interim_analysis": true,
+      "question": "what is the scene that will be shown at the close of this working?"
+    },
+    "registration_date": "2026-10-04",
+    "series_id": "OUTSIDE-1-v2.1-publication",
+    "stop_rule": "No W007 may be admitted until v2.1 registration is sealed and fresh D1, D2, and 20-trial positive control all pass under this evidence schema. No W001-W006 record may be repaired into publication evidence.",
+    "version": "2.1.0"
+  },
+  "protocol_sha256": "f8f4223f75d9a2df42866bd0eb036246511f86fa3eca09f79be4e5b3f203455f",
+  "registered_before_publication_data": true,
+  "registration_sha256": "07d9d78eb08c54497d77cac2c8535600042c84135888126a13d7f0d06e517365",
+  "registration_source_commit": "9a94670443b09445f2607e799123e6b544d25d3d",
+  "serialization": "canonical-json-v1-sorted-keys-utf8",
+  "series_id": "OUTSIDE-1-v2.1-publication",
+  "sources": {
+    "CanonicalNumogram.py": {"path": "../app/src/main/python/CanonicalNumogram.py","sha256": "f7c4e9a7ca928b9db6e12f650a2249eeb0eb4995056dd4940d781b6e9a4b569d"},
+    "NullInterfaces.py": {"path": "../tests/support/NullInterfaces.py","sha256": "7c97a5119587bc95dbc8d60fc1004cdabfefb54ee29ac0e31d1b93da70debfa3"},
+    "NumogramDynamics.py": {"path": "../app/src/main/python/NumogramDynamics.py","sha256": "dbc034e41a8d2c84658494a8c15cc7c41c2e629a325a3d34044f28e39c7b8cae"},
+    "NumogramInterface.py": {"path": "../app/src/main/python/NumogramInterface.py","sha256": "e2091e17ee62c8bcb8f3bb6db512c63b97111be3043f4e69d322b4a11b5a2d39"},
+    "Outside1_v2.py": {"path": "Outside1_v2.py","sha256": "595bde884be28d279fc2765ee052e9140258bf0e0e988f9e9e5a358ce9f2fbe3"},
+    "Outside1_v2_1.py": {"path": "Outside1_v2_1.py","sha256": "11e74fcd053be0481cabd9d81e7bca7b7c021021cbc4297bbf85a85160de9ef2"},
+    "Outside1_v2_1_working.py": {"path": "Outside1_v2_1_working.py","sha256": "262f1109dc2beeb07bdbcf3f72d6d388cf93c1af21a44b003ee8b0b1f7c2fb0e"},
+    "audit_outside1_v2_1.py": {"path": "audit_outside1_v2_1.py","sha256": "473c2e240f2af5e73decc32383dc57e03aad68edc4d76f1c65f89e32220970ec"},
+    "lexicon_v2.json": {"path": "lexicon_v2.json","sha256": "2add52c70f7c4d3697fb26ebc68c617299a22297d906acfb057e00096480b5f"},
+    "outside1_v2_pilot_freeze.json": {"path": "outside1_v2_pilot_freeze.json","sha256": "86e31d87241a8e1c9a0e9b9c62297f86779b53cd7e4e36101ce250e0688a4068"}
+  },
+  "version": "2.1.0"
+}
