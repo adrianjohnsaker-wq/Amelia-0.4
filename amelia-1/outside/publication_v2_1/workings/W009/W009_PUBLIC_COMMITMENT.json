@@ -1,0 +1,18 @@
+{
+  "arm_identity": "sealed until W106 final analysis",
+  "chain_ok": true,
+  "created_utc": "2026-10-04T22:31:24.169Z",
+  "evaluation_commit_sha": "3a6e38f474ff0e816b3cf6a836ae73f7d102164f",
+  "ledger_sha256": "af27078196c43ba9d00620eb3830da12bb23d37f15bdabfe5349ceb54b30cb28",
+  "pre_draw_state_sha256": "00379486c9b67aae87a85c6785561e71a126442cefd65b3b7c114e6eb26e94b9",
+  "ranking_event_hashes": {
+    "R1": "8d5b103cfa5eaf253fba9f87112dbd917824dc114145b59aee173ec1e7961b05",
+    "R2": "a72dd450bb28c2aead56a2225308017061798678031f177fb603b805adf4c3b0"
+  },
+  "resolution_event_hash": "ec8c57c99b0284588c9ce19475578ef6563d20698f381302ca8f407174618d1f",
+  "series_id": "OUTSIDE-1-v2.1-publication",
+  "target_draw_entropy_sha256": "00df28023fb16492cb9ef5a3ba0f1a59872571c20ff2af2987ae4fc37291e010",
+  "target_ranks": "sealed until W106 final analysis",
+  "target_scene": "a basalt sea cliff, a cluster of mushrooms, under hard noon light, snow blowing sideways.",
+  "working": "W009"
+}
