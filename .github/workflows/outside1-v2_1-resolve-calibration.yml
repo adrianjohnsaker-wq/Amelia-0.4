@@ -1,0 +1,157 @@
+name: OUTSIDE-1 v2.1 resolve publication calibration
+
+on:
+  push:
+    branches: ["amelia-1.0"]
+    paths:
+      - ".github/workflows/outside1-v2_1-resolve-calibration.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  resolve:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: amelia-1
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: actions/download-artifact@v4
+        with:
+          name: outside1-v2_1-calibration-materials
+          path: amelia-1/outside/calibration_materials
+          repository: ${{ github.repository }}
+          run-id: 37228169875
+          github-token: ${{ github.token }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: outside1-v2_1-calibration-responses-sealed
+          path: amelia-1/outside/calibration_responses
+          repository: ${{ github.repository }}
+          run-id: 37228511566
+          github-token: ${{ github.token }}
+      - name: Resolve D2 and reveal positive-control targets
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import collections,hashlib,json,os,sys
+          sys.path.insert(0,os.path.abspath("outside"))
+          import Outside1_v2 as O
+          import Outside1_v2_1 as P
+
+          reg=P.check_registration()
+          mr="outside/calibration_materials"
+          rr="outside/calibration_responses"
+          manifest=json.load(open(mr+"/outside1_v2_1_calibration_materials_manifest.json"))
+          d1=json.load(open(mr+"/outside1_v2_1_D1.json"))
+          d2=json.load(open(mr+"/outside1_v2_1_D2_panel.json"))
+          pc_public=json.load(open(mr+"/outside1_v2_1_PC_public.json"))
+          responses=json.load(open(rr+"/outside1_v2_1_calibration_responses.json"))
+          response_seal=json.load(open(rr+"/outside1_v2_1_response_seal.json"))
+
+          assert response_seal["target_reveal_occurred"] is False
+          assert response_seal["protocol_sha256"]==P.PROTOCOL_SHA256
+          assert response_seal["registration_sha256"]==reg["registration_sha256"]
+          assert response_seal["responses_sha256"]==hashlib.sha256(open(rr+"/outside1_v2_1_calibration_responses.json","rb").read()).hexdigest()
+
+          # D2: independent source-list identification from composition text only.
+          # Candidate source lists are treated as anonymous multisets; arm identity is irrelevant.
+          source={row["panel_id"]:[x["text"] for x in row["fragments"]] for row in d2}
+          d2_rows=[]
+          for out in responses["D2"]:
+              reading=out["reading"]
+              assert hashlib.sha256(reading.encode("utf-8")).hexdigest()==out["output_sha256"]
+              scores=[]
+              for cid,frags in source.items():
+                  cc=collections.Counter(frags)
+                  score=sum(min(n,reading.count(f)) for f,n in cc.items())
+                  scores.append((score,cid))
+              scores.sort(reverse=True)
+              unique=scores[0][0]>scores[1][0]
+              identified=scores[0][1] if unique else None
+              expected=out["panel_id"]
+              all_verbatim=all(f in reading for f in source[expected])
+              d2_rows.append({
+                  "reading_panel_id":expected,
+                  "identified_source_id":identified,
+                  "top_score":scores[0][0],
+                  "runner_up_score":scores[1][0],
+                  "unique":unique,
+                  "correct":identified==expected,
+                  "all_fragments_verbatim":all_verbatim,
+                  "reading_sha256":out["output_sha256"]
+              })
+          d2_correct=sum(x["correct"] for x in d2_rows)
+          d2_verbatim=sum(x["all_fragments_verbatim"] for x in d2_rows)
+          d2_result={
+              "pass":d2_correct>=P.D2_REQUIRED and d2_verbatim==8,
+              "identified_correctly":d2_correct,
+              "required":P.D2_REQUIRED,
+              "verbatim_preservation":d2_verbatim,
+              "rows":d2_rows,
+              "rows_sha256":P.channel_digest(d2_rows)
+          }
+
+          rankings={x["id"]:x["ranking"] for x in responses["positive_control"]}
+          # All rankings are already in the sealed response artifact above.
+          pc=P.resolve_positive_control(rankings)
+          dist={str(k):sum(x["rank"]==k for x in pc["rows"]) for k in range(1,5)}
+          pc["rank_distribution"]=dist
+
+          D1={
+              "pass":bool(d1["pass"]),
+              "n":d1["n"],
+              "mean_jaccard_canonical_null":d1["mean_jaccard_canonical_null"],
+              "mean_fragments_per_trace":d1["mean_fragments_per_trace"],
+              "threshold_max":d1["threshold_max"],
+              "rows_sha256":d1["rows_sha256"],
+              "raw_file_sha256":manifest["D1_sha256"]
+          }
+
+          payload={
+              "series_id":P.SERIES_ID,
+              "version":P.VERSION,
+              "created_utc":P.utc_now(),
+              "protocol_sha256":P.PROTOCOL_SHA256,
+              "registration_sha256":reg["registration_sha256"],
+              "calibration_materials":{
+                  "run_id":37228169875,
+                  "artifact_id":11312304781,
+                  "artifact_zip_sha256":"71dcb703fadf7506faf2d302f8d5d88da75070d490d01722a9471aaf030cbe1a",
+                  "manifest":manifest
+              },
+              "responses":{
+                  "run_id":37228511566,
+                  "artifact_id":11313141896,
+                  "artifact_zip_sha256":"cd569afa71512f0c509944fd9cf28bf6edee70ba1ada154c8eae161d1f26ee7e",
+                  "response_seal":response_seal,
+                  "target_reveal_after_response_seal":True
+              },
+              "D1":D1,
+              "D2":d2_result,
+              "positive_control":pc,
+              "publication_gate_pass":bool(D1["pass"] and d2_result["pass"] and pc["pass"]),
+              "W007_authorized":bool(D1["pass"] and d2_result["pass"] and pc["pass"]),
+              "pilot_W001_W006_inferential_use":"excluded"
+          }
+          payload["calibration_sha256"]=O.sha(payload)
+          json.dump(payload,open("outside/outside1_v2_1_calibration_seal.generated.json","w"),
+                    ensure_ascii=False,sort_keys=True,indent=2)
+          print("D1",D1)
+          print("D2",d2_correct,"/8 pass",d2_result["pass"])
+          print("PC",pc["hits_first"],"/20",pc["rank_distribution"],"pass",pc["pass"])
+          print("CALIBRATION_SHA256",payload["calibration_sha256"])
+          print("W007_AUTHORIZED",payload["W007_authorized"])
+          assert payload["publication_gate_pass"]
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: outside1-v2_1-publication-calibration-seal
+          path: amelia-1/outside/outside1_v2_1_calibration_seal.generated.json
+          retention-days: 90
