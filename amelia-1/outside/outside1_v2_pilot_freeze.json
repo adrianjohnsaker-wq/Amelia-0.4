@@ -1,0 +1,55 @@
+{
+  "designation": "OUTSIDE-1 v2 pilot/procedural evidence",
+  "status": "CLOSED_FROZEN",
+  "closed_before": "W007",
+  "closure_date": "2026-10-04",
+  "freeze_rule": "No W001-W006 record may be amended, timestamp-backfilled, method-backfilled, re-scored, or promoted into the publication-series inferential dataset. Existing raw records remain usable only as pilot/procedural evidence.",
+  "parent_protocol_sha256": "056ab407d4833232af540aff965c179762103f967370d2e7bae16bb25378cceb",
+  "canonical_runtime_digest": "df164ce751d53db17ba16049f656d98806c806df5cf558cef0e49ea782f864ff",
+  "graph_digest": "9760268dd784186434ea3d86efd2f8ae9f861b245f64f58c97f70f1e75fb3087",
+  "workings": [
+    {
+      "id": "W001",
+      "public_record": "w001_public_record.json",
+      "private_state_sha256": "86f80b4ade474f04fe938020af8e2d0fcbf4e9871cb4fabefe8928c2077129c9"
+    },
+    {
+      "id": "W002",
+      "public_record": "w002_public_record.json",
+      "private_state_sha256": "ef57761518e49fbc5cdf1d480995b0e2749d73675dcf13d8cde59db4c99964a8"
+    },
+    {
+      "id": "W003",
+      "public_record": "w003_public_record.json",
+      "private_state_sha256": "a0f7283dcc81c0757cbbbe2c4fb582e72c5f57495dea239d07b270f96bb4a3d2"
+    },
+    {
+      "id": "W004",
+      "public_record": "w004_public_record.json",
+      "private_state_sha256": "aa329c00640d03469b9fb1f36cc2e00abc6185adf1f38de4c06f2a49e32ab20b"
+    },
+    {
+      "id": "W005",
+      "public_record": "w005_public_record.json",
+      "ledger_sha256": "d09bbee7be25119362724146e2b10622c2570b3bfbca19fd9d40870e491b49ac",
+      "private_snapshot_sha256": "da6782cba01dead986a63ef5520e0034fa7b615b4c9a173bdd27f61c3eb00b51"
+    },
+    {
+      "id": "W006",
+      "public_record": null,
+      "ledger_sha256": "74bce9eff94f6b0af126c3b153b07e46428da58c52fc421237eeba0b11f8103e",
+      "private_snapshot_sha256": "e6c5cf198e36c38489ebfc6af2d69b1999ca618e106756f99e5b04ee1f8fe311",
+      "note": "W006 was resolved in the pilot ledger; its attempted public-record commit was blocked by the platform write filter. This note records the pre-existing snapshot identifiers only and does not reconstruct missing provenance."
+    }
+  ],
+  "known_limitations": [
+    "No contemporaneous UTC timestamp on every event.",
+    "No publication schema declaration on every event.",
+    "No per-channel rawTraceDigest/fragmentDigest on every pilot event.",
+    "Language-model method transcripts are incomplete.",
+    "No single immutable build/source/audit manifest binds every pilot event.",
+    "Pilot records are excluded from v2.1 primary or secondary inferential analysis."
+  ],
+  "successor": "OUTSIDE-1 v2.1 Publication Series",
+  "successor_first_working": "W007"
+}
