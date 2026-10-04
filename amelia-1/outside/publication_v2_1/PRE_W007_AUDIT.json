@@ -1,0 +1,27 @@
+{
+  "audit_sha256": "88d80e5cd96c0a2b2bb2c9301eadadbae2617294f817195ad506e70a1ecf82b8",
+  "calibration_audit_sha256": "7397ccf24b5f8db71f2643593be30cf8f30852afac02be9ba48ff281a1c4314d",
+  "calibration_sha256": "7c1c82194020d2163cf9f92511292624f0f70881e5f9796c29e0264e1bd318f3",
+  "chain_ok": true,
+  "created_utc": "2026-10-04T19:36:01.049Z",
+  "first_authorized_working": "W007",
+  "last_planned_working": "W106",
+  "protocol_sha256": "f8f4223f75d9a2df42866bd0eb036246511f86fa3eca09f79be4e5b3f203455f",
+  "publication_event_count": 0,
+  "publication_ledger_exists": false,
+  "registered_verifier_output": {
+    "PASS": true,
+    "audit": "OUTSIDE-1-v2.1-publication",
+    "calibration_sha256": "7c1c82194020d2163cf9f92511292624f0f70881e5f9796c29e0264e1bd318f3",
+    "ledger": {
+      "chain_ok": true,
+      "events": 0
+    },
+    "protocol_sha256": "f8f4223f75d9a2df42866bd0eb036246511f86fa3eca09f79be4e5b3f203455f",
+    "registration_sha256": "07d9d78eb08c54497d77cac2c8535600042c84135888126a13d7f0d06e517365"
+  },
+  "registration_sha256": "07d9d78eb08c54497d77cac2c8535600042c84135888126a13d7f0d06e517365",
+  "series_id": "OUTSIDE-1-v2.1-publication",
+  "status": "PASS",
+  "working_runner_sha256": "262f1109dc2beeb07bdbcf3f72d6d388cf93c1af21a44b003ee8b0b1f7c2fb0e"
+}
