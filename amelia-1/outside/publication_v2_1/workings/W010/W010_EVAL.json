@@ -1,16 +1,37 @@
 {
-  "working": "W010",
-  "fixed_before_selection": true,
-  "R1": [
-    "B",
-    "D",
-    "C",
-    "A"
-  ],
-  "R2": [
-    "C",
-    "D",
-    "B",
-    "A"
-  ]
+  "evaluation_order": {
+    "R1": [
+      "B",
+      "D",
+      "C",
+      "A"
+    ],
+    "R2": [
+      "C",
+      "D",
+      "B",
+      "A"
+    ]
+  },
+  "judge_prompt_sha256": {
+    "R1": "6ec0022f1f9257256520a7bc3d29d5d31fc9b4c2a060f7181d70742a6fa92da5",
+    "R2": "d8fd4b534d8a08400c356b7a455ac7831e430473b24db3731896adb886f870e8"
+  },
+  "method": {
+    "generation_time_status": "fixed before outcome-selection workflow",
+    "interface": "ChatGPT text conversation",
+    "model": "GPT-5.6 Sol",
+    "provider": "OpenAI",
+    "provider_request_id_status": "not exposed by ChatGPT interface",
+    "reasoning_effort": "High",
+    "temperature_status": "not exposed by ChatGPT interface"
+  },
+  "outcome_selection_occurred": false,
+  "phase": "EVALUATION_ORDER_FIXED_BEFORE_OUTCOME_SELECTION",
+  "reading_event_hashes": {
+    "R1": "88fe7b634e49afdbc24727cdcb5dcc2235b3d8267c829a2924a18db8a5e81712",
+    "R2": "92f3904383e1d09d626ecf8ea6a9e45b660e8dd91bc4565cec5da570427c4704"
+  },
+  "series_id": "OUTSIDE-1-v2.1-publication",
+  "working": "W010"
 }
