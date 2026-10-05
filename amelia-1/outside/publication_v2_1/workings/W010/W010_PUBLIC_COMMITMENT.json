@@ -1,0 +1,18 @@
+{
+  "arm_identity": "sealed until W106 final analysis",
+  "chain_ok": true,
+  "created_utc": "2026-10-05T09:20:34.144Z",
+  "evaluation_commit_sha": "b62cad690398b2c2317f83778fac87e2f95cea4d",
+  "ledger_sha256": "1990f4f3e7601784451f8b5f37d660a823e6c08ed1014a681e5e99ecc78ecfdc",
+  "pre_draw_state_sha256": "0d339f09b4eeffc9123efbcd089386d2805f6a524b36441df8b1fd2f0721f0a7",
+  "ranking_event_hashes": {
+    "R1": "76c9781389133270eb45534702d63aca0284e49fdf13555983d1ee86d74a3920",
+    "R2": "990d1264c1b984b27681b4112676bc0eb1225384edaa444fdcb68227a4e85ed3"
+  },
+  "resolution_event_hash": "b9c67ff96909ad3e20e74d1e06659e43ae8dfaf70912eef17c96e126e7d4153f",
+  "series_id": "OUTSIDE-1-v2.1-publication",
+  "target_draw_entropy_sha256": "7fc28b991f637f9d9f1f8bb25cb2d9f023d3af1cdb0f39a22591646797518a95",
+  "target_ranks": "sealed until W106 final analysis",
+  "target_scene": "a wooden kitchen table holding a prism beside two labelled magnets, under a hanging bulb, with small scratches in the wood.",
+  "working": "W010"
+}
