@@ -1,0 +1,58 @@
+name: W012 seal readings
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["amelia-1.0"]
+    paths:
+      - ".github/workflows/w012-readings.yml"
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  readings:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: amelia-1
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: actions/download-artifact@v4
+        with:
+          name: outside1-v2_1-private-through-W012-cast
+          path: amelia-1/outside
+          repository: ${{ github.repository }}
+          run-id: 37368441536
+          github-token: ${{ github.token }}
+      - name: Seal W012 readings
+        run: |
+          python - <<'PY'
+          import json,os,sys
+          sys.path.insert(0,os.path.abspath('outside'))
+          import Outside1_v2_1 as P
+          import Outside1_v2_1_working as W
+          method=P.language_method(provider='OpenAI',model='GPT-5.6 Sol',interface='ChatGPT text conversation',reasoning_effort='High',temperature_status='not exposed by ChatGPT interface',provider_request_id_status='not exposed by ChatGPT interface',generation_time_status='sealed in GitHub immediately after generation')
+          r1="Within one continuous arrangement, Hyperborean or Wendigo mythology stands beside ‘delta-phase’ or terminal deliria, while (meta)static pod-deliria and techno-immortalism extends toward limbic drift. Beyond them are shallow seas and dreams, followed by armored fish creatures beside trance-states. Further across the same scene appear cosmic swamp-labyrinths and enduring ideas, historical time and remembrance, then (meta)static pod-deliria and techno-immortalism and shallow seas. The elements remain in this exact order, joined only by direct spatial relations and continuation. Earlier elements remain nearer one another, later elements extend across the same scene, and nothing else is introduced beyond what was dealt."
+          r2="Within one continuous arrangement, Hyperborean or Wendigo mythology stands beside the dense void of the cosmic hypermatrix, while flatline and loss of signal extends toward crypt-navigation. Beyond them are (meta)static pod-deliria and techno-immortalism and ‘delta-phase’ or terminal deliria, followed by missing time and alien abduction beside the protocosmic abyss. Further across the same scene appear shallow seas and armored fish creatures, then enduring ideas, historical time and remembrance and (meta)static pod-deliria and techno-immortalism. The elements remain in this exact order, joined only by direct spatial relations and continuation. Earlier elements remain nearer one another, later elements extend across the same scene, and nothing else is introduced beyond what was dealt."
+          e1=W.seal_reading('W012','R1',r1,method)
+          e2=W.seal_reading('W012','R2',r2,method)
+          out={'working':'W012','reading_event_hashes':{'R1':e1['event_hash'],'R2':e2['event_hash']},'R1':W.judge_material('W012','R1'),'R2':W.judge_material('W012','R2')}
+          os.makedirs('outside/publication_v2_1/workings/W012',exist_ok=True)
+          json.dump(out,open('outside/publication_v2_1/workings/W012/W012_JUDGE_PUBLIC.json','w'),ensure_ascii=False,sort_keys=True,indent=2)
+          print(json.dumps(W.status(),sort_keys=True))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: outside1-v2_1-W012-judge-public
+          path: amelia-1/outside/publication_v2_1/workings/W012/W012_JUDGE_PUBLIC.json
+          retention-days: 90
+      - uses: actions/upload-artifact@v4
+        with:
+          name: outside1-v2_1-private-through-W012-readings
+          path: amelia-1/outside/ledger_v2_1_publication.jsonl
+          retention-days: 90
