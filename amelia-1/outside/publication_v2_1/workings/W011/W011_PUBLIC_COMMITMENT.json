@@ -1,0 +1,18 @@
+{
+  "arm_identity": "sealed until W106 final analysis",
+  "chain_ok": true,
+  "created_utc": "2026-10-05T19:44:06.637Z",
+  "evaluation_commit_sha": "9e40b566e75119bdb26d75577a800e8cb008ce4d",
+  "ledger_sha256": "24546218bff91fb0e7339c5755faf2372d1484a17fb75d119e5c73e01b73fa4b",
+  "pre_draw_state_sha256": "a0d4be3b65540c7b0d8ef5c704b4088839be5bd701d10ad78e77cc01c6dd410e",
+  "ranking_event_hashes": {
+    "R1": "08bce9158975e7fab3645a0b7a8556b6922159c672555763db17ab00f5c525e1",
+    "R2": "6b60f64231d6c76a59a42cc40e1bbead026bf8716e354e130ce22ef7207c8876"
+  },
+  "resolution_event_hash": "03f716b25429c5b88506d7e6ef215a8c9410ab961e9caa2f9c4fa38e9a418e1a",
+  "series_id": "OUTSIDE-1-v2.1-publication",
+  "target_draw_entropy_sha256": "5887c8260c20265f20c14c535396e43cb78fc7665a56fd9947109793749e7a0b",
+  "target_ranks": "sealed until W106 final analysis",
+  "target_scene": "a museum display cabinet holding a loaf beside a serrated knife, under a green desk lamp, with dust visible on the surface.",
+  "working": "W011"
+}
