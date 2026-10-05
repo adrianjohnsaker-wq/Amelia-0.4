@@ -1,0 +1,56 @@
+name: W012 archive
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["amelia-1.0"]
+    paths:
+      - ".github/workflows/w012-archive.yml"
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/download-artifact@v4
+        with:
+          name: outside1-v2_1-W012-public-after-cast
+          path: cast_public
+          repository: ${{ github.repository }}
+          run-id: 37368441536
+          github-token: ${{ github.token }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: outside1-v2_1-W012-public-resolved
+          path: resolved_public
+          repository: ${{ github.repository }}
+          run-id: 37375982205
+          github-token: ${{ github.token }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: outside1-v2_1-W012-audit
+          path: audit_public
+          repository: ${{ github.repository }}
+          run-id: 37376088160
+          github-token: ${{ github.token }}
+      - name: Stage W012 public files
+        run: |
+          set -euo pipefail
+          DEST=amelia-1/outside/publication_v2_1/workings/W012
+          mkdir -p "$DEST"
+          cp cast_public/W012_COMPOSITION_PUBLIC.json "$DEST/"
+          cp resolved_public/W012_FEEDBACK_PUBLIC.json "$DEST/"
+          cp resolved_public/W012_PUBLIC_COMMITMENT.json "$DEST/"
+          cp audit_public/W012_AUDIT.json "$DEST/"
+      - name: Commit W012 public archive
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add amelia-1/outside/publication_v2_1/workings/W012
+          git commit -m "Archive audited OUTSIDE-1 v2.1 W012 public evidence"
+          git push origin HEAD:amelia-1.0
