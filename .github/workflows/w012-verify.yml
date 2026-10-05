@@ -1,0 +1,58 @@
+name: W012 verify
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["amelia-1.0"]
+    paths:
+      - ".github/workflows/w012-verify.yml"
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: amelia-1
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: actions/download-artifact@v4
+        with:
+          name: outside1-v2_1-private-through-W012
+          path: amelia-1/outside
+          repository: ${{ github.repository }}
+          run-id: 37375982205
+          github-token: ${{ github.token }}
+      - name: Verify W012 ledger
+        run: |
+          python outside/audit_outside1_v2_1.py > /tmp/full.json
+          python - <<'PY'
+          import json,os,sys
+          sys.path.insert(0,os.path.abspath('outside'))
+          import Outside1_v2 as O
+          import Outside1_v2_1 as P
+          import Outside1_v2_1_working as W
+          a=json.load(open('/tmp/full.json'))
+          assert a['PASS'] is True
+          assert a['ledger']['events']==36
+          assert W.status()['workings_resolved']==6
+          assert W.status()['next_working']=='W013'
+          rows=[e for e in W.entries() if e['working_id']=='W012']
+          assert len(rows)==6
+          out={'series_id':P.SERIES_ID,'working':'W012','audit_created_utc':P.utc_now(),'audit_pass':True,'series_event_count':36,'working_event_count':6,'event_sequence':[{'event_seq':e['event_seq'],'event_id':e['event_id'],'event_type':e['event_type'],'created_utc':e['created_utc'],'payload_sha256':e['payload_sha256'],'event_hash':e['event_hash']} for e in rows],'final_event_hash':W.entries()[-1]['event_hash'],'ledger_sha256':O.file_sha256(P.LEDGER),'protocol_sha256':P.PROTOCOL_SHA256,'registration_sha256':P.load_registration()['registration_sha256'],'calibration_sha256':P.calibration_open()['calibration_sha256'],'arm_identity':'not exported','target_ranks':'not exported'}
+          out['audit_sha256']=O.sha(out)
+          os.makedirs('outside/W012_verify',exist_ok=True)
+          json.dump(out,open('outside/W012_verify/W012_AUDIT.json','w'),sort_keys=True,indent=2)
+          print(json.dumps(out,sort_keys=True))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: outside1-v2_1-W012-audit
+          path: amelia-1/outside/W012_verify/W012_AUDIT.json
+          retention-days: 90
