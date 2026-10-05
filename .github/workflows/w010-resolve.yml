@@ -1,0 +1,67 @@
+name: W010 resolve
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["amelia-1.0"]
+    paths:
+      - ".github/workflows/w010-resolve.yml"
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  resolve:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: amelia-1
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: actions/download-artifact@v4
+        with:
+          name: outside1-v2_1-private-through-W010-readings
+          path: amelia-1/outside
+          repository: ${{ github.repository }}
+          run-id: 37251052224
+          github-token: ${{ github.token }}
+      - name: Resolve W010
+        run: |
+          python - <<'PY'
+          import json,os,sys
+          sys.path.insert(0,os.path.abspath('outside'))
+          import Outside1_v2_1 as P
+          import Outside1_v2_1_working as W
+          c=json.load(open('outside/publication_v2_1/workings/W010/W010_EVAL.json',encoding='utf-8'))
+          assert c['working']=='W010'
+          assert c['outcome_selection_occurred'] is False
+          m=c['method']
+          r1=c['evaluation_order']['R1']; r2=c['evaluation_order']['R2']
+          raw1=json.dumps({'ranking':r1},separators=(',',':'))
+          raw2=json.dumps({'ranking':r2},separators=(',',':'))
+          e1=W.seal_ranking('W010','R1',r1,m,raw1)
+          e2=W.seal_ranking('W010','R2',r2,m,raw2)
+          fb=W.draw('W010')
+          z=W.find('resolved','W010')
+          outdir='outside/publication_v2_1/workings/W010'
+          os.makedirs(outdir,exist_ok=True)
+          json.dump(fb,open(outdir+'/W010_FEEDBACK_PUBLIC.json','w'),ensure_ascii=False,sort_keys=True,indent=2)
+          pub={'series_id':P.SERIES_ID,'working':'W010','created_utc':z['created_utc'],'evaluation_commit_sha':'b62cad690398b2c2317f83778fac87e2f95cea4d','ranking_event_hashes':{'R1':e1['event_hash'],'R2':e2['event_hash']},'resolution_event_hash':z['event_hash'],'pre_draw_state_sha256':z['payload']['pre_draw_state_sha256'],'target_draw_entropy_sha256':z['payload']['target_draw']['entropy_sha256'],'target_scene':fb['target_scene'],'ledger_sha256':P.file_sha256(P.LEDGER),'chain_ok':W.verify_chain(),'arm_identity':'sealed until W106 final analysis','target_ranks':'sealed until W106 final analysis'}
+          json.dump(pub,open(outdir+'/W010_PUBLIC_COMMITMENT.json','w'),ensure_ascii=False,sort_keys=True,indent=2)
+          json.dump(W.status(),open(outdir+'/W010_STATUS_RESOLVED.json','w'),sort_keys=True,indent=2)
+          print(json.dumps(W.status(),sort_keys=True))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: outside1-v2_1-W010-public-resolved
+          path: amelia-1/outside/publication_v2_1/workings/W010
+          retention-days: 90
+      - uses: actions/upload-artifact@v4
+        with:
+          name: outside1-v2_1-private-through-W010
+          path: amelia-1/outside/ledger_v2_1_publication.jsonl
+          retention-days: 90
