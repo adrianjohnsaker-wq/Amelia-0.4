@@ -1,0 +1,67 @@
+{
+  "series_id": "OUTSIDE-1-v2.1-publication",
+  "working": "W011",
+  "audit_created_utc": "2026-10-05T20:17:30Z",
+  "audit_pass": true,
+  "series_event_count": 30,
+  "working_event_count": 6,
+  "event_sequence": [
+    {
+      "event_seq": 25,
+      "event_id": "W011.000025.CAST",
+      "event_type": "cast",
+      "created_utc": "2026-10-05T19:30:22.940Z",
+      "payload_sha256": "6b6beab3a05ac89668e81400537a55b232b45f39def697da4669005778962389",
+      "event_hash": "9959fc6ff0d3fddb698155c6fbab68dd0f669336dbe4f8cec23b740a33e7caa0"
+    },
+    {
+      "event_seq": 26,
+      "event_id": "W011.000026.READING",
+      "event_type": "reading",
+      "created_utc": "2026-10-05T19:37:28.196Z",
+      "payload_sha256": "b634efd98e1f90aa43973d3f0f5025183c528beea31a986b56a34928241486f7",
+      "event_hash": "283d893284208397ed1a21ea6c6c69fdb2b5a497330ae33adc9ffbd3e5105cf5"
+    },
+    {
+      "event_seq": 27,
+      "event_id": "W011.000027.READING",
+      "event_type": "reading",
+      "created_utc": "2026-10-05T19:37:28.202Z",
+      "payload_sha256": "43f30756b6813ad7142942bf480361ebc27b6d194f5f682992807a3414537996",
+      "event_hash": "52cf87c5302218557cec08e8fb69f57806f7d76b0fd8f641965e7d2bdaae2283"
+    },
+    {
+      "event_seq": 28,
+      "event_id": "W011.000028.RANKING",
+      "event_type": "ranking",
+      "created_utc": "2026-10-05T19:44:06.619Z",
+      "payload_sha256": "e729d3270c68eb5ab122fbce7c6f3ceaef8a058ea46a068403506f116d3ea5d9",
+      "event_hash": "08bce9158975e7fab3645a0b7a8556b6922159c672555763db17ab00f5c525e1"
+    },
+    {
+      "event_seq": 29,
+      "event_id": "W011.000029.RANKING",
+      "event_type": "ranking",
+      "created_utc": "2026-10-05T19:44:06.627Z",
+      "payload_sha256": "c6cbd69f5e1c87d8922001dd1ae9d6ece87d42714a6fc8c5288eb5efa7383e37",
+      "event_hash": "6b60f64231d6c76a59a42cc40e1bbead026bf8716e354e130ce22ef7207c8876"
+    },
+    {
+      "event_seq": 30,
+      "event_id": "W011.000030.RESOLVED",
+      "event_type": "resolved",
+      "created_utc": "2026-10-05T19:44:06.637Z",
+      "payload_sha256": "f8104a617d29b7d6a73864b54b4eb73e49b115b14bcf4045863db5d7eca1fa4e",
+      "event_hash": "03f716b25429c5b88506d7e6ef215a8c9410ab961e9caa2f9c4fa38e9a418e1a"
+    }
+  ],
+  "final_event_hash": "03f716b25429c5b88506d7e6ef215a8c9410ab961e9caa2f9c4fa38e9a418e1a",
+  "ledger_sha256": "24546218bff91fb0e7339c5755faf2372d1484a17fb75d119e5c73e01b73fa4b",
+  "protocol_sha256": "f8f4223f75d9a2df42866bd0eb036246511f86fa3eca09f79be4e5b3f203455f",
+  "registration_sha256": "07d9d78eb08c54497d77cac2c8535600042c84135888126a13d7f0d06e517365",
+  "calibration_sha256": "7c1c82194020d2163cf9f92511292624f0f70881e5f9796c29e0264e1bd318f3",
+  "arm_identity": "not exported",
+  "target_ranks": "not exported",
+  "audit_method": "Independent local recomputation of canonical JSON payload hashes, event hashes, sequence, and parent hash chain from the sealed GitHub Actions private ledger artifact.",
+  "audit_sha256": "166e7442679bffb1da916f0cadf29f954015280850f24cfdbe9fce8ce53d1b39"
+}
