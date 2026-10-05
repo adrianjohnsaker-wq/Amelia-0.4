@@ -1,0 +1,18 @@
+{
+  "arm_identity": "sealed until W106 final analysis",
+  "chain_ok": true,
+  "created_utc": "2026-10-05T21:27:45.238Z",
+  "evaluation_commit_sha": "477fd63c37df3d156499f6fa0c01627aeec83d1b",
+  "ledger_sha256": "1fd157c0af66aac3a8a825a0b94ba42ccaef2df10e749bfc428ac2f0d4777ff3",
+  "pre_draw_state_sha256": "6649becbf023c033515181932650f223f57a16f06fdd320be2ef0ba3f3653ca9",
+  "ranking_event_hashes": {
+    "R1": "34569a46fada067d76dfebb687c4ad24dcd0b7c090fdb52559ad50b06198f98c",
+    "R2": "07c1e2928d5b4ae706f1a0db74800cacb00d15cc06d286326e1fcf2d12c5d949"
+  },
+  "resolution_event_hash": "efd1ab35926ffadff860b5eaa5c2e4b24fa8089497868c93901bc550e2ac41e5",
+  "series_id": "OUTSIDE-1-v2.1-publication",
+  "target_draw_entropy_sha256": "e82d7b9f47d4e0f130cc9d0b55b61e1b45907b47c6a8ab25f14c1dbe7679bd2e",
+  "target_ranks": "sealed until W106 final analysis",
+  "target_scene": "a laboratory bench holding charcoal sticks beside a white plaster hand, in narrow morning light, with condensation on nearby glass.",
+  "working": "W012"
+}
