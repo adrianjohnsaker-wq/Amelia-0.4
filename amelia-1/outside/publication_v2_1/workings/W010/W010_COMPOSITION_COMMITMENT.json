@@ -1,0 +1,20 @@
+{
+  "cast_event_hash": "8b83e25f6796afdeeb6c0e79a718da958b3b9127cb2884320e30d52d0c27c91a",
+  "method": {
+    "generation_time_status": "fixed before judging workflow",
+    "interface": "ChatGPT text conversation",
+    "model": "GPT-5.6 Sol",
+    "provider": "OpenAI",
+    "provider_request_id_status": "not exposed by ChatGPT interface",
+    "reasoning_effort": "High",
+    "temperature_status": "not exposed by ChatGPT interface"
+  },
+  "outputs": {
+    "R1": "Within one continuous arrangement, Hyperborean or Wendigo mythology stands beside swirling nebulae, while alien pattern extends toward ‘delta-phase’ or terminal deliria. Beyond them are (meta)static pod-deliria and techno-immortalism and limbic drift, followed by the plane of the third-eye beside the metallic ocean of the earth’s iron core. Further across the same scene appear missing time and alien abduction and cosmic swamp-labyrinths, then geoconvulsions and shallow seas. The elements remain in this exact order, joined only by direct spatial relations and continuation. Earlier elements remain nearer one another, later elements extend across the same scene, and nothing else is introduced beyond what was dealt.",
+    "R2": "Within one continuous arrangement, the dense void of the cosmic hypermatrix stands beside the metallic ocean of the earth’s iron core, while the plane of the third-eye extends toward cosmic swamp-labyrinths. Beyond them are crypt-navigation and swirling nebulae, followed by the Gate of Pandemonium beside limbic drift. Further across the same scene appear ‘fold-type’ time-anomalies and (meta)static pod-deliria and techno-immortalism, then dreams and emergence from the depths. The elements remain in this exact order, joined only by direct spatial relations and continuation. Earlier elements remain nearer one another, later elements extend across the same scene, and nothing else is introduced beyond what was dealt."
+  },
+  "phase": "COMPOSITION_OUTPUTS_FIXED_BEFORE_JUDGING",
+  "series_id": "OUTSIDE-1-v2.1-publication",
+  "target_selection_occurred": false,
+  "working": "W010"
+}
