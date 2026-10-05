@@ -1,0 +1,57 @@
+name: W011 prepare
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["amelia-1.0"]
+    paths:
+      - ".github/workflows/w011-prepare.yml"
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: amelia-1
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: actions/download-artifact@v4
+        with:
+          name: outside1-v2_1-private-through-W010
+          path: amelia-1/outside
+          repository: ${{ github.repository }}
+          run-id: 37289378797
+          github-token: ${{ github.token }}
+      - name: Prepare W011
+        run: |
+          python - <<'PY'
+          import json,os,sys
+          sys.path.insert(0,os.path.abspath('outside'))
+          import Outside1_v2_1_working as W
+          assert W.verify_chain()
+          assert W.status()['next_working']=='W011'
+          cast='HHTTTHHTTHHHHTTTHTHTTHTTTHHHTTHH'
+          assert len(cast)==32
+          p=W.prepare('W011',cast)
+          os.makedirs('outside/publication_v2_1/workings/W011',exist_ok=True)
+          json.dump(p,open('outside/publication_v2_1/workings/W011/W011_COMPOSITION_PUBLIC.json','w'),ensure_ascii=False,sort_keys=True,indent=2)
+          json.dump(W.status(),open('outside/publication_v2_1/workings/W011/W011_STATUS_AFTER_CAST.json','w'),sort_keys=True,indent=2)
+          print(json.dumps(W.status(),sort_keys=True))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: outside1-v2_1-W011-public-after-cast
+          path: amelia-1/outside/publication_v2_1/workings/W011
+          retention-days: 90
+      - uses: actions/upload-artifact@v4
+        with:
+          name: outside1-v2_1-private-through-W011-cast
+          path: amelia-1/outside/ledger_v2_1_publication.jsonl
+          retention-days: 90
