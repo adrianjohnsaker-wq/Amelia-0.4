@@ -1,0 +1,16 @@
+{
+  "working": "W010",
+  "fixed_before_selection": true,
+  "R1": [
+    "B",
+    "D",
+    "C",
+    "A"
+  ],
+  "R2": [
+    "C",
+    "D",
+    "B",
+    "A"
+  ]
+}
