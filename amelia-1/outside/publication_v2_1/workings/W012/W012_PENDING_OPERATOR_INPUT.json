@@ -1,0 +1,11 @@
+{
+  "series_id": "OUTSIDE-1-v2.1-publication",
+  "working": "W012",
+  "status": "PENDING_NOT_ADMITTED",
+  "operator_input_received": true,
+  "normalized_cast": "TTHTTTTHTHTHTTHHHTHHHHTTHHTTTHTH",
+  "toss_count": 32,
+  "normalization_note": "Joined 'TH' in the operator message was parsed as two tosses; accidental token 'BY' was ignored; final two tosses appended were T H.",
+  "admission_rule": "Do not create W012 publication ledger event until W011 is fully resolved and audited.",
+  "inferential_status": "none until admitted"
+}
