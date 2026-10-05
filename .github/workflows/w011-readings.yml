@@ -1,0 +1,58 @@
+name: W011 seal readings
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["amelia-1.0"]
+    paths:
+      - ".github/workflows/w011-readings.yml"
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  readings:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: amelia-1
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: actions/download-artifact@v4
+        with:
+          name: outside1-v2_1-private-through-W011-cast
+          path: amelia-1/outside
+          repository: ${{ github.repository }}
+          run-id: 37363257628
+          github-token: ${{ github.token }}
+      - name: Seal W011 readings
+        run: |
+          python - <<'PY'
+          import json,os,sys
+          sys.path.insert(0,os.path.abspath('outside'))
+          import Outside1_v2_1 as P
+          import Outside1_v2_1_working as W
+          method=P.language_method(provider='OpenAI',model='GPT-5.6 Sol',interface='ChatGPT text conversation',reasoning_effort='High',temperature_status='not exposed by ChatGPT interface',provider_request_id_status='not exposed by ChatGPT interface',generation_time_status='sealed in GitHub immediately after generation')
+          r1="Within one continuous arrangement, the plane of the third-eye stands beside (meta)static pod-deliria and techno-immortalism, while limbic drift extends toward the metallic ocean of the earth’s iron core. Beyond them are shallow seas and dreams, followed by cosmic swamp-labyrinths beside armored fish creatures. Further across the same scene appear trance-states and ‘fold-type’ time-anomalies, then crypt-navigation and emergence from the depths. The elements remain in this exact order, joined only by direct spatial relations and continuation. Earlier elements remain nearer one another, later elements extend across the same scene, and nothing else is introduced beyond what was dealt."
+          r2="Within one continuous arrangement, (meta)static pod-deliria and techno-immortalism stands beside shallow seas, while swirling nebulae extend toward armored fish creatures. Beyond them are cosmic swamp-labyrinths and the metallic ocean of the earth’s iron core, followed by the plane of the third-eye beside Hyperborean or Wendigo mythology. Further across the same scene appear alien pattern and unexpected messages, then the Gate of Pandemonium and turbular erosion. The elements remain in this exact order, joined only by direct spatial relations and continuation. Earlier elements remain nearer one another, later elements extend across the same scene, and nothing else is introduced beyond what was dealt."
+          e1=W.seal_reading('W011','R1',r1,method)
+          e2=W.seal_reading('W011','R2',r2,method)
+          out={'working':'W011','reading_event_hashes':{'R1':e1['event_hash'],'R2':e2['event_hash']},'R1':W.judge_material('W011','R1'),'R2':W.judge_material('W011','R2')}
+          os.makedirs('outside/publication_v2_1/workings/W011',exist_ok=True)
+          json.dump(out,open('outside/publication_v2_1/workings/W011/W011_JUDGE_PUBLIC.json','w'),ensure_ascii=False,sort_keys=True,indent=2)
+          print(json.dumps(W.status(),sort_keys=True))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: outside1-v2_1-W011-judge-public
+          path: amelia-1/outside/publication_v2_1/workings/W011/W011_JUDGE_PUBLIC.json
+          retention-days: 90
+      - uses: actions/upload-artifact@v4
+        with:
+          name: outside1-v2_1-private-through-W011-readings
+          path: amelia-1/outside/ledger_v2_1_publication.jsonl
+          retention-days: 90
