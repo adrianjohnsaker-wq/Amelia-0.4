@@ -1,0 +1,72 @@
+name: W010 seal readings
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["amelia-1.0"]
+    paths:
+      - ".github/workflows/w010-readings.yml"
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  readings:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: amelia-1
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: actions/download-artifact@v4
+        with:
+          name: outside1-v2_1-private-through-W010-cast
+          path: amelia-1/outside
+          repository: ${{ github.repository }}
+          run-id: 37250824198
+          github-token: ${{ github.token }}
+      - name: Seal constrained readings
+        run: |
+          python - <<'PY'
+          import json,os,sys
+          sys.path.insert(0,os.path.abspath('outside'))
+          import Outside1_v2_1 as P
+          import Outside1_v2_1_working as W
+
+          def compose(fr):
+              assert len(fr)==12
+              return (f'Within one continuous arrangement, {fr[0]} stands beside {fr[1]}, while {fr[2]} extends toward {fr[3]}. '
+                      f'Beyond them are {fr[4]} and {fr[5]}, followed by {fr[6]} beside {fr[7]}. '
+                      f'Further across the same scene appear {fr[8]} and {fr[9]}, then {fr[10]} and {fr[11]}. '
+                      'The elements remain in this exact order, joined only by direct spatial relations and continuation. '
+                      'Earlier elements remain nearer one another, later elements extend across the same scene, and nothing else is introduced beyond what was dealt.')
+
+          c=W.find('cast','W010')
+          sm=c['payload']['blind']['slot_map']
+          method=P.language_method(provider='OpenAI',model='GPT-5.6 Sol',interface='ChatGPT-authored constrained connective scaffold; deterministic CI instantiation from sealed fragments',reasoning_effort='High',temperature_status='not exposed by ChatGPT interface',provider_request_id_status='not exposed by ChatGPT interface',generation_time_status='instantiated and sealed in GitHub immediately after cast')
+          outs={}
+          for slot in ('R1','R2'):
+              arm=sm[slot]
+              fr=[x['text'] for x in c['payload']['arms'][arm]['fragments']]
+              reading=compose(fr)
+              ev=W.seal_reading('W010',slot,reading,method)
+              outs[slot]=ev
+          public={'working':'W010','reading_event_hashes':{s:outs[s]['event_hash'] for s in ('R1','R2')},'R1':W.judge_material('W010','R1'),'R2':W.judge_material('W010','R2')}
+          os.makedirs('outside/publication_v2_1/workings/W010',exist_ok=True)
+          json.dump(public,open('outside/publication_v2_1/workings/W010/W010_JUDGE_PUBLIC.json','w'),ensure_ascii=False,sort_keys=True,indent=2)
+          print(json.dumps(W.status(),sort_keys=True))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: outside1-v2_1-W010-judge-public
+          path: amelia-1/outside/publication_v2_1/workings/W010/W010_JUDGE_PUBLIC.json
+          retention-days: 90
+      - uses: actions/upload-artifact@v4
+        with:
+          name: outside1-v2_1-private-through-W010-readings
+          path: amelia-1/outside/ledger_v2_1_publication.jsonl
+          retention-days: 90
