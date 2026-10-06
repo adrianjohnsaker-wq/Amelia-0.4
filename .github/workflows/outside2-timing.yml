@@ -1,3 +1,4 @@
+# W015 timing trigger: 2026-10-06
 name: OUTSIDE-2 push capture and trusted timestamp
 on:
   push:
