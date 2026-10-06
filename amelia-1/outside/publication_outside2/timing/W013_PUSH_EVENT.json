@@ -1,0 +1,26 @@
+{
+  "matching_events": [],
+  "note": "Filtered repository events API response. An empty match list is not a push timestamp. W013_PUSH.json separately archives the GitHub push payload and workflow run creation time; W013.tsr is the signed pre-beacon existence evidence.",
+  "queried_utc": "2026-10-06T18:39:50.867283+00:00",
+  "queries": [
+    {
+      "count": 100,
+      "http_date": "Tue, 06 Oct 2026 18:39:35 GMT",
+      "url": "https://api.github.com/repos/adrianjohnsaker-wq/Amelia-0.4/events?per_page=100&page=1"
+    },
+    {
+      "count": 100,
+      "http_date": "Tue, 06 Oct 2026 18:39:42 GMT",
+      "url": "https://api.github.com/repos/adrianjohnsaker-wq/Amelia-0.4/events?per_page=100&page=2"
+    },
+    {
+      "count": 58,
+      "http_date": "Tue, 06 Oct 2026 18:39:50 GMT",
+      "url": "https://api.github.com/repos/adrianjohnsaker-wq/Amelia-0.4/events?per_page=100&page=3"
+    }
+  ],
+  "reading_commit": "c6e91cafee0e14fd15b6d43d277cafaae4026b5f",
+  "reading_event_hash": "0a565bbdd73cb9660c14c8b236af46f0c5a899039710a72091e882fca0df6997",
+  "status": "MATCHING_PUSH_EVENT_NOT_AVAILABLE",
+  "working": "W013"
+}
