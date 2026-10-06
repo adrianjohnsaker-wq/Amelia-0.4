@@ -29,6 +29,23 @@ All commands run from `amelia-1/outside`. The branch must not be force-pushed at
 6. **Feedback.** `python3 Outside2.py feedback W###` gives the target scene and both readings for the
    querent. Arm identity is in the ledger; the feedback order is presentation only.
 
+## Beacon audit
+
+`verify` checks that each recorded randomness is SHA-256 of the recorded signature, which an
+invented signature can satisfy. `audit_beacon_outside2.py` establishes that every signature is a
+genuine drand quicknet signature for the registered round (BLS verification under the quicknet
+public key, which the script shows hashes to the chain hash in the registration), recomputes each
+round and target from the protocol rules independently of `Outside2.py`, and with `--online`
+compares every round against at least two independent drand relays.
+
+    pip install py_ecc
+    python3 audit_beacon_outside2.py --online --json beacon_audit.json
+
+Run it at every intermediate audit and before the final analysis. Exit status 0 means PASS,
+1 FAIL, 2 INCOMPLETE (library missing or relays unreachable); only 0 counts as an audit pass.
+Publication timing (each READING pushed before its round) is checked separately from the
+repository history.
+
 ## Rules
 
 - No interim analysis. Target ranks are not written to the ledger, and `analyse` refuses until
