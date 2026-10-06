@@ -1,0 +1,103 @@
+{
+ "canonical_runtime_digest": "df164ce751d53db17ba16049f656d98806c806df5cf558cef0e49ea782f864ff",
+ "graph_digest": "9760268dd784186434ea3d86efd2f8ae9f861b245f64f58c97f70f1e75fb3087",
+ "protocol": {
+  "calibration_gate": {
+   "C1_coverage": "for both arms and every zone z: among calibration casts of workings whose quartet contains z, the share in which the candidate containing z is ranked first (a tie for first counts its share 1/k) lies in [0.18, 0.32]",
+   "C2_type_I": "1000 simulated series with no signal: empirical rejection at alpha 0.05 <= 0.065 for P1 and for P2",
+   "C3_curve": "descriptive power at planted fractions 0.10, 0.20, 0.30, 0.45, 0.60 of workings; reported, not gated",
+   "C3_on_channel_control": "200 simulated series in which one of the twelve canonical passages per working is replaced by a passage into a zone of the target pair: rejection >= 0.95 for P1 and for P2",
+   "data": "synthetic casts only, from registered seeds int(SHA-256('OUTSIDE-2:calibration:' + W + ':' + i)[:16], 16), i < 1000",
+   "rule": "W013 may not be admitted unless C1, C2 and C3 all pass. If any fails, the apparatus is not modified within this registration."
+  },
+  "claims": {
+   "on_failure": "the registered claim that this canonical apparatus selects target-related information under these conditions is not supported",
+   "permitted_on_success": "register 1 (P1 and/or P2 departures) and register 2 (canonical-specific structure if P2); access, not agency or communication"
+  },
+  "evidence": {
+   "arm_labels": "recorded openly in the ledger: scoring is mechanical, so there is no judge to blind; querent feedback shows the readings unlabelled",
+   "events_per_working": [
+    "CAST",
+    "READING",
+    "RESOLVED"
+   ],
+   "fields": [
+    "series_id",
+    "event_seq",
+    "event_id",
+    "event_type",
+    "working",
+    "created_utc",
+    "protocol_sha256",
+    "registration_sha256",
+    "parent_event_hash",
+    "payload_sha256",
+    "payload",
+    "event_hash"
+   ],
+   "no_backfill": true,
+   "serialization": "canonical-json-v1-sorted-keys-utf8"
+  },
+  "frozen_mechanics": {
+   "canonical_runtime_digest": "df164ce751d53db17ba16049f656d98806c806df5cf558cef0e49ea782f864ff",
+   "graph_digest": "9760268dd784186434ea3d86efd2f8ae9f861b245f64f58c97f70f1e75fb3087",
+   "law": "D3 Lemurian traversal",
+   "module": "Outside1_v2.py (graph, trace, seed_of; unchanged)",
+   "null": "N1 degree-matched typed rewiring, fresh instance per working: n1_degree_matched(93000 + k) for working Wk",
+   "passages": 12
+  },
+  "generation": {
+   "cast": "32 physical coin tosses H/T; seed = int(SHA-256(working id + ':' + tosses)[:16], 16)",
+   "n": 88,
+   "querent": "holds the fixed question during the physical cast",
+   "question": "what is the scene that will be shown at the close of this working?",
+   "workings": [
+    "W013",
+    "W100"
+   ]
+  },
+  "operator_ruling": "6 October 2026: close OUTSIDE-1 v2.1 as the instrumentation is faulty; continue from W013 to W100 under the Numogram-as-reader design, with a target pool built only from what the reader can express, so that channel capacity is checked before any working.",
+  "predecessor": {
+   "closure_file": "publication_v2_1/OUTSIDE1_V2_1_CLOSURE.json",
+   "pooling": "none; W007-W012 are never pooled with OUTSIDE-2",
+   "series": "OUTSIDE-1-v2.1-publication",
+   "status": "CLOSED_INSTRUMENT_FAULT after W012"
+  },
+  "primary": {
+   "P1": "one-sided exact randomization test over the target draw: T1 = sum over workings of the canonical arm's mid-rank of the target; p1 = P(T1' <= T1)",
+   "P2": "one-sided exact randomization test over the target draw: T2 = sum over workings of (null mid-rank - canonical mid-rank) of the target; p2 = P(T2' >= T2)",
+   "alpha": 0.05,
+   "interpretation": "P1 alone = departure from chance somewhere in the canonical apparatus; P2 = canonical-specific advantage over the same-cast null. The Numogram-specificity claim requires P2.",
+   "no_interim_analysis": true
+  },
+  "reader": {
+   "kind": "Numogram-as-reader; no language layer in evaluation",
+   "ranking": "candidates ranked by score, higher first; ties take mid-ranks",
+   "reading": "the ordered destination zones of the twelve recorded passages, per arm",
+   "reference": "REF_CASTS = 4000 reference casts per graph (canonical, and each working's null), seeds int(SHA-256('OUTSIDE-2:reference:' + graph tag + ':' + i)[:16], 16); frozen in outside2_reference.json before any working",
+   "score": "for candidate zone pair S: c = number of passages whose destination is in S; score = P(C < c) + 0.5 P(C = c) under the same arm's frozen reference distribution of C for S"
+  },
+  "registration_date": "2026-10-06",
+  "series_id": "OUTSIDE-2-numogram-reader",
+  "target_pool": {
+   "displayed_scene": "the registered lexicon_v2 fragments of the candidate's two zones, in zone order; display only, no role in scoring; no demon names",
+   "draw": "target index = int(SHA-256(32 bytes OS entropy || ':target-draw'), big-endian) mod 4, only after the reading event is sealed",
+   "expressibility": "every candidate is a set of zones the reader emits; coverage is tested in C1",
+   "quartet": "for working W: zones 0-9 shuffled by random.Random(int(SHA-256('OUTSIDE-2:quartet:' + W)[:16], 16)); candidates are the disjoint pairs (z0,z1), (z2,z3), (z4,z5), (z6,z7)"
+  },
+  "version": "1.0.0"
+ },
+ "protocol_sha256": "116c53ba79e21f627d7fb2a1d4087243fa755eb519148ec6e05ebdf304a26825",
+ "series_id": "OUTSIDE-2-numogram-reader",
+ "sources": {
+  "CanonicalNumogram.py": "f7c4e9a7ca928b9db6e12f650a2249eeb0eb4995056dd4940d781b6e9a4b569d",
+  "NullInterfaces.py": "7c97a5119587bc95dbc8d60fc1004cdabfefb54ee29ac0e31d1b93da70debfa3",
+  "NumogramDynamics.py": "dbc034e41a8d2c84658494a8c15cc7c41c2e629a325a3d34044f28e39c7b8cae",
+  "NumogramInterface.py": "e2091e17ee62c8bcb8f3bb6db512c63b97111be3043f4e69d322b4a11b5a2d39",
+  "OUTSIDE1_V2_1_CLOSURE.json": "70451c031fb7aa45d1011f89662832e8c43f3b77e0131bcd144c1498cb2ab244",
+  "Outside1_v2.py": "595bde884be28d279fc2765ee052e9140258bf0e0e988f9e9e5a358ce9f2fbe3",
+  "Outside2.py": "fbcfbe3dc7810e3669fb1534727dc691d217e02544f94e81270c646bced0f19d",
+  "lexicon_v2.json": "2add52c70f7c4d3697fb26ebc68c617299a22297d906acfbf057e00096480b5f"
+ },
+ "version": "1.0.0"
+}

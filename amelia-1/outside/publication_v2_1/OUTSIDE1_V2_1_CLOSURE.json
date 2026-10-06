@@ -1,0 +1,52 @@
+{
+  "series_id": "OUTSIDE-1-v2.1-publication",
+  "status": "CLOSED_INSTRUMENT_FAULT",
+  "closed_utc_date": "2026-10-06",
+  "decision": "operator ruling, 6 October 2026: close the current experiment as the instrumentation is faulty; continue from W013 to W100 under a separately registered Numogram-as-reader experiment with a target pool built only from what the reader can express",
+  "closed_after": "W012",
+  "workings_completed": ["W007", "W008", "W009", "W010", "W011", "W012"],
+  "series_event_count": 36,
+  "last_audit": {
+    "working": "W012",
+    "audit_sha256": "aac90ff6660f0a16c3edf3cc3dd2af72b26cf3dea267a08862714b9bd0882daf",
+    "final_event_hash": "efd1ab35926ffadff860b5eaa5c2e4b24fa8089497868c93901bc550e2ac41e5",
+    "ledger_sha256": "1fd157c0af66aac3a8a825a0b94ba42ccaef2df10e749bfc428ac2f0d4777ff3"
+  },
+  "blindness": {
+    "statement": "The closure decision was taken on structural grounds established from source code, lexicon, registration and calibration materials. No canonical or null target rank, no arm identity and no P1 or P2 statistic for W007-W012 was computed or inspected in reaching it. The W007-W012 audits record arm_identity and target_ranks as not exported.",
+    "outcome_dependence": "none"
+  },
+  "grounds": [
+    {
+      "id": "F1",
+      "name": "channel coverage",
+      "finding": "lexicon_v2.json holds 40 fragments, four per zone, whose concrete vocabulary is aquatic, terrain, weather or cosmic. Two of the four target-generator classes (human scenes, interiors) share no vocabulary with any fragment, so for those targets neither arm can carry target information. Rankings are therefore driven largely by target class rather than by trace, and P1 and P2 have little power.",
+      "evidence_sha256": {"lexicon_v2.json": "2add52c70f7c4d3697fb26ebc68c617299a22297d906acfbf057e00096480b5f", "Outside1_v2.py": "595bde884be28d279fc2765ee052e9140258bf0e0e988f9e9e5a358ce9f2fbe3"}
+    },
+    {
+      "id": "F2",
+      "name": "positive control off-channel",
+      "finding": "The calibration control appended one signal word from outside the lexicon as a closing sentence (e.g. 'At the close is heron.'). The 20/20 result shows that a judge can match an appended literal noun; it does not show that the trace-bound channel used in the workings can carry target information.",
+      "evidence_sha256": {"outside1_v2_1_calibration_responses.json": "392ca7e05a7341544382f9c30779f0eab3119a7719e48ff46905b66f165c01a4"}
+    },
+    {
+      "id": "F3",
+      "name": "unregistered composition method",
+      "finding": "The registered compose prompt requires one concrete paragraph by fresh language-model composition. Calibration and working readings were produced by a fixed connective scaffold authored in-session, declared only in the calibration method record.",
+      "evidence_sha256": {"Outside1_v2_1.py": "11e74fcd053be0481cabd9d81e7bca7b7c021021cbc4297bbf85a85160de9ef2", "outside1_v2_1_calibration_responses.json": "392ca7e05a7341544382f9c30779f0eab3119a7719e48ff46905b66f165c01a4"}
+    },
+    {
+      "id": "F4",
+      "name": "judge not context-isolated",
+      "finding": "Composition and judging ran in the same conversation as the operator, the apparatus source and all prior feedback. Validity of the exact test is unaffected because it conditions on sealed rankings, but the judge cannot be described as independent."
+    }
+  ],
+  "validity_note": "Target draws used operating-system entropy after sealed rankings; the W007-W012 records remain valid sealed observations. The fault is one of sensitivity and description, not of leakage.",
+  "disposition": {
+    "W007-W012": "remain sealed in their published form; no record may be amended",
+    "confirmatory_analysis": "the registered v2.1 P1/P2 will not be computed as a confirmatory test, since the series is closed at 6 of 100 workings",
+    "descriptive_release": "arm identities and target ranks may be released only after the final analysis of the successor experiment, labelled descriptive and excluded from all inference",
+    "pooling": "W007-W012 are never pooled with the successor experiment"
+  },
+  "successor": "OUTSIDE-2 Numogram-as-reader, workings W013-W100, separately registered"
+}
