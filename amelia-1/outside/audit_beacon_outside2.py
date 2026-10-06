@@ -28,12 +28,13 @@ Checks
     R6  RESOLVED written at or after the round time
     R7  (--online) at least two independent drand relays return the same randomness and signature
 
-Not checked here: that each READING was pushed publicly before its beacon round. That is read
-from the public repository history and is reported separately.
+Timing extension: verifies RFC3161 tokens for every READING, including unresolved workings.
+Missing tokens are INCOMPLETE; invalid or late tokens are FAIL. Archived GitHub push receipts
+are reported separately. TSA tokens prove existence, not publication or cast uniqueness.
 
 Usage
   python3 audit_beacon_outside2.py [--ledger PATH] [--registration PATH] [--online] [--json OUT]
-Requires py_ecc (pip install py_ecc). Exit status: 0 all checks pass; 1 a check failed;
+Requires requirements-audit.txt dependencies and OpenSSL. Exit status: 0 all checks pass; 1 a check failed;
 2 incomplete (BLS library unavailable, or --online and fewer than two relays reachable).
 """
 from __future__ import annotations
@@ -159,7 +160,7 @@ def fetch_round(relay: str, rnd: int, timeout: float = 15.0):
 # audit
 # ---------------------------------------------------------------------------
 
-def audit(ledger_path: str, registration_path: str, online: bool) -> dict:
+def audit(ledger_path: str, registration_path: str, online: bool, timing_dir=None) -> dict:
     report = {"audit": "OUTSIDE-2 beacon audit", "run_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
               "ledger": os.path.abspath(ledger_path), "global": {}, "workings": {}, "complete": True}
     g = report["global"]
@@ -232,18 +233,23 @@ def audit(ledger_path: str, registration_path: str, online: bool) -> dict:
                 relays_short = True
         checks = [v for k, v in row.items() if k.startswith("R") and k != "round"]
         flat = [c["pass"] if isinstance(c, dict) else c for c in checks]
-        row["status"] = "PASS" if all(x is True for x in flat) else ("INCOMPLETE" if None in flat else "FAIL")
+        row["status"] = "PASS" if all(x is True for x in flat) else ("FAIL" if False in flat else "INCOMPLETE")
         report["workings"][w] = row
 
     if online and relays_short:
         report["complete"] = False
         report.setdefault("incomplete_reason", "fewer than two relays reachable for at least one round")
+    from outside2_timing import audit_readings, TIMING
+    report["timing"] = audit_readings(events, reg, timing_dir or TIMING)
+    if any(v["status"] == "INCOMPLETE" for v in report["timing"].values()):
+        report["complete"] = False
+    timing_fails = [w for w, v in report["timing"].items() if v["status"] == "FAIL"]
     fails = [w for w, v in report["workings"].items() if v.get("status") == "FAIL"]
     gfail = [k for k, v in g.items() if k[:2] in ("G1", "G2", "G3", "G4") and v is False]
     report["resolved_audited"] = sum(1 for v in report["workings"].values() if "status" in v and v["status"] != "awaiting resolution")
-    report["failures"] = {"global": gfail, "workings": fails}
-    report["verdict"] = "FAIL" if (fails or gfail) else ("PASS" if report["complete"] else "INCOMPLETE")
-    report["not_checked"] = "public push of each READING before its beacon round (read from repository history)"
+    report["failures"] = {"global": gfail, "workings": fails, "timing": timing_fails}
+    report["verdict"] = "FAIL" if (fails or gfail or timing_fails) else ("PASS" if report["complete"] else "INCOMPLETE")
+    report["not_checked"] = "TSA proves existence, not public availability or absence of unpublished casts; GitHub receipts are archived server assertions; no online TSA revocation check"
     return report
 
 
@@ -251,10 +257,11 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[1])
     ap.add_argument("--ledger", default=os.path.join(HERE, "ledger_outside2.jsonl"))
     ap.add_argument("--registration", default=os.path.join(HERE, "outside2_registration.json"))
+    ap.add_argument("--timing-dir", help="directory containing W###.tsr and W###_PUSH.json")
     ap.add_argument("--online", action="store_true", help="also compare every round with independent drand relays")
     ap.add_argument("--json", help="write the full report to this path")
     a = ap.parse_args()
-    rep = audit(a.ledger, a.registration, a.online)
+    rep = audit(a.ledger, a.registration, a.online, a.timing_dir)
     text = json.dumps(rep, indent=1, sort_keys=True)
     if a.json:
         with open(a.json, "w", encoding="utf-8") as f:

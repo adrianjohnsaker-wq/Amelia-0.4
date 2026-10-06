@@ -1,0 +1,2 @@
+py_ecc==8.0.0
+asn1crypto==1.5.1

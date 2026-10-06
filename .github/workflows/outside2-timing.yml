@@ -1,0 +1,61 @@
+name: OUTSIDE-2 push capture and trusted timestamp
+on:
+  push:
+    branches: [amelia-1.0]
+    paths:
+      - amelia-1/outside/ledger_outside2.jsonl
+      - amelia-1/outside/outside2_timing.py
+      - amelia-1/outside/capture_outside2_timing.py
+      - amelia-1/outside/timing_trust/**
+      - .github/workflows/outside2-timing.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install asn1crypto==1.5.1
+      - name: Capture push and request signed timestamp (dummy if no new reading)
+        id: capture
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python amelia-1/outside/capture_outside2_timing.py
+      - name: Verify offline timestamp tests
+        run: python -m unittest discover -s amelia-1/outside/tests -v
+      - name: Retain evidence even when checks fail
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: outside2-timing-${{ github.run_id }}-${{ github.run_attempt }}
+          path: amelia-1/outside/publication_outside2/timing/
+          if-no-files-found: warn
+      - name: Commit evidence without rewriting history
+        if: always()
+        env:
+          TARGET_BRANCH: amelia-1.0
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          test -d amelia-1/outside/publication_outside2/timing || exit 0
+          git add amelia-1/outside/publication_outside2/timing
+          git diff --cached --quiet && exit 0
+          git commit -m 'Archive OUTSIDE-2 push and RFC3161 timestamp evidence'
+          for attempt in 1 2 3; do
+            git fetch origin "$TARGET_BRANCH"
+            git rebase "origin/$TARGET_BRANCH"
+            if git push origin "HEAD:refs/heads/$TARGET_BRANCH"; then exit 0; fi
+          done
+          echo 'Evidence remains in the workflow artifact; branch push failed.' >&2
+          exit 1
