@@ -1,0 +1,40 @@
+name: OUTSIDE-2 W015 admission
+on:
+  push:
+    branches: [amelia-1.0]
+    paths:
+      - .github/workflows/outside2-w015-admit.yml
+
+permissions:
+  contents: write
+
+jobs:
+  admit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: amelia-1.0
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Admit registered W015 cast and reading
+        run: |
+          set -euo pipefail
+          cd amelia-1/outside
+          python3 Outside2.py cast W015 TTHHHTHHTTTTHTHHHHTHHTTTTTTTHTHH
+          python3 Outside2.py verify
+      - name: Publish W015 ledger events
+        env:
+          TARGET_BRANCH: amelia-1.0
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add amelia-1/outside/ledger_outside2.jsonl
+          git diff --cached --quiet && { echo 'No ledger change'; exit 1; }
+          git commit -m 'Admit OUTSIDE-2 W015 cast and reading'
+          git push origin "HEAD:refs/heads/$TARGET_BRANCH"
