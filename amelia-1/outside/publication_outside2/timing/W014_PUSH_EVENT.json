@@ -1,0 +1,26 @@
+{
+  "matching_events": [],
+  "note": "Filtered events API result. Empty matches are not a timestamp. Workflow run time and signed timestamp are separate evidence.",
+  "queried_utc": "2026-10-06T18:53:25.116103+00:00",
+  "queries": [
+    {
+      "count": 100,
+      "http_date": "Tue, 06 Oct 2026 18:53:10 GMT",
+      "url": "https://api.github.com/repos/adrianjohnsaker-wq/Amelia-0.4/events?per_page=100&page=1"
+    },
+    {
+      "count": 100,
+      "http_date": "Tue, 06 Oct 2026 18:53:17 GMT",
+      "url": "https://api.github.com/repos/adrianjohnsaker-wq/Amelia-0.4/events?per_page=100&page=2"
+    },
+    {
+      "count": 58,
+      "http_date": "Tue, 06 Oct 2026 18:53:24 GMT",
+      "url": "https://api.github.com/repos/adrianjohnsaker-wq/Amelia-0.4/events?per_page=100&page=3"
+    }
+  ],
+  "reading_commit": "962fdbff4984420941729dd598420a809e70c388",
+  "reading_event_hash": "4828e5a95b6a4323b6bdc268e1a65c70fc0332b576b179fba7dfd1a42d51e9e6",
+  "status": "MATCHING_PUSH_EVENT_NOT_AVAILABLE",
+  "working": "W014"
+}
