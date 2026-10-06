@@ -1,21 +1,33 @@
 {
+ "beacon": {
+  "chain_hash": "52db9ba70e0cc0f6eaf7803dd07447a1f5477735fd3f661792ba94600c84e971",
+  "genesis_time": 1692803367,
+  "network": "drand quicknet",
+  "period": 3,
+  "scheme": "bls-unchained-g1-rfc9380",
+  "url": "https://api.drand.sh/52db9ba70e0cc0f6eaf7803dd07447a1f5477735fd3f661792ba94600c84e971/public/{round}"
+ },
  "canonical_runtime_digest": "df164ce751d53db17ba16049f656d98806c806df5cf558cef0e49ea782f864ff",
  "graph_digest": "9760268dd784186434ea3d86efd2f8ae9f861b245f64f58c97f70f1e75fb3087",
  "protocol": {
   "calibration_gate": {
-   "C1_coverage": "for both arms and every zone z: among calibration casts of workings whose quartet contains z, the share in which the candidate containing z is ranked first (a tie for first counts its share 1/k) lies in [0.18, 0.32]",
-   "C2_type_I": "1000 simulated series with no signal: empirical rejection at alpha 0.05 <= 0.065 for P1 and for P2",
-   "C3_curve": "descriptive power at planted fractions 0.10, 0.20, 0.30, 0.45, 0.60 of workings; reported, not gated",
-   "C3_on_channel_control": "200 simulated series in which one of the twelve canonical passages per working is replaced by a passage into a zone of the target pair: rejection >= 0.95 for P1 and for P2",
-   "data": "synthetic casts only, from registered seeds int(SHA-256('OUTSIDE-2:calibration:' + W + ':' + i)[:16], 16), i < 1000",
-   "rule": "W013 may not be admitted unless C1, C2 and C3 all pass. If any fails, the apparatus is not modified within this registration."
+   "C1_coverage": "for both arms and every zone z: among pool casts of workings whose quartet contains z, the share in which the candidate containing z is ranked first (a k-way tie for first counts 1/k) lies in [0.18, 0.32]",
+   "C2_type_I": "1000 simulated series with no signal: empirical rejection at alpha 0.05 <= 0.065 for P1 and for P2 (a code check; the tests are exact)",
+   "C3_trace_plant_control": "200 series: in every working the destination of one uniformly chosen canonical passage is replaced by a uniformly chosen zone of the target pair (it may already lie there): rejection >= 0.95 for P1 and for P2",
+   "C4_seed_selection_control": "200 series: in every working two pool casts are sampled and the one whose canonical trace has more passages in the target pair is used for both arms (first on ties): rejection >= 0.95 for P1 and >= 0.80 for P2. This signal is producible by the apparatus itself, entering through the cast",
+   "curve": "descriptive: C3-type plant applied to each working independently with probability 0.10, 0.20, 0.30, 0.45, 0.60; 200 series each; reported, not gated",
+   "data": "synthetic casts only: pool seeds int(SHA-256('OUTSIDE-2:calibration:' + W + ':' + i)[:16], 16), i < 1000 per working; series sample the pool uniformly with replacement using random.Random(int(SHA-256('OUTSIDE-2:calibration-series')[:16], 16)) in the order C2, C3, C4, curve",
+   "rule": "W013 may not be admitted unless C1-C4 all pass. If any fails, the apparatus is not modified within this registration. The calibration seal's SHA-256 is recorded in every CAST event.",
+   "thresholds": "set with knowledge of design-stage simulations on synthetic casts; no working data existed"
   },
   "claims": {
    "on_failure": "the registered claim that this canonical apparatus selects target-related information under these conditions is not supported",
-   "permitted_on_success": "register 1 (P1 and/or P2 departures) and register 2 (canonical-specific structure if P2); access, not agency or communication"
+   "permitted_on_success": "register 1 (P1 and/or P2 departures) and register 2 (canonical-trace-specific information if P2); access, not agency or communication"
   },
+  "early_closure": "The series may close before W100 only for a software or apparatus fault demonstrated on synthetic data and independently audited. Outcome-based stopping is prohibited. On any closure, all completed workings are analysed and reported with the same tests.",
   "evidence": {
-   "arm_labels": "recorded openly in the ledger: scoring is mechanical, so there is no judge to blind; querent feedback shows the readings unlabelled",
+   "arm_labels": "recorded openly in the ledger; scoring is mechanical, so there is no judge to blind. Querent feedback presents the readings in an order fixed by the working id; this is presentation, not a blinding measure",
+   "atomicity": "CAST and READING are written in one append",
    "events_per_working": [
     "CAST",
     "READING",
@@ -36,7 +48,9 @@
     "event_hash"
    ],
    "no_backfill": true,
-   "serialization": "canonical-json-v1-sorted-keys-utf8"
+   "resolved_payload": "beacon round, randomness, signature, target index and pair only; target ranks are not written to the ledger",
+   "serialization": "canonical-json-v1-sorted-keys-utf8",
+   "verify": "replays every event: chain links, payload digests, registration and protocol digests, calibration seal, seed from tosses, both traces and scores from the seed, beacon round from the READING timestamp, randomness = SHA-256(signature), and the target index"
   },
   "frozen_mechanics": {
    "canonical_runtime_digest": "df164ce751d53db17ba16049f656d98806c806df5cf558cef0e49ea782f864ff",
@@ -47,6 +61,7 @@
    "passages": 12
   },
   "generation": {
+   "admission": "workings are admitted strictly in order; every cast the querent makes for a working is admitted; no cast may be discarded or repeated",
    "cast": "32 physical coin tosses H/T; seed = int(SHA-256(working id + ':' + tosses)[:16], 16)",
    "n": 88,
    "querent": "holds the fixed question during the physical cast",
@@ -67,27 +82,40 @@
    "P1": "one-sided exact randomization test over the target draw: T1 = sum over workings of the canonical arm's mid-rank of the target; p1 = P(T1' <= T1)",
    "P2": "one-sided exact randomization test over the target draw: T2 = sum over workings of (null mid-rank - canonical mid-rank) of the target; p2 = P(T2' >= T2)",
    "alpha": 0.05,
-   "interpretation": "P1 alone = departure from chance somewhere in the canonical apparatus; P2 = canonical-specific advantage over the same-cast null. The Numogram-specificity claim requires P2.",
+   "interpretation": "P1 alone: departure from chance in the canonical apparatus. P2: the effect follows the content of the canonical trace rather than the same-seed null trace. P2 does not by itself show that the canonical graph structure is necessary; that requires the registered follow-up of perturbation specificity (lesions to canonical relations).",
    "no_interim_analysis": true
   },
   "reader": {
    "kind": "Numogram-as-reader; no language layer in evaluation",
    "ranking": "candidates ranked by score, higher first; ties take mid-ranks",
    "reading": "the ordered destination zones of the twelve recorded passages, per arm",
-   "reference": "REF_CASTS = 4000 reference casts per graph (canonical, and each working's null), seeds int(SHA-256('OUTSIDE-2:reference:' + graph tag + ':' + i)[:16], 16); frozen in outside2_reference.json before any working",
+   "reference": "4000 reference casts per graph; graph tags 'canonical' and 'null:W###'; seeds int(SHA-256('OUTSIDE-2:reference:canonical:' + i)[:16], 16) and int(SHA-256('OUTSIDE-2:reference:null:' + W + ':' + i)[:16], 16), i < 4000; frozen in outside2_reference.json before any working",
    "score": "for candidate zone pair S: c = number of passages whose destination is in S; score = P(C < c) + 0.5 P(C = c) under the same arm's frozen reference distribution of C for S"
   },
   "registration_date": "2026-10-06",
+  "residual_trust": "The reading timestamp is written by the operator. The defence against re-casting a working is the public push before the beacon round, the admission rule, and the querent's own record of each cast. These are stated as procedural, not cryptographic, guarantees.",
   "series_id": "OUTSIDE-2-numogram-reader",
+  "supersedes": {
+   "reason": "independent pre-publication review: locally drawn target could be re-drawn by ledger truncation; calibration seal not bound into the ledger; RESOLVED events carried target ranks; on-channel control needed an apparatus-producible counterpart",
+   "registration_file_sha256": "83af4d296bc798af953639f9c1dfadad207bef321fbed2898db5b7831c940ef0",
+   "status": "never published; no working, reference-gated cast or target draw occurred under it",
+   "version": "1.0.0"
+  },
+  "target_draw": {
+   "audit": "anyone can fetch the round from the beacon, check randomness = SHA-256(signature) and recompute the target",
+   "index": "target index = int(SHA-256(randomness bytes || UTF-8(W + ':target-draw')), big-endian) mod 4",
+   "publication": "the commit containing the CAST and READING events is pushed to the public repository before the beacon round's time; a late push is recorded and reported, and never grounds for discarding the working",
+   "round": "r = ceil((t_reading + 600 - 1692803367) / 3) + 1, where t_reading is the READING event's created_utc in Unix seconds; the first round at or after 600 s past the reading",
+   "source": "drand quicknet public randomness beacon (chain hash 52db9ba7...e971, genesis 1692803367, period 3 s)"
+  },
   "target_pool": {
    "displayed_scene": "the registered lexicon_v2 fragments of the candidate's two zones, in zone order; display only, no role in scoring; no demon names",
-   "draw": "target index = int(SHA-256(32 bytes OS entropy || ':target-draw'), big-endian) mod 4, only after the reading event is sealed",
    "expressibility": "every candidate is a set of zones the reader emits; coverage is tested in C1",
    "quartet": "for working W: zones 0-9 shuffled by random.Random(int(SHA-256('OUTSIDE-2:quartet:' + W)[:16], 16)); candidates are the disjoint pairs (z0,z1), (z2,z3), (z4,z5), (z6,z7)"
   },
-  "version": "1.0.0"
+  "version": "1.1.0"
  },
- "protocol_sha256": "116c53ba79e21f627d7fb2a1d4087243fa755eb519148ec6e05ebdf304a26825",
+ "protocol_sha256": "01b103a21db5a7475db30f1eef18de51f9acb8d8310fd1ee18cdf6c29d6b08a0",
  "series_id": "OUTSIDE-2-numogram-reader",
  "sources": {
   "CanonicalNumogram.py": "f7c4e9a7ca928b9db6e12f650a2249eeb0eb4995056dd4940d781b6e9a4b569d",
@@ -96,8 +124,8 @@
   "NumogramInterface.py": "e2091e17ee62c8bcb8f3bb6db512c63b97111be3043f4e69d322b4a11b5a2d39",
   "OUTSIDE1_V2_1_CLOSURE.json": "70451c031fb7aa45d1011f89662832e8c43f3b77e0131bcd144c1498cb2ab244",
   "Outside1_v2.py": "595bde884be28d279fc2765ee052e9140258bf0e0e988f9e9e5a358ce9f2fbe3",
-  "Outside2.py": "fbcfbe3dc7810e3669fb1534727dc691d217e02544f94e81270c646bced0f19d",
+  "Outside2.py": "c2eaf7bad8d73cdaa6bbff555af767909d6f60c81e27f9156ca6b9280d2df496",
   "lexicon_v2.json": "2add52c70f7c4d3697fb26ebc68c617299a22297d906acfbf057e00096480b5f"
  },
- "version": "1.0.0"
+ "version": "1.1.0"
 }
