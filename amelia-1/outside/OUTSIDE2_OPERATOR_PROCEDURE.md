@@ -29,6 +29,37 @@ All commands run from `amelia-1/outside`. The branch must not be force-pushed at
 6. **Feedback.** `python3 Outside2.py feedback W###` gives the target scene and both readings for the
    querent. Arm identity is in the ledger; the feedback order is presentation only.
 
+## Queue runner (from W020)
+
+From W020 the per-working procedure is automated by `.github/workflows/outside2-queue.yml`.
+The querent still performs the physical 32-toss cast while holding the registered question.
+The repository request commit may be made directly by the querent or by a connected assistant
+acting on the querent's explicit instruction. These are separate acts: the request receipt records
+the request file/line and its Git commit provenance, while the cast itself remains the querent's act.
+
+1. Put one or more consecutive casts in a text file under
+   `amelia-1/outside/admission_requests/` using the format documented in that folder.
+   A connected assistant may create and push this file when explicitly instructed by the querent.
+2. That request commit starts the serialized queue. For each working, the runner calls the
+   registered `Outside2.cast`, obtains and verifies an RFC 3161 timestamp for the READING hash,
+   publishes the ledger and timestamp, and immediately publishes a request-bound admission receipt.
+3. After the registered beacon time, the runner requires at least two reachable drand relays,
+   requires every reachable relay to agree, verifies the BLS signature under the registered
+   quicknet key, then calls the registered `Outside2.resolve`.
+4. It replays the ledger and publishes relay responses, `W###_VERIFY.json`, and
+   `W###_FEEDBACK.json`. A partial run is restart-safe: an admitted unresolved working and any
+   missing admission receipt are handled before a new cast.
+5. At run end it publishes `publication_outside2/batches/BATCH_<run>.json`. The file reports a
+   batch verdict for workings handled in that run separately from the cumulative audit verdict,
+   so the historical W015 timing gap does not turn a clean later batch into a false failure.
+6. Any failed check halts before the next causal step and publishes `INCIDENT_<run>.json`.
+   Nothing admitted is discarded. No ranks, P1, P2 or other interim test statistics are computed.
+
+Queued internal pushes use GitHub's workflow token. GitHub suppresses recursive ordinary
+push-workflow triggering for those writes, so the older push-capture workflow is not relied upon
+for W020 onward. The queue's own RFC 3161 token, admission receipt, relay record, replay
+verification and batch audit are the evidence path for queued workings.
+
 ## Beacon audit
 
 `verify` checks that each recorded randomness is SHA-256 of the recorded signature, which an
@@ -93,10 +124,11 @@ GitHub JSON preserves the server assertion but is not independently signed by Gi
 A timestamp proves existence of the committed reading, not its public availability.
 The two evidence layers must be described separately.
 
-Do not publish ledger changes with a workflow's default `GITHUB_TOKEN`: GitHub suppresses
-subsequent push workflows for those writes. Use the authenticated operator/GitHub App push
-route used for registration. The evidence workflow's own bot commits affect only timing
-files and intentionally do not trigger another capture. Avoid skip-CI commit annotations.
+For the W013-W019 push-capture path, do not publish ledger changes with a workflow's default
+`GITHUB_TOKEN`, because GitHub suppresses subsequent ordinary push workflows for those writes.
+From W020 the queue runner is the explicit exception: it creates and verifies its own RFC 3161
+evidence before/alongside its internal token-authenticated pushes and does not depend on recursive
+execution of the older capture workflow. Avoid skip-CI commit annotations.
 
 The admission rule still covers undisclosed casts; neither timestamping nor GitHub history
 proves that no unpublished alternative cast occurred. None of these changes modifies

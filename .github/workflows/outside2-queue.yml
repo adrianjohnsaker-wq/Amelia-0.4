@@ -1,0 +1,54 @@
+name: OUTSIDE-2 queue runner
+
+# A request commit in admission_requests/ starts the queue. The commit may be made
+# directly by the querent or by a connected assistant acting on the querent's
+# explicit instruction. The physical cast remains the querent's act.
+on:
+  push:
+    branches: [amelia-1.0]
+    paths:
+      - amelia-1/outside/admission_requests/**
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: outside2-ledger
+  cancel-in-progress: false
+
+jobs:
+  queue:
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    env:
+      TARGET_BRANCH: amelia-1.0
+      GH_TOKEN: ${{ github.token }}
+      OUTSIDE2_QUEUE_MAX: '20'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: amelia-1.0
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install -r amelia-1/outside/requirements-audit.txt
+      - name: Queue unit tests
+        run: python -m unittest amelia-1/outside/tests/test_outside2_queue.py -v
+      - name: Configure evidence commit identity
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+      - name: Run the queue
+        working-directory: amelia-1/outside
+        run: python3 queue_outside2.py
+      - name: Retain all evidence in the run
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: outside2-queue-${{ github.run_id }}
+          path: |
+            amelia-1/outside/ledger_outside2.jsonl
+            amelia-1/outside/publication_outside2/
+          if-no-files-found: warn
