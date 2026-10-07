@@ -1,0 +1,116 @@
+{
+  "events": [
+    {
+      "created_utc": "2026-10-06T20:50:45.885Z",
+      "event_hash": "1ef3d532bf3ed3e55b383af07f6d3c74344368215081cef1bf0935df809d655e",
+      "event_id": "W015.000007.CAST",
+      "event_seq": 7,
+      "event_type": "CAST",
+      "parent_event_hash": "521992615f790c63b8b098b44d75aeb82102233620d79db1653f290a845e9a00",
+      "payload": {
+        "calibration_sha256": "539cf350d93158c757176815fca8d654c0354d6eadab1478b1b54102988e811d",
+        "reference_sha256": "b32d1f4a3bf965e50250dde6faa44e10d3efafbc883d89b1b3c4fac50720aed9",
+        "seed": 12788514755433770031,
+        "tosses": "TTHHHTHHTTTTHTHHHHTHHTTTTTTTHTHH"
+      },
+      "payload_sha256": "7b1a27b4b822f33873e270e255c8e78ba7f0f4ce462fc9b779921bad9772612a",
+      "protocol_sha256": "01b103a21db5a7475db30f1eef18de51f9acb8d8310fd1ee18cdf6c29d6b08a0",
+      "registration_sha256": "f9a6aff2893b9e6e5942b18b0e5aa61b724d06a3b7fcbcbe1a75f0d41269c752",
+      "series_id": "OUTSIDE-2-numogram-reader",
+      "working": "W015"
+    },
+    {
+      "created_utc": "2026-10-06T20:50:45.885Z",
+      "event_hash": "7d16bf8aeae09d367e597e1b38c79b0721cbdecb9fefa9a43397cafbf1a52b4a",
+      "event_id": "W015.000008.READING",
+      "event_seq": 8,
+      "event_type": "READING",
+      "parent_event_hash": "1ef3d532bf3ed3e55b383af07f6d3c74344368215081cef1bf0935df809d655e",
+      "payload": {
+        "beacon_round": 32839028,
+        "beacon_round_time_unix": 1791320448,
+        "canonical": {
+          "dst": [
+            8,
+            7,
+            2,
+            5,
+            4,
+            1,
+            8,
+            1,
+            1,
+            1,
+            1,
+            8
+          ],
+          "ranks2": [
+            8,
+            2,
+            4,
+            6
+          ],
+          "scores": [
+            0.099875,
+            0.793,
+            0.709875,
+            0.489
+          ]
+        },
+        "cast_event_hash": "1ef3d532bf3ed3e55b383af07f6d3c74344368215081cef1bf0935df809d655e",
+        "null": {
+          "dst": [
+            8,
+            9,
+            4,
+            5,
+            2,
+            1,
+            8,
+            7,
+            6,
+            3,
+            1,
+            8
+          ],
+          "ranks2": [
+            8,
+            2,
+            4,
+            6
+          ],
+          "scores": [
+            0.325875,
+            0.755625,
+            0.694125,
+            0.57125
+          ]
+        },
+        "quartet": [
+          [
+            7,
+            9
+          ],
+          [
+            0,
+            8
+          ],
+          [
+            2,
+            5
+          ],
+          [
+            4,
+            6
+          ]
+        ]
+      },
+      "payload_sha256": "5aab39a25ea06d239a76b32953dd7975f2589a9611a842e136f90a689a764c69",
+      "protocol_sha256": "01b103a21db5a7475db30f1eef18de51f9acb8d8310fd1ee18cdf6c29d6b08a0",
+      "registration_sha256": "f9a6aff2893b9e6e5942b18b0e5aa61b724d06a3b7fcbcbe1a75f0d41269c752",
+      "series_id": "OUTSIDE-2-numogram-reader",
+      "working": "W015"
+    }
+  ],
+  "status": "UNPUBLISHED_LOCAL_RECORD_NOT_INSERTED_IN_CANONICAL_LEDGER"
+}

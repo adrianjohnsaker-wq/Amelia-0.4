@@ -1,0 +1,20 @@
+{
+  "admission_discrepancy": "A second software admission was performed by the later W015 admission workflow. This is not evidence of a second physical cast. Both records are preserved; this discrepancy must not be represented as a clean uninterrupted admission.",
+  "comparison": "Same 32 tosses, seed, quartet and both arm readings; different admission timestamp and hence different fixed beacon round.",
+  "earlier_local_reading": {
+    "beacon_round": 32839028,
+    "created_utc": "2026-10-06T20:50:45.885Z",
+    "event_hash": "7d16bf8aeae09d367e597e1b38c79b0721cbdecb9fefa9a43397cafbf1a52b4a",
+    "publication": "No completed branch commit/push in this session before interruption"
+  },
+  "missing_timestamp": "No W015.tsq, W015.tsr or W015_PUSH.json exists at c585a48. The later trigger produced DRY_RUN_37534432712 rather than a W015 token because the trigger commit appended no READING.",
+  "primary_analysis": "No interim P1/P2 analysis performed.",
+  "procedure": "Resolve the already published round 32839773 only; do not redraw or re-admit. Do not backdate or create a substitute pre-deadline token. Retain the working and report timing audit INCOMPLETE. The unpublished round has not been resolved or compared for outcome selection in this continuation.",
+  "published_reading": {
+    "beacon_round": 32839773,
+    "created_utc": "2026-10-06T21:28:00.587Z",
+    "event_hash": "6ac5ff38d7c482d0aeeca6310b61b9f9368bc836459e1924162071b1f583d338"
+  },
+  "recorded_utc": "2026-10-07T10:43:36.914186+00:00",
+  "working": "W015"
+}
