@@ -1,0 +1,66 @@
+{
+  "schema": "OUTSIDE-2-beacon-audit-compact-1",
+  "audit": "OUTSIDE-2 W018 beacon and timing audit",
+  "run_utc": "2026-10-07T13:04:36+00:00",
+  "base_audit": {
+    "file": "W017_BEACON_AUDIT.json",
+    "blob_sha": "4394e646bb5d552b80609c10b6ebd52cd5152f1e"
+  },
+  "ledger_snapshot": {
+    "events": 18,
+    "head": "78c70c8659e2a7dca255cf0981c8ffd5d0e8e3acbfaabf153894a9d2c2c5d871",
+    "chain_ok": true,
+    "problems": []
+  },
+  "global": {
+    "key_bound": true,
+    "registration_parameters": true,
+    "known_answer": true,
+    "ledger_chain": true
+  },
+  "W018": {
+    "round": 32858197,
+    "status": "PASS",
+    "checks": {
+      "round_rule": true,
+      "links": true,
+      "randomness_hash_signature": true,
+      "bls_signature": true,
+      "target": true,
+      "resolved_after_round": true
+    },
+    "relays": {
+      "agreeing": 3,
+      "reachable": 3,
+      "pass": true
+    },
+    "target_index": 2,
+    "target_pair": [
+      2,
+      6
+    ],
+    "randomness": "c038e9a380ca8033de0bb73aa62486e73cec7371cf633c027d8e087296ac747a",
+    "signature": "86eea444883c35e5048d8cc8812d7a8d6f6bf61245868bcb076f5f486b0b8471aef2443e277c397e81d158080687bcd6"
+  },
+  "timing_W018": {
+    "status": "PASS",
+    "gen_time": "2026-10-07T12:49:51+00:00",
+    "deadline_unix": 1791377955,
+    "run_created_at": "2026-10-07T12:49:35Z",
+    "response_sha256": "becb630fb93681e74ff5df798c8e42f8d11aa857fda2695328c1ac710d6b2e4a",
+    "trust_anchor_sha256": "2151b61137ffa86bf664691ba67e7da0b19f98c758e3d228d5d8ebf27e044438"
+  },
+  "cumulative": {
+    "resolved_audited": 6,
+    "verdict": "INCOMPLETE",
+    "sole_known_incomplete_timing_record": "W015"
+  },
+  "evidence_files": [
+    "W018_VERIFY.json",
+    "W018_RELAY_RESPONSES.json",
+    "W018_PUSH_EVENT.json",
+    "W018_PUSH.json",
+    "W018.tsq",
+    "W018.tsr"
+  ]
+}
