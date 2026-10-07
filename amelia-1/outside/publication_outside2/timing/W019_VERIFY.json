@@ -1,0 +1,18 @@
+{
+  "chain_ok": true,
+  "events": 21,
+  "head": "e358db2a20a0c32a07ceee7a7d9583da7acc1499cbe1679fb79cd62efa37caf8",
+  "problems": [],
+  "verification_method": "W019 resolution delta recomputed against the published 20-event pre-beacon ledger using the registered cj/sha, target-draw, linkage, randomness-hash, and post-round rules; events 1-20 were independently verified pre-beacon.",
+  "delta_checks": {
+    "parent_link": true,
+    "payload_sha256": true,
+    "event_sha256": true,
+    "randomness_is_sha256_signature": true,
+    "target_index": true,
+    "target_pair": true,
+    "resolved_after_round": true,
+    "bls_signature": true,
+    "wrong_round_rejected": true
+  }
+}
