@@ -1,0 +1,13 @@
+{
+  "working": "W019",
+  "phase": "PREBEACON",
+  "chain_ok": true,
+  "events": 20,
+  "head": "206a24a9b79537893ce5d36ae0df9d4f364a0d318f5ad813b80551ca95305d3e",
+  "problems": [],
+  "reading_commit": "54b8ae88535dbb8ffd0a3f8385dc3de85bc0558b",
+  "beacon_round": 32858433,
+  "beacon_round_time_unix": 1791378663,
+  "no_target_resolution_performed": true,
+  "no_interim_P1_P2_analysis": true
+}
