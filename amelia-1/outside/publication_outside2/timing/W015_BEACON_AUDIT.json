@@ -1,0 +1,112 @@
+{
+  "audit": "OUTSIDE-2 beacon audit",
+  "complete": false,
+  "failures": {
+    "global": [],
+    "timing": [],
+    "workings": []
+  },
+  "global": {
+    "G1_key_bound_to_registered_chain_hash": true,
+    "G2_registration_parameters": true,
+    "G3_known_answer": true,
+    "G4_ledger_chain": true,
+    "events": 9,
+    "head": "ef3930b88f2b31c59c0a52682a06d08c9528c7c6817d3e57718c1cedcabc5697"
+  },
+  "ledger": "/workspace/scratch/5adf0e9ab361/w015-current/amelia-1/outside/ledger_outside2.jsonl",
+  "not_checked": "TSA proves existence, not public availability or absence of unpublished casts; GitHub receipts are archived server assertions; no online TSA revocation check",
+  "resolved_audited": 3,
+  "run_utc": "2026-10-07T10:44:26+00:00",
+  "timing": {
+    "W013": {
+      "accuracy_declared": false,
+      "accuracy_seconds": 0.0,
+      "comparison_time_unix": 1791311844.0,
+      "deadline_unix": 1791312420,
+      "gen_time": "2026-10-06T18:37:24+00:00",
+      "github_push_evidence": {
+        "note": "run creation is a server-side upper bound on push time, not an exact push time",
+        "push_before_deadline": null,
+        "push_event_created_at": null,
+        "run_created_at": "2026-10-06T18:37:12Z",
+        "run_created_before_deadline": true
+      },
+      "reason": "signed issuance time (plus declared accuracy, if any) must precede beacon",
+      "response_sha256": "33789452d0b488e746079eda8b487feee1ad18fdeedf2119b64bc1a4114897cf",
+      "status": "PASS",
+      "trust_anchor_sha256": "2151b61137ffa86bf664691ba67e7da0b19f98c758e3d228d5d8ebf27e044438"
+    },
+    "W014": {
+      "accuracy_declared": false,
+      "accuracy_seconds": 0.0,
+      "comparison_time_unix": 1791312777.0,
+      "deadline_unix": 1791313350,
+      "gen_time": "2026-10-06T18:52:57+00:00",
+      "github_push_evidence": {
+        "note": "run creation is a server-side upper bound on push time, not an exact push time",
+        "push_before_deadline": null,
+        "push_event_created_at": null,
+        "run_created_at": "2026-10-06T18:52:48Z",
+        "run_created_before_deadline": true
+      },
+      "reason": "signed issuance time (plus declared accuracy, if any) must precede beacon",
+      "response_sha256": "fc82a087d09df565d57911fabb3b473c1f359b389759e3a9ce6ec196f1ef94ff",
+      "status": "PASS",
+      "trust_anchor_sha256": "2151b61137ffa86bf664691ba67e7da0b19f98c758e3d228d5d8ebf27e044438"
+    },
+    "W015": {
+      "github_push_evidence": "INCOMPLETE: push receipt absent",
+      "reason": "timestamp response missing",
+      "status": "INCOMPLETE"
+    }
+  },
+  "verdict": "INCOMPLETE",
+  "workings": {
+    "W013": {
+      "R1_round_rule": true,
+      "R2_links": true,
+      "R3_randomness_is_hash_of_signature": true,
+      "R4_bls_signature": true,
+      "R5_target": true,
+      "R6_resolved_after_round": true,
+      "R7_relays": {
+        "agreeing": 3,
+        "pass": true,
+        "reachable": 3
+      },
+      "round": 32836352,
+      "status": "PASS"
+    },
+    "W014": {
+      "R1_round_rule": true,
+      "R2_links": true,
+      "R3_randomness_is_hash_of_signature": true,
+      "R4_bls_signature": true,
+      "R5_target": true,
+      "R6_resolved_after_round": true,
+      "R7_relays": {
+        "agreeing": 3,
+        "pass": true,
+        "reachable": 3
+      },
+      "round": 32836662,
+      "status": "PASS"
+    },
+    "W015": {
+      "R1_round_rule": true,
+      "R2_links": true,
+      "R3_randomness_is_hash_of_signature": true,
+      "R4_bls_signature": true,
+      "R5_target": true,
+      "R6_resolved_after_round": true,
+      "R7_relays": {
+        "agreeing": 3,
+        "pass": true,
+        "reachable": 3
+      },
+      "round": 32839773,
+      "status": "PASS"
+    }
+  }
+}

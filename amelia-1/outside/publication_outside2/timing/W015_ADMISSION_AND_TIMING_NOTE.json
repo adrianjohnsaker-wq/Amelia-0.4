@@ -7,6 +7,14 @@
     "event_hash": "7d16bf8aeae09d367e597e1b38c79b0721cbdecb9fefa9a43397cafbf1a52b4a",
     "publication": "No completed branch commit/push in this session before interruption"
   },
+  "github_publication_evidence": {
+    "beacon_deadline_utc": "2026-10-06T21:38:03Z",
+    "before_deadline": true,
+    "event_id": "23212138861",
+    "pushed_commit": "b8d1458140669563cd1c576a133c6b5526374108",
+    "server_created_at": "2026-10-06T21:28:02Z",
+    "source": "W015_PUSH_EVENT.json"
+  },
   "missing_timestamp": "No W015.tsq, W015.tsr or W015_PUSH.json exists at c585a48. The later trigger produced DRY_RUN_37534432712 rather than a W015 token because the trigger commit appended no READING.",
   "primary_analysis": "No interim P1/P2 analysis performed.",
   "procedure": "Resolve the already published round 32839773 only; do not redraw or re-admit. Do not backdate or create a substitute pre-deadline token. Retain the working and report timing audit INCOMPLETE. The unpublished round has not been resolved or compared for outcome selection in this continuation.",

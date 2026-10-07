@@ -1,0 +1,52 @@
+{
+  "matching_events": [
+    {
+      "actor": {
+        "avatar_url": "https://avatars.githubusercontent.com/u/41898282?",
+        "display_login": "github-actions",
+        "gravatar_id": "",
+        "id": 41898282,
+        "login": "github-actions[bot]",
+        "url": "https://api.github.com/users/github-actions[bot]"
+      },
+      "created_at": "2026-10-06T21:28:02Z",
+      "id": "23212138861",
+      "payload": {
+        "before": "03a3c0bba7a54d2e910fe2104cd421fc5deeefec",
+        "head": "b8d1458140669563cd1c576a133c6b5526374108",
+        "push_id": 45665879872,
+        "ref": "refs/heads/amelia-1.0",
+        "repository_id": 1091279701
+      },
+      "public": true,
+      "repo": {
+        "id": 1091279701,
+        "name": "adrianjohnsaker-wq/Amelia-0.4",
+        "url": "https://api.github.com/repos/adrianjohnsaker-wq/Amelia-0.4"
+      },
+      "type": "PushEvent"
+    }
+  ],
+  "note": "Filtered feed result, not a substitute for the missing W015 timestamp token. W015_SERVER_RUNS.json preserves server run metadata.",
+  "queried_utc": "2026-10-07T10:45:07.230390+00:00",
+  "queries": [
+    {
+      "count": 100,
+      "http_date": "Wed, 07 Oct 2026 10:44:54 GMT",
+      "url": "https://api.github.com/repos/adrianjohnsaker-wq/Amelia-0.4/events?per_page=100&page=1"
+    },
+    {
+      "count": 100,
+      "http_date": "Wed, 07 Oct 2026 10:45:00 GMT",
+      "url": "https://api.github.com/repos/adrianjohnsaker-wq/Amelia-0.4/events?per_page=100&page=2"
+    },
+    {
+      "count": 75,
+      "http_date": "Wed, 07 Oct 2026 10:45:07 GMT",
+      "url": "https://api.github.com/repos/adrianjohnsaker-wq/Amelia-0.4/events?per_page=100&page=3"
+    }
+  ],
+  "reading_commit": "b8d1458140669563cd1c576a133c6b5526374108",
+  "status": "FOUND",
+  "working": "W015"
+}
