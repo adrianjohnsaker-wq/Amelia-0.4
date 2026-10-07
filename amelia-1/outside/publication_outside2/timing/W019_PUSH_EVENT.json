@@ -1,0 +1,11 @@
+{
+  "schema": "OUTSIDE-2-push-event-availability-1",
+  "working": "W019",
+  "reading_commit": "54b8ae88535dbb8ffd0a3f8385dc3de85bc0558b",
+  "reading_event_hash": "206a24a9b79537893ce5d36ae0df9d4f364a0d318f5ad813b80551ca95305d3e",
+  "workflow_capture_file": "W019_PUSH.json",
+  "workflow_capture_blob_sha": "32145cefc9b2d155c6f771518bb9c09d8be2e500",
+  "repository_push_event": null,
+  "status": "MATCHING_PUSH_EVENT_NOT_AVAILABLE_IN_WORKFLOW_CAPTURE",
+  "note": "The workflow receipt preserves the actual push webhook payload, run metadata and signed RFC3161 token. A null repository_push_event is not treated as proof that no PushEvent existed."
+}
