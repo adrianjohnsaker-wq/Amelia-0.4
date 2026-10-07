@@ -1,0 +1,26 @@
+{
+  "matching_events": [],
+  "note": "Filtered events API result. Empty matches are not a push timestamp. Workflow run metadata and signed RFC3161 token are separate evidence.",
+  "queried_utc": "2026-10-07T12:41:42.290409+00:00",
+  "queries": [
+    {
+      "count": 100,
+      "http_date": "Wed, 07 Oct 2026 12:41:41 GMT",
+      "url": "https://api.github.com/repos/adrianjohnsaker-wq/Amelia-0.4/events?per_page=100&page=1"
+    },
+    {
+      "count": 100,
+      "http_date": "Wed, 07 Oct 2026 12:41:41 GMT",
+      "url": "https://api.github.com/repos/adrianjohnsaker-wq/Amelia-0.4/events?per_page=100&page=2"
+    },
+    {
+      "count": 75,
+      "http_date": "Wed, 07 Oct 2026 12:41:42 GMT",
+      "url": "https://api.github.com/repos/adrianjohnsaker-wq/Amelia-0.4/events?per_page=100&page=3"
+    }
+  ],
+  "reading_commit": "5c53a26c27c06b26a1b5523baca015b5093bf590",
+  "reading_event_hash": "c659a57e5c0103a8486222e4c7a9bbcde46a82d6b8b6e72f8b80669b4fee9df5",
+  "status": "MATCHING_PUSH_EVENT_NOT_AVAILABLE",
+  "working": "W017"
+}
