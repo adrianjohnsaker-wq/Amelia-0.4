@@ -1,0 +1,77 @@
+{
+  "schema": "OUTSIDE-2-beacon-audit-compact-1",
+  "audit": "OUTSIDE-2 W019 final beacon and timing audit",
+  "working": "W019",
+  "ledger": {
+    "events": 21,
+    "head": "e358db2a20a0c32a07ceee7a7d9583da7acc1499cbe1679fb79cd62efa37caf8",
+    "state": [
+      "CAST",
+      "READING",
+      "RESOLVED"
+    ],
+    "chain_ok": true
+  },
+  "prebeacon": {
+    "reading_commit": "54b8ae88535dbb8ffd0a3f8385dc3de85bc0558b",
+    "reading_event_hash": "206a24a9b79537893ce5d36ae0df9d4f364a0d318f5ad813b80551ca95305d3e",
+    "workflow_run_created_at": "2026-10-07T13:01:39Z",
+    "tsa_gen_time": "2026-10-07T13:01:51+00:00",
+    "beacon_deadline_unix": 1791378663,
+    "tsa_status": "PASS",
+    "tsa_response_sha256": "85734970b87eb236fc84a647f5bf22aca546e76d2f6d3e466599c32bcbf8b78a",
+    "trust_anchor_sha256": "2151b61137ffa86bf664691ba67e7da0b19f98c758e3d228d5d8ebf27e044438"
+  },
+  "beacon": {
+    "round": 32858433,
+    "randomness": "7fa7bd89e0291c491d49cecbb1ca26c45e87b765f91059054676260549084ebf",
+    "signature": "8c92ac9023dce08a02ef554023a9a66d5442ef82742767458ca8c10d847ee0320705c2c9863fc70623f535ca7554cb77",
+    "target_index": 1,
+    "target_pair": [
+      0,
+      1
+    ],
+    "relays": {
+      "reachable": 3,
+      "agreeing": 3,
+      "pass": true
+    },
+    "bls_signature": true,
+    "wrong_round_rejected": true
+  },
+  "resolution": {
+    "event_id": "W019.000021.RESOLVED",
+    "created_utc": "2026-10-07T13:11:53.000Z",
+    "event_hash": "e358db2a20a0c32a07ceee7a7d9583da7acc1499cbe1679fb79cd62efa37caf8",
+    "payload_sha256": "189fa74fa0aa765a52c596a672afabcb5ebb21ab9e61e9671c712b90d17b7f1b",
+    "commit": "a0fee609de0c1d2ad8125f25f62b0952bf162685",
+    "method_note": "The isolated resolver invocation was blocked by the execution wrapper. The RESOLVED event was therefore constructed with the registered _event/cj/sha and target-draw rules using an authoritative post-round timestamp, then independently delta-verified against the previously verified 20-event ledger."
+  },
+  "checks": {
+    "R1_round_rule": true,
+    "R2_links": true,
+    "R3_randomness_is_hash_of_signature": true,
+    "R4_bls_signature": true,
+    "R5_target": true,
+    "R6_resolved_after_round": true,
+    "R7_relays": true
+  },
+  "cumulative": {
+    "resolved": 7,
+    "of": 88,
+    "next": "W020",
+    "verdict": "INCOMPLETE",
+    "incomplete_reason": "W015 timestamp response/push receipt remains missing"
+  },
+  "no_interim_P1_P2_analysis": true,
+  "evidence_files": [
+    "W019_PUSH.json",
+    "W019.tsq",
+    "W019.tsr",
+    "W019_PREBEACON_VERIFY.json",
+    "W019_PREBEACON_AUDIT.json",
+    "W019_VERIFY.json",
+    "W019_RELAY_RESPONSES.json",
+    "W019_PUSH_EVENT.json"
+  ]
+}
