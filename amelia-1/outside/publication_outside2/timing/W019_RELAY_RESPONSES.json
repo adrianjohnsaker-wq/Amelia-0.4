@@ -1,0 +1,43 @@
+{
+  "responses": [
+    {
+      "relay": "https://api.drand.sh",
+      "response": {
+        "round": 32858433,
+        "randomness": "7fa7bd89e0291c491d49cecbb1ca26c45e87b765f91059054676260549084ebf",
+        "signature": "8c92ac9023dce08a02ef554023a9a66d5442ef82742767458ca8c10d847ee0320705c2c9863fc70623f535ca7554cb77"
+      },
+      "round": 32858433
+    },
+    {
+      "relay": "https://api2.drand.sh",
+      "response": {
+        "error": "UNAVAILABLE: connection failed during independent retrieval"
+      },
+      "round": 32858433
+    },
+    {
+      "relay": "https://api3.drand.sh",
+      "response": {
+        "round": 32858433,
+        "randomness": "7fa7bd89e0291c491d49cecbb1ca26c45e87b765f91059054676260549084ebf",
+        "signature": "8c92ac9023dce08a02ef554023a9a66d5442ef82742767458ca8c10d847ee0320705c2c9863fc70623f535ca7554cb77"
+      },
+      "round": 32858433
+    },
+    {
+      "relay": "https://drand.cloudflare.com",
+      "response": {
+        "round": 32858433,
+        "randomness": "7fa7bd89e0291c491d49cecbb1ca26c45e87b765f91059054676260549084ebf",
+        "signature": "8c92ac9023dce08a02ef554023a9a66d5442ef82742767458ca8c10d847ee0320705c2c9863fc70623f535ca7554cb77"
+      },
+      "round": 32858433
+    }
+  ],
+  "agreement": {
+    "reachable": 3,
+    "agreeing": 3,
+    "pass": true
+  }
+}
