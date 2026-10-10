@@ -1,0 +1,251 @@
+{
+  "batch_verdict": "PASS",
+  "completed_utc": "2026-10-10T23:51:05.344Z",
+  "cumulative_audit_failures": {
+    "global": [],
+    "timing": [],
+    "workings": []
+  },
+  "cumulative_audit_verdict": "INCOMPLETE",
+  "events": 126,
+  "ledger_head": "d51f307a7b1ba69e7ec00dbea02c7dc58ca887a37e97c3adf43e80deebb8b6f2",
+  "note": "batch_verdict evaluates only workings handled in this run; cumulative status may remain INCOMPLETE because of historical evidence gaps such as W015. No ranks or test statistics are computed by the queue runner.",
+  "run": "20261010T214827Z_38089020358",
+  "schema": "OUTSIDE-2-queue-batch-2",
+  "steps": [
+    {
+      "beacon_round": 32955383,
+      "push_before_deadline": true,
+      "request_commit": "e6dad93091791aaefcde55c40b7a5bd58fbdf8d7",
+      "step": "admitted",
+      "tsa": "PASS",
+      "working": "W043"
+    },
+    {
+      "beacon_round": 32955383,
+      "relays": 3,
+      "step": "resolved",
+      "working": "W043"
+    },
+    {
+      "beacon_round": 32955587,
+      "push_before_deadline": true,
+      "request_commit": "e6dad93091791aaefcde55c40b7a5bd58fbdf8d7",
+      "step": "admitted",
+      "tsa": "PASS",
+      "working": "W044"
+    },
+    {
+      "beacon_round": 32955587,
+      "relays": 3,
+      "step": "resolved",
+      "working": "W044"
+    },
+    {
+      "beacon_round": 32955791,
+      "push_before_deadline": true,
+      "request_commit": "e6dad93091791aaefcde55c40b7a5bd58fbdf8d7",
+      "step": "admitted",
+      "tsa": "PASS",
+      "working": "W045"
+    },
+    {
+      "beacon_round": 32955791,
+      "relays": 3,
+      "step": "resolved",
+      "working": "W045"
+    },
+    {
+      "beacon_round": 32955995,
+      "push_before_deadline": true,
+      "request_commit": "e6dad93091791aaefcde55c40b7a5bd58fbdf8d7",
+      "step": "admitted",
+      "tsa": "PASS",
+      "working": "W046"
+    },
+    {
+      "beacon_round": 32955995,
+      "relays": 3,
+      "step": "resolved",
+      "working": "W046"
+    },
+    {
+      "beacon_round": 32956199,
+      "push_before_deadline": true,
+      "request_commit": "e6dad93091791aaefcde55c40b7a5bd58fbdf8d7",
+      "step": "admitted",
+      "tsa": "PASS",
+      "working": "W047"
+    },
+    {
+      "beacon_round": 32956199,
+      "relays": 3,
+      "step": "resolved",
+      "working": "W047"
+    },
+    {
+      "beacon_round": 32956403,
+      "push_before_deadline": true,
+      "request_commit": "e6dad93091791aaefcde55c40b7a5bd58fbdf8d7",
+      "step": "admitted",
+      "tsa": "PASS",
+      "working": "W048"
+    },
+    {
+      "beacon_round": 32956403,
+      "relays": 3,
+      "step": "resolved",
+      "working": "W048"
+    },
+    {
+      "beacon_round": 32956607,
+      "push_before_deadline": true,
+      "request_commit": "e6dad93091791aaefcde55c40b7a5bd58fbdf8d7",
+      "step": "admitted",
+      "tsa": "PASS",
+      "working": "W049"
+    },
+    {
+      "beacon_round": 32956607,
+      "relays": 3,
+      "step": "resolved",
+      "working": "W049"
+    },
+    {
+      "beacon_round": 32956811,
+      "push_before_deadline": true,
+      "request_commit": "e6dad93091791aaefcde55c40b7a5bd58fbdf8d7",
+      "step": "admitted",
+      "tsa": "PASS",
+      "working": "W050"
+    },
+    {
+      "beacon_round": 32956811,
+      "relays": 3,
+      "step": "resolved",
+      "working": "W050"
+    },
+    {
+      "beacon_round": 32957015,
+      "push_before_deadline": true,
+      "request_commit": "e6dad93091791aaefcde55c40b7a5bd58fbdf8d7",
+      "step": "admitted",
+      "tsa": "PASS",
+      "working": "W051"
+    },
+    {
+      "beacon_round": 32957015,
+      "relays": 3,
+      "step": "resolved",
+      "working": "W051"
+    },
+    {
+      "beacon_round": 32957219,
+      "push_before_deadline": true,
+      "request_commit": "e6dad93091791aaefcde55c40b7a5bd58fbdf8d7",
+      "step": "admitted",
+      "tsa": "PASS",
+      "working": "W052"
+    },
+    {
+      "beacon_round": 32957219,
+      "relays": 3,
+      "step": "resolved",
+      "working": "W052"
+    },
+    {
+      "beacon_round": 32957423,
+      "push_before_deadline": true,
+      "request_commit": "e6dad93091791aaefcde55c40b7a5bd58fbdf8d7",
+      "step": "admitted",
+      "tsa": "PASS",
+      "working": "W053"
+    },
+    {
+      "beacon_round": 32957423,
+      "relays": 3,
+      "step": "resolved",
+      "working": "W053"
+    },
+    {
+      "beacon_round": 32957627,
+      "push_before_deadline": true,
+      "request_commit": "e6dad93091791aaefcde55c40b7a5bd58fbdf8d7",
+      "step": "admitted",
+      "tsa": "PASS",
+      "working": "W054"
+    },
+    {
+      "beacon_round": 32957627,
+      "relays": 3,
+      "step": "resolved",
+      "working": "W054"
+    },
+    {
+      "next": "W055",
+      "step": "queue empty"
+    }
+  ],
+  "workings_this_run": {
+    "W043": {
+      "beacon": "PASS",
+      "relay": "PASS",
+      "timing": "PASS"
+    },
+    "W044": {
+      "beacon": "PASS",
+      "relay": "PASS",
+      "timing": "PASS"
+    },
+    "W045": {
+      "beacon": "PASS",
+      "relay": "PASS",
+      "timing": "PASS"
+    },
+    "W046": {
+      "beacon": "PASS",
+      "relay": "PASS",
+      "timing": "PASS"
+    },
+    "W047": {
+      "beacon": "PASS",
+      "relay": "PASS",
+      "timing": "PASS"
+    },
+    "W048": {
+      "beacon": "PASS",
+      "relay": "PASS",
+      "timing": "PASS"
+    },
+    "W049": {
+      "beacon": "PASS",
+      "relay": "PASS",
+      "timing": "PASS"
+    },
+    "W050": {
+      "beacon": "PASS",
+      "relay": "PASS",
+      "timing": "PASS"
+    },
+    "W051": {
+      "beacon": "PASS",
+      "relay": "PASS",
+      "timing": "PASS"
+    },
+    "W052": {
+      "beacon": "PASS",
+      "relay": "PASS",
+      "timing": "PASS"
+    },
+    "W053": {
+      "beacon": "PASS",
+      "relay": "PASS",
+      "timing": "PASS"
+    },
+    "W054": {
+      "beacon": "PASS",
+      "relay": "PASS",
+      "timing": "PASS"
+    }
+  }
+}
