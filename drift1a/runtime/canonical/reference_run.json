@@ -1,0 +1,7 @@
+{
+ "digest_H": "47b62b9df24f0e7e624c97ced510949fe4972ffca3e11cc08f82719a529ed82b",
+ "digest_P": "77b3a7f8ebc64622a63b1402bd9e2eddca23c929cc7eb228acffe0decbfd1387",
+ "episodes": 200,
+ "seed": 90701,
+ "substrate": "AmeliaSubstrate-1.0.0-M1"
+}

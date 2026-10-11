@@ -1,0 +1,16 @@
+{
+ "canonical_digest": "df164ce751d53db17ba16049f656d98806c806df5cf558cef0e49ea782f864ff",
+ "canonical_spec": "CanonicalNumogram-1.1.1",
+ "edge_counts": {
+  "current": 10,
+  "gate": 10,
+  "syzygy": 10
+ },
+ "graph_digest": "9760268dd784186434ea3d86efd2f8ae9f861b245f64f58c97f70f1e75fb3087",
+ "modules": {
+  "CanonicalNumogram.py": "f7c4e9a7ca928b9db6e12f650a2249eeb0eb4995056dd4940d781b6e9a4b569d",
+  "NumogramDynamics.py": "dbc034e41a8d2c84658494a8c15cc7c41c2e629a325a3d34044f28e39c7b8cae",
+  "NumogramInterface.py": "e2091e17ee62c8bcb8f3bb6db512c63b97111be3043f4e69d322b4a11b5a2d39"
+ },
+ "source": "sealed programme copies; digests identical to xenop_seal.json and later seals"
+}
