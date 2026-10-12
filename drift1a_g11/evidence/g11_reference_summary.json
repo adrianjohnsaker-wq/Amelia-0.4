@@ -1,0 +1,305 @@
+{
+  "policy": {
+    "version": "DRIFT-1A-G1.1-0.1.0",
+    "boundary": [
+      0,
+      3,
+      6,
+      9
+    ],
+    "episode_cap": 1260,
+    "ingress": "uniform-ten-zones-at-tick-start",
+    "initial_entry": "uniform",
+    "ticks": "one-legal-move-per-arm",
+    "memory": "carry-CG-reset-M-before-choice",
+    "clock": "global-tick",
+    "outcome": "post-move-boundary-Warp-or-Plex"
+  },
+  "seed": 101,
+  "ticks": 512,
+  "metrics": {
+    "C": {
+      "completed_episodes": 68,
+      "boundary_episodes": 68,
+      "warp": 47,
+      "plex": 21,
+      "warp_fraction": 0.6911764705882353,
+      "cap_terminated": 0,
+      "mean_completed_length": 7.529411764705882,
+      "right_censored": null,
+      "effects_by_source": {
+        "0": {
+          "choices": 6,
+          "commitment_changed": 0,
+          "governor_changed": 6,
+          "retention_changed": 0,
+          "commitment_active": 0,
+          "retention_active": 0
+        },
+        "1": {
+          "choices": 152,
+          "commitment_changed": 0,
+          "governor_changed": 152,
+          "retention_changed": 6,
+          "commitment_active": 0,
+          "retention_active": 6
+        },
+        "2": {
+          "choices": 30,
+          "commitment_changed": 0,
+          "governor_changed": 0,
+          "retention_changed": 0,
+          "commitment_active": 0,
+          "retention_active": 0
+        },
+        "3": {
+          "choices": 4,
+          "commitment_changed": 0,
+          "governor_changed": 4,
+          "retention_changed": 0,
+          "commitment_active": 0,
+          "retention_active": 2
+        },
+        "4": {
+          "choices": 37,
+          "commitment_changed": 0,
+          "governor_changed": 0,
+          "retention_changed": 0,
+          "commitment_active": 0,
+          "retention_active": 0
+        },
+        "5": {
+          "choices": 103,
+          "commitment_changed": 0,
+          "governor_changed": 0,
+          "retention_changed": 0,
+          "commitment_active": 0,
+          "retention_active": 0
+        },
+        "6": {
+          "choices": 9,
+          "commitment_changed": 0,
+          "governor_changed": 0,
+          "retention_changed": 0,
+          "commitment_active": 0,
+          "retention_active": 0
+        },
+        "7": {
+          "choices": 110,
+          "commitment_changed": 0,
+          "governor_changed": 0,
+          "retention_changed": 0,
+          "commitment_active": 0,
+          "retention_active": 0
+        },
+        "8": {
+          "choices": 53,
+          "commitment_changed": 0,
+          "governor_changed": 0,
+          "retention_changed": 0,
+          "commitment_active": 0,
+          "retention_active": 0
+        },
+        "9": {
+          "choices": 8,
+          "commitment_changed": 0,
+          "governor_changed": 8,
+          "retention_changed": 0,
+          "commitment_active": 0,
+          "retention_active": 7
+        }
+      }
+    },
+    "G": {
+      "completed_episodes": 241,
+      "boundary_episodes": 241,
+      "warp": 131,
+      "plex": 110,
+      "warp_fraction": 0.5435684647302904,
+      "cap_terminated": 0,
+      "mean_completed_length": 2.120331950207469,
+      "right_censored": {
+        "length": 1,
+        "route": [
+          6,
+          7
+        ]
+      },
+      "effects_by_source": {
+        "0": {
+          "choices": 32,
+          "commitment_changed": 0,
+          "governor_changed": 32,
+          "retention_changed": 0,
+          "commitment_active": 0,
+          "retention_active": 0
+        },
+        "1": {
+          "choices": 157,
+          "commitment_changed": 0,
+          "governor_changed": 157,
+          "retention_changed": 152,
+          "commitment_active": 0,
+          "retention_active": 152
+        },
+        "2": {
+          "choices": 30,
+          "commitment_changed": 0,
+          "governor_changed": 0,
+          "retention_changed": 0,
+          "commitment_active": 0,
+          "retention_active": 0
+        },
+        "3": {
+          "choices": 22,
+          "commitment_changed": 0,
+          "governor_changed": 22,
+          "retention_changed": 0,
+          "commitment_active": 0,
+          "retention_active": 0
+        },
+        "4": {
+          "choices": 31,
+          "commitment_changed": 0,
+          "governor_changed": 0,
+          "retention_changed": 0,
+          "commitment_active": 0,
+          "retention_active": 0
+        },
+        "5": {
+          "choices": 69,
+          "commitment_changed": 0,
+          "governor_changed": 0,
+          "retention_changed": 0,
+          "commitment_active": 0,
+          "retention_active": 0
+        },
+        "6": {
+          "choices": 26,
+          "commitment_changed": 0,
+          "governor_changed": 0,
+          "retention_changed": 0,
+          "commitment_active": 0,
+          "retention_active": 0
+        },
+        "7": {
+          "choices": 79,
+          "commitment_changed": 0,
+          "governor_changed": 0,
+          "retention_changed": 0,
+          "commitment_active": 0,
+          "retention_active": 0
+        },
+        "8": {
+          "choices": 37,
+          "commitment_changed": 0,
+          "governor_changed": 0,
+          "retention_changed": 0,
+          "commitment_active": 0,
+          "retention_active": 0
+        },
+        "9": {
+          "choices": 29,
+          "commitment_changed": 25,
+          "governor_changed": 29,
+          "retention_changed": 0,
+          "commitment_active": 25,
+          "retention_active": 28
+        }
+      }
+    },
+    "M": {
+      "completed_episodes": 69,
+      "boundary_episodes": 69,
+      "warp": 48,
+      "plex": 21,
+      "warp_fraction": 0.6956521739130435,
+      "cap_terminated": 0,
+      "mean_completed_length": 7.420289855072464,
+      "right_censored": null,
+      "effects_by_source": {
+        "0": {
+          "choices": 6,
+          "commitment_changed": 0,
+          "governor_changed": 0,
+          "retention_changed": 0,
+          "commitment_active": 0,
+          "retention_active": 0
+        },
+        "1": {
+          "choices": 148,
+          "commitment_changed": 0,
+          "governor_changed": 0,
+          "retention_changed": 0,
+          "commitment_active": 0,
+          "retention_active": 0
+        },
+        "2": {
+          "choices": 30,
+          "commitment_changed": 0,
+          "governor_changed": 0,
+          "retention_changed": 0,
+          "commitment_active": 0,
+          "retention_active": 0
+        },
+        "3": {
+          "choices": 4,
+          "commitment_changed": 0,
+          "governor_changed": 0,
+          "retention_changed": 0,
+          "commitment_active": 0,
+          "retention_active": 0
+        },
+        "4": {
+          "choices": 37,
+          "commitment_changed": 0,
+          "governor_changed": 0,
+          "retention_changed": 0,
+          "commitment_active": 0,
+          "retention_active": 0
+        },
+        "5": {
+          "choices": 106,
+          "commitment_changed": 0,
+          "governor_changed": 0,
+          "retention_changed": 0,
+          "commitment_active": 0,
+          "retention_active": 0
+        },
+        "6": {
+          "choices": 8,
+          "commitment_changed": 0,
+          "governor_changed": 0,
+          "retention_changed": 0,
+          "commitment_active": 0,
+          "retention_active": 0
+        },
+        "7": {
+          "choices": 109,
+          "commitment_changed": 0,
+          "governor_changed": 0,
+          "retention_changed": 0,
+          "commitment_active": 0,
+          "retention_active": 0
+        },
+        "8": {
+          "choices": 56,
+          "commitment_changed": 0,
+          "governor_changed": 0,
+          "retention_changed": 0,
+          "commitment_active": 0,
+          "retention_active": 0
+        },
+        "9": {
+          "choices": 8,
+          "commitment_changed": 0,
+          "governor_changed": 0,
+          "retention_changed": 0,
+          "commitment_active": 0,
+          "retention_active": 0
+        }
+      }
+    }
+  },
+  "discrete_path_digest": "30df20156f6d0c2ac8bf53fd3f6b34a975b260e53fa20a49f12a3629bc604a40"
+}
