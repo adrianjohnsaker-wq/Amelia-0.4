@@ -1,0 +1,139 @@
+name: Amelia C1 continuous observation
+
+on:
+  push:
+    branches: [amelia-1.0]
+    paths:
+      - 'drift1a_c1/**/*.py'
+      - 'drift1a_c1/requirements.txt'
+      - 'drift1a_c1/vendor/**'
+      - 'claude/DRIFT1A_C1_CHARTER_draft.md'
+      - '.github/workflows/drift1a-c1.yml'
+  schedule:
+    - cron: '17 * * * *'
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Validate offline, create the first LIVE genesis, or resume LIVE ingestion'
+        type: choice
+        options: [validate, genesis, run]
+        default: validate
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: amelia-c1-continuous
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.action == 'validate')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: amelia-1.0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12.14'
+          cache: pip
+          cache-dependency-path: drift1a_c1/requirements.txt
+      - run: python -m pip install -r drift1a_c1/requirements.txt
+      - name: Accepted substrate and C1 recovery / cryptographic tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/c1-validation"
+          (cd drift1a_g11 && sha256sum -c ACCEPTED_CORE_SHA256SUMS.txt && python -m unittest discover -s tests -v) 2>&1 | tee "$RUNNER_TEMP/c1-validation/substrate-tests.log"
+          python -m unittest discover -s drift1a_c1/tests -v 2>&1 | tee "$RUNNER_TEMP/c1-validation/c1-tests.log"
+      - name: Simulate a complete week across two week boundaries and replay all arms
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m drift1a_c1.simulate --root "$RUNNER_TEMP/c1-simulation" 2>&1 | tee "$RUNNER_TEMP/c1-validation/simulation.log"
+      - name: Preserve offline evidence (never a live seal)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Amelia-C1-offline-validation-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/c1-validation/
+            ${{ runner.temp }}/c1-simulation/
+          include-hidden-files: false
+          retention-days: 90
+          if-no-files-found: warn
+
+  observe:
+    if: vars.DRIFT_C1_ENABLE_LIVE == 'true' && (github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.action != 'validate'))
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    permissions:
+      contents: write
+    env:
+      C1_LEASE: ${{ github.run_id }}-${{ github.run_attempt }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: amelia-1.0
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12.14'
+          cache: pip
+          cache-dependency-path: drift1a_c1/requirements.txt
+      - run: python -m pip install -r drift1a_c1/requirements.txt
+      - name: Acquire a durable recorder lease before admitting anything
+        id: lease
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'Amelia C1 recorder'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          python -m drift1a_c1.runner claim "$C1_LEASE"
+          git add -- drift1a_c1/runner_state
+          git commit -m "C1: acquire recorder lease $C1_LEASE"
+          git push origin HEAD:amelia-1.0
+          echo 'acquired=true' >> "$GITHUB_OUTPUT"
+      - name: Admit verified rounds or create an explicitly requested genesis
+        env:
+          DRIFT_C1_ENABLE_LIVE: 'true'
+          REQUESTED_ACTION: ${{ inputs.action || 'run' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m drift1a_c1.cli "$REQUESTED_ACTION" --max-ticks 120 2>&1 | tee "$RUNNER_TEMP/c1-observation.log"
+      - name: Preserve state before attempting repository persistence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Amelia-C1-state-${{ github.run_id }}
+          path: |
+            drift1a_c1/recorded_live/
+            drift1a_c1/runner_state/
+            ${{ runner.temp }}/c1-observation.log
+          include-hidden-files: false
+          retention-days: 90
+          if-no-files-found: warn
+      - name: Commit immutable records, including partial progress and failed seal attempts
+        if: always() && steps.lease.outputs.acquired == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m drift1a_c1.runner complete "$C1_LEASE"
+          git add -- drift1a_c1/runner_state
+          if [ -d drift1a_c1/recorded_live ]; then git add -- drift1a_c1/recorded_live; fi
+          git commit -m "C1: append observation records (workflow $GITHUB_RUN_ID)"
+          for attempt in 1 2 3; do
+            git fetch origin amelia-1.0
+            if ! git rebase origin/amelia-1.0; then
+              git rebase --abort
+              echo 'Persistence conflict: recover the uploaded state artifact before resuming.' >&2
+              exit 1
+            fi
+            if git push origin HEAD:amelia-1.0; then exit 0; fi
+          done
+          echo 'State push failed; preserve and reconcile this run artifact before resuming.' >&2
+          exit 1

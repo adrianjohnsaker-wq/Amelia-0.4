@@ -1,0 +1,45 @@
+test_persistent_three_arm_resume_replay_export (test_android_session.AndroidSession.test_persistent_three_arm_resume_replay_export) ... ok
+test_reference (test_android_session.AndroidSession.test_reference) ... ok
+test_reject_tampered_ledger (test_android_session.AndroidSession.test_reject_tampered_ledger) ... ok
+test_all_start_zones_and_graphs_legal (test_g1.G1.test_all_start_zones_and_graphs_legal) ... ok
+test_android_boundary_roundtrip (test_g1.G1.test_android_boundary_roundtrip) ... ok
+test_brier_eprocess_and_temporal_leakage (test_g1.G1.test_brier_eprocess_and_temporal_leakage) ... ok
+test_candidate_predictions_use_same_prior_and_commit_selected (test_g1.G1.test_candidate_predictions_use_same_prior_and_commit_selected) ... ok
+test_checkpoint_resume_exact_and_tamper_rejected (test_g1.G1.test_checkpoint_resume_exact_and_tamper_rejected) ... ok
+test_complete_reset_matches_fresh_history_at_same_present (test_g1.G1.test_complete_reset_matches_fresh_history_at_same_present) ... ok
+test_d1_prior_matches_sealed_fraction_law (test_g1.G1.test_d1_prior_matches_sealed_fraction_law) ... ok
+test_disputed_gate_exclusion_and_no_added_self_loop (test_g1.G1.test_disputed_gate_exclusion_and_no_added_self_loop) ... ok
+test_distribution_and_governor_do_not_mutate (test_g1.G1.test_distribution_and_governor_do_not_mutate) ... ok
+test_governor_evaluates_and_reweights_candidates (test_g1.G1.test_governor_evaluates_and_reweights_candidates) ... ok
+test_metrics_and_censoring (test_g1.G1.test_metrics_and_censoring) ... ok
+test_no_zone2_loop_even_with_corrupt_preference (test_g1.G1.test_no_zone2_loop_even_with_corrupt_preference) ... ok
+test_reset_every_tick_discards_all_history_before_read (test_g1.G1.test_reset_every_tick_discards_all_history_before_read) ... ok
+test_retention_final_probability_floor (test_g1.G1.test_retention_final_probability_floor) ... ok
+test_retention_global_expiry_no_stale_reactivation (test_g1.G1.test_retention_global_expiry_no_stale_reactivation) ... ok
+test_retention_rearms_only_after_new_threshold_crossing (test_g1.G1.test_retention_rearms_only_after_new_threshold_crossing) ... ok
+test_runner_replay_and_shared_variates (test_g1.G1.test_runner_replay_and_shared_variates) ... ok
+test_same_present_different_memory_changes_distribution (test_g1.G1.test_same_present_different_memory_changes_distribution) ... ok
+test_sampling_boundaries_and_invalid_input (test_g1.G1.test_sampling_boundaries_and_invalid_input) ... ok
+test_sealed_canonical_bytes (test_g1.G1.test_sealed_canonical_bytes) ... ok
+test_single_writer_lock (test_g1.G1.test_single_writer_lock) ... ok
+test_typed_rewire_degrees_and_loops (test_g1.G1.test_typed_rewire_degrees_and_loops) ... ok
+test_variate_is_operation_keyed_and_candidate_count_independent (test_g1.G1.test_variate_is_operation_keyed_and_candidate_count_independent) ... ok
+test_commitment_ts_parity (test_g1.Parity.test_commitment_ts_parity) ... ok
+test_field_ts_parity (test_g1.Parity.test_field_ts_parity) ... ok
+test_legacy_selector_ts_parity (test_g1.Parity.test_legacy_selector_ts_parity) ... ok
+test_retention_legacy_ts_parity (test_g1.Parity.test_retention_legacy_ts_parity) ... ok
+test_self_loop_probability_ts_parity (test_g1.Parity.test_self_loop_probability_ts_parity) ... ok
+test_cap_and_boundary_precedence (test_g11.G11.test_cap_and_boundary_precedence) ... ok
+test_checkpoint_resume_and_invalid_variate_transaction (test_g11.G11.test_checkpoint_resume_and_invalid_variate_transaction) ... ok
+test_entry_into_boundary_still_makes_one_move_and_reenters_next_tick (test_g11.G11.test_entry_into_boundary_still_makes_one_move_and_reenters_next_tick) ... ok
+test_global_operation_keying_is_distinct_and_stateless (test_g11.G11.test_global_operation_keying_is_distinct_and_stateless) ... ok
+test_memory_changes_same_present_choice_distribution (test_g11.G11.test_memory_changes_same_present_choice_distribution) ... ok
+test_metrics_denominators_routes_censoring_and_actual_effects (test_g11.G11.test_metrics_denominators_routes_censoring_and_actual_effects) ... ok
+test_one_legal_move_per_tick_and_no_ingress_updates (test_g11.G11.test_one_legal_move_per_tick_and_no_ingress_updates) ... ok
+test_shared_entry_proposals_every_tick_even_when_episode_schedules_diverge (test_g11.G11.test_shared_entry_proposals_every_tick_even_when_episode_schedules_diverge) ... ok
+test_wrapper_preserves_selector_behavior_after_entry (test_g11.G11.test_wrapper_preserves_selector_behavior_after_entry) ... ok
+
+----------------------------------------------------------------------
+Ran 40 tests in 28.880s
+
+OK
