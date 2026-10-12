@@ -9,6 +9,7 @@ test_mode_isolation_and_frozen_files (test_c1.C1.test_mode_isolation_and_frozen_
 test_mutual_information_ties_and_empty_routes (test_c1.C1.test_mutual_information_ties_and_empty_routes) ... ok
 test_pairing_reset_reentry_and_replay (test_c1.C1.test_pairing_reset_reentry_and_replay) ... ok
 test_restart_ignores_temp_and_does_not_duplicate_ticks (test_c1.C1.test_restart_ignores_temp_and_does_not_duplicate_ticks) ... ok
+test_streaming_record_digest_equals_canonical_list (test_c1.C1.test_streaming_record_digest_equals_canonical_list) ... ok
 test_tamper_and_gap_rejected (test_c1.C1.test_tamper_and_gap_rejected) ... ok
 test_real_known_answer_wrong_round_and_forgery (test_c1.Crypto.test_real_known_answer_wrong_round_and_forgery) ... ok
 test_failed_seal_retry_and_week_assignment_preserve_bytes (test_c1.Weekly.test_failed_seal_retry_and_week_assignment_preserve_bytes) ... ok
@@ -24,6 +25,6 @@ test_wrong_reading (test_timestamps.TimestampTests.test_wrong_reading) ... ok
 test_wrong_trust (test_timestamps.TimestampTests.test_wrong_trust) ... ok
 
 ----------------------------------------------------------------------
-Ran 24 tests in 7.333s
+Ran 25 tests in 8.305s
 
 OK

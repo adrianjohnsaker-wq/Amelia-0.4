@@ -9,7 +9,7 @@ from drift1a_c1.common import read,cj,sha,digest,week
 from drift1a_c1.beacon import SyntheticBeacon,SyntheticSealer,LiveBeacon,Sealer,first_round,round_time,VerificationError,KAT
 from drift1a_c1.engine import Engine,genesis,graphs,input_for,NAMES
 from drift1a_c1.metrics import mutual_information,ranks,js_divergence
-from drift1a_c1.reports import weekly,interpretations
+from drift1a_c1.reports import weekly,interpretations,week_record_digest
 from drift_core import digest as core_digest,empty_history,degree_signature
 
 class C1(unittest.TestCase):
@@ -96,6 +96,10 @@ class C1(unittest.TestCase):
         self.assertIsNone(mutual_information([])['bits'])
         self.assertIsNone(js_divergence({},{}));self.assertEqual(js_divergence({'a':1},{'a':2}),0.)
         r=ranks({a:{'x':2} for a in NAMES})['/x'];self.assertEqual((r['rank_low'],r['rank_high']),(1,9));self.assertFalse(r['strict_outside'])
+    def test_streaming_record_digest_equals_canonical_list(self):
+        rows=[dict(round_time=1791762550.,tick=i) for i in range(3)]
+        hashed,last=week_record_digest(iter(rows),week(rows[0]['round_time']))
+        self.assertEqual(hashed,digest(rows));self.assertEqual(last,rows[-1])
 
 class Crypto(unittest.TestCase):
     def test_real_known_answer_wrong_round_and_forgery(self):
@@ -119,7 +123,8 @@ class Weekly(unittest.TestCase):
             with patch('drift1a_c1.reports.render',side_effect=RuntimeError('must not regenerate')):weekly(e)
             self.assertEqual(before,(folder/'report.json').read_bytes());self.assertEqual(markdown,(folder/'report.md').read_bytes())
             self.assertTrue((folder/'seal/receipt.json').exists())
-            weekly(e) # repeat invocation is idempotent
+            with patch('drift1a_c1.reports.summarize',side_effect=RuntimeError('must reuse sealed report')):
+                weekly(e) # repeat invocation is idempotent and does not reprocess history
             r=read(folder/'report.json');self.assertTrue(all(m['ticks']==1 for m in r['arms'].values()))
     def test_late_genesis_fails_and_remains_unactivated(self):
         with tempfile.TemporaryDirectory() as root:

@@ -1,5 +1,6 @@
 """Immutable weekly reports; rendering can evolve, measurement code is frozen."""
 import base64
+import hashlib
 import json
 from pathlib import Path
 from .common import cj,digest,sha,publish,read,week,project_journal
@@ -8,12 +9,16 @@ from .metrics import summarize,ranks,js_divergence,VERSION
 from .engine import NAMES
 
 def weekly(engine):
-    summaries=summarize(engine.records());result=[]
     next_time=round_time(engine.g['R0']+20*engine.tick)
-    rows=list(engine.records())
-    for w,arms in sorted(summaries.items()):
-        # An incomplete ingestion backlog cannot finalize a week.
-        if w>=week(next_time) or w>=week(engine.clock()):continue
+    # Engine startup has already checked these immutable chunk names and order.
+    complete_weeks=sorted({p.name.split('-',1)[1].removesuffix('.json.gz')
+        for p in (engine.root/'record/chunks').glob('*.json.gz')
+        if p.name.split('-',1)[1].removesuffix('.json.gz')<min(week(next_time),week(engine.clock()))})
+    needed=[w for w in complete_weeks if not (engine.root/'reports'/w/'prepared.json').exists()]
+    # Recompute measurements only for a newly completed week. Retrying a seal
+    # uses exactly its old packet and never materializes the entire tick ledger.
+    summaries=summarize(engine.records()) if needed else {};result=[]
+    for w in complete_weeks:
         folder=engine.root/'reports'/w;packet=folder/'report.json'
         prepared=folder/'prepared.json'
         if prepared.exists():
@@ -21,6 +26,7 @@ def weekly(engine):
             publish(packet,cj(saved['report']))
             publish(folder/'report.md',saved['markdown'].encode())
         if not packet.exists():
+            arms=summaries[w]
             earlier={}
             for old in sorted((engine.root/'reports').glob('*/report.json')):
                 if old.parent.name>=w:continue
@@ -36,10 +42,10 @@ def weekly(engine):
                     recurring_routes=sum(r in first for r in current),
                     comparisons={old:dict(js_divergence_bits=js_divergence(current,v['report']['arms'][a]['routes']),
                         shared_routes=len(current.keys()&v['report']['arms'][a]['routes'].keys()),prior_seal_digest=v['seal_digest']) for old,v in earlier.items()})
-            included=[r for r in rows if week(r['round_time'])==w]
+            records_digest,last=week_record_digest(engine.records(),w)
             report=dict(version='C1-report-0.2',mode=engine.g['mode'],week=w,genesis_digest=digest(engine.g),
-                measurement_version=VERSION,generated_at=engine.clock(),last_included_round=included[-1]['beacon']['round'],
-                last_included_round_time=included[-1]['round_time'],records_digest=digest(included),
+                measurement_version=VERSION,generated_at=engine.clock(),last_included_round=last['beacon']['round'],
+                last_included_round_time=last['round_time'],records_digest=records_digest,
                 renderer_sha256=sha(Path(__file__).read_bytes()),arms=arms,references=ranks(arms),retrospective=retrospective,
                 limitations=['Exploratory; no hypothesis test or calibrated anomaly claim.',
                     'References are deterministic transformations of the same inflow, not independent sources.',
@@ -57,6 +63,17 @@ def weekly(engine):
         engine.sealer.verify(folder/'seal',digest(bundle))
         result.append(dict(week=w,seal=receipt))
     return result
+
+def week_record_digest(records,w):
+    """Exactly SHA256(canonical JSON list), without retaining that list in memory."""
+    h=hashlib.sha256();h.update(b'[');last=None
+    for r in records:
+        if week(r['round_time'])!=w:continue
+        if last is not None:h.update(b',')
+        h.update(cj(r));last=r
+    h.update(b']')
+    if last is None:raise ValueError('empty completed week')
+    return h.hexdigest(),last
 
 def render(r):
     lines=[f'# Amelia C1 — {r["week"]}',f'Mode: {r["mode"]}. Observational and exploratory.',

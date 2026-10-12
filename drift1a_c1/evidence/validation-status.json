@@ -1,6 +1,6 @@
 {
   "status": "UNIT_TESTS_PASS_MULTI_WEEK_PENDING",
-  "c1_tests": 24,
+  "c1_tests": 25,
   "accepted_substrate_tests": 40,
   "python": "3.12.14",
   "live_activated": false,
