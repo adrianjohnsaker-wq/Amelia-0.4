@@ -25,6 +25,6 @@ test_wrong_reading (test_timestamps.TimestampTests.test_wrong_reading) ... ok
 test_wrong_trust (test_timestamps.TimestampTests.test_wrong_trust) ... ok
 
 ----------------------------------------------------------------------
-Ran 25 tests in 8.305s
+Ran 25 tests in 7.337s
 
 OK

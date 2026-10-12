@@ -1,3 +1,17 @@
+runtime/canonical/CanonicalNumogram.py: OK
+runtime/canonical/NumogramDynamics.py: OK
+runtime/canonical/NumogramInterface.py: OK
+runtime/canonical/amelia_core.py: OK
+runtime/canonical/amelia_substrate.py: OK
+runtime/canonical/canonical_manifest.json: OK
+runtime/canonical/reference_run.json: OK
+runtime/drift_android.py: OK
+runtime/drift_core.py: OK
+runtime/memory.py: OK
+runtime/run_drift.py: OK
+runtime/scoring.py: OK
+PASS: canonical source bytes verified; 512-tick G1.1 C/G/M events and states match; state tolerance 1e-12.
+G1.1 runtime sealed: 7b445308e59522c093ca79ff870121442603d4ba681a689f9cda0a0bd7928c2a
 test_persistent_three_arm_resume_replay_export (test_android_session.AndroidSession.test_persistent_three_arm_resume_replay_export) ... ok
 test_reference (test_android_session.AndroidSession.test_reference) ... ok
 test_reject_tampered_ledger (test_android_session.AndroidSession.test_reject_tampered_ledger) ... ok
@@ -40,6 +54,6 @@ test_shared_entry_proposals_every_tick_even_when_episode_schedules_diverge (test
 test_wrapper_preserves_selector_behavior_after_entry (test_g11.G11.test_wrapper_preserves_selector_behavior_after_entry) ... ok
 
 ----------------------------------------------------------------------
-Ran 40 tests in 28.880s
+Ran 40 tests in 31.756s
 
 OK

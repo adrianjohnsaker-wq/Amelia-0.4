@@ -1,8 +1,49 @@
 {
-  "status": "UNIT_TESTS_PASS_MULTI_WEEK_PENDING",
+  "status": "PASS",
   "c1_tests": 25,
   "accepted_substrate_tests": 40,
-  "python": "3.12.14",
+  "arms": 18,
+  "ticks_per_arm": 10082,
+  "total_arm_moves": 181476,
+  "exact_replay": true,
   "live_activated": false,
-  "cryptographic_fixtures": "recorded quicknet KAT and local synthetic RFC3161 authority"
+  "validated_commit": "3ce9f2350aaf97f7d037bc17e1cbdfc2ac7ca9c9",
+  "workflow_run": 38272274430,
+  "workflow_url": "https://github.com/adrianjohnsaker-wq/Amelia-0.4/actions/runs/38272274430",
+  "artifact_id": 11759339186,
+  "artifact_sha256": "7cfe1e9ebeac78bb14cc8a84d9b9ff7d0c78c826c1fe3522f56b328fd7b65c2b",
+  "frozen_files_match": true,
+  "simulation_reports": {
+    "2026-W41": {
+      "bundle": {
+        "json_sha256": "a98e7ad596c79687a1849d69a1b11951381dd5970d573d0dcd8d5f3abe192bd4",
+        "markdown_sha256": "8bb3f1d03396104feaaa5e92fae08ae06711e607712903045aaa678e322b7372"
+      },
+      "receipt": {
+        "comparison_time_unix": 1792368034,
+        "imprint": "8e1fee9952d9af76cdd84b8a09153a0a3c622d12c010215499f34c37627072cc",
+        "mode": "SIMULATION",
+        "recorded_at": 1792368034,
+        "round_current_at_sealing": 33188223,
+        "status": "SIMULATED_NOT_RFC3161"
+      },
+      "ticks_per_arm": 1
+    },
+    "2026-W42": {
+      "bundle": {
+        "json_sha256": "ace804d8a536654a2a57ab4087336b9fe19d45904d9305fd2854441d1518f873",
+        "markdown_sha256": "a12e66a7024e7aba6501fc30b6108f83012815cde82d4caab986638a14211aaf"
+      },
+      "receipt": {
+        "comparison_time_unix": 1792368034,
+        "imprint": "1e3f40e1db09dc8adc365cabd7315bb3c3582cfc35cc44fe09283d5256e9b93d",
+        "mode": "SIMULATION",
+        "recorded_at": 1792368034,
+        "round_current_at_sealing": 33188223,
+        "status": "SIMULATED_NOT_RFC3161"
+      },
+      "ticks_per_arm": 10080
+    }
+  },
+  "cryptographic_fixtures": "recorded quicknet KAT and local synthetic RFC3161 authority; simulation seals are not live timestamps"
 }

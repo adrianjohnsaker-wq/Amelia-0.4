@@ -1,0 +1,19 @@
+{
+  "arms": 18,
+  "first_week": "2026-W41",
+  "last_week": "2026-W43",
+  "mode": "SIMULATION",
+  "not_live_evidence": true,
+  "outage_resume_tick": 17,
+  "replay": {
+    "exact_replay": true,
+    "head": "ac2e93ef5893849be347c3618b7a3b828a360e2ece6f1c371e73fe09b942994b",
+    "ticks": 10082
+  },
+  "runtime_seconds": 1879.79,
+  "sealed_simulated_weeks": [
+    "2026-W41",
+    "2026-W42"
+  ],
+  "ticks": 10082
+}

@@ -4,6 +4,8 @@ C1 keeps the accepted G1.1 Numogram instrument running with memory across episod
 
 **Delivery status: live operation disabled; no genesis or live rounds consumed.** The Android G1.1 pilot and its saved runs are unchanged. The continuous recorder runs on GitHub; its Markdown reports can be read on a phone.
 
+**Validation completed:** 25 C1 tests and 40 accepted-substrate tests passed in [GitHub run 38272274430](https://github.com/adrianjohnsaker-wq/Amelia-0.4/actions/runs/38272274430). All 18 arms completed 10,082 synthetic ticks and replayed exactly (181,476 arm moves). Outage recovery and two simulated weekly seals passed. See [validation evidence](evidence/validation-status.json), the [full-week report example](evidence/SIMULATION-2026-W42-report.md), and the [downloadable full evidence artifact](https://github.com/adrianjohnsaker-wq/Amelia-0.4/actions/runs/38272274430/artifacts/11759339186). The artifact includes the complete simulation ledger and checkpoints; its SHA-256 is recorded in the evidence summary. Simulation timestamps are explicitly synthetic.
+
 The [charter](../claude/DRIFT1A_C1_CHARTER_draft.md) incorporates the six approved amendments. Genesis freezes its exact bytes, the accepted substrate, admission and measurement code, graph definitions, dependencies and trust material. Report rendering may evolve; every report identifies its renderer hash. Changing a frozen file halts an existing run.
 
 ## What runs
@@ -38,7 +40,7 @@ The workflow must exist on **main** for its hourly schedule; it checks out **ame
 3. Check the successful genesis receipt and pinned source/graph digests. Its RFC 3161 seal must precede R0's publication; otherwise the attempt is retained and no run is admitted.
 4. The hourly **run** action then resumes the next eligible round. It may also be dispatched manually. Set the variable to `false` to pause; restoring it resumes the same sequence and records lag.
 
-Live genesis requires working drand and FreeTSA services. The FreeTSA root is pinned. A recorded drand round at sealing is contextual information; it is not an independent timestamp service. Only a verified RFC 3161 token establishes the stated seal time, with its accuracy allowance.
+Live genesis requires working drand and FreeTSA services. The FreeTSA root is pinned. The drand round number recorded at sealing is calculated from the receipt time and pinned round schedule; it is contextual information, not an independently verified publication attestation. Only a verified RFC 3161 token establishes the stated seal time, with its accuracy allowance.
 
 Do not delete or recreate `recorded_live/genesis.json` to recover a run. Do not modify frozen files underneath an active run. A new protocol needs a separately identified genesis.
 
