@@ -1,7 +1,7 @@
-# DRIFT-1A-C1: continuous observational phase — charter 0.2
+# DRIFT-1A-C1: continuous observational phase — charter draft 0.2 (amendments 1–10)
 
 Status: exploratory observation, not a registered hypothesis test. Live activation
-has not occurred. This supersedes draft 0.1 with the six approved amendments.
+has not occurred. This supersedes draft 0.1 with amendments 1–10. Amendments 7–10 were approved by the operator on 12 October 2026 following review of the synthetic W42 trial. That trial is engineering evidence only and says nothing about the inflow.
 The motivating hypothesis is that the Numogram can be explored as an operational
 channel for an Outside whose temporal relations need not match internal progressive
 time. This is motivation, not a property established by the apparatus.
@@ -112,28 +112,117 @@ No advance-knowledge claim is made about already consumed or published rounds.
   week. Excess over base can follow the implemented bias and is not an anomaly.
   Endings of episodes containing any commitment choice are assigned to ending week.
 - Routes encode entry plus ordered full typed edges (including labels). Frequencies
-  and distinct/top routes concern completed boundary episodes, including cross-week
-  starts. Cap episodes are counted separately. This definition is fixed.
+  and distinct/top routes concern completed episodes (boundary or cap), including
+  cross-week starts, separately by entry class under amendment 7.
 
-(b) Descriptive references: each defined numeric statistic of C is ranked against
-R01–R08 with a tied rank interval, reference range, and STRICT outside-range flag.
-Undefined values are labelled, not filled. 2/9 applies only under exchangeability
-and no ties; these hash-related arms do not establish those assumptions. Multiple
-weekly flags are expected. No calibrated p-values or findings are inferred.
-M and G are shown descriptively, with the same counting conventions.
+(b) Descriptive references use only the 30 declared statistics in amendment 9.
+Undefined values are labelled, not filled. No calibrated anomaly finding is inferred.
 
-(c) Retrospective reading: full route-count distributions, Jensen–Shannon divergence
-in bits between weeks (undefined for an empty distribution), shared/distinct route
-recurrence, and first observed week in the completed-route record. Every earlier
-week is cited by its seal-receipt digest. All reference arms use the same scale.
-These are recorded associations; the operator supplies interpretations separately.
+(c) Retrospective traversal-route reading follows amendment 10. Full route-count
+distributions, Jensen–Shannon divergence in bits (undefined for empty distributions),
+and dated novelty/rarity recurrence are retained. Every earlier week is cited by its
+seal-receipt digest. These are recorded associations; the operator interprets them.
 
-Outcome predictability at lag k: plug-in mutual information in bits between the
-zone k moves before a boundary ending and Warp/Plex, for k=1..8. Only episodes
-with length >=k qualify; their entry zone is eligible at k=length. Never cross an
-embodiment entry. Include n at every k; acknowledge finite-sample upward bias.
-'Retrochronic horizon' may be used interpretively, but this metric measures
-within-episode forward association and is not a test of external anticipation.
+### Amendment 7 — episode entry classes
+
+Traversal episodes enter {1,2,4,5,7,8}; boundary-entry episodes enter {0,3,6,9}.
+This classification is identical in all arms, including G. Traversal is the primary
+interpretation class. All completed-episode statistics are reported for all episodes,
+traversal and boundary-entry: Warp, Plex, cap, Warp fraction, boundary-ending rate,
+mean completed length, length distribution and typed routes. The unfinished episode
+at week end carries its class. Every completed canonical boundary-entry episode
+(C, M, R01–R08) must have length 1 and end at Plex for entry 0/9 or Warp for entry 3/6.
+Reports state the diagnostic result, count checked, and failures; a failure is also
+appended as an incident. G is not subject to the length-1 diagnostic.
+
+Tick statistics are assigned to the class of the episode active on that tick,
+including unfinished episodes. Occupancy denominators are weekly ticks in that
+class. Class boundary-ending rates divide endings in that class by its weekly ticks;
+the declared all-episode boundary-ending rate divides all endings by all weekly ticks.
+Cross-week episode lengths/routes belong to their ending week; their individual
+choices, memory changes and remembered-exit expectations belong to their choice week.
+Routes include cap endings. Per-100-episode denominators include all completed
+episodes in the indicated class. Routes count distinct typed sequences, not their
+occurrences, when used as novelty/rarity counts or distinct-route rates.
+
+### Amendment 8 — corrected outcome predictability
+
+Primary population: traversal episodes ending at the boundary; all boundary-ending
+episodes remain a secondary series. For each arm and lag k=1..8, use episodes of
+length >=k. Z is the zone k moves before the ending; entry is eligible at k=length.
+O is Warp/Plex. Never cross an embodiment entry. Report n, the plug-in mutual
+information in bits and the Miller–Madow estimate:
+
+I_MM = I_plugin + ((m_Z-1)+(m_O-1)-(m_ZO-1))/(2*n*ln(2)).
+
+The m values count nonempty marginal/joint cells and are also reported. Preserve
+negative corrected estimates. Empty populations are undefined; n<50 is insufficient
+and its MM estimate is unavailable for the declared comparison. Nonempty insufficient
+populations still receive descriptive estimates and permutation-null values.
+
+B=200 within-week permutations of O across the eligible episodes. The exact seed is
+SHA256(UTF8('DRIFT-1A-C1-PERM|' + week + '|' + arm + '|' + decimal(k))), where week
+is YYYY-Www and k is unpadded. Interpret the digest as an unsigned big-endian integer
+for Python random.Random (MT19937); shuffle a fresh copy of O on each permutation.
+The frozen Python dependency/runtime choice is 3.12.14. Both populations independently
+initialize this same specified stream. Report the nearest-rank 95th percentile
+(sorted null value 190 of 200) and count(null >= observed plug-in)/200, without
+adding one. A sufficient observation <= that percentile is described as
+'indistinguishable from zero'; n<50 takes the label 'insufficient'. These are
+within-episode forward associations, not evidence of external anticipation.
+
+### Amendment 9 — declared flags and cross-week tally
+
+Exactly N=30 statistics are declared, all on traversal episodes unless stated:
+Warp fraction (1); boundary-ending rate per tick, all episodes (1); mean completed
+length (1); distinct routes per 100 episodes (1); zone occupancy 0–9 (10); self-loop
+selection counts at 0,1,3,9 (4); commitment/governor/retention probability-change
+counts (3); remembered-exit selected/final-probability expectation ratio (1);
+Miller–Madow outcome predictability at lags 1–8 (8).
+
+Only this set receives strict outside-reference-range flags. Eligible counts,
+visit sums, totals, length distributions, and amendment-10 ranks are derived,
+never additional flag tests. A tie with a reference extreme is not outside; tied
+ranks span all equal values. If C or any reference is undefined, that statistic is
+unavailable and not flagged. Report declared N=30, N_compared, F, nominal expectation
+2N/9=6.6667, and 2*N_compared/9 for the available subset, conditional on exchangeability
+and no ties. Correlation can make F vary more than a binomial count (correlation
+alone does not mathematically guarantee increased variance); linearity preserves
+its expectation under those assumptions. Hash-related references do not establish
+exchangeability. No inferential calibration is claimed.
+
+For each declared statistic, retain cumulative weeks flagged, weeks compared,
+total weeks reported, expected flags 2/9 per compared week, and nominal expectation
+2/9 per reported week. An unavailable week is not counted as an unflagged comparison.
+Memory carries across weeks, so weeks are serially dependent and a binomial
+reference is approximate. Persistent flags over many weeks are the pattern of
+interest, not a single week's flag.
+
+### Amendment 10 — traversal-route novelty, rarity and recurrence
+
+A route is the typed move sequence of a completed traversal episode, from entry
+to boundary or cap ending (entry plus full typed edges uniquely identifies it).
+First appearance is in that arm's completed-route history, attributed to ending week.
+Report novel distinct routes as count and per 100 completed traversal episodes.
+
+Among canonical memory-carrying arms C and R01–R08, route r is reference-rare for X
+in week w iff r occurs in at most one of the other eight arms that week. Presence,
+not frequency, determines this leave-one-out rule, applied symmetrically to all nine.
+Report rare-route count and rate per 100 completed traversal episodes. M and G have
+novelty and divergence statistics, but leave-one-out rarity is not defined for them.
+
+A recurring rare route was reference-rare in its first appearance week and occurs
+again in a later week in the same arm. Keep its first week, recurrence weeks and
+first report's seal digest; show the accumulated list and current-week recurrence
+count. Later changes in rarity do not alter its first-week status. Novelty and
+rarity counts/rates and recurrence counts carry descriptive tied ranks among nine
+for C and each R arm, without adding flags. Jensen–Shannon divergence now uses
+traversal-route distributions for every arm.
+
+All classification, MI/permutation definitions, declared comparisons, tallies,
+rarity and recurrence calculations live in frozen metrics.py, not the mutable
+renderer. The two operator-specified explanatory sentences are printed verbatim
+in each report.
 
 ## 5. Interpretation records
 
@@ -154,3 +243,11 @@ Live workflow requires an explicit repository enable variable AND separately
 sealed genesis. No implementation test consumes live inflow into Amelia state.
 Synthetic tests use visibly marked synthetic beacons and seals; they cannot be
 admitted as live cryptographic evidence. G1/G1.1 Android installations are unaffected.
+
+## 7. Pre-genesis review gate
+
+Amendments 7–10 change measurement only. The substrate, arms, inflow, cadence,
+ledger and sealing remain unchanged. Tests and the full simulation must pass.
+The earlier example report is retained; a new A7–A10 example is a separate evidence
+file. Genesis proceeds only after the operator has read that regenerated report.
+No live genesis is authorized by completion of implementation or validation.

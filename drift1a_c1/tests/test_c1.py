@@ -8,7 +8,7 @@ from unittest.mock import patch
 from drift1a_c1.common import read,cj,sha,digest,week
 from drift1a_c1.beacon import SyntheticBeacon,SyntheticSealer,LiveBeacon,Sealer,first_round,round_time,VerificationError,KAT
 from drift1a_c1.engine import Engine,genesis,graphs,input_for,NAMES
-from drift1a_c1.metrics import mutual_information,ranks,js_divergence
+from drift1a_c1.metrics import mutual_information,compare,js_divergence
 from drift1a_c1.reports import weekly,interpretations,week_record_digest
 from drift_core import digest as core_digest,empty_history,degree_signature
 
@@ -95,7 +95,7 @@ class C1(unittest.TestCase):
         self.assertEqual(mutual_information([(1,'Warp'),(2,'Plex')])['bits'],1.)
         self.assertIsNone(mutual_information([])['bits'])
         self.assertIsNone(js_divergence({},{}));self.assertEqual(js_divergence({'a':1},{'a':2}),0.)
-        r=ranks({a:{'x':2} for a in NAMES})['/x'];self.assertEqual((r['rank_low'],r['rank_high']),(1,9));self.assertFalse(r['strict_outside'])
+        r=compare(2,[2]*8);self.assertEqual((r['rank_low'],r['rank_high']),(1,9));self.assertFalse(r['strict_outside'])
     def test_streaming_record_digest_equals_canonical_list(self):
         rows=[dict(round_time=1791762550.,tick=i) for i in range(3)]
         hashed,last=week_record_digest(iter(rows),week(rows[0]['round_time']))

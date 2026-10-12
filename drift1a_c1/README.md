@@ -4,9 +4,9 @@ C1 keeps the accepted G1.1 Numogram instrument running with memory across episod
 
 **Delivery status: live operation disabled; no genesis or live rounds consumed.** The Android G1.1 pilot and its saved runs are unchanged. The continuous recorder runs on GitHub; its Markdown reports can be read on a phone.
 
-**Validation completed:** 25 C1 tests and 40 accepted-substrate tests passed in [GitHub run 38272274430](https://github.com/adrianjohnsaker-wq/Amelia-0.4/actions/runs/38272274430). All 18 arms completed 10,082 synthetic ticks and replayed exactly (181,476 arm moves). Outage recovery and two simulated weekly seals passed. See [validation evidence](evidence/validation-status.json), the [full-week report example](evidence/SIMULATION-2026-W42-report.md), and the [downloadable full evidence artifact](https://github.com/adrianjohnsaker-wq/Amelia-0.4/actions/runs/38272274430/artifacts/11759339186). The artifact includes the complete simulation ledger and checkpoints; its SHA-256 is recorded in the evidence summary. Simulation timestamps are explicitly synthetic.
+**Earlier six-amendment baseline validation (retained):** 25 C1 tests and 40 accepted-substrate tests passed in [GitHub run 38272274430](https://github.com/adrianjohnsaker-wq/Amelia-0.4/actions/runs/38272274430). All 18 arms completed 10,082 synthetic ticks and replayed exactly (181,476 arm moves). Outage recovery and two simulated weekly seals passed. See [validation evidence](evidence/validation-status.json), the [full-week report example](evidence/SIMULATION-2026-W42-report.md), and the [downloadable full evidence artifact](https://github.com/adrianjohnsaker-wq/Amelia-0.4/actions/runs/38272274430/artifacts/11759339186). The artifact includes the complete simulation ledger and checkpoints; its SHA-256 is recorded in the evidence summary. Simulation timestamps are explicitly synthetic.
 
-The [charter](../claude/DRIFT1A_C1_CHARTER_draft.md) incorporates the six approved amendments. Genesis freezes its exact bytes, the accepted substrate, admission and measurement code, graph definitions, dependencies and trust material. Report rendering may evolve; every report identifies its renderer hash. Changing a frozen file halts an existing run.
+The [charter](../claude/DRIFT1A_C1_CHARTER_draft.md) incorporates all ten approved amendments. Genesis freezes its exact bytes, the accepted substrate, admission and measurement code, graph definitions, dependencies and trust material. Report rendering may evolve; every report identifies its renderer hash. Changing a frozen file halts an existing run.
 
 ## What runs
 
@@ -31,9 +31,11 @@ Use a fresh simulation directory. The default simulation runs 10,082 ticks per a
 
 The `Amelia C1 continuous observation` workflow's **validate** action runs these checks and uploads an evidence artifact. A local simulation may take tens of minutes. The accepted G1.1 tests are also run in CI.
 
-## Live activation, after reviewing the charter and evidence
+## Live activation, only after operator review of the regenerated A7–A10 report
 
 The workflow must exist on **main** for its hourly schedule; it checks out **amelia-1.0**, where all code, state and reports live. Installation alone starts no experiment.
+
+The operator must first read the regenerated A7–A10 example report. Implementation approval alone does not authorize genesis.
 
 1. Set the repository Actions variable `DRIFT_C1_ENABLE_LIVE` to the exact string `true`.
 2. Manually dispatch `Amelia C1 continuous observation` from `main`, selecting **genesis**. Genesis is never created by the scheduled **run** action.
@@ -69,3 +71,18 @@ The first week may be partial. Episodes crossing a week boundary contribute thei
 Add new interpretation files to `drift1a_c1/interpretations/`. The next run retains their bytes, records when it first observed them and obtains a separate seal. Revisions are new files. Dates written in a note remain operator assertions. A prospective anticipation needs an explicit target and matching rule, and a verified seal before that target material exists; retrospective reading is kept distinct.
 
 No language model generates claims or readings inside this recorder. Human interpretation remains yours.
+
+## Amendments 7–10
+
+The new measurement layer separates all, traversal and boundary-entry episodes.
+Traversal is primary; canonical boundary-entry diagnostics are reported and any
+failure is an incident. Outcome predictability now includes signed Miller–Madow
+estimates and 200 reproducible within-week permutations, with n < 50 marked
+insufficient. Only the declared 30 statistics receive outside-range flags, with
+available denominators and cross-week tallies explicit. Traversal-route rarity
+is leave-one-out among C and R01–R08; first-week rare status and seal provenance
+are retained for later recurrence. All these calculations are in frozen metrics.py.
+
+The previous report files and evidence are retained. New evidence filenames carry
+`A7-A10`; their simulation seals are synthetic. The substrate, arm definitions,
+beacon admission, ledger and sealing mechanisms have not changed.

@@ -8,6 +8,7 @@ from .common import cj,publish,week
 from .engine import Engine,genesis,locked,NAMES
 from .beacon import SyntheticBeacon,SyntheticSealer,round_time,first_round,RetrievalError
 from .reports import weekly,interpretations
+from .metrics import VERSION
 
 class Flaky(SyntheticBeacon):
     blocked=None
@@ -37,10 +38,17 @@ def simulate(root,ticks=10082):
         # Independent process-style reload before replay.
         e=Engine(root,beacon,seal,lambda:now[0]);verified=e.replay()
         reports=weekly(e)
+        for item in reports:
+            report=json.loads((Path(root)/'reports'/item['week']/'report.json').read_text())
+            assert report['flags']['N']==30 and len(report['references'])==30
+            for arm,metrics in report['arms'].items():
+                classes=metrics['episode_classes']
+                assert classes['traversal']['completed']+classes['boundary_entry']['completed']==classes['all']['completed']
+                assert metrics['boundary_entry_diagnostic']['status']==('NOT_APPLICABLE' if arm.startswith('G') else 'PASS')
         notes=Path(root)/'operator_notes';notes.mkdir()
         (notes/'reading.txt').write_text('Retrospective SIMULATION reading; no anticipation claim.')
         interpretations(e,notes);interpretations(e,notes)
-        summary=dict(mode='SIMULATION',not_live_evidence=True,arms=len(NAMES),ticks=e.tick,first_week=week(round_time(g['R0'])),last_week=week(round_time(g['R0']+20*(e.tick-1))),
+        summary=dict(measurement_version=VERSION,declared_statistics=30,canonical_boundary_diagnostics='PASS',mode='SIMULATION',not_live_evidence=True,arms=len(NAMES),ticks=e.tick,first_week=week(round_time(g['R0'])),last_week=week(round_time(g['R0']+20*(e.tick-1))),
             sealed_simulated_weeks=[r['week'] for r in reports],replay=verified,outage_resume_tick=17,
             runtime_seconds=round(time.monotonic()-start,2))
         publish(Path(root)/'simulation_summary.json',cj(summary));print(json.dumps(summary,indent=2),flush=True)
