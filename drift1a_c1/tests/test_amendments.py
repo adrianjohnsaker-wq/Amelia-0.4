@@ -7,7 +7,7 @@ from pathlib import Path
 from unittest.mock import patch
 from drift1a_c1.engine import NAMES
 from drift1a_c1.metrics import (blank, mutual_information, outcome_predictability,
-    boundary_diagnostic, PRIMARY_KEYS, ranks, flag_summary, route_rarity, retrospective, summarize)
+    boundary_diagnostic, PRIMARY_KEYS, ranks, flag_summary, route_rarity, retrospective, summarize, primary_values, constant_primary_statistics, leave_one_out_flags, route_divergence)
 from drift1a_c1.common import week, read
 import test_c1
 
@@ -17,7 +17,7 @@ def arm_fixture(routes=None):
     t.update(warp_fraction=.5,mean_completed_length=4.,distinct_routes_per_100_episodes=10.,
         zone_occupancy=[.1]*10,remembered_exit_ratio=1.,routes=routes or {},completed=100,
         outcome_predictability_at_lag={str(k):dict(status='sufficient',miller_madow_bits=.01) for k in range(1,9)})
-    return dict(boundary_ending_rate=.25,episode_classes={'traversal':t})
+    return dict(boundary_ending_rate=.25,episode_classes={'traversal':t,'boundary_entry':copy.deepcopy(t)})
 
 
 class Amendments(unittest.TestCase):
@@ -48,20 +48,47 @@ class Amendments(unittest.TestCase):
         self.assertEqual(outcome_predictability(pairs[:50],'2026-W42','C',4)['status'],'sufficient')
         self.assertIsNone(outcome_predictability([],'2026-W42','C',4)['bits'])
 
-    def test_flags_use_exactly_declared_thirty_not_derived_counts(self):
+    def test_flags_use_exactly_declared_twenty_nine_not_derived_counts(self):
         arms={a:arm_fixture() for a in NAMES}
         arms['C']['ticks']=1000000
         arms['C']['episode_classes']['traversal']['warp_fraction']=.75
         rows=ranks(arms);f=flag_summary(rows,{})
-        self.assertEqual(list(rows),PRIMARY_KEYS);self.assertEqual((f['N'],f['N_compared'],f['F']),(30,30,1))
-        self.assertAlmostEqual(f['expected_flags'],60/9)
+        self.assertEqual(list(rows),PRIMARY_KEYS);self.assertEqual((f['N'],f['N_compared'],f['F']),(29,29,1))
+        self.assertAlmostEqual(f['expected_flags'],58/9)
         tied=rows['mean_completed_length'];self.assertEqual((tied['rank_low'],tied['rank_high']),(1,9))
         arms['C']['episode_classes']['traversal']['outcome_predictability_at_lag']['8']['status']='insufficient'
         rows=ranks(arms);f=flag_summary(rows,{})
-        self.assertEqual(f['N_compared'],29)
+        self.assertEqual(f['N_compared'],28)
         self.assertEqual(f['cross_week']['outcome_mm_lag_8']['weeks_compared'],0)
         prior={'old':{'report':{'references':rows}}};f=flag_summary(rows,prior)
         self.assertEqual(f['cross_week']['warp_fraction']['weeks_flagged'],2)
+
+    def test_a11_population_mapping_and_constant_diagnostic(self):
+        arms={a:arm_fixture() for a in NAMES}
+        arms['C']['episode_classes']['boundary_entry']['self_loops']=[7]*10
+        arms['C']['episode_classes']['traversal']['self_loops']=[3]*10
+        v=primary_values(arms['C'])
+        self.assertNotIn('zone_occupancy_0',v)
+        self.assertEqual([v[f'self_loops_{z}'] for z in (0,1,3,9)],[7,3,7,7])
+        self.assertIn('warp_fraction',constant_primary_statistics(arms))
+        self.assertNotIn('self_loops_0',constant_primary_statistics(arms))
+
+    def test_leave_one_out_flags_are_symmetric(self):
+        arms={a:arm_fixture() for a in NAMES}
+        arms['C']['episode_classes']['traversal']['warp_fraction']=.9
+        first=leave_one_out_flags(arms)
+        self.assertEqual(first['C']['F'],1)
+        arms['C'],arms['R01']=arms['R01'],arms['C']
+        other=leave_one_out_flags(arms)
+        self.assertEqual(first['C'],other['R01'])
+        self.assertEqual(first['R01'],other['C'])
+
+    def test_divergence_requires_fifty_episodes_in_both_weeks(self):
+        a=dict(completed=50,routes={'x':50});b=dict(completed=49,routes={'y':49})
+        self.assertEqual(route_divergence(a,b)['status'],'insufficient')
+        self.assertIsNone(route_divergence(b,a)['js_divergence_bits'])
+        b.update(completed=50,routes={'y':50})
+        self.assertEqual(route_divergence(a,b)['js_divergence_bits'],1.)
 
     def test_leave_one_out_rarity_swaps_symmetrically(self):
         arms={a:arm_fixture() for a in NAMES}

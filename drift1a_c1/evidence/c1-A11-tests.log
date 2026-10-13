@@ -1,0 +1,41 @@
+test_a11_population_mapping_and_constant_diagnostic (test_amendments.Amendments.test_a11_population_mapping_and_constant_diagnostic) ... ok
+test_boundary_entry_diagnostic_is_canonical_only_and_has_fixed_outcomes (test_amendments.Amendments.test_boundary_entry_diagnostic_is_canonical_only_and_has_fixed_outcomes) ... ok
+test_divergence_requires_fifty_episodes_in_both_weeks (test_amendments.Amendments.test_divergence_requires_fifty_episodes_in_both_weeks) ... ok
+test_flags_use_exactly_declared_twenty_nine_not_derived_counts (test_amendments.Amendments.test_flags_use_exactly_declared_twenty_nine_not_derived_counts) ... ok
+test_leave_one_out_flags_are_symmetric (test_amendments.Amendments.test_leave_one_out_flags_are_symmetric) ... ok
+test_leave_one_out_rarity_swaps_symmetrically (test_amendments.Amendments.test_leave_one_out_rarity_swaps_symmetrically) ... ok
+test_miller_madow_against_hand_computed_two_by_two_table (test_amendments.Amendments.test_miller_madow_against_hand_computed_two_by_two_table) ... ok
+test_permutation_stream_is_deterministic_and_marks_small_n (test_amendments.Amendments.test_permutation_stream_is_deterministic_and_marks_small_n) ... ok
+test_rare_at_first_is_retained_and_seals_are_cited (test_amendments.Amendments.test_rare_at_first_is_retained_and_seals_are_cited) ... ok
+test_diagnostic_failure_is_written_as_an_incident (test_amendments.RecordedClasses.test_diagnostic_failure_is_written_as_an_incident) ... ok
+test_recorded_class_accounting_and_canonical_diagnostic (test_amendments.RecordedClasses.test_recorded_class_accounting_and_canonical_diagnostic) ... ok
+test_fetch_failure_commits_prefix_and_retries_same_round (test_c1.C1.test_fetch_failure_commits_prefix_and_retries_same_round) ... ok
+test_genesis_cadence_and_distinct_degree_matched_graphs (test_c1.C1.test_genesis_cadence_and_distinct_degree_matched_graphs) ... ok
+test_hosted_lease_blocks_until_evidence_completion (test_c1.C1.test_hosted_lease_blocks_until_evidence_completion) ... ok
+test_interpretation_recovers_after_publication_interruption (test_c1.C1.test_interpretation_recovers_after_publication_interruption) ... ok
+test_interpretation_retry_preserves_first_observed_and_deduplicates (test_c1.C1.test_interpretation_retry_preserves_first_observed_and_deduplicates) ... ok
+test_invalid_beacon_halts_without_cursor_advance (test_c1.C1.test_invalid_beacon_halts_without_cursor_advance) ... ok
+test_lag_and_not_yet_published (test_c1.C1.test_lag_and_not_yet_published) ... ok
+test_mode_isolation_and_frozen_files (test_c1.C1.test_mode_isolation_and_frozen_files) ... ok
+test_mutual_information_ties_and_empty_routes (test_c1.C1.test_mutual_information_ties_and_empty_routes) ... ok
+test_pairing_reset_reentry_and_replay (test_c1.C1.test_pairing_reset_reentry_and_replay) ... ok
+test_restart_ignores_temp_and_does_not_duplicate_ticks (test_c1.C1.test_restart_ignores_temp_and_does_not_duplicate_ticks) ... ok
+test_streaming_record_digest_equals_canonical_list (test_c1.C1.test_streaming_record_digest_equals_canonical_list) ... ok
+test_tamper_and_gap_rejected (test_c1.C1.test_tamper_and_gap_rejected) ... ok
+test_real_known_answer_wrong_round_and_forgery (test_c1.Crypto.test_real_known_answer_wrong_round_and_forgery) ... ok
+test_failed_seal_retry_and_week_assignment_preserve_bytes (test_c1.Weekly.test_failed_seal_retry_and_week_assignment_preserve_bytes) ... ok
+test_late_genesis_fails_and_remains_unactivated (test_c1.Weekly.test_late_genesis_fails_and_remains_unactivated) ... ok
+test_accuracy_boundary (test_timestamps.TimestampTests.test_accuracy_boundary) ... ok
+test_altered_signature (test_timestamps.TimestampTests.test_altered_signature) ... ok
+test_genuine_offline (test_timestamps.TimestampTests.test_genuine_offline) ... ok
+test_late (test_timestamps.TimestampTests.test_late) ... ok
+test_missing (test_timestamps.TimestampTests.test_missing) ... ok
+test_missing_openssl (test_timestamps.TimestampTests.test_missing_openssl) ... ok
+test_report_seal_serializes_without_deadline_and_rejects_receipt_tamper (test_timestamps.TimestampTests.test_report_seal_serializes_without_deadline_and_rejects_receipt_tamper) ... ok
+test_wrong_reading (test_timestamps.TimestampTests.test_wrong_reading) ... ok
+test_wrong_trust (test_timestamps.TimestampTests.test_wrong_trust) ... ok
+
+----------------------------------------------------------------------
+Ran 36 tests in 36.930s
+
+OK

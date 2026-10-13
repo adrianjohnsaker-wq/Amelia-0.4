@@ -1,7 +1,7 @@
-# DRIFT-1A-C1: continuous observational phase — charter draft 0.2 (amendments 1–10)
+# DRIFT-1A-C1: continuous observational phase — charter draft 0.3 (amendments 1–11)
 
 Status: exploratory observation, not a registered hypothesis test. Live activation
-has not occurred. This supersedes draft 0.1 with amendments 1–10. Amendments 7–10 were approved by the operator on 12 October 2026 following review of the synthetic W42 trial. That trial is engineering evidence only and says nothing about the inflow.
+has not occurred. This supersedes draft 0.1 with amendments 1–11. Amendments 7–10 were approved by the operator on 12 October 2026 following review of the synthetic W42 trial. That trial is engineering evidence only and says nothing about the inflow.
 The motivating hypothesis is that the Numogram can be explored as an operational
 channel for an Outside whose temporal relations need not match internal progressive
 time. This is motivation, not a property established by the apparatus.
@@ -115,11 +115,11 @@ No advance-knowledge claim is made about already consumed or published rounds.
   and distinct/top routes concern completed episodes (boundary or cap), including
   cross-week starts, separately by entry class under amendment 7.
 
-(b) Descriptive references use only the 30 declared statistics in amendment 9.
+(b) Descriptive references use only the 29 declared statistics in amendments 9 and 11.
 Undefined values are labelled, not filled. No calibrated anomaly finding is inferred.
 
 (c) Retrospective traversal-route reading follows amendment 10. Full route-count
-distributions, Jensen–Shannon divergence in bits (undefined for empty distributions),
+distributions, Jensen–Shannon divergence in bits (insufficient unless both weeks have at least 50 completed traversal episodes),
 and dated novelty/rarity recurrence are retained. Every earlier week is cited by its
 seal-receipt digest. These are recorded associations; the operator interprets them.
 
@@ -173,10 +173,10 @@ within-episode forward associations, not evidence of external anticipation.
 
 ### Amendment 9 — declared flags and cross-week tally
 
-Exactly N=30 statistics are declared, all on traversal episodes unless stated:
+Exactly N=29 statistics (as corrected by amendment 11) are declared, all on traversal episodes unless stated:
 Warp fraction (1); boundary-ending rate per tick, all episodes (1); mean completed
-length (1); distinct routes per 100 episodes (1); zone occupancy 0–9 (10); self-loop
-selection counts at 0,1,3,9 (4); commitment/governor/retention probability-change
+length (1); distinct routes per 100 episodes (1); zone occupancy 1–9 (9); self-loop
+selection counts at 0,3,9 on boundary-entry episodes and at 1 on traversal episodes (4); commitment/governor/retention probability-change
 counts (3); remembered-exit selected/final-probability expectation ratio (1);
 Miller–Madow outcome predictability at lags 1–8 (8).
 
@@ -184,8 +184,8 @@ Only this set receives strict outside-reference-range flags. Eligible counts,
 visit sums, totals, length distributions, and amendment-10 ranks are derived,
 never additional flag tests. A tie with a reference extreme is not outside; tied
 ranks span all equal values. If C or any reference is undefined, that statistic is
-unavailable and not flagged. Report declared N=30, N_compared, F, nominal expectation
-2N/9=6.6667, and 2*N_compared/9 for the available subset, conditional on exchangeability
+unavailable and not flagged. Report declared N=29, N_compared, F, nominal expectation
+2N/9=6.4444, and 2*N_compared/9 for the available subset, conditional on exchangeability
 and no ties. Correlation can make F vary more than a binomial count (correlation
 alone does not mathematically guarantee increased variance); linearity preserves
 its expectation under those assumptions. Hash-related references do not establish
@@ -244,10 +244,27 @@ sealed genesis. No implementation test consumes live inflow into Amelia state.
 Synthetic tests use visibly marked synthetic beacons and seals; they cannot be
 admitted as live cryptographic evidence. G1/G1.1 Android installations are unaffected.
 
-## 7. Pre-genesis review gate
+## 7. Amendment 11 and pre-genesis gate
 
-Amendments 7–10 change measurement only. The substrate, arms, inflow, cadence,
-ledger and sealing remain unchanged. Tests and the full simulation must pass.
-The earlier example report is retained; a new A7–A10 example is a separate evidence
-file. Genesis proceeds only after the operator has read that regenerated report.
-No live genesis is authorized by completion of implementation or validation.
+Approved by the operator on 13 October 2026 after review of the regenerated
+simulation report at f70f23b. Self-loop selections at zones 0, 3 and 9 are measured
+on boundary-entry episodes; zone 1 remains on traversal episodes. Traversal
+zone_occupancy_0 is retained descriptively but removed from the declared set.
+The declared set has N=29, with nominal expected flags 58/9, conditional on
+exchangeability without ties. The validation week must fail its validation check
+if any declared statistic is constant across C and R01–R08. This check is specific
+to the fixed synthetic validation week; it does not censor constant or tied
+statistics in later live weeks, and does not establish exchangeability.
+
+Each report also gives leave-one-out F counts for each of C and R01–R08 against
+the other eight. This is a descriptive empirical comparison with shared,
+dependent data, not an independently calibrated null distribution. Weekly
+traversal-route divergence requires at least 50 completed traversal episodes
+in each week; otherwise it is marked insufficient.
+
+Amendments 7–11 change measurement and reporting only. The substrate, arms,
+inflow, cadence, ledger and sealing remain unchanged. Earlier example reports
+are retained; the A11 example is a new evidence file. The operator has read the
+A7–A10 report and authorizes genesis after the corrected declared set is
+implemented, validated and its report regenerated. No genesis may precede
+successful validation. Synthetic seals never serve as live timing evidence.

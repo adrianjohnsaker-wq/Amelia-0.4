@@ -8,7 +8,7 @@ C1 keeps the accepted G1.1 Numogram instrument running with memory across episod
 
 **Earlier six-amendment baseline validation (retained):** 25 C1 tests and 40 accepted-substrate tests passed in [GitHub run 38272274430](https://github.com/adrianjohnsaker-wq/Amelia-0.4/actions/runs/38272274430). All 18 arms completed 10,082 synthetic ticks and replayed exactly (181,476 arm moves). Outage recovery and two simulated weekly seals passed. See [validation evidence](evidence/validation-status.json), the [full-week report example](evidence/SIMULATION-2026-W42-report.md), and the [downloadable full evidence artifact](https://github.com/adrianjohnsaker-wq/Amelia-0.4/actions/runs/38272274430/artifacts/11759339186). The artifact includes the complete simulation ledger and checkpoints; its SHA-256 is recorded in the evidence summary. Simulation timestamps are explicitly synthetic.
 
-The [charter](../claude/DRIFT1A_C1_CHARTER_draft.md) incorporates all ten approved amendments. Genesis freezes its exact bytes, the accepted substrate, admission and measurement code, graph definitions, dependencies and trust material. Report rendering may evolve; every report identifies its renderer hash. Changing a frozen file halts an existing run.
+The [charter](../claude/DRIFT1A_C1_CHARTER_draft.md) incorporates all eleven approved amendments. Genesis freezes its exact bytes, the accepted substrate, admission and measurement code, graph definitions, dependencies and trust material. Report rendering may evolve; every report identifies its renderer hash. Changing a frozen file halts an existing run.
 
 ## What runs
 
@@ -33,11 +33,11 @@ Use a fresh simulation directory. The default simulation runs 10,082 ticks per a
 
 The `Amelia C1 continuous observation` workflow's **validate** action runs these checks and uploads an evidence artifact. A local simulation may take tens of minutes. The accepted G1.1 tests are also run in CI.
 
-## Live activation, only after operator review of the regenerated A7–A10 report
+## Live activation after amendment 11 validation
 
 The workflow must exist on **main** for its hourly schedule; it checks out **amelia-1.0**, where all code, state and reports live. Installation alone starts no experiment.
 
-The operator must first read the regenerated A7–A10 example report. Implementation approval alone does not authorize genesis.
+The operator reviewed the A7–A10 report on 13 October 2026 and authorized genesis after amendment 11 is implemented, validated and its report regenerated. That authorization does not substitute for a successful cryptographic genesis seal.
 
 1. Set the repository Actions variable `DRIFT_C1_ENABLE_LIVE` to the exact string `true`.
 2. Manually dispatch `Amelia C1 continuous observation` from `main`, selecting **genesis**. Genesis is never created by the scheduled **run** action.
@@ -80,7 +80,7 @@ The new measurement layer separates all, traversal and boundary-entry episodes.
 Traversal is primary; canonical boundary-entry diagnostics are reported and any
 failure is an incident. Outcome predictability now includes signed Miller–Madow
 estimates and 200 reproducible within-week permutations, with n < 50 marked
-insufficient. Only the declared 30 statistics receive outside-range flags, with
+insufficient. Only the declared 29 statistics receive outside-range flags, with
 available denominators and cross-week tallies explicit. Traversal-route rarity
 is leave-one-out among C and R01–R08; first-week rare status and seal provenance
 are retained for later recurrence. All these calculations are in frozen metrics.py.
@@ -88,3 +88,30 @@ are retained for later recurrence. All these calculations are in frozen metrics.
 The previous report files and evidence are retained. New evidence filenames carry
 `A7-A10`; their simulation seals are synthetic. The substrate, arm definitions,
 beacon admission, ledger and sealing mechanisms have not changed.
+
+## Amendment 11
+
+Self-loop statistics at 0, 3 and 9 now use boundary-entry episodes; zone 1 remains
+on traversal episodes. Zone-0 traversal occupancy remains descriptive, outside
+the declared 29-statistic set. The fixed full validation week must contain no
+constant declared statistic across C and R01–R08. Reports include descriptive
+leave-one-out flag counts, and route divergence requires 50 traversal episodes
+in both weeks. The charter is draft 0.3.
+
+The A11 example is a reanalysis of the already replay-verified A7–A10 synthetic
+ledger. Its provenance identifies the source artifact and original report; all
+raw arm measurements must match, and only the declared comparisons and reporting
+change. It does not claim a new dynamics run or live timestamp. Reproduce with:
+
+```bash
+python -m drift1a_c1.remeasure --archive C1-A7-A10-validation.zip --root /tmp/C1-A11-reanalysis
+```
+
+36 C1 tests passed. Reanalysis of all 10,082 source ticks across 18 arms passed;
+all raw arm measurements match the earlier report, all 29 declared full-week
+statistics vary across the nine canonical memory-carrying arms, and C has 2 flags.
+
+See [the regenerated A11 example](evidence/SIMULATION-2026-W42-A11-report.md) and
+[its validation record](evidence/validation-status-A11.json). All earlier examples
+are retained. GitHub validation additionally reruns the complete simulation on
+code pushes; its full-week check rejects any constant declared statistic.

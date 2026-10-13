@@ -1,4 +1,4 @@
-"""Frozen C1 measurements, approved amendments 1–10 (charter draft 0.2)."""
+"""Frozen C1 measurements, approved amendments 1–11 (charter draft 0.3)."""
 import copy
 import hashlib
 import math
@@ -7,7 +7,7 @@ from collections import Counter
 from .common import week, cj
 from .engine import NAMES
 
-VERSION = 'C1-measurements-0.2-A10'
+VERSION = 'C1-measurements-0.3-A11'
 CANONICAL_MEMORY = ['C'] + [f'R{i:02d}' for i in range(1, 9)]
 BOUNDARY = {0, 3, 6, 9}
 CLASSES = ('all', 'traversal', 'boundary_entry')
@@ -152,18 +152,18 @@ def js_divergence(a,b):
 
 
 PRIMARY_KEYS=(['warp_fraction','boundary_ending_rate_all','mean_completed_length','distinct_routes_per_100_episodes']+
-    [f'zone_occupancy_{z}' for z in range(10)]+[f'self_loops_{z}' for z in (0,1,3,9)]+
+    [f'zone_occupancy_{z}' for z in range(1,10)]+[f'self_loops_{z}' for z in (0,1,3,9)]+
     [f'{s}_changed' for s in ('commitment','governor','retention')]+['remembered_exit_ratio']+
     [f'outcome_mm_lag_{k}' for k in range(1,9)])
-assert len(PRIMARY_KEYS)==30
+assert len(PRIMARY_KEYS)==29
 
 
 def primary_values(arm):
     t=arm['episode_classes']['traversal']
     values={k:t[k] for k in ('warp_fraction','mean_completed_length','distinct_routes_per_100_episodes','remembered_exit_ratio')}
     values['boundary_ending_rate_all']=arm['boundary_ending_rate']
-    values.update({f'zone_occupancy_{z}':t['zone_occupancy'][z] for z in range(10)})
-    values.update({f'self_loops_{z}':t['self_loops'][z] for z in (0,1,3,9)})
+    values.update({f'zone_occupancy_{z}':t['zone_occupancy'][z] for z in range(1,10)})
+    values.update({f'self_loops_{z}':arm['episode_classes']['traversal' if z==1 else 'boundary_entry']['self_loops'][z] for z in (0,1,3,9)})
     values.update({f'{s}_changed':t['memory'][f'{s}_changed'] for s in ('commitment','governor','retention')})
     for k in range(1,9):
         v=t['outcome_predictability_at_lag'][str(k)]
@@ -192,10 +192,32 @@ def flag_summary(rows,earlier):
         tally[k]=dict(weeks_reported=len(history),weeks_compared=compared,
             weeks_flagged=sum(x['strict_outside'] for x in history),expected_flags=2*compared/9,
             nominal_expected_all_weeks=2*len(history)/9)
-    return dict(N=30,N_compared=n,F=sum(v['strict_outside'] for v in rows.values()),expected_flags=60/9,
+    return dict(N=len(PRIMARY_KEYS),N_compared=n,F=sum(v['strict_outside'] for v in rows.values()),expected_flags=2*len(PRIMARY_KEYS)/9,
         expected_flags_comparable=2*n/9,cross_week=tally,
         ties='Equal values occupy a tied rank interval; equality with a reference extreme is never flagged.',
         dependence='Statistics are correlated, which can make F vary more than a binomial count; the expectation is unchanged under exchangeability without ties. Memory carries across weeks, so weeks are serially dependent and a binomial reference is approximate.')
+
+
+def constant_primary_statistics(arms):
+    """Validation-week diagnostic, not a rule for censoring live reports."""
+    values={a:primary_values(arms[a]) for a in CANONICAL_MEMORY}
+    return [k for k in PRIMARY_KEYS if len({values[a][k] for a in CANONICAL_MEMORY})==1]
+
+
+def leave_one_out_flags(arms):
+    values={a:primary_values(arms[a]) for a in CANONICAL_MEMORY}
+    result={}
+    for a in CANONICAL_MEMORY:
+        rows=[compare(values[a][k],[values[b][k] for b in CANONICAL_MEMORY if b!=a]) for k in PRIMARY_KEYS]
+        result[a]=dict(F=sum(r['strict_outside'] for r in rows),N_compared=sum(r['status']=='compared' for r in rows))
+    return result
+
+
+def route_divergence(current,prior):
+    n,m=current['completed'],prior['completed']
+    sufficient=n>=50 and m>=50
+    return dict(status='sufficient' if sufficient else 'insufficient',current_episodes=n,prior_episodes=m,
+        js_divergence_bits=js_divergence(current['routes'],prior['routes']) if sufficient else None)
 
 
 def route_rarity(arms):
@@ -225,8 +247,8 @@ def retrospective(arms,earlier,w):
             reference_rare_routes=rare,reference_rare_count=len(rare) if rare is not None else None,
             reference_rare_per_100_episodes=rate(len(rare)) if rare is not None else None,
             recurring_rare_routes=recurring,recurring_rare_this_week=sum(w in x['recurrence_weeks'] for x in recurring),
-            route_history=history,comparisons={old:dict(js_divergence_bits=js_divergence(routes,v['report']['arms'][a]['episode_classes']['traversal']['routes']),prior_seal_digest=v['seal_digest']) for old,v in sorted(earlier.items())})
-    # Descriptive ranks only: amendment 10 does not enlarge the 30-statistic flag set.
+            route_history=history,comparisons={old:dict(route_divergence(current,v['report']['arms'][a]['episode_classes']['traversal']),prior_seal_digest=v['seal_digest']) for old,v in sorted(earlier.items())})
+    # Descriptive ranks only: amendment 10 does not enlarge the 29-statistic flag set.
     for a in CANONICAL_MEMORY:
         out[a]['ranks_among_nine']={}
         for key in ('novel_count','novel_per_100_episodes','reference_rare_count','reference_rare_per_100_episodes','recurring_rare_this_week'):

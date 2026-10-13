@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 from .common import cj,digest,sha,publish,read,week,project_journal
 from .beacon import round_time
-from .metrics import summarize,ranks,flag_summary,retrospective as route_history,VERSION,CLASSES,PRIMARY_KEYS
+from .metrics import summarize,ranks,flag_summary,retrospective as route_history,VERSION,CLASSES,PRIMARY_KEYS,leave_one_out_flags
 from .engine import NAMES
 
 def weekly(engine):
@@ -41,10 +41,10 @@ def weekly(engine):
                     engine.incident('canonical_boundary_entry_diagnostic',
                         dict(week=w,arm=arm,diagnostic=diagnostic),engine.g['R0']+20*engine.tick)
             records_digest,last=week_record_digest(engine.records(),w)
-            report=dict(version='C1-report-0.2-A10',mode=engine.g['mode'],week=w,genesis_digest=digest(engine.g),
+            report=dict(version='C1-report-0.3-A11',mode=engine.g['mode'],week=w,genesis_digest=digest(engine.g),
                 measurement_version=VERSION,generated_at=engine.clock(),last_included_round=last['beacon']['round'],
                 last_included_round_time=last['round_time'],records_digest=records_digest,
-                renderer_sha256=sha(Path(__file__).read_bytes()),arms=arms,references=references,flags=flag_summary(references,earlier),retrospective=retrospective,
+                renderer_sha256=sha(Path(__file__).read_bytes()),arms=arms,references=references,flags=flag_summary(references,earlier),leave_one_out_flags=leave_one_out_flags(arms),retrospective=retrospective,
                 limitations=['Exploratory; no hypothesis test or calibrated anomaly claim.',
                     'References are deterministic transformations of the same inflow, not independent sources.',
                     '2/9 is conditional on exchangeability and no ties; many weekly flags are expected.',
@@ -75,7 +75,7 @@ def week_record_digest(records,w):
 
 def render(r):
     number=lambda v:'undefined' if v is None else (str(v) if type(v) is int else f'{v:.5g}')
-    lines=[f'# Amelia C1 — {r["week"]} — amendments 7–10',
+    lines=[f'# Amelia C1 — {r["week"]} — amendments 7–11',
         f'Mode: {r["mode"]}. Observational and exploratory. Traversal episodes are the primary interpretation class.',
         '',
         'C against M isolates the effect of carried memory under the same inflow. C against R01–R08 isolates what this particular inflow does that other inflows of the same kind, passed through the same instrument with carried memory, do not.',
@@ -115,6 +115,7 @@ def render(r):
     lines += ['\n## Declared comparisons and cross-week tally',
         f'N = {f["N"]} declared statistics; {f["N_compared"]} comparable this week; F = {f["F"]} flagged. Expected flags under exchangeability without ties: 2N/9 = {f["expected_flags"]:.4f}; for the comparable subset: {f["expected_flags_comparable"]:.4f}.',
         f['dependence'],f['ties'],
+        'Self-loop counts at 0, 3 and 9 use boundary-entry episodes; zone 1 uses traversal episodes. Zone occupancy 0 is descriptive only.',
         'An unavailable statistic is not flagged and does not count as a compared week. The table gives flagged / compared weeks and expectation 2/9 per compared week; JSON also gives total reported weeks. Persistent departures across weeks are the pattern of interest; a single week’s flag is not.',
         '\nStatistic | C | R range | Tied rank | Flag | Weeks flagged / compared | Expected',
         '---|---:|---|---|---|---|---:']
@@ -123,6 +124,8 @@ def render(r):
         span='unavailable' if v['status']=='undefined' else f'{number(v["reference_min"])}–{number(v["reference_max"])}'
         rank='unavailable' if v['status']=='undefined' else f'{v["rank_low"]}–{v["rank_high"]}'
         lines.append(f'{k} | {number(v.get("value"))} | {span} | {rank} | {"YES" if v["strict_outside"] else "—"} | {t["weeks_flagged"]}/{t["weeks_compared"]} | {t["expected_flags"]:.3f}')
+    lines += ['\nLeave-one-out flag counts (each arm against the other eight; descriptive empirical comparison, not an independent null sample):', '\nArm | F | Comparable', '---|---:|---:']
+    for a,v in r['leave_one_out_flags'].items():lines.append(f'{a} | {v["F"]} | {v["N_compared"]}')
     lines += ['\nAll other values, including eligible counts, visit sums and route novelty/rarity ranks, are derived descriptions and are never flagged.',
         '\n## Traversal route novelty, rarity and recurrence',
         'Counts are distinct typed routes; rates are per 100 completed traversal episodes. Reference rarity is leave-one-out among C and R01–R08, with occurrence in at most one of the other eight arms. It is not defined for M or G. Recurring rare routes were rare at first appearance, not merely rare now.',
@@ -136,7 +139,7 @@ def render(r):
     for a,v in r['retrospective'].items():
         if v['comparisons']:
             lines.append(f'\n{a} traversal-route Jensen–Shannon divergence:')
-            for old,x in v['comparisons'].items():lines.append(f'- Against {old}: {number(x["js_divergence_bits"])} bits; seal `{x["prior_seal_digest"]}`.')
+            for old,x in v['comparisons'].items():lines.append(f'- Against {old}: {number(x["js_divergence_bits"])+" bits" if x["status"]=="sufficient" else "insufficient (requires 50 traversal episodes in both weeks)"}; seal `{x["prior_seal_digest"]}`.')
         if v['recurring_rare_routes']:
             lines.append(f'\n{a} recurring rare routes:')
             for x in v['recurring_rare_routes']:
