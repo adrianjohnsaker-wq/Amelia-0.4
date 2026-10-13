@@ -1,0 +1,53 @@
+{
+  "batch_verdict": "PASS",
+  "completed_utc": "2026-10-13T19:55:48.596Z",
+  "cumulative_audit_failures": {
+    "global": [],
+    "timing": [],
+    "workings": []
+  },
+  "cumulative_audit_verdict": "INCOMPLETE",
+  "events": 162,
+  "ledger_head": "06bcae02c4a57e5fca6a1178328de70b38f13c257bdf7ffa68b4c19cbdc07a51",
+  "note": "batch_verdict evaluates only workings handled in this run; cumulative status may remain INCOMPLETE because of historical evidence gaps such as W015. No ranks or test statistics are computed by the queue runner.",
+  "run": "20261013T194522Z_38178417971",
+  "schema": "OUTSIDE-2-queue-batch-2",
+  "steps": [
+    {
+      "beacon_round": 32986390,
+      "relays": 3,
+      "step": "resolved",
+      "working": "W065"
+    },
+    {
+      "beacon_round": 33039322,
+      "push_before_deadline": true,
+      "request_commit": "74339d676a4f54da195c3a2617df4644c639aed3",
+      "step": "admitted",
+      "tsa": "PASS",
+      "working": "W066"
+    },
+    {
+      "beacon_round": 33039322,
+      "relays": 3,
+      "step": "resolved",
+      "working": "W066"
+    },
+    {
+      "next": "W067",
+      "step": "queue empty"
+    }
+  ],
+  "workings_this_run": {
+    "W065": {
+      "beacon": "PASS",
+      "relay": "PASS",
+      "timing": "PASS"
+    },
+    "W066": {
+      "beacon": "PASS",
+      "relay": "PASS",
+      "timing": "PASS"
+    }
+  }
+}
