@@ -33,6 +33,6 @@ test_wrong_reading (test_timestamps.TimestampTests.test_wrong_reading) ... ok
 test_wrong_trust (test_timestamps.TimestampTests.test_wrong_trust) ... ok
 
 ----------------------------------------------------------------------
-Ran 33 tests in 12.036s
+Ran 33 tests in 17.151s
 
 OK

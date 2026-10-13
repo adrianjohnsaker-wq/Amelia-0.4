@@ -1,0 +1,78 @@
+{
+  "status": "PASS",
+  "amendments": "7\u201310",
+  "c1_tests": 33,
+  "accepted_substrate_tests": 40,
+  "arms": 18,
+  "ticks_per_arm": 10082,
+  "total_arm_moves": 181476,
+  "exact_replay": true,
+  "all_tick_records_and_checkpoints_match_baseline": true,
+  "original_example_reports_preserved": true,
+  "live_activated": false,
+  "operator_review_required_before_genesis": true,
+  "validated_commit": "2fd554f0fe00527d43ba03a70806ef4a65d48eb1",
+  "workflow_run": 38314170412,
+  "artifact_id": 11777921172,
+  "artifact_sha256": "4ed2bb9bd5bc1e713f36b4c7bce68513108ecdfacd54e35e42c9d1bf8bf9493a",
+  "frozen_files_match": true,
+  "simulation_reports": {
+    "2026-W41": {
+      "bundle": {
+        "json_sha256": "30e97b5203ead5e98e4de138adbf65548d2108378daef01f3bccdb1dd88cf117",
+        "markdown_sha256": "a820c95ea3f14f4554f02242cadf07c5d7cab86e20b3125a95fb7d27d4d47bc8"
+      },
+      "receipt": {
+        "comparison_time_unix": 1792368034,
+        "imprint": "633c72825d684e8ac04741c129dfa27470b70003ca4ba78121b5a8a9cbc54f36",
+        "mode": "SIMULATION",
+        "recorded_at": 1792368034,
+        "round_current_at_sealing": 33188223,
+        "status": "SIMULATED_NOT_RFC3161"
+      },
+      "ticks_per_arm": 1,
+      "C_completed_by_class": {
+        "all": 0,
+        "boundary_entry": 0,
+        "traversal": 0
+      },
+      "C_boundary_entry_diagnostic": {
+        "checked": 0,
+        "failures": [],
+        "status": "PASS"
+      },
+      "N": 30,
+      "N_compared": 8,
+      "F": 0
+    },
+    "2026-W42": {
+      "bundle": {
+        "json_sha256": "2184a15714b9bb78d2aecf1c2abc1ac876e07382a1a529f0c4d69876191177a0",
+        "markdown_sha256": "7db462e22f1db9a5491e845eddfc1b99b2d5aed2ae4cc983c73cd2ebadd2c5e0"
+      },
+      "receipt": {
+        "comparison_time_unix": 1792368034,
+        "imprint": "30d49bd091f9550f1c31f7a2144eab0f332cc151972225f1315b8e394ed897aa",
+        "mode": "SIMULATION",
+        "recorded_at": 1792368034,
+        "round_current_at_sealing": 33188223,
+        "status": "SIMULATED_NOT_RFC3161"
+      },
+      "ticks_per_arm": 10080,
+      "C_completed_by_class": {
+        "all": 1353,
+        "boundary_entry": 534,
+        "traversal": 819
+      },
+      "C_boundary_entry_diagnostic": {
+        "checked": 534,
+        "failures": [],
+        "status": "PASS"
+      },
+      "N": 30,
+      "N_compared": 30,
+      "F": 1
+    }
+  },
+  "cryptographic_fixtures": "recorded quicknet KAT and local synthetic RFC3161 authority; simulation seals are not live timestamps"
+}

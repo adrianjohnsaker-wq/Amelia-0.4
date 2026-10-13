@@ -1,0 +1,22 @@
+{
+  "arms": 18,
+  "canonical_boundary_diagnostics": "PASS",
+  "declared_statistics": 30,
+  "first_week": "2026-W41",
+  "last_week": "2026-W43",
+  "measurement_version": "C1-measurements-0.2-A10",
+  "mode": "SIMULATION",
+  "not_live_evidence": true,
+  "outage_resume_tick": 17,
+  "replay": {
+    "exact_replay": true,
+    "head": "b6d2c09e05132f099964cf80c3e60479cac917d038e9c83fd9a67383dab62a6e",
+    "ticks": 10082
+  },
+  "runtime_seconds": 1950.65,
+  "sealed_simulated_weeks": [
+    "2026-W41",
+    "2026-W42"
+  ],
+  "ticks": 10082
+}
