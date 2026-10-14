@@ -1,0 +1,41 @@
+{
+  "beacon_deadline_unix": 1792005804,
+  "beacon_round": 33067480,
+  "github_timing": {
+    "note": "runner clock is not an independent publication timestamp; RFC 3161 is the primary independent pre-beacon existence evidence. Event-feed availability is not assumed.",
+    "reconstructed_after_partial_run": false,
+    "run_id": "38594169285",
+    "runner_push_before_deadline": true,
+    "runner_push_completed_utc": "2026-10-14T19:13:25.185563+00:00"
+  },
+  "pushed_commit": "d65c9c73d6444649a31f7d6e0dc7a9deec73689e",
+  "reading_event_hash": "481c727404cfc1ad34100611d8b80cdb4421294bb8f7951d0d056ed037d1d48a",
+  "request": {
+    "file": "batch-2026-10-14-001.txt",
+    "line": 20,
+    "source": "batch-2026-10-14-001.txt:20",
+    "tosses": "TTTTTTTTHHHTHHHHTTTHHTHTHTHHTHHT",
+    "working": "W098"
+  },
+  "request_git_provenance": {
+    "author_email": "adrianjohnsaker@gmail.com",
+    "author_name": "Adrian Saker",
+    "author_time": "2026-10-14T16:59:18+01:00",
+    "commit": "4bac2890028c07a1922c13f4e0a1db4da3d8d974",
+    "file": "amelia-1/outside/admission_requests/batch-2026-10-14-001.txt"
+  },
+  "schema": "OUTSIDE-2-queue-admission-2",
+  "synthetic": false,
+  "tsa": {
+    "accuracy_declared": false,
+    "accuracy_seconds": 0.0,
+    "comparison_time_unix": 1792005202.0,
+    "deadline_unix": 1792005804,
+    "gen_time": "2026-10-14T19:13:22+00:00",
+    "reason": "signed issuance time (plus declared accuracy, if any) must precede beacon",
+    "response_sha256": "74b6fff6dc77b81242b8d4c5e7cac4211324693c005e19b03aeed60609a3ee39",
+    "status": "PASS",
+    "trust_anchor_sha256": "2151b61137ffa86bf664691ba67e7da0b19f98c758e3d228d5d8ebf27e044438"
+  },
+  "working": "W098"
+}
