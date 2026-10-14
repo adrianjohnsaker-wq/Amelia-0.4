@@ -1,0 +1,403 @@
+{
+  "batch_verdict": "PASS",
+  "completed_utc": "2026-10-14T19:23:55.796Z",
+  "cumulative_audit_failures": {
+    "global": [],
+    "timing": [],
+    "workings": []
+  },
+  "cumulative_audit_verdict": "INCOMPLETE",
+  "events": 258,
+  "ledger_head": "dd97bf9f7ce29dbd8ff9d42ed69e3a38d90931d8feeb5455b9dc296de54e0bbe",
+  "note": "batch_verdict evaluates only workings handled in this run; cumulative status may remain INCOMPLETE because of historical evidence gaps such as W015. No ranks or test statistics are computed by the queue runner.",
+  "run": "20261014T155930Z_38594169285",
+  "schema": "OUTSIDE-2-queue-batch-2",
+  "steps": [
+    {
+      "beacon_round": 33063604,
+      "push_before_deadline": true,
+      "request_commit": "4bac2890028c07a1922c13f4e0a1db4da3d8d974",
+      "step": "admitted",
+      "tsa": "PASS",
+      "working": "W079"
+    },
+    {
+      "beacon_round": 33063604,
+      "relays": 3,
+      "step": "resolved",
+      "working": "W079"
+    },
+    {
+      "beacon_round": 33063808,
+      "push_before_deadline": true,
+      "request_commit": "4bac2890028c07a1922c13f4e0a1db4da3d8d974",
+      "step": "admitted",
+      "tsa": "PASS",
+      "working": "W080"
+    },
+    {
+      "beacon_round": 33063808,
+      "relays": 3,
+      "step": "resolved",
+      "working": "W080"
+    },
+    {
+      "beacon_round": 33064012,
+      "push_before_deadline": true,
+      "request_commit": "4bac2890028c07a1922c13f4e0a1db4da3d8d974",
+      "step": "admitted",
+      "tsa": "PASS",
+      "working": "W081"
+    },
+    {
+      "beacon_round": 33064012,
+      "relays": 3,
+      "step": "resolved",
+      "working": "W081"
+    },
+    {
+      "beacon_round": 33064216,
+      "push_before_deadline": true,
+      "request_commit": "4bac2890028c07a1922c13f4e0a1db4da3d8d974",
+      "step": "admitted",
+      "tsa": "PASS",
+      "working": "W082"
+    },
+    {
+      "beacon_round": 33064216,
+      "relays": 3,
+      "step": "resolved",
+      "working": "W082"
+    },
+    {
+      "beacon_round": 33064420,
+      "push_before_deadline": true,
+      "request_commit": "4bac2890028c07a1922c13f4e0a1db4da3d8d974",
+      "step": "admitted",
+      "tsa": "PASS",
+      "working": "W083"
+    },
+    {
+      "beacon_round": 33064420,
+      "relays": 3,
+      "step": "resolved",
+      "working": "W083"
+    },
+    {
+      "beacon_round": 33064624,
+      "push_before_deadline": true,
+      "request_commit": "4bac2890028c07a1922c13f4e0a1db4da3d8d974",
+      "step": "admitted",
+      "tsa": "PASS",
+      "working": "W084"
+    },
+    {
+      "beacon_round": 33064624,
+      "relays": 3,
+      "step": "resolved",
+      "working": "W084"
+    },
+    {
+      "beacon_round": 33064828,
+      "push_before_deadline": true,
+      "request_commit": "4bac2890028c07a1922c13f4e0a1db4da3d8d974",
+      "step": "admitted",
+      "tsa": "PASS",
+      "working": "W085"
+    },
+    {
+      "beacon_round": 33064828,
+      "relays": 3,
+      "step": "resolved",
+      "working": "W085"
+    },
+    {
+      "beacon_round": 33065032,
+      "push_before_deadline": true,
+      "request_commit": "4bac2890028c07a1922c13f4e0a1db4da3d8d974",
+      "step": "admitted",
+      "tsa": "PASS",
+      "working": "W086"
+    },
+    {
+      "beacon_round": 33065032,
+      "relays": 3,
+      "step": "resolved",
+      "working": "W086"
+    },
+    {
+      "beacon_round": 33065236,
+      "push_before_deadline": true,
+      "request_commit": "4bac2890028c07a1922c13f4e0a1db4da3d8d974",
+      "step": "admitted",
+      "tsa": "PASS",
+      "working": "W087"
+    },
+    {
+      "beacon_round": 33065236,
+      "relays": 3,
+      "step": "resolved",
+      "working": "W087"
+    },
+    {
+      "beacon_round": 33065440,
+      "push_before_deadline": true,
+      "request_commit": "4bac2890028c07a1922c13f4e0a1db4da3d8d974",
+      "step": "admitted",
+      "tsa": "PASS",
+      "working": "W088"
+    },
+    {
+      "beacon_round": 33065440,
+      "relays": 3,
+      "step": "resolved",
+      "working": "W088"
+    },
+    {
+      "beacon_round": 33065644,
+      "push_before_deadline": true,
+      "request_commit": "4bac2890028c07a1922c13f4e0a1db4da3d8d974",
+      "step": "admitted",
+      "tsa": "PASS",
+      "working": "W089"
+    },
+    {
+      "beacon_round": 33065644,
+      "relays": 3,
+      "step": "resolved",
+      "working": "W089"
+    },
+    {
+      "beacon_round": 33065848,
+      "push_before_deadline": true,
+      "request_commit": "4bac2890028c07a1922c13f4e0a1db4da3d8d974",
+      "step": "admitted",
+      "tsa": "PASS",
+      "working": "W090"
+    },
+    {
+      "beacon_round": 33065848,
+      "relays": 3,
+      "step": "resolved",
+      "working": "W090"
+    },
+    {
+      "beacon_round": 33066052,
+      "push_before_deadline": true,
+      "request_commit": "4bac2890028c07a1922c13f4e0a1db4da3d8d974",
+      "step": "admitted",
+      "tsa": "PASS",
+      "working": "W091"
+    },
+    {
+      "beacon_round": 33066052,
+      "relays": 3,
+      "step": "resolved",
+      "working": "W091"
+    },
+    {
+      "beacon_round": 33066256,
+      "push_before_deadline": true,
+      "request_commit": "4bac2890028c07a1922c13f4e0a1db4da3d8d974",
+      "step": "admitted",
+      "tsa": "PASS",
+      "working": "W092"
+    },
+    {
+      "beacon_round": 33066256,
+      "relays": 3,
+      "step": "resolved",
+      "working": "W092"
+    },
+    {
+      "beacon_round": 33066460,
+      "push_before_deadline": true,
+      "request_commit": "4bac2890028c07a1922c13f4e0a1db4da3d8d974",
+      "step": "admitted",
+      "tsa": "PASS",
+      "working": "W093"
+    },
+    {
+      "beacon_round": 33066460,
+      "relays": 3,
+      "step": "resolved",
+      "working": "W093"
+    },
+    {
+      "beacon_round": 33066664,
+      "push_before_deadline": true,
+      "request_commit": "4bac2890028c07a1922c13f4e0a1db4da3d8d974",
+      "step": "admitted",
+      "tsa": "PASS",
+      "working": "W094"
+    },
+    {
+      "beacon_round": 33066664,
+      "relays": 3,
+      "step": "resolved",
+      "working": "W094"
+    },
+    {
+      "beacon_round": 33066868,
+      "push_before_deadline": true,
+      "request_commit": "4bac2890028c07a1922c13f4e0a1db4da3d8d974",
+      "step": "admitted",
+      "tsa": "PASS",
+      "working": "W095"
+    },
+    {
+      "beacon_round": 33066868,
+      "relays": 3,
+      "step": "resolved",
+      "working": "W095"
+    },
+    {
+      "beacon_round": 33067072,
+      "push_before_deadline": true,
+      "request_commit": "4bac2890028c07a1922c13f4e0a1db4da3d8d974",
+      "step": "admitted",
+      "tsa": "PASS",
+      "working": "W096"
+    },
+    {
+      "beacon_round": 33067072,
+      "relays": 3,
+      "step": "resolved",
+      "working": "W096"
+    },
+    {
+      "beacon_round": 33067276,
+      "push_before_deadline": true,
+      "request_commit": "4bac2890028c07a1922c13f4e0a1db4da3d8d974",
+      "step": "admitted",
+      "tsa": "PASS",
+      "working": "W097"
+    },
+    {
+      "beacon_round": 33067276,
+      "relays": 3,
+      "step": "resolved",
+      "working": "W097"
+    },
+    {
+      "beacon_round": 33067480,
+      "push_before_deadline": true,
+      "request_commit": "4bac2890028c07a1922c13f4e0a1db4da3d8d974",
+      "step": "admitted",
+      "tsa": "PASS",
+      "working": "W098"
+    },
+    {
+      "beacon_round": 33067480,
+      "relays": 3,
+      "step": "resolved",
+      "working": "W098"
+    },
+    {
+      "limit": 20,
+      "step": "stopped at per-run limit"
+    }
+  ],
+  "workings_this_run": {
+    "W079": {
+      "beacon": "PASS",
+      "relay": "PASS",
+      "timing": "PASS"
+    },
+    "W080": {
+      "beacon": "PASS",
+      "relay": "PASS",
+      "timing": "PASS"
+    },
+    "W081": {
+      "beacon": "PASS",
+      "relay": "PASS",
+      "timing": "PASS"
+    },
+    "W082": {
+      "beacon": "PASS",
+      "relay": "PASS",
+      "timing": "PASS"
+    },
+    "W083": {
+      "beacon": "PASS",
+      "relay": "PASS",
+      "timing": "PASS"
+    },
+    "W084": {
+      "beacon": "PASS",
+      "relay": "PASS",
+      "timing": "PASS"
+    },
+    "W085": {
+      "beacon": "PASS",
+      "relay": "PASS",
+      "timing": "PASS"
+    },
+    "W086": {
+      "beacon": "PASS",
+      "relay": "PASS",
+      "timing": "PASS"
+    },
+    "W087": {
+      "beacon": "PASS",
+      "relay": "PASS",
+      "timing": "PASS"
+    },
+    "W088": {
+      "beacon": "PASS",
+      "relay": "PASS",
+      "timing": "PASS"
+    },
+    "W089": {
+      "beacon": "PASS",
+      "relay": "PASS",
+      "timing": "PASS"
+    },
+    "W090": {
+      "beacon": "PASS",
+      "relay": "PASS",
+      "timing": "PASS"
+    },
+    "W091": {
+      "beacon": "PASS",
+      "relay": "PASS",
+      "timing": "PASS"
+    },
+    "W092": {
+      "beacon": "PASS",
+      "relay": "PASS",
+      "timing": "PASS"
+    },
+    "W093": {
+      "beacon": "PASS",
+      "relay": "PASS",
+      "timing": "PASS"
+    },
+    "W094": {
+      "beacon": "PASS",
+      "relay": "PASS",
+      "timing": "PASS"
+    },
+    "W095": {
+      "beacon": "PASS",
+      "relay": "PASS",
+      "timing": "PASS"
+    },
+    "W096": {
+      "beacon": "PASS",
+      "relay": "PASS",
+      "timing": "PASS"
+    },
+    "W097": {
+      "beacon": "PASS",
+      "relay": "PASS",
+      "timing": "PASS"
+    },
+    "W098": {
+      "beacon": "PASS",
+      "relay": "PASS",
+      "timing": "PASS"
+    }
+  }
+}
