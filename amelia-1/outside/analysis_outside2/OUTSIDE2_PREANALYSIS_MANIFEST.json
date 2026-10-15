@@ -1,0 +1,29 @@
+{
+  "schema": "OUTSIDE-2-preanalysis-manifest-v1",
+  "status": "FROZEN_INPUTS_ANALYSIS_NOT_RUN",
+  "series": "OUTSIDE-2-numogram-reader",
+  "registered_version": "1.1.0",
+  "frozen_ref": "amelia-1.0",
+  "collection_endpoint": "W100.000264.RESOLVED",
+  "ledger_events": 264,
+  "ledger_head_sha256": "baafa6db28a238f6a38427f60fc944117e03f87c730c82f3210444410d4c3b79",
+  "evidence_archive_sha256": "f14e4b196fe0007846937226163f3a7f60ea93013d217319d429d8f0d44cfcd2",
+  "evidence_run_id": 38771484368,
+  "registration_sha256": "f9a6aff2893b9e6e5942b18b0e5aa61b724d06a3b7fcbcbe1a75f0d41269c752",
+  "reference_sha256": "b32d1f4a3bf965e50250dde6faa44e10d3efafbc883d89b1b3c4fac50720aed9",
+  "calibration_sha256": "539cf350d93158c757176815fca8d654c0354d6eadab1478b1b54102988e811d",
+  "protocol_sha256": "01b103a21db5a7475db30f1eef18de51f9acb8d8310fd1ee18cdf6c29d6b08a0",
+  "git_blob_shas": {
+    "Outside2.py": "9b58dcd94994192d85ac3bcc48b799344a1af58a",
+    "outside2_registration.json": "370d3971c83658c77b13760b207177cd33394ec5",
+    "outside2_reference.json": "1101794d155a783014a77ba21641c6fe4798cab6",
+    "outside2_calibration_seal.json": "f1a7581149c5be9856632a620cf130bb2eb0d032"
+  },
+  "historical_audit": "INCOMPLETE; W015 historical evidence gap; no primary exclusion",
+  "primary_inclusion": "W013-W100 all 88 resolved",
+  "preanalysis_commands": [
+    "python3 Outside2.py verify",
+    "python3 Outside2.py analyse"
+  ],
+  "note": "Git blob SHA-1 identifiers are not file SHA-256; independent RFC3161 timestamp and frozen commit pin still required before analyse."
+}
