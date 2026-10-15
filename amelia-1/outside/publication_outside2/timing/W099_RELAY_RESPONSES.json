@@ -1,0 +1,40 @@
+{
+  "agreeing_relays": 3,
+  "bls_verified": true,
+  "fetched_utc": "2026-10-15T16:54:37.803Z",
+  "randomness": "9e26ef555ebdaf114dd32754918f4c1688165d88ada5abe6725cbbb311385c8b",
+  "responses": [
+    {
+      "relay": "https://api.drand.sh",
+      "response": {
+        "randomness": "9e26ef555ebdaf114dd32754918f4c1688165d88ada5abe6725cbbb311385c8b",
+        "round": 33093302,
+        "signature": "98cf7050393f3c5989d84d63c4086adbe465e7c68852a4c8caf22bf521e58322a3a2fcc509710a83cffd042849fe560d"
+      }
+    },
+    {
+      "relay": "https://api2.drand.sh",
+      "response": {
+        "randomness": "9e26ef555ebdaf114dd32754918f4c1688165d88ada5abe6725cbbb311385c8b",
+        "round": 33093302,
+        "signature": "98cf7050393f3c5989d84d63c4086adbe465e7c68852a4c8caf22bf521e58322a3a2fcc509710a83cffd042849fe560d"
+      }
+    },
+    {
+      "relay": "https://api3.drand.sh",
+      "response": {
+        "randomness": "9e26ef555ebdaf114dd32754918f4c1688165d88ada5abe6725cbbb311385c8b",
+        "round": 33093302,
+        "signature": "98cf7050393f3c5989d84d63c4086adbe465e7c68852a4c8caf22bf521e58322a3a2fcc509710a83cffd042849fe560d"
+      }
+    },
+    {
+      "relay": "https://drand.cloudflare.com",
+      "response": {
+        "error": "HTTPError: HTTP Error 403: Forbidden"
+      }
+    }
+  ],
+  "round": 33093302,
+  "signature": "98cf7050393f3c5989d84d63c4086adbe465e7c68852a4c8caf22bf521e58322a3a2fcc509710a83cffd042849fe560d"
+}
