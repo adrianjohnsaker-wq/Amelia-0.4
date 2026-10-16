@@ -1,0 +1,141 @@
+name: OUTSIDE-2 registered analysis (runs once)
+on:
+  push:
+    branches: [amelia-1.0]
+    paths: [".github/workflows/outside2-registered-analysis.yml"]
+permissions:
+  contents: write
+concurrency:
+  group: outside2-ledger
+  cancel-in-progress: false
+jobs:
+  analyse:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      PIN: fc141e490d3fc702e214956bb7e86bbfb5f00742
+      ADDENDUM_COMMIT: 854c34f2bedcbe76b4254c914547c840f198a8c9
+      HEAD_EXPECTED: baafa6db28a238f6a38427f60fc944117e03f87c730c82f3210444410d4c3b79
+      EVENTS_EXPECTED: '264'
+      A: amelia-1/outside/analysis_outside2
+    steps:
+      - name: Check out pinned inputs (read only)
+        uses: actions/checkout@v5
+        with:
+          ref: fc141e490d3fc702e214956bb7e86bbfb5f00742
+          path: pinned
+          persist-credentials: false
+      - name: Check out evidence branch
+        uses: actions/checkout@v5
+        with:
+          ref: amelia-1.0
+          path: record
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install registered audit dependencies
+        run: pip install -r pinned/amelia-1/outside/requirements-audit.txt
+      - name: Refuse a second analysis
+        run: |
+          if [ -e "record/$A/OUTSIDE2_ANALYSIS_OUTPUT.json" ]; then
+            echo "::error::OUTSIDE2_ANALYSIS_OUTPUT.json exists; the registered analysis runs once."
+            exit 1
+          fi
+      - name: Prepare commit helper
+        run: |
+          git -C record config user.name 'github-actions[bot]'
+          git -C record config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          printf '%s\n' '#!/usr/bin/env bash' 'set -euo pipefail' \
+            'cd record; git add "$A"; git commit -m "$1"' \
+            'for i in 1 2 3 4 5; do' \
+            '  if git pull --rebase origin amelia-1.0 && git push origin HEAD:amelia-1.0; then exit 0; fi' \
+            '  sleep $((i*10)); done; exit 1' > "$RUNNER_TEMP/publish.sh"
+          chmod +x "$RUNNER_TEMP/publish.sh"
+      - name: Stage 1 - recompute input SHA-256 at the pinned commit
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, os, subprocess, sys
+          A, PIN, AC = os.environ['A'], os.environ['PIN'], os.environ['ADDENDUM_COMMIT']
+          sha = lambda b: hashlib.sha256(b).hexdigest()
+          add_raw = subprocess.run(['git', '-C', 'record', 'show',
+                                    AC + ':' + A + '/OUTSIDE2_PREANALYSIS_ADDENDUM.json'],
+                                   capture_output=True, check=True).stdout
+          add = json.loads(add_raw)
+          problems = []
+          if add['pinned_input_commit'] != PIN:
+              problems.append('addendum pins a different commit')
+          man_path = add.get('original_manifest_path') or (A + '/OUTSIDE2_PREANALYSIS_MANIFEST.json')
+          man_sha = sha(open(os.path.join('pinned', man_path), 'rb').read())
+          if man_sha != add['original_manifest_sha256']:
+              problems.append('original manifest digest differs')
+          files = {}
+          for name, expected in sorted(add['registered_expected_sha256'].items()):
+              got = sha(open(os.path.join('pinned/amelia-1/outside', name), 'rb').read())
+              files[name] = {'expected': expected, 'recomputed': got, 'match': got == expected}
+              if got != expected:
+                  problems.append('digest differs: ' + name)
+          out = {'stage': 1, 'pinned_input_commit': PIN, 'addendum_commit': AC,
+                 'addendum_sha256': sha(add_raw), 'manifest_path': man_path, 'manifest_sha256': man_sha,
+                 'files': files, 'all_match': not problems, 'problems': problems}
+          os.makedirs(os.path.join('record', A), exist_ok=True)
+          with open(os.path.join('record', A, 'OUTSIDE2_ANALYSIS_STAGE1_SHA256.json'), 'w') as f:
+              json.dump(out, f, indent=1, sort_keys=True); f.write('\n')
+          print(json.dumps(out, indent=1, sort_keys=True))
+          sys.exit(0 if not problems else 1)
+          PY
+      - name: Stage 2 - RFC 3161 seal over manifest, addendum and stage-1 record
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, os, sys, time
+          sys.path.insert(0, 'pinned/amelia-1/outside')
+          import outside2_timing as T
+          A = os.environ['A']; d = os.path.join('record', A)
+          s1_path = os.path.join(d, 'OUTSIDE2_ANALYSIS_STAGE1_SHA256.json')
+          s1 = json.load(open(s1_path))
+          sealed = {'pinned_input_commit': os.environ['PIN'], 'manifest_sha256': s1['manifest_sha256'],
+                    'addendum_sha256': s1['addendum_sha256'],
+                    'stage1_sha256': hashlib.sha256(open(s1_path, 'rb').read()).hexdigest()}
+          digest = hashlib.sha256(json.dumps(sealed, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
+          resp = T.obtain_token(os.path.join(d, 'OUTSIDE2_ANALYSIS_SEAL'), digest)
+          v = T.verify_token(resp, digest, time.time() + 600)
+          out = {'stage': 2, 'sealed': sealed, 'sealed_digest': digest,
+                 'digest_rule': 'SHA-256 of canonical JSON of sealed (sorted keys, separators , :)',
+                 'rfc3161': v, 'analysis_run': False}
+          with open(os.path.join(d, 'OUTSIDE2_ANALYSIS_SEAL.json'), 'w') as f:
+              json.dump(out, f, indent=1, sort_keys=True); f.write('\n')
+          print(json.dumps(out, indent=1, sort_keys=True))
+          sys.exit(0 if v.get('status') == 'PASS' else 1)
+          PY
+      - name: Commit stages 1-2 before any analysis
+        run: '"$RUNNER_TEMP/publish.sh" "OUTSIDE-2: pinned input digests verified and analysis inputs sealed (RFC 3161); analysis not yet run"'
+      - name: Stage 3 - ledger verification at the pinned commit
+        run: |
+          set -euo pipefail
+          out="$GITHUB_WORKSPACE/record/$A/OUTSIDE2_ANALYSIS_VERIFY.json"
+          (cd pinned/amelia-1/outside && python3 Outside2.py verify) > "$out"
+          cat "$out"
+          python3 - "$out" <<'PY'
+          import json, os, sys
+          v = json.load(open(sys.argv[1]))
+          ok = v['chain_ok'] is True and v['events'] == int(os.environ['EVENTS_EXPECTED']) \
+               and v['head'] == os.environ['HEAD_EXPECTED']
+          print('verify gate:', 'PASS' if ok else 'FAIL'); sys.exit(0 if ok else 1)
+          PY
+      - name: Commit stage 3
+        run: '"$RUNNER_TEMP/publish.sh" "OUTSIDE-2: ledger verify at pinned commit (264 events, expected head); analysis not yet run"'
+      - name: Stage 4 - registered P1/P2 analysis (once)
+        run: |
+          set -euo pipefail
+          out="$GITHUB_WORKSPACE/record/$A/OUTSIDE2_ANALYSIS_OUTPUT.json"
+          (cd pinned/amelia-1/outside && python3 Outside2.py analyse) > "$out"
+          cat "$out"
+      - name: Commit stage 4
+        run: '"$RUNNER_TEMP/publish.sh" "OUTSIDE-2: registered P1/P2 analysis output (Outside2.py analyse at pinned commit), recorded as printed"'
+      - name: Retain partial evidence on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: outside2-analysis-partial-${{ github.run_id }}
+          path: record/amelia-1/outside/analysis_outside2/
+          if-no-files-found: warn
