@@ -1,0 +1,20 @@
+{
+  "schema": "OUTSIDE-2-preanalysis-addendum-v1",
+  "original_manifest_path": "amelia-1/outside/analysis_outside2/OUTSIDE2_PREANALYSIS_MANIFEST.json",
+  "original_manifest_sha256": "51de3af453a80351322f04a830002f730d256cd0dbc45d9c9db05ba8cda051f4",
+  "pinned_input_commit": "fc141e490d3fc702e214956bb7e86bbfb5f00742",
+  "registered_expected_sha256": {
+    "Outside2.py": "c2eaf7bad8d73cdaa6bbff555af767909d6f60c81e27f9156ca6b9280d2df496",
+    "Outside1_v2.py": "595bde884be28d279fc2765ee052e9140258bf0e0e988f9e9e5a358ce9f2fbe3",
+    "lexicon_v2.json": "2add52c70f7c4d3697fb26ebc68c617299a22297d906acfbf057e00096480b5f",
+    "outside2_registration.json": "f9a6aff2893b9e6e5942b18b0e5aa61b724d06a3b7fcbcbe1a75f0d41269c752",
+    "outside2_reference.json": "b32d1f4a3bf965e50250dde6faa44e10d3efafbc883d89b1b3c4fac50720aed9",
+    "outside2_calibration_seal.json": "539cf350d93158c757176815fca8d654c0354d6eadab1478b1b54102988e811d"
+  },
+  "sha256_check": "PENDING; expected digests extracted from registration and CAST records; must recompute at pinned commit and halt on mismatch",
+  "rfc3161_manifest_seal": "PENDING",
+  "ledger_verify": "PENDING",
+  "primary_analysis": "NOT_RUN",
+  "cumulative_audit": "INCOMPLETE; W015 retained; no exclusions",
+  "instructions": "Seal original manifest and addendum before running verify and analyse. Execute analyse once and commit exact stdout."
+}
