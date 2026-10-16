@@ -1,0 +1,42 @@
+{
+ "addendum_commit": "854c34f2bedcbe76b4254c914547c840f198a8c9",
+ "addendum_sha256": "bd6043b184a180017e07bd56917545e1a11310d683599e44662a92e0de4381e5",
+ "all_match": true,
+ "files": {
+  "Outside1_v2.py": {
+   "expected": "595bde884be28d279fc2765ee052e9140258bf0e0e988f9e9e5a358ce9f2fbe3",
+   "match": true,
+   "recomputed": "595bde884be28d279fc2765ee052e9140258bf0e0e988f9e9e5a358ce9f2fbe3"
+  },
+  "Outside2.py": {
+   "expected": "c2eaf7bad8d73cdaa6bbff555af767909d6f60c81e27f9156ca6b9280d2df496",
+   "match": true,
+   "recomputed": "c2eaf7bad8d73cdaa6bbff555af767909d6f60c81e27f9156ca6b9280d2df496"
+  },
+  "lexicon_v2.json": {
+   "expected": "2add52c70f7c4d3697fb26ebc68c617299a22297d906acfbf057e00096480b5f",
+   "match": true,
+   "recomputed": "2add52c70f7c4d3697fb26ebc68c617299a22297d906acfbf057e00096480b5f"
+  },
+  "outside2_calibration_seal.json": {
+   "expected": "539cf350d93158c757176815fca8d654c0354d6eadab1478b1b54102988e811d",
+   "match": true,
+   "recomputed": "539cf350d93158c757176815fca8d654c0354d6eadab1478b1b54102988e811d"
+  },
+  "outside2_reference.json": {
+   "expected": "b32d1f4a3bf965e50250dde6faa44e10d3efafbc883d89b1b3c4fac50720aed9",
+   "match": true,
+   "recomputed": "b32d1f4a3bf965e50250dde6faa44e10d3efafbc883d89b1b3c4fac50720aed9"
+  },
+  "outside2_registration.json": {
+   "expected": "f9a6aff2893b9e6e5942b18b0e5aa61b724d06a3b7fcbcbe1a75f0d41269c752",
+   "match": true,
+   "recomputed": "f9a6aff2893b9e6e5942b18b0e5aa61b724d06a3b7fcbcbe1a75f0d41269c752"
+  }
+ },
+ "manifest_path": "amelia-1/outside/analysis_outside2/OUTSIDE2_PREANALYSIS_MANIFEST.json",
+ "manifest_sha256": "51de3af453a80351322f04a830002f730d256cd0dbc45d9c9db05ba8cda051f4",
+ "pinned_input_commit": "fc141e490d3fc702e214956bb7e86bbfb5f00742",
+ "problems": [],
+ "stage": 1
+}

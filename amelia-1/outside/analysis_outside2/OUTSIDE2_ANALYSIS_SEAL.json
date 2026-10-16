@@ -1,0 +1,23 @@
+{
+ "analysis_run": false,
+ "digest_rule": "SHA-256 of canonical JSON of sealed (sorted keys, separators , :)",
+ "rfc3161": {
+  "accuracy_declared": false,
+  "accuracy_seconds": 0.0,
+  "comparison_time_unix": 1792144039.0,
+  "deadline_unix": 1792144639.9778128,
+  "gen_time": "2026-10-16T09:47:19+00:00",
+  "reason": "signed issuance time (plus declared accuracy, if any) must precede beacon",
+  "response_sha256": "ede789da97b986a7c35e35db356a8afd447320b74c804c2c5238afc5ba4f0bb5",
+  "status": "PASS",
+  "trust_anchor_sha256": "2151b61137ffa86bf664691ba67e7da0b19f98c758e3d228d5d8ebf27e044438"
+ },
+ "sealed": {
+  "addendum_sha256": "bd6043b184a180017e07bd56917545e1a11310d683599e44662a92e0de4381e5",
+  "manifest_sha256": "51de3af453a80351322f04a830002f730d256cd0dbc45d9c9db05ba8cda051f4",
+  "pinned_input_commit": "fc141e490d3fc702e214956bb7e86bbfb5f00742",
+  "stage1_sha256": "ed609d28c520abfe5e4532813b85bbb22580c24c2c30b1dfdd976a3d6dabb28a"
+ },
+ "sealed_digest": "02760d7d0c8bd96c33d8c19285aabc3dafec88844c570de880fb33c1b4af16be",
+ "stage": 2
+}
