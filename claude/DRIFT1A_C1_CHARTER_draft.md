@@ -1,7 +1,7 @@
-# DRIFT-1A-C1: continuous observational phase — charter draft 0.3 (amendments 1–11)
+# DRIFT-1A-C1: continuous observational phase — charter draft 0.4 (amendments 1–13; 12–13 pending implementation and validation)
 
 Status: exploratory observation, not a registered hypothesis test. Live activation
-has not occurred. This supersedes draft 0.1 with amendments 1–11. Amendments 7–10 were approved by the operator on 12 October 2026 following review of the synthetic W42 trial. That trial is engineering evidence only and says nothing about the inflow.
+has not occurred. This extends draft 0.3 with amendments 12–13 as pre-genesis specifications, not yet implemented or validated. Amendments 7–10 were approved by the operator on 12 October 2026 following review of the synthetic W42 trial. That trial is engineering evidence only and says nothing about the inflow.
 The motivating hypothesis is that the Numogram can be explored as an operational
 channel for an Outside whose temporal relations need not match internal progressive
 time. This is motivation, not a property established by the apparatus.
@@ -268,3 +268,12 @@ are retained; the A11 example is a new evidence file. The operator has read the
 A7–A10 report and authorizes genesis after the corrected declared set is
 implemented, validated and its report regenerated. No genesis may precede
 successful validation. Synthetic seals never serve as live timing evidence.
+
+## Pre-genesis amendments 12–13 (implementation pending)
+
+Amendment 12 (approved in principle 16 October 2026): weekly reports must contain, in order, A. Form (canonical C/R versus rewired G; structural only), B. Memory (C versus M on matched inflow), and C. Signal (C versus R01–R08 separately for each channel; the only Outside-relevant contrast). The declared 29-statistic flags, leave-one-out self-calibration and cross-week tallies belong only in Signal. Every operator interpretation note must identify Form, Memory or Signal. Form must state: "Form is shared by every arm on the canonical graph, whatever its inflow. It bears on the Numogram's structure, not on any inflow."
+
+Amendment 13 (specified for implementation and review 16 October 2026): channel B uses NIST Randomness Beacon 2.0 chain-2 pulses, in pulse-index order, with C-N (canonical/carried), M-N (canonical/reset before each choice), and R-N01–R-N08 (canonical/carried, keyed NIST reference inputs). A pulse is admitted only after verifying the pinned certificate RSA signature, predecessor precommitment and outputValue recomputation. Input is SHA-256 of raw outputValue bytes; reference k is SHA-256 of UTF-8 prefix DRIFT-1A-C1-NIST-REF-k| concatenated with input bytes. Channel B has its own genesis, append-only hash chain, incident log and weekly Signal tally. Missing pulse indices are recorded, never substituted. Certificate changes halt B pending operator amendment. Channel A operates independently and may start without B. Before B genesis, verify recent NIST publication freshness and measure and record gap rate. Cross-channel rank comparison is descriptive only.
+
+Pre-genesis validation gate: A11's PASS simulation remains the unchanged measurement baseline. A12 requires a regenerated Form/Memory/Signal report and regression equality of all underlying A11 measurements and flags. A13 requires independent NIST signature, precommitment and output recomputation known-answer and negative tests; outage, gap, certificate-change, restart and deterministic replay tests. No live genesis before operator review and explicit approval. All five rigour standards apply: fixed definitions; no outcome-driven changes; sealed prospective promotion; independent replay; publish every week.
+
