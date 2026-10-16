@@ -1,0 +1,9 @@
+{
+ "T1_doubled": 434,
+ "T2_doubled": 0,
+ "mean_canonical_target_rank": 2.465909090909091,
+ "mean_null_target_rank": 2.465909090909091,
+ "n": 88,
+ "p1": 0.4059393079653791,
+ "p2": 0.5148418012625087
+}
