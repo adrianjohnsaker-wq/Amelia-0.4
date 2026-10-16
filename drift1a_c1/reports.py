@@ -41,7 +41,7 @@ def weekly(engine):
                     engine.incident('canonical_boundary_entry_diagnostic',
                         dict(week=w,arm=arm,diagnostic=diagnostic),engine.g['R0']+20*engine.tick)
             records_digest,last=week_record_digest(engine.records(),w)
-            report=dict(version='C1-report-0.3-A11',mode=engine.g['mode'],week=w,genesis_digest=digest(engine.g),
+            report=dict(version='C1-report-0.4-A12-render',mode=engine.g['mode'],week=w,genesis_digest=digest(engine.g),
                 measurement_version=VERSION,generated_at=engine.clock(),last_included_round=last['beacon']['round'],
                 last_included_round_time=last['round_time'],records_digest=records_digest,
                 renderer_sha256=sha(Path(__file__).read_bytes()),arms=arms,references=references,flags=flag_summary(references,earlier),leave_one_out_flags=leave_one_out_flags(arms),retrospective=retrospective,
@@ -75,13 +75,16 @@ def week_record_digest(records,w):
 
 def render(r):
     number=lambda v:'undefined' if v is None else (str(v) if type(v) is int else f'{v:.5g}')
-    lines=[f'# Amelia C1 — {r["week"]} — amendments 7–11',
+    lines=[f'# Amelia C1 — {r["week"]} — amendments 7–12 (report layout)',
         f'Mode: {r["mode"]}. Observational and exploratory. Traversal episodes are the primary interpretation class.',
         '',
         'C against M isolates the effect of carried memory under the same inflow. C against R01–R08 isolates what this particular inflow does that other inflows of the same kind, passed through the same instrument with carried memory, do not.',
         '',
         'Because the reference tapes are keyed hashes of the same rounds, standard cryptographic assumptions predict no systematic departure of C from the references; that is the null against which any persistent departure is read.',
-        '\n## Process history',
+        '\n## A. Form — canonical graph versus rewired controls (channel A only)',
+        'Form is shared by every arm on the canonical graph, whatever its inflow. It bears on the Numogram\'s structure, not on any inflow.',
+        'This section describes determinacy horizon, zone-1 dwell, Warp/Plex outcomes and route lengths. G controls belong only to channel A.',
+        '\n### Process history',
         'Completed episodes are assigned to their ending week, including full lengths of cross-week episodes. Tick statistics use the class of the episode active on that tick. Occupancy divides by that class’s weekly ticks. Routes include cap endings.']
     for cl in CLASSES:
         lines += [f'\n### {cl.replace("_"," ")}',
@@ -101,7 +104,7 @@ def render(r):
     for a,m in r['arms'].items():
         d=m['boundary_entry_diagnostic']
         lines.append(f'- {a}: {d["status"]}; checked {d["checked"]}; failures {len(d["failures"])}. Unfinished: {json.dumps(m["unfinished"])}.')
-    lines += ['\n## Outcome predictability',
+    lines += ['\n### Outcome predictability',
         'This quantity is within-episode forward association, not evidence of external anticipation. Traversal boundary endings are primary; all boundary endings are secondary. Miller–Madow estimates are signed and are not clipped to zero. A lag with n < 50 is insufficient. Values within the permutation null are reported as indistinguishable from zero.',
         'B = 200; null 95th percentile uses nearest rank; ≥ proportion is the number of permuted plug-in values at least as large as observed divided by 200. The JSON contains every arm’s values and exact seed.']
     for cl in ('traversal','all'):
@@ -111,8 +114,13 @@ def render(r):
         for a in ('C','M'):
             for k,v in r['arms'][a]['episode_classes'][cl]['outcome_predictability_at_lag'].items():
                 lines.append(f'{a} | {k} | {v["n"]} | {number(v["bits"])} | {number(v["miller_madow_bits"])} | {number(v["null_95_bits"])} | {number(v["permutation_ge_proportion"])} | {v["interpretation"]}')
+    lines += ['\n## B. Memory — matched inflow, C versus M',
+        'C and M receive identical inflow. C carries memory; M resets it before each choice. This is a memory contrast, not evidence of Outside access.',
+        'Compare the C and M rows above for outcome predictability and process history; full memory activity is archived in the JSON.']
     f=r['flags']
-    lines += ['\n## Declared comparisons and cross-week tally',
+    lines += ['\n## C. Signal — C versus eight canonical reference arms (channel A)',
+        'Only Signal bears on the proposed Outside hypothesis; it is exploratory and not a registered hypothesis test.',
+        '\n### Declared comparisons and cross-week tally',
         f'N = {f["N"]} declared statistics; {f["N_compared"]} comparable this week; F = {f["F"]} flagged. Expected flags under exchangeability without ties: 2N/9 = {f["expected_flags"]:.4f}; for the comparable subset: {f["expected_flags_comparable"]:.4f}.',
         f['dependence'],f['ties'],
         'Self-loop counts at 0, 3 and 9 use boundary-entry episodes; zone 1 uses traversal episodes. Zone occupancy 0 is descriptive only.',
@@ -127,7 +135,7 @@ def render(r):
     lines += ['\nLeave-one-out flag counts (each arm against the other eight; descriptive empirical comparison, not an independent null sample):', '\nArm | F | Comparable', '---|---:|---:']
     for a,v in r['leave_one_out_flags'].items():lines.append(f'{a} | {v["F"]} | {v["N_compared"]}')
     lines += ['\nAll other values, including eligible counts, visit sums and route novelty/rarity ranks, are derived descriptions and are never flagged.',
-        '\n## Traversal route novelty, rarity and recurrence',
+        '\n### Traversal route novelty, rarity and recurrence',
         'Counts are distinct typed routes; rates are per 100 completed traversal episodes. Reference rarity is leave-one-out among C and R01–R08, with occurrence in at most one of the other eight arms. It is not defined for M or G. Recurring rare routes were rare at first appearance, not merely rare now.',
         '\nArm | Novel | Novel / 100 | Reference-rare | Rare / 100 | Recurring rare this week',
         '---|---:|---:|---:|---:|---:']
