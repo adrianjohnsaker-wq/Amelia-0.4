@@ -54,7 +54,6 @@ class LeasePushTests(unittest.TestCase):
         run(self.work,"remote","set-url","--push","origin",str(self.work/"nonexistent.git"))
         with self.assertRaisesRegex(RuntimeError,"three attempts: no admission"):
             acquire("124-1")
-        self.assertNotEqual(run(self.work,"ls-remote","origin","refs/heads/amelia-1.0").returncode,0) if False else None
         self.assertNotEqual(run(self.work,"rev-parse","--verify","origin/amelia-1.0").returncode,1)
         self.assertFalse((self.remote/"drift1a_c1/runner_state/leases/124-1.json").exists())
         self.assertNotIn("124-1",run(self.work,"ls-tree","-r","--name-only","origin/amelia-1.0").stdout)
