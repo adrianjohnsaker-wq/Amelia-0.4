@@ -70,8 +70,7 @@ def audit(archive, simulation, output):
                 # The flags table contains the declared comparison rows; confirm
                 # the two named W42 departures rather than relying only on F.
                 if expected_keys:
-                    flagged=[row for row in actual["references"] if isinstance(row,dict) and row.get("strict_outside")]
-                    named={str(row.get("name",row.get("key",row.get("statistic","")))) for row in flagged}
+                    named={key for key,row in actual["references"].items() if row["strict_outside"]}
                     if named!=set(expected_keys):
                         diffs.append({"statistic":"flagged_statistic_names","expected":expected_keys,"actual":sorted(named)})
                 record["measurements"]["weeks"][w]={"arms_compared":len(source["arms"]),"declared_statistics":len(PRIMARY_KEYS),"differences":diffs,"match":not diffs}
