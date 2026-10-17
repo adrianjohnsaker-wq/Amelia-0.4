@@ -49,6 +49,7 @@ jobs:
           mkdir -p "$RUNNER_TEMP/c1-validation"
           (cd drift1a_g11 && sha256sum -c ACCEPTED_CORE_SHA256SUMS.txt && python prepare.py && python -m unittest discover -s tests -v) 2>&1 | tee "$RUNNER_TEMP/c1-validation/substrate-tests.log"
           python -m unittest discover -s drift1a_c1/tests -v 2>&1 | tee "$RUNNER_TEMP/c1-validation/c1-tests.log"
+          python -m unittest drift1a_c1.tests.test_lease_push -v 2>&1 | tee "$RUNNER_TEMP/c1-validation/lease-injection.log"
       - name: Simulate a complete week across two week boundaries and replay all arms
         shell: bash
         run: |
@@ -92,22 +93,8 @@ jobs:
           set -euo pipefail
           git config user.name 'Amelia C1 recorder'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          # Re-read authoritative state before every lease attempt. A failed
-          # push must never permit admission under an unpersisted lease.
-          for attempt in 1 2 3; do
-            git fetch origin amelia-1.0
-            git reset --hard origin/amelia-1.0
-            python -m drift1a_c1.runner claim "$C1_LEASE"
-            git add -- drift1a_c1/runner_state
-            git commit -m "C1: acquire recorder lease $C1_LEASE"
-            if git push origin HEAD:amelia-1.0; then
-              echo 'acquired=true' >> "$GITHUB_OUTPUT"
-              exit 0
-            fi
-            echo "Concurrent lease push conflict (attempt $attempt); refreshing authoritative state" >&2
-          done
-          echo 'Lease was not persisted; no beacon admission authorised.' >&2
-          exit 1
+          python -m drift1a_c1.lease_push "$C1_LEASE"
+          echo 'acquired=true' >> "$GITHUB_OUTPUT"
       - name: Admit verified rounds or create an explicitly requested genesis
         env:
           DRIFT_C1_ENABLE_LIVE: 'true'
