@@ -22,6 +22,7 @@ on:
 
 permissions:
   contents: read
+  actions: read
 
 concurrency:
   group: amelia-c1-continuous
@@ -49,11 +50,35 @@ jobs:
           mkdir -p "$RUNNER_TEMP/c1-validation"
           (cd drift1a_g11 && sha256sum -c ACCEPTED_CORE_SHA256SUMS.txt && python prepare.py && python -m unittest discover -s tests -v) 2>&1 | tee "$RUNNER_TEMP/c1-validation/substrate-tests.log"
           python -m unittest discover -s drift1a_c1/tests -v 2>&1 | tee "$RUNNER_TEMP/c1-validation/c1-tests.log"
+          python -m unittest drift1a_c1.tests.test_lease_push -v 2>&1 | tee "$RUNNER_TEMP/c1-validation/lease-injection.log"
       - name: Simulate a complete week across two week boundaries and replay all arms
         shell: bash
         run: |
           set -euo pipefail
           python -m drift1a_c1.simulate --root "$RUNNER_TEMP/c1-simulation" 2>&1 | tee "$RUNNER_TEMP/c1-validation/simulation.log"
+      - name: Audit A11 frozen-file and all-arm measurement identity; verify renderer SHA
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api -H 'Accept: application/vnd.github+json' \
+            /repos/${{ github.repository }}/actions/artifacts/11777921172/zip \
+            > "$RUNNER_TEMP/c1-validation/A11-source.zip"
+          python -m drift1a_c1.a12_regression \
+            --archive "$RUNNER_TEMP/c1-validation/A11-source.zip" \
+            --simulation "$RUNNER_TEMP/c1-simulation" \
+            --output "$RUNNER_TEMP/c1-validation/A12-identity.json" \
+            2>&1 | tee "$RUNNER_TEMP/c1-validation/A12-identity.log"
+          test -s "$RUNNER_TEMP/c1-validation/A12-identity.json"
+          python -c 'import json,sys; p=json.load(open(sys.argv[1])); assert p["overall_verdict"]["status"]=="PASS", "A12 identity FAIL"' "$RUNNER_TEMP/c1-validation/A12-identity.json"
+      - name: Enforce A12 audit artifact existence even if a prior step fails
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s "$RUNNER_TEMP/c1-validation/A12-identity.json"
+          python -c 'import json,sys; p=json.load(open(sys.argv[1])); assert p["overall_verdict"]["status"]=="PASS"' "$RUNNER_TEMP/c1-validation/A12-identity.json"
       - name: Preserve offline evidence (never a live seal)
         if: always()
         uses: actions/upload-artifact@v4
@@ -92,10 +117,7 @@ jobs:
           set -euo pipefail
           git config user.name 'Amelia C1 recorder'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          python -m drift1a_c1.runner claim "$C1_LEASE"
-          git add -- drift1a_c1/runner_state
-          git commit -m "C1: acquire recorder lease $C1_LEASE"
-          git push origin HEAD:amelia-1.0
+          python -m drift1a_c1.lease_push "$C1_LEASE"
           echo 'acquired=true' >> "$GITHUB_OUTPUT"
       - name: Admit verified rounds or create an explicitly requested genesis
         env:
