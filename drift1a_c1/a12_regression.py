@@ -21,13 +21,24 @@ def audit(archive, simulation, output):
         baseline=json.loads(Path("drift1a_c1/evidence/validation-status-A11.json").read_text())
         current=frozen_files()
         old=baseline["measurement_files"]
+        exception=json.loads(Path("drift1a_c1/evidence/A12-baseline-exception.json").read_text())
+        charter="claude/DRIFT1A_C1_CHARTER_draft.md"
+        assert exception["scope"]["exception"]=="charter only"
+        assert exception["charter"]["path"]==charter
+        assert exception["charter"]["A11_sha256"]=="418b8722176eef032bcc4f54e491678592105b9a84b5156455a332f28ba168c5"
+        assert exception["charter"]["approved_sha256"]=="f18cce34cef1812c5d1a91e0f6138a027b32605e0d36cfe8fead34c085833c71"
+        assert exception["approval"]["date"]=="2026-10-17"
+        assert exception["failed_audit"]["run_id"]==39059931955
+        assert exception["failed_audit"]["artifact_id"]==12111771861
         for name in sorted(set(current)|set(old)):
             prior=old.get(name);now=current.get(name)
-            record["frozen_files"]["files"][name]={"A11_sha256":prior,"current_sha256":now,"match":prior==now}
-        record["frozen_files"]["matches"]=all(x["match"] for x in record["frozen_files"]["files"].values())
-        record["frozen_files"]["note"]="A11 charter draft 0.3 differs from approved draft 0.4; discrepancy is not silently exempted."
+            expected=exception["charter"]["approved_sha256"] if name==charter else prior
+            record["frozen_files"]["files"][name]={"A11_sha256":prior,"current_sha256":now,"required_sha256":expected,"match":prior is not None and now==expected,"exception_applies":name==charter}
+        record["frozen_files"]["matches"]=bool(record["frozen_files"]["files"]) and all(x["match"] for x in record["frozen_files"]["files"].values())
+        record["frozen_files"]["exception_record"]="drift1a_c1/evidence/A12-baseline-exception.json"
+        record["frozen_files"]["note"]="Charter must equal approved draft 0.4 hash; every other frozen file must equal its A11 hash."
         if not record["frozen_files"]["matches"]:
-            record["overall_verdict"]["errors"].append("Frozen-file SHA mismatch against A11, including approved charter update")
+            record["overall_verdict"]["errors"].append("Frozen-file hash outside strict approved baseline")
         if VERSION!=baseline["measurement_version"]:
             record["overall_verdict"]["errors"].append("Measurement version differs")
         archive=Path(archive)
