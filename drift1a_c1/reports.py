@@ -77,6 +77,7 @@ def render(r):
     number=lambda v:'undefined' if v is None else (str(v) if type(v) is int else f'{v:.5g}')
     lines=[f'# Amelia C1 — {r["week"]} — amendments 7–12 (report layout)',
         f'Mode: {r["mode"]}. Observational and exploratory. Traversal episodes are the primary interpretation class.',
+        f'Renderer SHA-256 (reports.py): `{r["renderer_sha256"]}`.',
         '',
         'C against M isolates the effect of carried memory under the same inflow. C against R01–R08 isolates what this particular inflow does that other inflows of the same kind, passed through the same instrument with carried memory, do not.',
         '',
