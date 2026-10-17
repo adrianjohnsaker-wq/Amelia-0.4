@@ -1,0 +1,29 @@
+{
+  "schema": "C1-A12-baseline-exception-1",
+  "failed_audit": {
+    "run_id": 39059931955,
+    "job_id": 117475616644,
+    "artifact_id": 12111771861,
+    "artifact_url": "https://github.com/adrianjohnsaker-wq/Amelia-0.4/actions/runs/39059931955/artifacts/12111771861",
+    "verdict": "FAIL",
+    "preserved_unchanged": true
+  },
+  "charter": {
+    "path": "claude/DRIFT1A_C1_CHARTER_draft.md",
+    "A11_sha256": "418b8722176eef032bcc4f54e491678592105b9a84b5156455a332f28ba168c5",
+    "approved_draft": "0.4",
+    "approved_sha256": "f18cce34cef1812c5d1a91e0f6138a027b32605e0d36cfe8fead34c085833c71",
+    "commit_containing_approved_bytes": "e4e8ec54b0e2b37132a4c17f0383361158ebfbab"
+  },
+  "approval": {
+    "source": "Explicit operator approval in this conversation",
+    "date": "2026-10-17",
+    "approved_for": "C1 Channel A genesis"
+  },
+  "scope": {
+    "exception": "charter only",
+    "computational_frozen_files": "Must match A11 SHA-256 exactly",
+    "charter": "Must match approved draft 0.4 SHA-256 exactly",
+    "all_other_differences": "FAIL"
+  }
+}
