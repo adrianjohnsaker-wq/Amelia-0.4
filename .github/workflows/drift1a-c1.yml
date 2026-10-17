@@ -70,6 +70,15 @@ jobs:
             --simulation "$RUNNER_TEMP/c1-simulation" \
             --output "$RUNNER_TEMP/c1-validation/A12-identity.json" \
             2>&1 | tee "$RUNNER_TEMP/c1-validation/A12-identity.log"
+          test -s "$RUNNER_TEMP/c1-validation/A12-identity.json"
+          python -c 'import json,sys; p=json.load(open(sys.argv[1])); assert p["overall_verdict"]["status"]=="PASS", "A12 identity FAIL"' "$RUNNER_TEMP/c1-validation/A12-identity.json"
+      - name: Enforce A12 audit artifact existence even if a prior step fails
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s "$RUNNER_TEMP/c1-validation/A12-identity.json"
+          python -c 'import json,sys; p=json.load(open(sys.argv[1])); assert p["overall_verdict"]["status"]=="PASS"' "$RUNNER_TEMP/c1-validation/A12-identity.json"
       - name: Preserve offline evidence (never a live seal)
         if: always()
         uses: actions/upload-artifact@v4
