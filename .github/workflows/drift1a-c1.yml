@@ -22,6 +22,7 @@ on:
 
 permissions:
   contents: read
+  actions: read
 
 concurrency:
   group: amelia-c1-continuous
@@ -55,6 +56,20 @@ jobs:
         run: |
           set -euo pipefail
           python -m drift1a_c1.simulate --root "$RUNNER_TEMP/c1-simulation" 2>&1 | tee "$RUNNER_TEMP/c1-validation/simulation.log"
+      - name: Audit A11 frozen-file and all-arm measurement identity; verify renderer SHA
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api -H 'Accept: application/vnd.github+json' \
+            /repos/${{ github.repository }}/actions/artifacts/11777921172/zip \
+            > "$RUNNER_TEMP/c1-validation/A11-source.zip"
+          python -m drift1a_c1.a12_regression \
+            --archive "$RUNNER_TEMP/c1-validation/A11-source.zip" \
+            --simulation "$RUNNER_TEMP/c1-simulation" \
+            --output "$RUNNER_TEMP/c1-validation/A12-identity.json" \
+            2>&1 | tee "$RUNNER_TEMP/c1-validation/A12-identity.log"
       - name: Preserve offline evidence (never a live seal)
         if: always()
         uses: actions/upload-artifact@v4
