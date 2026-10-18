@@ -1,0 +1,59 @@
+{
+  "schema": "C1-live-genesis-recovery-audit-status-1",
+  "scope": "Read-only repository and GitHub Actions metadata inspection; binary replay and OpenSSL verification NOT executed",
+  "genesis": {
+    "digest": "baf03bf19a953d6b9cb4523239138e0a6cae4771f68b45cbf36a03f65acf969b",
+    "created_at_utc": "2026-10-17T23:05:32.510Z",
+    "r0": 33158540,
+    "r0_publication_utc": "2026-10-17T23:16:27Z",
+    "origin_run_id": 39077639009,
+    "origin_event": "workflow_dispatch",
+    "origin_branch": "main",
+    "origin_action": "genesis",
+    "origin_commit": "0c6788dca5092f8d60f57c46171e182b0fc68148",
+    "receipt_status": "PASS",
+    "receipt_gen_time": "2026-10-17T23:05:32Z",
+    "receipt_verification": "Receipt inspected; underlying RFC 3161 token not independently verified"
+  },
+  "frozen_files": {
+    "baseline_entries": 26,
+    "genesis_entries": 26,
+    "mismatches": 0,
+    "exception": "charter only, approved draft 0.4 f18cce34cef1812c5d1a91e0f6138a027b32605e0d36cfe8fead34c085833c71"
+  },
+  "arms": 18,
+  "graph_digests": 18,
+  "failed_duplicate_genesis": {
+    "run_id": 39091595319,
+    "lease": "39091595319-1",
+    "completion_marker": "drift1a_c1/runner_state/completions/39091595319-1.json",
+    "completion_confirmed": true,
+    "admission_attempted": false,
+    "reason": "ValueError: genesis already exists",
+    "artifact_id": 12122209296
+  },
+  "admission": {
+    "run_id": 39085356410,
+    "chunk_count": 1,
+    "chunk_path": "drift1a_c1/recorded_live/record/chunks/00000000-2026-W42.json.gz",
+    "ticks_reported": 113,
+    "last_tick_index": 112,
+    "next_round": 33160800,
+    "incident_files_found": 0,
+    "gap_free_status": "NOT INDEPENDENTLY VERIFIED: binary replay pending"
+  },
+  "pending_audits": {
+    "replay": {
+      "status": "NOT_RUN",
+      "command": "python -m drift1a_c1.cli replay --root drift1a_c1/recorded_live"
+    },
+    "openssl_timestamp": {
+      "status": "NOT_RUN",
+      "command": "openssl ts -verify -queryfile drift1a_c1/recorded_live/genesis_attempts/baf03bf19a953d6b9cb4523239138e0a6cae4771f68b45cbf36a03f65acf969b/seal/attempt-0000.tsq -in drift1a_c1/recorded_live/genesis_attempts/baf03bf19a953d6b9cb4523239138e0a6cae4771f68b45cbf36a03f65acf969b/seal/attempt-0000.tsr -CAfile drift1a_c1/vendor/timing_trust/freetsa-ca.pem"
+    }
+  },
+  "limitations": [
+    "GitHub connector does not expose binary gzip/TSR content for local execution; no independent replay or openssl result is claimed",
+    "The existing live recorder is unchanged; no force push or deletions"
+  ]
+}
