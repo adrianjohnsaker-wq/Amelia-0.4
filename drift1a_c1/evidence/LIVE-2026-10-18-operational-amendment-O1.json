@@ -2,7 +2,7 @@
   "schema": "C1-operational-amendment-1",
   "amendment": "O1",
   "date_utc": "2026-10-18",
-  "status": "COMMITTED_PENDING_LIVE_EXECUTION_AND_REPLAY",
+  "status": "CLOSED_OPERATIONALLY_VERIFIED",
   "reason": "GitHub scheduled-run delays of 1h57m58s, 4h51m02s and 5h16m46s produced a growing backlog under the previous 120-tick limit.",
   "previous_max_ticks": 120,
   "new_max_ticks": 480,
@@ -18,5 +18,19 @@
     "Confirm exact_replay true and OpenSSL Verification: OK",
     "Compare remaining backlog against the currently due tick and monitor schedule delays"
   ],
-  "note": "Operational ceiling is not a promise that 480 ticks will be available, nor proof that scheduled jobs will run hourly. No live run or post-amendment replay claimed in this registration."
+  "note": "Operational ceiling is not a promise that 480 ticks will be available, nor proof that scheduled jobs will run hourly. No live run or post-amendment replay claimed in this registration.",
+  "verification": {
+    "scheduled_run": "39152896627",
+    "scheduled_admitted_ticks": 480,
+    "manual_run": "39155684442",
+    "manual_admitted_ticks": 338,
+    "total_new_ticks": 818,
+    "post_amendment_audit_run": "39159862210",
+    "post_amendment_audit_commit": "103e486",
+    "replay_ticks": 1171,
+    "replay_exact": true,
+    "replay_head": "66dbcc67288872e8d133814db6c76a2aa63b1ff5ef6b389c6600a4497f6a197c",
+    "openssl_timestamp_verification": "PASS",
+    "scope": "Operational capacity and record reproducibility only; no claim of scientific causal effect"
+  }
 }
