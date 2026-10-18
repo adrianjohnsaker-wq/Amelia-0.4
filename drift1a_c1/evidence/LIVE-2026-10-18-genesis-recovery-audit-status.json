@@ -42,24 +42,25 @@
   "graph_digests": 18,
   "limitations": [
     "The existing live recorder is unchanged; no force push or deletions",
+    "Audit results are recorded verbatim with exit codes; a failed check is never reported as passing.",
     "Audit results are recorded verbatim with exit codes; a failed check is never reported as passing."
   ],
   "pending_audits": {
     "openssl_timestamp": {
       "command": "openssl ts -verify -queryfile drift1a_c1/recorded_live/genesis_attempts/baf03bf19a953d6b9cb4523239138e0a6cae4771f68b45cbf36a03f65acf969b/seal/attempt-0000.tsq -in drift1a_c1/recorded_live/genesis_attempts/baf03bf19a953d6b9cb4523239138e0a6cae4771f68b45cbf36a03f65acf969b/seal/attempt-0000.tsr -CAfile drift1a_c1/vendor/timing_trust/freetsa-ca.pem",
-      "executed_at_unix": 1792324242.1676006,
+      "executed_at_unix": 1792352693.4473097,
       "exit_code": 0,
       "output": "Using configuration from /usr/lib/ssl/openssl.cnf\nVerification: OK\n",
       "status": "PASS",
-      "workflow_run": "39124729450"
+      "workflow_run": "39159862210"
     },
     "replay": {
       "command": "python -m drift1a_c1.cli replay --root drift1a_c1/recorded_live",
-      "executed_at_unix": 1792324242.1675613,
+      "executed_at_unix": 1792352693.4472806,
       "exit_code": 0,
-      "output": "{\n  \"ticks\": 353,\n  \"head\": \"e9da55dc9b0996f28f5569c0fa3f19d40c81372a1ed6c34876649358ffb4b3b1\",\n  \"exact_replay\": true\n}\n",
+      "output": "{\n  \"ticks\": 1171,\n  \"head\": \"66dbcc67288872e8d133814db6c76a2aa63b1ff5ef6b389c6600a4497f6a197c\",\n  \"exact_replay\": true\n}\n",
       "status": "PASS",
-      "workflow_run": "39124729450"
+      "workflow_run": "39159862210"
     }
   },
   "schema": "C1-live-genesis-recovery-audit-status-1",
