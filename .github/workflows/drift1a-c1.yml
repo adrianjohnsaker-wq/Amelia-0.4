@@ -126,7 +126,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python -m drift1a_c1.cli "$REQUESTED_ACTION" --max-ticks 120 2>&1 | tee "$RUNNER_TEMP/c1-observation.log"
+          # Operational catch-up amendment O1 (2026-10-18): 120 -> 480 ticks per invocation.\n          # No change to genesis, frozen code, input sequence or record format.\n          python -m drift1a_c1.cli "$REQUESTED_ACTION" --max-ticks 480 2>&1 | tee "$RUNNER_TEMP/c1-observation.log"
       - name: Preserve state before attempting repository persistence
         if: always()
         uses: actions/upload-artifact@v4
