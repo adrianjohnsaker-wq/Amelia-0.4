@@ -1,0 +1,22 @@
+{
+  "schema": "C1-operational-amendment-1",
+  "amendment": "O1",
+  "date_utc": "2026-10-18",
+  "status": "COMMITTED_PENDING_LIVE_EXECUTION_AND_REPLAY",
+  "reason": "GitHub scheduled-run delays of 1h57m58s, 4h51m02s and 5h16m46s produced a growing backlog under the previous 120-tick limit.",
+  "previous_max_ticks": 120,
+  "new_max_ticks": 480,
+  "change_scope": ".github/workflows/drift1a-c1.yml on main, observe invocation only",
+  "workflow_commit": "57654488c1927c2314dc8dfa22f2ecbcdebd8c7e",
+  "genesis_digest": "baf03bf19a953d6b9cb4523239138e0a6cae4771f68b45cbf36a03f65acf969b",
+  "frozen_substrate_changed": false,
+  "existing_record_changed": false,
+  "protocol_input_sequence_changed": false,
+  "review_conditions": [
+    "Observe one live invocation using --max-ticks 480; record admitted count and cursor",
+    "Run dispatch-only independent live audit on latest recorded_live branch state",
+    "Confirm exact_replay true and OpenSSL Verification: OK",
+    "Compare remaining backlog against the currently due tick and monitor schedule delays"
+  ],
+  "note": "Operational ceiling is not a promise that 480 ticks will be available, nor proof that scheduled jobs will run hourly. No live run or post-amendment replay claimed in this registration."
+}
