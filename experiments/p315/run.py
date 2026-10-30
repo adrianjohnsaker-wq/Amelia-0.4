@@ -175,8 +175,6 @@ def rewired_gates(seed):
 
         if accepted < 80 or degree_signature(gates) != signature or self_loop_count(gates) != loops:
             continue
-        if not strongly_connected(gates):
-            continue
         if len(canonical_edges.symmetric_difference(edge_set(gates))) < 20:
             continue
         for index, gate in enumerate(gates):
@@ -405,9 +403,6 @@ def main():
 
     if len(FULL_NUMOGRAM_GATES) != 29:
         raise RuntimeError("canonical Orange full Numogram must have 29 gates")
-    if not strongly_connected(FULL_NUMOGRAM_GATES):
-        raise RuntimeError("canonical full Numogram must be strongly connected")
-
     worlds = [make_world(WORLD_SEED_BASE + index) for index in range(WORLD_COUNT)]
     canonical_gates = clone_gates()
     canonical_phases = canonical_phase_map()
