@@ -1,0 +1,108 @@
+{
+  "arm_means": {
+    "inscription": {
+      "alternating_run": 14.678947368421053,
+      "distinct_zones": 4.721052631578948,
+      "warp_occupancy": 0.7259868421052632
+    },
+    "matched": {
+      "alternating_run": 10.24736842105263,
+      "distinct_zones": 6.057894736842106,
+      "warp_occupancy": 0.4654605263157895
+    },
+    "open": {
+      "alternating_run": 1.0052631578947369,
+      "distinct_zones": 7.5,
+      "warp_occupancy": 0.05641447368421053
+    },
+    "real": {
+      "alternating_run": 18.53684210526316,
+      "distinct_zones": 2,
+      "warp_occupancy": 1.0
+    },
+    "topology": {
+      "alternating_run": 18.673684210526314,
+      "distinct_zones": 2,
+      "warp_occupancy": 1.0
+    }
+  },
+  "eligible_lineages": 190,
+  "entry_transformation": {
+    "held": true,
+    "multivariate": {
+      "T": 1.398531683591786,
+      "components": {
+        "activation_hhi": {
+          "holm_p": 1.0,
+          "mean_difference": 0.0,
+          "p_two_sided": 1.0
+        },
+        "bias_mag": {
+          "holm_p": 0.00017999640007199856,
+          "mean_difference": 0.00013394736842105274,
+          "p_two_sided": 1.999960000799984e-05
+        },
+        "governor_tension": {
+          "holm_p": 1.0,
+          "mean_difference": 0.0,
+          "p_two_sided": 1.0
+        },
+        "hysteresis": {
+          "holm_p": 0.0016799664006719864,
+          "mean_difference": -0.014946842105263165,
+          "p_two_sided": 0.00023999520009599807
+        },
+        "strain_entropy": {
+          "holm_p": 0.00017999640007199856,
+          "mean_difference": 0.09108193297282142,
+          "p_two_sided": 1.999960000799984e-05
+        },
+        "strain_mass": {
+          "holm_p": 0.002159956800863983,
+          "mean_difference": 0.010987164504771562,
+          "p_two_sided": 0.0003599928001439971
+        },
+        "tensor_norm": {
+          "holm_p": 1.0,
+          "mean_difference": 0.0,
+          "p_two_sided": 1.0
+        },
+        "warp_activation_diff": {
+          "holm_p": 1.0,
+          "mean_difference": 0.0,
+          "p_two_sided": 1.0
+        },
+        "warp_phase_coherence": {
+          "holm_p": 1.0,
+          "mean_difference": 0.0,
+          "p_two_sided": 1.0
+        }
+      },
+      "p": 1.999960000799984e-05
+    }
+  },
+  "inscription": {
+    "held": false,
+    "real_minus_topology_occupancy_mean": 0.0,
+    "real_vs_topology_p": 1.0,
+    "slow_state": {
+      "hysteresis": {
+        "holm_p": 0.9667806643867123,
+        "mean_difference": -0.007760526315789473,
+        "p": 0.9667806643867123
+      },
+      "strain_mass": {
+        "holm_p": 0.05935881282374352,
+        "mean_difference": 0.05796672467916321,
+        "p": 0.02967940641187176
+      }
+    }
+  },
+  "terminality": {
+    "alternating_p": 1.999960000799984e-05,
+    "held": true,
+    "occupancy_p": 1.999960000799984e-05,
+    "real_minus_open_alternating_run_mean": 17.53157894736842,
+    "real_minus_open_occupancy_mean": 0.9435855263157895
+  }
+}
