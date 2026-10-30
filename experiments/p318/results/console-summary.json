@@ -1,0 +1,51 @@
+{
+  "mechanism": {
+    "label": "GLOBAL_HYSTERETIC_MATURITY",
+    "pfm_only_75pct_threshold_lineages": 18.75,
+    "sufficient": {
+      "FLAT_MAGNITUDE": true,
+      "HYSTERESIS_ONLY": true,
+      "RECENT_EVENTS_ONLY": false,
+      "SHUFFLED_STRAIN": true,
+      "STRAIN_HYSTERESIS": true,
+      "STRAIN_ONLY": false
+    }
+  },
+  "primary": {
+    "donor_count": 26,
+    "donor_vs_blank": {
+      "discordant": 27,
+      "left_only": 26,
+      "p_upper": 2.086162567138672e-07,
+      "right_only": 1
+    },
+    "full_count": 25,
+    "full_vs_blank": {
+      "discordant": 26,
+      "left_only": 25,
+      "p_upper": 4.023313522338867e-07,
+      "right_only": 1
+    },
+    "held": true,
+    "pfm_count": 25,
+    "pfm_vs_blank": {
+      "discordant": 26,
+      "left_only": 25,
+      "p_upper": 4.023313522338867e-07,
+      "right_only": 1
+    }
+  },
+  "status": "ALREADY_COMPLETED",
+  "warp": {
+    "absolute_mean_warp_transition_difference": 0.0,
+    "event_budget": 8,
+    "gain": 1.5,
+    "gain_vs_full": {
+      "discordant": 2,
+      "left_only": 0,
+      "p_upper": 1.0,
+      "right_only": 2
+    },
+    "promising": false
+  }
+}
