@@ -1,0 +1,4923 @@
+{
+  "candidate_forms": [
+    {
+      "confirm_developmental_absent": true,
+      "confirm_family_alpha": 0.0019230769230769232,
+      "confirm_fresh_lineages": 0,
+      "confirm_non_echo_fraction": 0.9,
+      "confirm_permuted_lineages": 18,
+      "confirm_replay_lineages": 13,
+      "confirm_reset_lineages": 0,
+      "confirm_retained_details": [
+        {
+          "count": 3,
+          "first_step": 6,
+          "input_echo": false,
+          "lineage": "C002",
+          "recurred_after_first": true,
+          "recurrence_intervals": [
+            10,
+            1
+          ],
+          "seed": 3170098,
+          "step_ranges": [
+            [
+              6,
+              8
+            ],
+            [
+              16,
+              18
+            ],
+            [
+              17,
+              19
+            ]
+          ]
+        },
+        {
+          "count": 2,
+          "first_step": 6,
+          "input_echo": false,
+          "lineage": "C007",
+          "recurred_after_first": true,
+          "recurrence_intervals": [
+            9
+          ],
+          "seed": 3170103,
+          "step_ranges": [
+            [
+              6,
+              8
+            ],
+            [
+              15,
+              17
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 6,
+          "input_echo": true,
+          "lineage": "C020",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170116,
+          "step_ranges": [
+            [
+              6,
+              8
+            ]
+          ]
+        },
+        {
+          "count": 2,
+          "first_step": 15,
+          "input_echo": false,
+          "lineage": "C022",
+          "recurred_after_first": true,
+          "recurrence_intervals": [
+            1
+          ],
+          "seed": 3170118,
+          "step_ranges": [
+            [
+              15,
+              17
+            ],
+            [
+              16,
+              18
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 6,
+          "input_echo": false,
+          "lineage": "C026",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170122,
+          "step_ranges": [
+            [
+              6,
+              8
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 17,
+          "input_echo": false,
+          "lineage": "C030",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170126,
+          "step_ranges": [
+            [
+              17,
+              19
+            ]
+          ]
+        },
+        {
+          "count": 2,
+          "first_step": 6,
+          "input_echo": false,
+          "lineage": "C037",
+          "recurred_after_first": true,
+          "recurrence_intervals": [
+            11
+          ],
+          "seed": 3170133,
+          "step_ranges": [
+            [
+              6,
+              8
+            ],
+            [
+              17,
+              19
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 125,
+          "input_echo": false,
+          "lineage": "C038",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170134,
+          "step_ranges": [
+            [
+              125,
+              127
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 15,
+          "input_echo": false,
+          "lineage": "C048",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170144,
+          "step_ranges": [
+            [
+              15,
+              17
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 16,
+          "input_echo": false,
+          "lineage": "C049",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170145,
+          "step_ranges": [
+            [
+              16,
+              18
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 18,
+          "input_echo": true,
+          "lineage": "C052",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170148,
+          "step_ranges": [
+            [
+              18,
+              20
+            ]
+          ]
+        },
+        {
+          "count": 2,
+          "first_step": 14,
+          "input_echo": false,
+          "lineage": "C059",
+          "recurred_after_first": true,
+          "recurrence_intervals": [
+            1
+          ],
+          "seed": 3170155,
+          "step_ranges": [
+            [
+              14,
+              16
+            ],
+            [
+              15,
+              17
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 17,
+          "input_echo": false,
+          "lineage": "C060",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170156,
+          "step_ranges": [
+            [
+              17,
+              19
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 6,
+          "input_echo": false,
+          "lineage": "C062",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170158,
+          "step_ranges": [
+            [
+              6,
+              8
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 16,
+          "input_echo": false,
+          "lineage": "C067",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170163,
+          "step_ranges": [
+            [
+              16,
+              18
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 6,
+          "input_echo": false,
+          "lineage": "C070",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170166,
+          "step_ranges": [
+            [
+              6,
+              8
+            ]
+          ]
+        },
+        {
+          "count": 2,
+          "first_step": 16,
+          "input_echo": false,
+          "lineage": "C077",
+          "recurred_after_first": true,
+          "recurrence_intervals": [
+            1
+          ],
+          "seed": 3170173,
+          "step_ranges": [
+            [
+              16,
+              18
+            ],
+            [
+              17,
+              19
+            ]
+          ]
+        },
+        {
+          "count": 3,
+          "first_step": 15,
+          "input_echo": false,
+          "lineage": "C082",
+          "recurred_after_first": true,
+          "recurrence_intervals": [
+            1,
+            1
+          ],
+          "seed": 3170178,
+          "step_ranges": [
+            [
+              15,
+              17
+            ],
+            [
+              16,
+              18
+            ],
+            [
+              17,
+              19
+            ]
+          ]
+        },
+        {
+          "count": 2,
+          "first_step": 6,
+          "input_echo": false,
+          "lineage": "C090",
+          "recurred_after_first": true,
+          "recurrence_intervals": [
+            11
+          ],
+          "seed": 3170186,
+          "step_ranges": [
+            [
+              6,
+              8
+            ],
+            [
+              17,
+              19
+            ]
+          ]
+        },
+        {
+          "count": 4,
+          "first_step": 14,
+          "input_echo": false,
+          "lineage": "C092",
+          "recurred_after_first": true,
+          "recurrence_intervals": [
+            1,
+            1,
+            1
+          ],
+          "seed": 3170188,
+          "step_ranges": [
+            [
+              14,
+              16
+            ],
+            [
+              15,
+              17
+            ],
+            [
+              16,
+              18
+            ],
+            [
+              17,
+              19
+            ]
+          ]
+        }
+      ],
+      "confirm_retained_lineages": 20,
+      "confirm_static_lineages": 0,
+      "confirmed_new_ingression_form": false,
+      "contains_prior_pointer_material": false,
+      "discovery_lineage_count": 24,
+      "discovery_lineages": [
+        "D002",
+        "D006",
+        "D008",
+        "D013",
+        "D018",
+        "D032",
+        "D033",
+        "D042",
+        "D043",
+        "D051",
+        "D052",
+        "D055",
+        "D061",
+        "D062",
+        "D063",
+        "D065",
+        "D076",
+        "D081",
+        "D082",
+        "D083",
+        "D085",
+        "D088",
+        "D092",
+        "D095"
+      ],
+      "discovery_non_echo_fraction": 0.9583333333333334,
+      "discovery_non_echo_lineages": [
+        "D002",
+        "D006",
+        "D008",
+        "D013",
+        "D018",
+        "D032",
+        "D033",
+        "D043",
+        "D051",
+        "D052",
+        "D055",
+        "D061",
+        "D062",
+        "D063",
+        "D065",
+        "D076",
+        "D081",
+        "D082",
+        "D083",
+        "D085",
+        "D088",
+        "D092",
+        "D095"
+      ],
+      "discovery_occurrences": 34,
+      "examples": [
+        {
+          "end": 19,
+          "lineage": "D002",
+          "start": 17
+        },
+        {
+          "end": 8,
+          "lineage": "D006",
+          "start": 6
+        },
+        {
+          "end": 125,
+          "lineage": "D008",
+          "start": 123
+        },
+        {
+          "end": 8,
+          "lineage": "D013",
+          "start": 6
+        },
+        {
+          "end": 19,
+          "lineage": "D018",
+          "start": 17
+        },
+        {
+          "end": 8,
+          "lineage": "D032",
+          "start": 6
+        },
+        {
+          "end": 8,
+          "lineage": "D033",
+          "start": 6
+        },
+        {
+          "end": 16,
+          "lineage": "D042",
+          "start": 14
+        }
+      ],
+      "form_id": "L3|P1-1-1|A3|H3",
+      "hbin": 3,
+      "length": 3,
+      "median_recurrence_interval": 1,
+      "path": [
+        1,
+        1,
+        1
+      ],
+      "permuted_sign_test": {
+        "canonical_only": 3,
+        "control_only": 1,
+        "discordant": 4,
+        "p_upper": 0.3125
+      },
+      "reset_sign_test": {
+        "canonical_only": 20,
+        "control_only": 0,
+        "discordant": 20,
+        "p_upper": 9.5367431640625e-07
+      },
+      "retained_recurrence_fraction": 0.45,
+      "rewired_lineage_counts": [
+        31,
+        59,
+        6,
+        14,
+        42,
+        1,
+        8,
+        22,
+        5,
+        17,
+        5,
+        76,
+        25,
+        5,
+        0,
+        15,
+        33,
+        32,
+        65,
+        1,
+        46,
+        0,
+        13,
+        24
+      ],
+      "rewired_max_lineages": 76,
+      "rewired_mean_lineages": 22.708333333333332,
+      "top_activation": 3
+    },
+    {
+      "confirm_developmental_absent": true,
+      "confirm_family_alpha": 0.0019230769230769232,
+      "confirm_fresh_lineages": 0,
+      "confirm_non_echo_fraction": 1.0,
+      "confirm_permuted_lineages": 8,
+      "confirm_replay_lineages": 7,
+      "confirm_reset_lineages": 0,
+      "confirm_retained_details": [
+        {
+          "count": 2,
+          "first_step": 5,
+          "input_echo": false,
+          "lineage": "C002",
+          "recurred_after_first": true,
+          "recurrence_intervals": [
+            11
+          ],
+          "seed": 3170098,
+          "step_ranges": [
+            [
+              5,
+              8
+            ],
+            [
+              16,
+              19
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 5,
+          "input_echo": false,
+          "lineage": "C020",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170116,
+          "step_ranges": [
+            [
+              5,
+              8
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 15,
+          "input_echo": false,
+          "lineage": "C022",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170118,
+          "step_ranges": [
+            [
+              15,
+              18
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 5,
+          "input_echo": false,
+          "lineage": "C026",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170122,
+          "step_ranges": [
+            [
+              5,
+              8
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 14,
+          "input_echo": false,
+          "lineage": "C059",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170155,
+          "step_ranges": [
+            [
+              14,
+              17
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 5,
+          "input_echo": false,
+          "lineage": "C062",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170158,
+          "step_ranges": [
+            [
+              5,
+              8
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 5,
+          "input_echo": false,
+          "lineage": "C070",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170166,
+          "step_ranges": [
+            [
+              5,
+              8
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 16,
+          "input_echo": false,
+          "lineage": "C077",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170173,
+          "step_ranges": [
+            [
+              16,
+              19
+            ]
+          ]
+        },
+        {
+          "count": 2,
+          "first_step": 15,
+          "input_echo": false,
+          "lineage": "C082",
+          "recurred_after_first": true,
+          "recurrence_intervals": [
+            1
+          ],
+          "seed": 3170178,
+          "step_ranges": [
+            [
+              15,
+              18
+            ],
+            [
+              16,
+              19
+            ]
+          ]
+        },
+        {
+          "count": 3,
+          "first_step": 14,
+          "input_echo": false,
+          "lineage": "C092",
+          "recurred_after_first": true,
+          "recurrence_intervals": [
+            1,
+            1
+          ],
+          "seed": 3170188,
+          "step_ranges": [
+            [
+              14,
+              17
+            ],
+            [
+              15,
+              18
+            ],
+            [
+              16,
+              19
+            ]
+          ]
+        }
+      ],
+      "confirm_retained_lineages": 10,
+      "confirm_static_lineages": 0,
+      "confirmed_new_ingression_form": false,
+      "contains_prior_pointer_material": false,
+      "discovery_lineage_count": 15,
+      "discovery_lineages": [
+        "D006",
+        "D032",
+        "D033",
+        "D042",
+        "D043",
+        "D055",
+        "D062",
+        "D063",
+        "D076",
+        "D082",
+        "D083",
+        "D085",
+        "D088",
+        "D092",
+        "D095"
+      ],
+      "discovery_non_echo_fraction": 1.0,
+      "discovery_non_echo_lineages": [
+        "D006",
+        "D032",
+        "D033",
+        "D042",
+        "D043",
+        "D055",
+        "D062",
+        "D063",
+        "D076",
+        "D082",
+        "D083",
+        "D085",
+        "D088",
+        "D092",
+        "D095"
+      ],
+      "discovery_occurrences": 18,
+      "examples": [
+        {
+          "end": 8,
+          "lineage": "D006",
+          "start": 5
+        },
+        {
+          "end": 8,
+          "lineage": "D032",
+          "start": 5
+        },
+        {
+          "end": 8,
+          "lineage": "D033",
+          "start": 5
+        },
+        {
+          "end": 126,
+          "lineage": "D042",
+          "start": 123
+        },
+        {
+          "end": 127,
+          "lineage": "D042",
+          "start": 124
+        },
+        {
+          "end": 8,
+          "lineage": "D043",
+          "start": 5
+        },
+        {
+          "end": 17,
+          "lineage": "D055",
+          "start": 14
+        },
+        {
+          "end": 8,
+          "lineage": "D062",
+          "start": 5
+        }
+      ],
+      "form_id": "L4|P1-1-1-1|A3|H3",
+      "hbin": 3,
+      "length": 4,
+      "median_recurrence_interval": 1.0,
+      "path": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "permuted_sign_test": {
+        "canonical_only": 2,
+        "control_only": 0,
+        "discordant": 2,
+        "p_upper": 0.25
+      },
+      "reset_sign_test": {
+        "canonical_only": 10,
+        "control_only": 0,
+        "discordant": 10,
+        "p_upper": 0.0009765625
+      },
+      "retained_recurrence_fraction": 0.3,
+      "rewired_lineage_counts": [
+        27,
+        34,
+        0,
+        10,
+        25,
+        0,
+        0,
+        5,
+        3,
+        8,
+        1,
+        55,
+        8,
+        0,
+        0,
+        10,
+        15,
+        6,
+        36,
+        0,
+        39,
+        0,
+        1,
+        17
+      ],
+      "rewired_max_lineages": 55,
+      "rewired_mean_lineages": 12.5,
+      "top_activation": 3
+    },
+    {
+      "confirm_developmental_absent": false,
+      "confirm_family_alpha": 0.0019230769230769232,
+      "confirm_fresh_lineages": 1,
+      "confirm_non_echo_fraction": 1.0,
+      "confirm_permuted_lineages": 16,
+      "confirm_replay_lineages": 18,
+      "confirm_reset_lineages": 1,
+      "confirm_retained_details": [
+        {
+          "count": 1,
+          "first_step": 7,
+          "input_echo": false,
+          "lineage": "C010",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170106,
+          "step_ranges": [
+            [
+              7,
+              11
+            ]
+          ]
+        },
+        {
+          "count": 2,
+          "first_step": 7,
+          "input_echo": false,
+          "lineage": "C020",
+          "recurred_after_first": true,
+          "recurrence_intervals": [
+            31
+          ],
+          "seed": 3170116,
+          "step_ranges": [
+            [
+              7,
+              11
+            ],
+            [
+              38,
+              42
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 6,
+          "input_echo": false,
+          "lineage": "C028",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170124,
+          "step_ranges": [
+            [
+              6,
+              10
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 5,
+          "input_echo": false,
+          "lineage": "C030",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170126,
+          "step_ranges": [
+            [
+              5,
+              9
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 9,
+          "input_echo": false,
+          "lineage": "C032",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170128,
+          "step_ranges": [
+            [
+              9,
+              13
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 6,
+          "input_echo": false,
+          "lineage": "C035",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170131,
+          "step_ranges": [
+            [
+              6,
+              10
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 7,
+          "input_echo": false,
+          "lineage": "C046",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170142,
+          "step_ranges": [
+            [
+              7,
+              11
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 6,
+          "input_echo": false,
+          "lineage": "C049",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170145,
+          "step_ranges": [
+            [
+              6,
+              10
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 8,
+          "input_echo": false,
+          "lineage": "C050",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170146,
+          "step_ranges": [
+            [
+              8,
+              12
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 6,
+          "input_echo": false,
+          "lineage": "C052",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170148,
+          "step_ranges": [
+            [
+              6,
+              10
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 33,
+          "input_echo": false,
+          "lineage": "C059",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170155,
+          "step_ranges": [
+            [
+              33,
+              37
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 11,
+          "input_echo": false,
+          "lineage": "C060",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170156,
+          "step_ranges": [
+            [
+              11,
+              15
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 37,
+          "input_echo": false,
+          "lineage": "C066",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170162,
+          "step_ranges": [
+            [
+              37,
+              41
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 6,
+          "input_echo": false,
+          "lineage": "C075",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170171,
+          "step_ranges": [
+            [
+              6,
+              10
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 7,
+          "input_echo": false,
+          "lineage": "C080",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170176,
+          "step_ranges": [
+            [
+              7,
+              11
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 12,
+          "input_echo": false,
+          "lineage": "C089",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170185,
+          "step_ranges": [
+            [
+              12,
+              16
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 7,
+          "input_echo": false,
+          "lineage": "C090",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170186,
+          "step_ranges": [
+            [
+              7,
+              11
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 4,
+          "input_echo": false,
+          "lineage": "C092",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170188,
+          "step_ranges": [
+            [
+              4,
+              8
+            ]
+          ]
+        }
+      ],
+      "confirm_retained_lineages": 18,
+      "confirm_static_lineages": 0,
+      "confirmed_new_ingression_form": false,
+      "contains_prior_pointer_material": false,
+      "discovery_lineage_count": 14,
+      "discovery_lineages": [
+        "D002",
+        "D003",
+        "D006",
+        "D013",
+        "D046",
+        "D051",
+        "D052",
+        "D055",
+        "D061",
+        "D071",
+        "D074",
+        "D076",
+        "D082",
+        "D088"
+      ],
+      "discovery_non_echo_fraction": 1.0,
+      "discovery_non_echo_lineages": [
+        "D002",
+        "D003",
+        "D006",
+        "D013",
+        "D046",
+        "D051",
+        "D052",
+        "D055",
+        "D061",
+        "D071",
+        "D074",
+        "D076",
+        "D082",
+        "D088"
+      ],
+      "discovery_occurrences": 17,
+      "examples": [
+        {
+          "end": 17,
+          "lineage": "D002",
+          "start": 13
+        },
+        {
+          "end": 11,
+          "lineage": "D003",
+          "start": 7
+        },
+        {
+          "end": 37,
+          "lineage": "D003",
+          "start": 33
+        },
+        {
+          "end": 11,
+          "lineage": "D006",
+          "start": 7
+        },
+        {
+          "end": 11,
+          "lineage": "D013",
+          "start": 7
+        },
+        {
+          "end": 11,
+          "lineage": "D046",
+          "start": 7
+        },
+        {
+          "end": 10,
+          "lineage": "D051",
+          "start": 6
+        },
+        {
+          "end": 10,
+          "lineage": "D052",
+          "start": 6
+        }
+      ],
+      "form_id": "L5|P1-1-8-9-1|A3|H3",
+      "hbin": 3,
+      "length": 5,
+      "median_recurrence_interval": 31,
+      "path": [
+        1,
+        1,
+        8,
+        9,
+        1
+      ],
+      "permuted_sign_test": {
+        "canonical_only": 3,
+        "control_only": 1,
+        "discordant": 4,
+        "p_upper": 0.3125
+      },
+      "reset_sign_test": {
+        "canonical_only": 18,
+        "control_only": 1,
+        "discordant": 19,
+        "p_upper": 3.814697265625e-05
+      },
+      "retained_recurrence_fraction": 0.05555555555555555,
+      "rewired_lineage_counts": [
+        0,
+        0,
+        0,
+        0,
+        4,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "rewired_max_lineages": 4,
+      "rewired_mean_lineages": 0.16666666666666666,
+      "top_activation": 3
+    },
+    {
+      "confirm_developmental_absent": true,
+      "confirm_family_alpha": 0.0019230769230769232,
+      "confirm_fresh_lineages": 2,
+      "confirm_non_echo_fraction": 0.6153846153846154,
+      "confirm_permuted_lineages": 13,
+      "confirm_replay_lineages": 12,
+      "confirm_reset_lineages": 1,
+      "confirm_retained_details": [
+        {
+          "count": 1,
+          "first_step": 3,
+          "input_echo": true,
+          "lineage": "C005",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170101,
+          "step_ranges": [
+            [
+              3,
+              5
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 4,
+          "input_echo": false,
+          "lineage": "C012",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170108,
+          "step_ranges": [
+            [
+              4,
+              6
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 8,
+          "input_echo": true,
+          "lineage": "C015",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170111,
+          "step_ranges": [
+            [
+              8,
+              10
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 5,
+          "input_echo": false,
+          "lineage": "C019",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170115,
+          "step_ranges": [
+            [
+              5,
+              7
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 3,
+          "input_echo": true,
+          "lineage": "C039",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170135,
+          "step_ranges": [
+            [
+              3,
+              5
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 2,
+          "input_echo": false,
+          "lineage": "C042",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170138,
+          "step_ranges": [
+            [
+              2,
+              4
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 6,
+          "input_echo": false,
+          "lineage": "C065",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170161,
+          "step_ranges": [
+            [
+              6,
+              8
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 5,
+          "input_echo": true,
+          "lineage": "C072",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170168,
+          "step_ranges": [
+            [
+              5,
+              7
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 3,
+          "input_echo": false,
+          "lineage": "C076",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170172,
+          "step_ranges": [
+            [
+              3,
+              5
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 3,
+          "input_echo": true,
+          "lineage": "C078",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170174,
+          "step_ranges": [
+            [
+              3,
+              5
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 4,
+          "input_echo": false,
+          "lineage": "C081",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170177,
+          "step_ranges": [
+            [
+              4,
+              6
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 6,
+          "input_echo": false,
+          "lineage": "C085",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170181,
+          "step_ranges": [
+            [
+              6,
+              8
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 3,
+          "input_echo": false,
+          "lineage": "C087",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170183,
+          "step_ranges": [
+            [
+              3,
+              5
+            ]
+          ]
+        }
+      ],
+      "confirm_retained_lineages": 13,
+      "confirm_static_lineages": 0,
+      "confirmed_new_ingression_form": false,
+      "contains_prior_pointer_material": false,
+      "discovery_lineage_count": 14,
+      "discovery_lineages": [
+        "D015",
+        "D024",
+        "D025",
+        "D026",
+        "D035",
+        "D038",
+        "D041",
+        "D045",
+        "D053",
+        "D064",
+        "D066",
+        "D075",
+        "D078",
+        "D084"
+      ],
+      "discovery_non_echo_fraction": 0.9285714285714286,
+      "discovery_non_echo_lineages": [
+        "D015",
+        "D024",
+        "D025",
+        "D026",
+        "D035",
+        "D038",
+        "D041",
+        "D045",
+        "D053",
+        "D064",
+        "D066",
+        "D075",
+        "D084"
+      ],
+      "discovery_occurrences": 14,
+      "examples": [
+        {
+          "end": 4,
+          "lineage": "D015",
+          "start": 2
+        },
+        {
+          "end": 6,
+          "lineage": "D024",
+          "start": 4
+        },
+        {
+          "end": 7,
+          "lineage": "D025",
+          "start": 5
+        },
+        {
+          "end": 6,
+          "lineage": "D026",
+          "start": 4
+        },
+        {
+          "end": 6,
+          "lineage": "D035",
+          "start": 4
+        },
+        {
+          "end": 6,
+          "lineage": "D038",
+          "start": 4
+        },
+        {
+          "end": 9,
+          "lineage": "D041",
+          "start": 7
+        },
+        {
+          "end": 3,
+          "lineage": "D045",
+          "start": 1
+        }
+      ],
+      "form_id": "L3|P2-3-6|A0|H3",
+      "hbin": 3,
+      "length": 3,
+      "median_recurrence_interval": null,
+      "path": [
+        2,
+        3,
+        6
+      ],
+      "permuted_sign_test": {
+        "canonical_only": 1,
+        "control_only": 1,
+        "discordant": 2,
+        "p_upper": 0.75
+      },
+      "reset_sign_test": {
+        "canonical_only": 12,
+        "control_only": 0,
+        "discordant": 12,
+        "p_upper": 0.000244140625
+      },
+      "retained_recurrence_fraction": 0.0,
+      "rewired_lineage_counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "rewired_max_lineages": 1,
+      "rewired_mean_lineages": 0.041666666666666664,
+      "top_activation": 0
+    },
+    {
+      "confirm_developmental_absent": false,
+      "confirm_family_alpha": 0.0019230769230769232,
+      "confirm_fresh_lineages": 1,
+      "confirm_non_echo_fraction": 0.8571428571428571,
+      "confirm_permuted_lineages": 11,
+      "confirm_replay_lineages": 7,
+      "confirm_reset_lineages": 0,
+      "confirm_retained_details": [
+        {
+          "count": 1,
+          "first_step": 9,
+          "input_echo": false,
+          "lineage": "C002",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170098,
+          "step_ranges": [
+            [
+              9,
+              11
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 15,
+          "input_echo": false,
+          "lineage": "C010",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170106,
+          "step_ranges": [
+            [
+              15,
+              17
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 15,
+          "input_echo": false,
+          "lineage": "C020",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170116,
+          "step_ranges": [
+            [
+              15,
+              17
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 19,
+          "input_echo": false,
+          "lineage": "C022",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170118,
+          "step_ranges": [
+            [
+              19,
+              21
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 9,
+          "input_echo": false,
+          "lineage": "C026",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170122,
+          "step_ranges": [
+            [
+              9,
+              11
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 10,
+          "input_echo": false,
+          "lineage": "C030",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170126,
+          "step_ranges": [
+            [
+              10,
+              12
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 9,
+          "input_echo": false,
+          "lineage": "C037",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170133,
+          "step_ranges": [
+            [
+              9,
+              11
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 69,
+          "input_echo": false,
+          "lineage": "C038",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170134,
+          "step_ranges": [
+            [
+              69,
+              71
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 36,
+          "input_echo": true,
+          "lineage": "C048",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170144,
+          "step_ranges": [
+            [
+              36,
+              38
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 14,
+          "input_echo": true,
+          "lineage": "C057",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170153,
+          "step_ranges": [
+            [
+              14,
+              16
+            ]
+          ]
+        },
+        {
+          "count": 2,
+          "first_step": 64,
+          "input_echo": false,
+          "lineage": "C066",
+          "recurred_after_first": true,
+          "recurrence_intervals": [
+            55
+          ],
+          "seed": 3170162,
+          "step_ranges": [
+            [
+              64,
+              66
+            ],
+            [
+              119,
+              121
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 16,
+          "input_echo": false,
+          "lineage": "C070",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170166,
+          "step_ranges": [
+            [
+              16,
+              18
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 36,
+          "input_echo": false,
+          "lineage": "C077",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170173,
+          "step_ranges": [
+            [
+              36,
+              38
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 37,
+          "input_echo": false,
+          "lineage": "C090",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170186,
+          "step_ranges": [
+            [
+              37,
+              39
+            ]
+          ]
+        }
+      ],
+      "confirm_retained_lineages": 14,
+      "confirm_static_lineages": 0,
+      "confirmed_new_ingression_form": false,
+      "contains_prior_pointer_material": false,
+      "discovery_lineage_count": 13,
+      "discovery_lineages": [
+        "D006",
+        "D008",
+        "D011",
+        "D018",
+        "D022",
+        "D033",
+        "D053",
+        "D062",
+        "D071",
+        "D072",
+        "D081",
+        "D082",
+        "D083"
+      ],
+      "discovery_non_echo_fraction": 0.9230769230769231,
+      "discovery_non_echo_lineages": [
+        "D006",
+        "D008",
+        "D011",
+        "D022",
+        "D033",
+        "D053",
+        "D062",
+        "D071",
+        "D072",
+        "D081",
+        "D082",
+        "D083"
+      ],
+      "discovery_occurrences": 15,
+      "examples": [
+        {
+          "end": 17,
+          "lineage": "D006",
+          "start": 15
+        },
+        {
+          "end": 11,
+          "lineage": "D008",
+          "start": 9
+        },
+        {
+          "end": 71,
+          "lineage": "D011",
+          "start": 69
+        },
+        {
+          "end": 15,
+          "lineage": "D018",
+          "start": 13
+        },
+        {
+          "end": 36,
+          "lineage": "D022",
+          "start": 34
+        },
+        {
+          "end": 120,
+          "lineage": "D033",
+          "start": 118
+        },
+        {
+          "end": 39,
+          "lineage": "D053",
+          "start": 37
+        },
+        {
+          "end": 15,
+          "lineage": "D062",
+          "start": 13
+        }
+      ],
+      "form_id": "L3|P8-9-0|A3|H3",
+      "hbin": 3,
+      "length": 3,
+      "median_recurrence_interval": 55,
+      "path": [
+        8,
+        9,
+        0
+      ],
+      "permuted_sign_test": {
+        "canonical_only": 3,
+        "control_only": 0,
+        "discordant": 3,
+        "p_upper": 0.125
+      },
+      "reset_sign_test": {
+        "canonical_only": 14,
+        "control_only": 0,
+        "discordant": 14,
+        "p_upper": 6.103515625e-05
+      },
+      "retained_recurrence_fraction": 0.07142857142857142,
+      "rewired_lineage_counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "rewired_max_lineages": 0,
+      "rewired_mean_lineages": 0,
+      "top_activation": 3
+    },
+    {
+      "confirm_developmental_absent": true,
+      "confirm_family_alpha": 0.0019230769230769232,
+      "confirm_fresh_lineages": 0,
+      "confirm_non_echo_fraction": 1.0,
+      "confirm_permuted_lineages": 9,
+      "confirm_replay_lineages": 9,
+      "confirm_reset_lineages": 1,
+      "confirm_retained_details": [
+        {
+          "count": 1,
+          "first_step": 1,
+          "input_echo": false,
+          "lineage": "C005",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170101,
+          "step_ranges": [
+            [
+              1,
+              3
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 2,
+          "input_echo": false,
+          "lineage": "C012",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170108,
+          "step_ranges": [
+            [
+              2,
+              4
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 6,
+          "input_echo": false,
+          "lineage": "C015",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170111,
+          "step_ranges": [
+            [
+              6,
+              8
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 1,
+          "input_echo": false,
+          "lineage": "C039",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170135,
+          "step_ranges": [
+            [
+              1,
+              3
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 4,
+          "input_echo": false,
+          "lineage": "C065",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170161,
+          "step_ranges": [
+            [
+              4,
+              6
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 3,
+          "input_echo": false,
+          "lineage": "C072",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170168,
+          "step_ranges": [
+            [
+              3,
+              5
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 4,
+          "input_echo": false,
+          "lineage": "C079",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170175,
+          "step_ranges": [
+            [
+              4,
+              6
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 2,
+          "input_echo": false,
+          "lineage": "C081",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170177,
+          "step_ranges": [
+            [
+              2,
+              4
+            ]
+          ]
+        }
+      ],
+      "confirm_retained_lineages": 8,
+      "confirm_static_lineages": 0,
+      "confirmed_new_ingression_form": false,
+      "contains_prior_pointer_material": false,
+      "discovery_lineage_count": 13,
+      "discovery_lineages": [
+        "D012",
+        "D021",
+        "D022",
+        "D023",
+        "D026",
+        "D034",
+        "D035",
+        "D036",
+        "D038",
+        "D041",
+        "D048",
+        "D054",
+        "D056"
+      ],
+      "discovery_non_echo_fraction": 0.9230769230769231,
+      "discovery_non_echo_lineages": [
+        "D021",
+        "D022",
+        "D023",
+        "D026",
+        "D034",
+        "D035",
+        "D036",
+        "D038",
+        "D041",
+        "D048",
+        "D054",
+        "D056"
+      ],
+      "discovery_occurrences": 13,
+      "examples": [
+        {
+          "end": 6,
+          "lineage": "D012",
+          "start": 4
+        },
+        {
+          "end": 7,
+          "lineage": "D021",
+          "start": 5
+        },
+        {
+          "end": 7,
+          "lineage": "D022",
+          "start": 5
+        },
+        {
+          "end": 7,
+          "lineage": "D023",
+          "start": 5
+        },
+        {
+          "end": 4,
+          "lineage": "D026",
+          "start": 2
+        },
+        {
+          "end": 7,
+          "lineage": "D034",
+          "start": 5
+        },
+        {
+          "end": 4,
+          "lineage": "D035",
+          "start": 2
+        },
+        {
+          "end": 7,
+          "lineage": "D036",
+          "start": 5
+        }
+      ],
+      "form_id": "L3|P1-1-2|A0|H3",
+      "hbin": 3,
+      "length": 3,
+      "median_recurrence_interval": null,
+      "path": [
+        1,
+        1,
+        2
+      ],
+      "permuted_sign_test": {
+        "canonical_only": 1,
+        "control_only": 2,
+        "discordant": 3,
+        "p_upper": 0.875
+      },
+      "reset_sign_test": {
+        "canonical_only": 7,
+        "control_only": 0,
+        "discordant": 7,
+        "p_upper": 0.0078125
+      },
+      "retained_recurrence_fraction": 0.0,
+      "rewired_lineage_counts": [
+        0,
+        13,
+        0,
+        3,
+        12,
+        0,
+        10,
+        0,
+        0,
+        0,
+        0,
+        0,
+        5,
+        0,
+        0,
+        0,
+        7,
+        0,
+        0,
+        0,
+        25,
+        14,
+        0,
+        0
+      ],
+      "rewired_max_lineages": 25,
+      "rewired_mean_lineages": 3.7083333333333335,
+      "top_activation": 0
+    },
+    {
+      "confirm_developmental_absent": false,
+      "confirm_family_alpha": 0.0019230769230769232,
+      "confirm_fresh_lineages": 2,
+      "confirm_non_echo_fraction": 0.9333333333333333,
+      "confirm_permuted_lineages": 15,
+      "confirm_replay_lineages": 14,
+      "confirm_reset_lineages": 1,
+      "confirm_retained_details": [
+        {
+          "count": 1,
+          "first_step": 1,
+          "input_echo": false,
+          "lineage": "C000",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170096,
+          "step_ranges": [
+            [
+              1,
+              4
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 3,
+          "input_echo": false,
+          "lineage": "C005",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170101,
+          "step_ranges": [
+            [
+              3,
+              6
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 0,
+          "input_echo": false,
+          "lineage": "C008",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170104,
+          "step_ranges": [
+            [
+              0,
+              3
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 4,
+          "input_echo": false,
+          "lineage": "C012",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170108,
+          "step_ranges": [
+            [
+              4,
+              7
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 1,
+          "input_echo": false,
+          "lineage": "C017",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170113,
+          "step_ranges": [
+            [
+              1,
+              4
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 5,
+          "input_echo": false,
+          "lineage": "C019",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170115,
+          "step_ranges": [
+            [
+              5,
+              8
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 3,
+          "input_echo": true,
+          "lineage": "C039",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170135,
+          "step_ranges": [
+            [
+              3,
+              6
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 2,
+          "input_echo": false,
+          "lineage": "C042",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170138,
+          "step_ranges": [
+            [
+              2,
+              5
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 0,
+          "input_echo": false,
+          "lineage": "C056",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170152,
+          "step_ranges": [
+            [
+              0,
+              3
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 6,
+          "input_echo": false,
+          "lineage": "C065",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170161,
+          "step_ranges": [
+            [
+              6,
+              9
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 3,
+          "input_echo": false,
+          "lineage": "C076",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170172,
+          "step_ranges": [
+            [
+              3,
+              6
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 3,
+          "input_echo": false,
+          "lineage": "C078",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170174,
+          "step_ranges": [
+            [
+              3,
+              6
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 4,
+          "input_echo": false,
+          "lineage": "C081",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170177,
+          "step_ranges": [
+            [
+              4,
+              7
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 6,
+          "input_echo": false,
+          "lineage": "C085",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170181,
+          "step_ranges": [
+            [
+              6,
+              9
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 3,
+          "input_echo": false,
+          "lineage": "C087",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170183,
+          "step_ranges": [
+            [
+              3,
+              6
+            ]
+          ]
+        }
+      ],
+      "confirm_retained_lineages": 15,
+      "confirm_static_lineages": 0,
+      "confirmed_new_ingression_form": false,
+      "contains_prior_pointer_material": false,
+      "discovery_lineage_count": 13,
+      "discovery_lineages": [
+        "D015",
+        "D024",
+        "D025",
+        "D026",
+        "D035",
+        "D038",
+        "D045",
+        "D053",
+        "D064",
+        "D066",
+        "D075",
+        "D078",
+        "D084"
+      ],
+      "discovery_non_echo_fraction": 1.0,
+      "discovery_non_echo_lineages": [
+        "D015",
+        "D024",
+        "D025",
+        "D026",
+        "D035",
+        "D038",
+        "D045",
+        "D053",
+        "D064",
+        "D066",
+        "D075",
+        "D078",
+        "D084"
+      ],
+      "discovery_occurrences": 13,
+      "examples": [
+        {
+          "end": 5,
+          "lineage": "D015",
+          "start": 2
+        },
+        {
+          "end": 7,
+          "lineage": "D024",
+          "start": 4
+        },
+        {
+          "end": 8,
+          "lineage": "D025",
+          "start": 5
+        },
+        {
+          "end": 7,
+          "lineage": "D026",
+          "start": 4
+        },
+        {
+          "end": 7,
+          "lineage": "D035",
+          "start": 4
+        },
+        {
+          "end": 7,
+          "lineage": "D038",
+          "start": 4
+        },
+        {
+          "end": 4,
+          "lineage": "D045",
+          "start": 1
+        },
+        {
+          "end": 73,
+          "lineage": "D053",
+          "start": 70
+        }
+      ],
+      "form_id": "L4|P2-3-6-3|A0|H3",
+      "hbin": 3,
+      "length": 4,
+      "median_recurrence_interval": null,
+      "path": [
+        2,
+        3,
+        6,
+        3
+      ],
+      "permuted_sign_test": {
+        "canonical_only": 0,
+        "control_only": 0,
+        "discordant": 0,
+        "p_upper": 1.0
+      },
+      "reset_sign_test": {
+        "canonical_only": 15,
+        "control_only": 1,
+        "discordant": 16,
+        "p_upper": 0.0002593994140625
+      },
+      "retained_recurrence_fraction": 0.0,
+      "rewired_lineage_counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "rewired_max_lineages": 0,
+      "rewired_mean_lineages": 0,
+      "top_activation": 0
+    },
+    {
+      "confirm_developmental_absent": true,
+      "confirm_family_alpha": 0.0019230769230769232,
+      "confirm_fresh_lineages": 1,
+      "confirm_non_echo_fraction": 1.0,
+      "confirm_permuted_lineages": 13,
+      "confirm_replay_lineages": 10,
+      "confirm_reset_lineages": 1,
+      "confirm_retained_details": [
+        {
+          "count": 1,
+          "first_step": 2,
+          "input_echo": false,
+          "lineage": "C005",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170101,
+          "step_ranges": [
+            [
+              2,
+              5
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 3,
+          "input_echo": false,
+          "lineage": "C012",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170108,
+          "step_ranges": [
+            [
+              3,
+              6
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 7,
+          "input_echo": false,
+          "lineage": "C015",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170111,
+          "step_ranges": [
+            [
+              7,
+              10
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 4,
+          "input_echo": false,
+          "lineage": "C019",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170115,
+          "step_ranges": [
+            [
+              4,
+              7
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 2,
+          "input_echo": false,
+          "lineage": "C039",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170135,
+          "step_ranges": [
+            [
+              2,
+              5
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 1,
+          "input_echo": false,
+          "lineage": "C042",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170138,
+          "step_ranges": [
+            [
+              1,
+              4
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 5,
+          "input_echo": false,
+          "lineage": "C065",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170161,
+          "step_ranges": [
+            [
+              5,
+              8
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 4,
+          "input_echo": false,
+          "lineage": "C072",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170168,
+          "step_ranges": [
+            [
+              4,
+              7
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 2,
+          "input_echo": false,
+          "lineage": "C076",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170172,
+          "step_ranges": [
+            [
+              2,
+              5
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 2,
+          "input_echo": false,
+          "lineage": "C078",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170174,
+          "step_ranges": [
+            [
+              2,
+              5
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 3,
+          "input_echo": false,
+          "lineage": "C081",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170177,
+          "step_ranges": [
+            [
+              3,
+              6
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 5,
+          "input_echo": false,
+          "lineage": "C085",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170181,
+          "step_ranges": [
+            [
+              5,
+              8
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 2,
+          "input_echo": false,
+          "lineage": "C087",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170183,
+          "step_ranges": [
+            [
+              2,
+              5
+            ]
+          ]
+        }
+      ],
+      "confirm_retained_lineages": 13,
+      "confirm_static_lineages": 0,
+      "confirmed_new_ingression_form": false,
+      "contains_prior_pointer_material": false,
+      "discovery_lineage_count": 12,
+      "discovery_lineages": [
+        "D015",
+        "D024",
+        "D026",
+        "D035",
+        "D038",
+        "D041",
+        "D045",
+        "D064",
+        "D066",
+        "D075",
+        "D078",
+        "D084"
+      ],
+      "discovery_non_echo_fraction": 1.0,
+      "discovery_non_echo_lineages": [
+        "D015",
+        "D024",
+        "D026",
+        "D035",
+        "D038",
+        "D041",
+        "D045",
+        "D064",
+        "D066",
+        "D075",
+        "D078",
+        "D084"
+      ],
+      "discovery_occurrences": 12,
+      "examples": [
+        {
+          "end": 4,
+          "lineage": "D015",
+          "start": 1
+        },
+        {
+          "end": 6,
+          "lineage": "D024",
+          "start": 3
+        },
+        {
+          "end": 6,
+          "lineage": "D026",
+          "start": 3
+        },
+        {
+          "end": 6,
+          "lineage": "D035",
+          "start": 3
+        },
+        {
+          "end": 6,
+          "lineage": "D038",
+          "start": 3
+        },
+        {
+          "end": 9,
+          "lineage": "D041",
+          "start": 6
+        },
+        {
+          "end": 3,
+          "lineage": "D045",
+          "start": 0
+        },
+        {
+          "end": 7,
+          "lineage": "D064",
+          "start": 4
+        }
+      ],
+      "form_id": "L4|P1-2-3-6|A0|H3",
+      "hbin": 3,
+      "length": 4,
+      "median_recurrence_interval": null,
+      "path": [
+        1,
+        2,
+        3,
+        6
+      ],
+      "permuted_sign_test": {
+        "canonical_only": 1,
+        "control_only": 1,
+        "discordant": 2,
+        "p_upper": 0.75
+      },
+      "reset_sign_test": {
+        "canonical_only": 12,
+        "control_only": 0,
+        "discordant": 12,
+        "p_upper": 0.000244140625
+      },
+      "retained_recurrence_fraction": 0.0,
+      "rewired_lineage_counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "rewired_max_lineages": 0,
+      "rewired_mean_lineages": 0,
+      "top_activation": 0
+    },
+    {
+      "confirm_developmental_absent": true,
+      "confirm_family_alpha": 0.0019230769230769232,
+      "confirm_fresh_lineages": 0,
+      "confirm_non_echo_fraction": 1.0,
+      "confirm_permuted_lineages": 13,
+      "confirm_replay_lineages": 9,
+      "confirm_reset_lineages": 0,
+      "confirm_retained_details": [
+        {
+          "count": 1,
+          "first_step": 15,
+          "input_echo": false,
+          "lineage": "C002",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170098,
+          "step_ranges": [
+            [
+              15,
+              18
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 14,
+          "input_echo": false,
+          "lineage": "C007",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170103,
+          "step_ranges": [
+            [
+              14,
+              17
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 14,
+          "input_echo": false,
+          "lineage": "C022",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170118,
+          "step_ranges": [
+            [
+              14,
+              17
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 16,
+          "input_echo": false,
+          "lineage": "C030",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170126,
+          "step_ranges": [
+            [
+              16,
+              19
+            ]
+          ]
+        },
+        {
+          "count": 2,
+          "first_step": 5,
+          "input_echo": false,
+          "lineage": "C037",
+          "recurred_after_first": true,
+          "recurrence_intervals": [
+            11
+          ],
+          "seed": 3170133,
+          "step_ranges": [
+            [
+              5,
+              8
+            ],
+            [
+              16,
+              19
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 124,
+          "input_echo": false,
+          "lineage": "C038",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170134,
+          "step_ranges": [
+            [
+              124,
+              127
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 15,
+          "input_echo": false,
+          "lineage": "C049",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170145,
+          "step_ranges": [
+            [
+              15,
+              18
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 17,
+          "input_echo": false,
+          "lineage": "C052",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170148,
+          "step_ranges": [
+            [
+              17,
+              20
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 13,
+          "input_echo": false,
+          "lineage": "C059",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170155,
+          "step_ranges": [
+            [
+              13,
+              16
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 15,
+          "input_echo": false,
+          "lineage": "C067",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170163,
+          "step_ranges": [
+            [
+              15,
+              18
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 14,
+          "input_echo": false,
+          "lineage": "C082",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170178,
+          "step_ranges": [
+            [
+              14,
+              17
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 5,
+          "input_echo": false,
+          "lineage": "C090",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170186,
+          "step_ranges": [
+            [
+              5,
+              8
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 13,
+          "input_echo": false,
+          "lineage": "C092",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170188,
+          "step_ranges": [
+            [
+              13,
+              16
+            ]
+          ]
+        }
+      ],
+      "confirm_retained_lineages": 13,
+      "confirm_static_lineages": 0,
+      "confirmed_new_ingression_form": false,
+      "contains_prior_pointer_material": false,
+      "discovery_lineage_count": 12,
+      "discovery_lineages": [
+        "D002",
+        "D013",
+        "D018",
+        "D042",
+        "D052",
+        "D055",
+        "D062",
+        "D063",
+        "D065",
+        "D081",
+        "D088",
+        "D095"
+      ],
+      "discovery_non_echo_fraction": 1.0,
+      "discovery_non_echo_lineages": [
+        "D002",
+        "D013",
+        "D018",
+        "D042",
+        "D052",
+        "D055",
+        "D062",
+        "D063",
+        "D065",
+        "D081",
+        "D088",
+        "D095"
+      ],
+      "discovery_occurrences": 12,
+      "examples": [
+        {
+          "end": 19,
+          "lineage": "D002",
+          "start": 16
+        },
+        {
+          "end": 8,
+          "lineage": "D013",
+          "start": 5
+        },
+        {
+          "end": 19,
+          "lineage": "D018",
+          "start": 16
+        },
+        {
+          "end": 16,
+          "lineage": "D042",
+          "start": 13
+        },
+        {
+          "end": 18,
+          "lineage": "D052",
+          "start": 15
+        },
+        {
+          "end": 16,
+          "lineage": "D055",
+          "start": 13
+        },
+        {
+          "end": 19,
+          "lineage": "D062",
+          "start": 16
+        },
+        {
+          "end": 19,
+          "lineage": "D063",
+          "start": 16
+        }
+      ],
+      "form_id": "L4|P9-1-1-1|A3|H3",
+      "hbin": 3,
+      "length": 4,
+      "median_recurrence_interval": 11,
+      "path": [
+        9,
+        1,
+        1,
+        1
+      ],
+      "permuted_sign_test": {
+        "canonical_only": 1,
+        "control_only": 1,
+        "discordant": 2,
+        "p_upper": 0.75
+      },
+      "reset_sign_test": {
+        "canonical_only": 13,
+        "control_only": 0,
+        "discordant": 13,
+        "p_upper": 0.0001220703125
+      },
+      "retained_recurrence_fraction": 0.07692307692307693,
+      "rewired_lineage_counts": [
+        1,
+        0,
+        0,
+        0,
+        2,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        2,
+        0,
+        0,
+        0,
+        0,
+        24,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0
+      ],
+      "rewired_max_lineages": 24,
+      "rewired_mean_lineages": 1.2916666666666667,
+      "top_activation": 3
+    },
+    {
+      "confirm_developmental_absent": true,
+      "confirm_family_alpha": 0.0019230769230769232,
+      "confirm_fresh_lineages": 0,
+      "confirm_non_echo_fraction": 1.0,
+      "confirm_permuted_lineages": 6,
+      "confirm_replay_lineages": 12,
+      "confirm_reset_lineages": 10,
+      "confirm_retained_details": [
+        {
+          "count": 1,
+          "first_step": 17,
+          "input_echo": false,
+          "lineage": "C009",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170105,
+          "step_ranges": [
+            [
+              17,
+              20
+            ]
+          ]
+        },
+        {
+          "count": 2,
+          "first_step": 15,
+          "input_echo": false,
+          "lineage": "C012",
+          "recurred_after_first": true,
+          "recurrence_intervals": [
+            2
+          ],
+          "seed": 3170108,
+          "step_ranges": [
+            [
+              15,
+              18
+            ],
+            [
+              17,
+              20
+            ]
+          ]
+        },
+        {
+          "count": 2,
+          "first_step": 16,
+          "input_echo": false,
+          "lineage": "C029",
+          "recurred_after_first": true,
+          "recurrence_intervals": [
+            2
+          ],
+          "seed": 3170125,
+          "step_ranges": [
+            [
+              16,
+              19
+            ],
+            [
+              18,
+              21
+            ]
+          ]
+        },
+        {
+          "count": 3,
+          "first_step": 14,
+          "input_echo": false,
+          "lineage": "C065",
+          "recurred_after_first": true,
+          "recurrence_intervals": [
+            2,
+            2
+          ],
+          "seed": 3170161,
+          "step_ranges": [
+            [
+              14,
+              17
+            ],
+            [
+              16,
+              19
+            ],
+            [
+              18,
+              21
+            ]
+          ]
+        },
+        {
+          "count": 3,
+          "first_step": 13,
+          "input_echo": false,
+          "lineage": "C072",
+          "recurred_after_first": true,
+          "recurrence_intervals": [
+            2,
+            2
+          ],
+          "seed": 3170168,
+          "step_ranges": [
+            [
+              13,
+              16
+            ],
+            [
+              15,
+              18
+            ],
+            [
+              17,
+              20
+            ]
+          ]
+        },
+        {
+          "count": 2,
+          "first_step": 16,
+          "input_echo": false,
+          "lineage": "C091",
+          "recurred_after_first": true,
+          "recurrence_intervals": [
+            2
+          ],
+          "seed": 3170187,
+          "step_ranges": [
+            [
+              16,
+              19
+            ],
+            [
+              18,
+              21
+            ]
+          ]
+        }
+      ],
+      "confirm_retained_lineages": 6,
+      "confirm_static_lineages": 0,
+      "confirmed_new_ingression_form": false,
+      "contains_prior_pointer_material": false,
+      "discovery_lineage_count": 9,
+      "discovery_lineages": [
+        "D012",
+        "D014",
+        "D021",
+        "D023",
+        "D038",
+        "D043",
+        "D048",
+        "D054",
+        "D080"
+      ],
+      "discovery_non_echo_fraction": 1.0,
+      "discovery_non_echo_lineages": [
+        "D012",
+        "D014",
+        "D021",
+        "D023",
+        "D038",
+        "D043",
+        "D048",
+        "D054",
+        "D080"
+      ],
+      "discovery_occurrences": 16,
+      "examples": [
+        {
+          "end": 19,
+          "lineage": "D012",
+          "start": 16
+        },
+        {
+          "end": 20,
+          "lineage": "D014",
+          "start": 17
+        },
+        {
+          "end": 22,
+          "lineage": "D014",
+          "start": 19
+        },
+        {
+          "end": 16,
+          "lineage": "D021",
+          "start": 13
+        },
+        {
+          "end": 18,
+          "lineage": "D021",
+          "start": 15
+        },
+        {
+          "end": 17,
+          "lineage": "D023",
+          "start": 14
+        },
+        {
+          "end": 19,
+          "lineage": "D023",
+          "start": 16
+        },
+        {
+          "end": 21,
+          "lineage": "D038",
+          "start": 18
+        }
+      ],
+      "form_id": "L4|P3-6-3-6|A3|H2",
+      "hbin": 2,
+      "length": 4,
+      "median_recurrence_interval": 2,
+      "path": [
+        3,
+        6,
+        3,
+        6
+      ],
+      "permuted_sign_test": {
+        "canonical_only": 0,
+        "control_only": 0,
+        "discordant": 0,
+        "p_upper": 1.0
+      },
+      "reset_sign_test": {
+        "canonical_only": 6,
+        "control_only": 10,
+        "discordant": 16,
+        "p_upper": 0.8949432373046875
+      },
+      "retained_recurrence_fraction": 0.8333333333333334,
+      "rewired_lineage_counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "rewired_max_lineages": 0,
+      "rewired_mean_lineages": 0,
+      "top_activation": 3
+    },
+    {
+      "confirm_developmental_absent": true,
+      "confirm_family_alpha": 0.0019230769230769232,
+      "confirm_fresh_lineages": 0,
+      "confirm_non_echo_fraction": 0.875,
+      "confirm_permuted_lineages": 8,
+      "confirm_replay_lineages": 5,
+      "confirm_reset_lineages": 1,
+      "confirm_retained_details": [
+        {
+          "count": 4,
+          "first_step": 44,
+          "input_echo": false,
+          "lineage": "C010",
+          "recurred_after_first": true,
+          "recurrence_intervals": [
+            1,
+            1,
+            1
+          ],
+          "seed": 3170106,
+          "step_ranges": [
+            [
+              44,
+              47
+            ],
+            [
+              45,
+              48
+            ],
+            [
+              46,
+              49
+            ],
+            [
+              47,
+              50
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 120,
+          "input_echo": false,
+          "lineage": "C048",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170144,
+          "step_ranges": [
+            [
+              120,
+              123
+            ]
+          ]
+        },
+        {
+          "count": 2,
+          "first_step": 28,
+          "input_echo": true,
+          "lineage": "C052",
+          "recurred_after_first": true,
+          "recurrence_intervals": [
+            1
+          ],
+          "seed": 3170148,
+          "step_ranges": [
+            [
+              28,
+              31
+            ],
+            [
+              29,
+              32
+            ]
+          ]
+        },
+        {
+          "count": 2,
+          "first_step": 47,
+          "input_echo": false,
+          "lineage": "C059",
+          "recurred_after_first": true,
+          "recurrence_intervals": [
+            1
+          ],
+          "seed": 3170155,
+          "step_ranges": [
+            [
+              47,
+              50
+            ],
+            [
+              48,
+              51
+            ]
+          ]
+        },
+        {
+          "count": 4,
+          "first_step": 46,
+          "input_echo": false,
+          "lineage": "C060",
+          "recurred_after_first": true,
+          "recurrence_intervals": [
+            1,
+            1,
+            72
+          ],
+          "seed": 3170156,
+          "step_ranges": [
+            [
+              46,
+              49
+            ],
+            [
+              47,
+              50
+            ],
+            [
+              48,
+              51
+            ],
+            [
+              120,
+              123
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 121,
+          "input_echo": false,
+          "lineage": "C069",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170165,
+          "step_ranges": [
+            [
+              121,
+              124
+            ]
+          ]
+        },
+        {
+          "count": 2,
+          "first_step": 46,
+          "input_echo": false,
+          "lineage": "C077",
+          "recurred_after_first": true,
+          "recurrence_intervals": [
+            1
+          ],
+          "seed": 3170173,
+          "step_ranges": [
+            [
+              46,
+              49
+            ],
+            [
+              47,
+              50
+            ]
+          ]
+        },
+        {
+          "count": 1,
+          "first_step": 0,
+          "input_echo": false,
+          "lineage": "C088",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170184,
+          "step_ranges": [
+            [
+              0,
+              3
+            ]
+          ]
+        }
+      ],
+      "confirm_retained_lineages": 8,
+      "confirm_static_lineages": 0,
+      "confirmed_new_ingression_form": false,
+      "contains_prior_pointer_material": false,
+      "discovery_lineage_count": 9,
+      "discovery_lineages": [
+        "D014",
+        "D033",
+        "D038",
+        "D042",
+        "D054",
+        "D081",
+        "D083",
+        "D085",
+        "D093"
+      ],
+      "discovery_non_echo_fraction": 1.0,
+      "discovery_non_echo_lineages": [
+        "D014",
+        "D033",
+        "D038",
+        "D042",
+        "D054",
+        "D081",
+        "D083",
+        "D085",
+        "D093"
+      ],
+      "discovery_occurrences": 14,
+      "examples": [
+        {
+          "end": 3,
+          "lineage": "D014",
+          "start": 0
+        },
+        {
+          "end": 48,
+          "lineage": "D033",
+          "start": 45
+        },
+        {
+          "end": 49,
+          "lineage": "D033",
+          "start": 46
+        },
+        {
+          "end": 50,
+          "lineage": "D033",
+          "start": 47
+        },
+        {
+          "end": 3,
+          "lineage": "D038",
+          "start": 0
+        },
+        {
+          "end": 124,
+          "lineage": "D042",
+          "start": 121
+        },
+        {
+          "end": 125,
+          "lineage": "D042",
+          "start": 122
+        },
+        {
+          "end": 3,
+          "lineage": "D054",
+          "start": 0
+        }
+      ],
+      "form_id": "L4|P1-1-1-1|A6|H3",
+      "hbin": 3,
+      "length": 4,
+      "median_recurrence_interval": 1,
+      "path": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "permuted_sign_test": {
+        "canonical_only": 1,
+        "control_only": 1,
+        "discordant": 2,
+        "p_upper": 0.75
+      },
+      "reset_sign_test": {
+        "canonical_only": 8,
+        "control_only": 1,
+        "discordant": 9,
+        "p_upper": 0.01953125
+      },
+      "retained_recurrence_fraction": 0.625,
+      "rewired_lineage_counts": [
+        20,
+        5,
+        10,
+        0,
+        2,
+        1,
+        4,
+        0,
+        0,
+        29,
+        28,
+        15,
+        6,
+        2,
+        0,
+        27,
+        4,
+        2,
+        8,
+        13,
+        45,
+        1,
+        20,
+        20
+      ],
+      "rewired_max_lineages": 45,
+      "rewired_mean_lineages": 10.916666666666666,
+      "top_activation": 6
+    },
+    {
+      "confirm_developmental_absent": true,
+      "confirm_family_alpha": 0.0019230769230769232,
+      "confirm_fresh_lineages": 0,
+      "confirm_non_echo_fraction": 1.0,
+      "confirm_permuted_lineages": 6,
+      "confirm_replay_lineages": 11,
+      "confirm_reset_lineages": 8,
+      "confirm_retained_details": [
+        {
+          "count": 1,
+          "first_step": 18,
+          "input_echo": false,
+          "lineage": "C009",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170105,
+          "step_ranges": [
+            [
+              18,
+              21
+            ]
+          ]
+        },
+        {
+          "count": 2,
+          "first_step": 16,
+          "input_echo": false,
+          "lineage": "C012",
+          "recurred_after_first": true,
+          "recurrence_intervals": [
+            2
+          ],
+          "seed": 3170108,
+          "step_ranges": [
+            [
+              16,
+              19
+            ],
+            [
+              18,
+              21
+            ]
+          ]
+        },
+        {
+          "count": 3,
+          "first_step": 15,
+          "input_echo": false,
+          "lineage": "C029",
+          "recurred_after_first": true,
+          "recurrence_intervals": [
+            2,
+            2
+          ],
+          "seed": 3170125,
+          "step_ranges": [
+            [
+              15,
+              18
+            ],
+            [
+              17,
+              20
+            ],
+            [
+              19,
+              22
+            ]
+          ]
+        },
+        {
+          "count": 3,
+          "first_step": 13,
+          "input_echo": false,
+          "lineage": "C065",
+          "recurred_after_first": true,
+          "recurrence_intervals": [
+            2,
+            2
+          ],
+          "seed": 3170161,
+          "step_ranges": [
+            [
+              13,
+              16
+            ],
+            [
+              15,
+              18
+            ],
+            [
+              17,
+              20
+            ]
+          ]
+        },
+        {
+          "count": 2,
+          "first_step": 14,
+          "input_echo": false,
+          "lineage": "C072",
+          "recurred_after_first": true,
+          "recurrence_intervals": [
+            2
+          ],
+          "seed": 3170168,
+          "step_ranges": [
+            [
+              14,
+              17
+            ],
+            [
+              16,
+              19
+            ]
+          ]
+        },
+        {
+          "count": 2,
+          "first_step": 17,
+          "input_echo": false,
+          "lineage": "C091",
+          "recurred_after_first": true,
+          "recurrence_intervals": [
+            2
+          ],
+          "seed": 3170187,
+          "step_ranges": [
+            [
+              17,
+              20
+            ],
+            [
+              19,
+              22
+            ]
+          ]
+        }
+      ],
+      "confirm_retained_lineages": 6,
+      "confirm_static_lineages": 0,
+      "confirmed_new_ingression_form": false,
+      "contains_prior_pointer_material": false,
+      "discovery_lineage_count": 8,
+      "discovery_lineages": [
+        "D014",
+        "D021",
+        "D023",
+        "D035",
+        "D038",
+        "D043",
+        "D048",
+        "D054"
+      ],
+      "discovery_non_echo_fraction": 1.0,
+      "discovery_non_echo_lineages": [
+        "D014",
+        "D021",
+        "D023",
+        "D035",
+        "D038",
+        "D043",
+        "D048",
+        "D054"
+      ],
+      "discovery_occurrences": 13,
+      "examples": [
+        {
+          "end": 21,
+          "lineage": "D014",
+          "start": 18
+        },
+        {
+          "end": 17,
+          "lineage": "D021",
+          "start": 14
+        },
+        {
+          "end": 19,
+          "lineage": "D021",
+          "start": 16
+        },
+        {
+          "end": 18,
+          "lineage": "D023",
+          "start": 15
+        },
+        {
+          "end": 19,
+          "lineage": "D035",
+          "start": 16
+        },
+        {
+          "end": 22,
+          "lineage": "D038",
+          "start": 19
+        },
+        {
+          "end": 72,
+          "lineage": "D043",
+          "start": 69
+        },
+        {
+          "end": 74,
+          "lineage": "D043",
+          "start": 71
+        }
+      ],
+      "form_id": "L4|P6-3-6-3|A3|H2",
+      "hbin": 2,
+      "length": 4,
+      "median_recurrence_interval": 2,
+      "path": [
+        6,
+        3,
+        6,
+        3
+      ],
+      "permuted_sign_test": {
+        "canonical_only": 0,
+        "control_only": 0,
+        "discordant": 0,
+        "p_upper": 1.0
+      },
+      "reset_sign_test": {
+        "canonical_only": 6,
+        "control_only": 8,
+        "discordant": 14,
+        "p_upper": 0.78802490234375
+      },
+      "retained_recurrence_fraction": 0.8333333333333334,
+      "rewired_lineage_counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "rewired_max_lineages": 0,
+      "rewired_mean_lineages": 0,
+      "top_activation": 3
+    },
+    {
+      "confirm_developmental_absent": true,
+      "confirm_family_alpha": 0.0019230769230769232,
+      "confirm_fresh_lineages": 0,
+      "confirm_non_echo_fraction": 1.0,
+      "confirm_permuted_lineages": 6,
+      "confirm_replay_lineages": 11,
+      "confirm_reset_lineages": 8,
+      "confirm_retained_details": [
+        {
+          "count": 1,
+          "first_step": 17,
+          "input_echo": false,
+          "lineage": "C009",
+          "recurred_after_first": false,
+          "recurrence_intervals": [],
+          "seed": 3170105,
+          "step_ranges": [
+            [
+              17,
+              21
+            ]
+          ]
+        },
+        {
+          "count": 2,
+          "first_step": 15,
+          "input_echo": false,
+          "lineage": "C012",
+          "recurred_after_first": true,
+          "recurrence_intervals": [
+            2
+          ],
+          "seed": 3170108,
+          "step_ranges": [
+            [
+              15,
+              19
+            ],
+            [
+              17,
+              21
+            ]
+          ]
+        },
+        {
+          "count": 3,
+          "first_step": 14,
+          "input_echo": false,
+          "lineage": "C029",
+          "recurred_after_first": true,
+          "recurrence_intervals": [
+            2,
+            2
+          ],
+          "seed": 3170125,
+          "step_ranges": [
+            [
+              14,
+              18
+            ],
+            [
+              16,
+              20
+            ],
+            [
+              18,
+              22
+            ]
+          ]
+        },
+        {
+          "count": 3,
+          "first_step": 12,
+          "input_echo": false,
+          "lineage": "C065",
+          "recurred_after_first": true,
+          "recurrence_intervals": [
+            2,
+            2
+          ],
+          "seed": 3170161,
+          "step_ranges": [
+            [
+              12,
+              16
+            ],
+            [
+              14,
+              18
+            ],
+            [
+              16,
+              20
+            ]
+          ]
+        },
+        {
+          "count": 2,
+          "first_step": 13,
+          "input_echo": false,
+          "lineage": "C072",
+          "recurred_after_first": true,
+          "recurrence_intervals": [
+            2
+          ],
+          "seed": 3170168,
+          "step_ranges": [
+            [
+              13,
+              17
+            ],
+            [
+              15,
+              19
+            ]
+          ]
+        },
+        {
+          "count": 2,
+          "first_step": 16,
+          "input_echo": false,
+          "lineage": "C091",
+          "recurred_after_first": true,
+          "recurrence_intervals": [
+            2
+          ],
+          "seed": 3170187,
+          "step_ranges": [
+            [
+              16,
+              20
+            ],
+            [
+              18,
+              22
+            ]
+          ]
+        }
+      ],
+      "confirm_retained_lineages": 6,
+      "confirm_static_lineages": 0,
+      "confirmed_new_ingression_form": false,
+      "contains_prior_pointer_material": false,
+      "discovery_lineage_count": 8,
+      "discovery_lineages": [
+        "D014",
+        "D021",
+        "D023",
+        "D035",
+        "D038",
+        "D043",
+        "D048",
+        "D054"
+      ],
+      "discovery_non_echo_fraction": 1.0,
+      "discovery_non_echo_lineages": [
+        "D014",
+        "D021",
+        "D023",
+        "D035",
+        "D038",
+        "D043",
+        "D048",
+        "D054"
+      ],
+      "discovery_occurrences": 13,
+      "examples": [
+        {
+          "end": 21,
+          "lineage": "D014",
+          "start": 17
+        },
+        {
+          "end": 17,
+          "lineage": "D021",
+          "start": 13
+        },
+        {
+          "end": 19,
+          "lineage": "D021",
+          "start": 15
+        },
+        {
+          "end": 18,
+          "lineage": "D023",
+          "start": 14
+        },
+        {
+          "end": 19,
+          "lineage": "D035",
+          "start": 15
+        },
+        {
+          "end": 22,
+          "lineage": "D038",
+          "start": 18
+        },
+        {
+          "end": 72,
+          "lineage": "D043",
+          "start": 68
+        },
+        {
+          "end": 74,
+          "lineage": "D043",
+          "start": 70
+        }
+      ],
+      "form_id": "L5|P3-6-3-6-3|A3|H2",
+      "hbin": 2,
+      "length": 5,
+      "median_recurrence_interval": 2,
+      "path": [
+        3,
+        6,
+        3,
+        6,
+        3
+      ],
+      "permuted_sign_test": {
+        "canonical_only": 0,
+        "control_only": 0,
+        "discordant": 0,
+        "p_upper": 1.0
+      },
+      "reset_sign_test": {
+        "canonical_only": 6,
+        "control_only": 8,
+        "discordant": 14,
+        "p_upper": 0.78802490234375
+      },
+      "retained_recurrence_fraction": 0.8333333333333334,
+      "rewired_lineage_counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "rewired_max_lineages": 0,
+      "rewired_mean_lineages": 0,
+      "top_activation": 3
+    }
+  ],
+  "developmental_return_forms": [
+    {
+      "contains_prior_pointer_material": false,
+      "developmental_lineages": 85,
+      "form_id": "L3|P3-6-3|A3|H3",
+      "path": [
+        3,
+        6,
+        3
+      ],
+      "post_lineages": 91,
+      "post_occurrences": 1695
+    },
+    {
+      "contains_prior_pointer_material": false,
+      "developmental_lineages": 85,
+      "form_id": "L3|P6-3-6|A3|H3",
+      "path": [
+        6,
+        3,
+        6
+      ],
+      "post_lineages": 91,
+      "post_occurrences": 1468
+    },
+    {
+      "contains_prior_pointer_material": false,
+      "developmental_lineages": 85,
+      "form_id": "L4|P3-6-3-6|A3|H3",
+      "path": [
+        3,
+        6,
+        3,
+        6
+      ],
+      "post_lineages": 91,
+      "post_occurrences": 1466
+    },
+    {
+      "contains_prior_pointer_material": false,
+      "developmental_lineages": 85,
+      "form_id": "L4|P6-3-6-3|A3|H3",
+      "path": [
+        6,
+        3,
+        6,
+        3
+      ],
+      "post_lineages": 91,
+      "post_occurrences": 1367
+    },
+    {
+      "contains_prior_pointer_material": false,
+      "developmental_lineages": 85,
+      "form_id": "L5|P3-6-3-6-3|A3|H3",
+      "path": [
+        3,
+        6,
+        3,
+        6,
+        3
+      ],
+      "post_lineages": 91,
+      "post_occurrences": 1365
+    },
+    {
+      "contains_prior_pointer_material": false,
+      "developmental_lineages": 84,
+      "form_id": "L5|P6-3-6-3-6|A3|H3",
+      "path": [
+        6,
+        3,
+        6,
+        3,
+        6
+      ],
+      "post_lineages": 91,
+      "post_occurrences": 1200
+    },
+    {
+      "contains_prior_pointer_material": false,
+      "developmental_lineages": 87,
+      "form_id": "L3|P3-6-3|A6|H3",
+      "path": [
+        3,
+        6,
+        3
+      ],
+      "post_lineages": 90,
+      "post_occurrences": 986
+    },
+    {
+      "contains_prior_pointer_material": false,
+      "developmental_lineages": 87,
+      "form_id": "L4|P6-3-6-3|A6|H3",
+      "path": [
+        6,
+        3,
+        6,
+        3
+      ],
+      "post_lineages": 90,
+      "post_occurrences": 883
+    },
+    {
+      "contains_prior_pointer_material": false,
+      "developmental_lineages": 87,
+      "form_id": "L5|P3-6-3-6-3|A6|H3",
+      "path": [
+        3,
+        6,
+        3,
+        6,
+        3
+      ],
+      "post_lineages": 90,
+      "post_occurrences": 881
+    },
+    {
+      "contains_prior_pointer_material": false,
+      "developmental_lineages": 87,
+      "form_id": "L3|P6-3-6|A6|H3",
+      "path": [
+        6,
+        3,
+        6
+      ],
+      "post_lineages": 89,
+      "post_occurrences": 790
+    },
+    {
+      "contains_prior_pointer_material": false,
+      "developmental_lineages": 87,
+      "form_id": "L4|P3-6-3-6|A6|H3",
+      "path": [
+        3,
+        6,
+        3,
+        6
+      ],
+      "post_lineages": 89,
+      "post_occurrences": 785
+    },
+    {
+      "contains_prior_pointer_material": false,
+      "developmental_lineages": 85,
+      "form_id": "L5|P6-3-6-3-6|A6|H3",
+      "path": [
+        6,
+        3,
+        6,
+        3,
+        6
+      ],
+      "post_lineages": 89,
+      "post_occurrences": 701
+    },
+    {
+      "contains_prior_pointer_material": false,
+      "developmental_lineages": 78,
+      "form_id": "L3|P3-6-3|A9|H3",
+      "path": [
+        3,
+        6,
+        3
+      ],
+      "post_lineages": 89,
+      "post_occurrences": 376
+    },
+    {
+      "contains_prior_pointer_material": false,
+      "developmental_lineages": 65,
+      "form_id": "L3|P6-3-6|A9|H3",
+      "path": [
+        6,
+        3,
+        6
+      ],
+      "post_lineages": 89,
+      "post_occurrences": 350
+    },
+    {
+      "contains_prior_pointer_material": false,
+      "developmental_lineages": 64,
+      "form_id": "L4|P3-6-3-6|A9|H3",
+      "path": [
+        3,
+        6,
+        3,
+        6
+      ],
+      "post_lineages": 89,
+      "post_occurrences": 341
+    },
+    {
+      "contains_prior_pointer_material": false,
+      "developmental_lineages": 73,
+      "form_id": "L4|P6-3-6-3|A9|H3",
+      "path": [
+        6,
+        3,
+        6,
+        3
+      ],
+      "post_lineages": 87,
+      "post_occurrences": 325
+    },
+    {
+      "contains_prior_pointer_material": false,
+      "developmental_lineages": 73,
+      "form_id": "L5|P3-6-3-6-3|A9|H3",
+      "path": [
+        3,
+        6,
+        3,
+        6,
+        3
+      ],
+      "post_lineages": 86,
+      "post_occurrences": 321
+    },
+    {
+      "contains_prior_pointer_material": false,
+      "developmental_lineages": 85,
+      "form_id": "L3|P3-6-3|A1|H3",
+      "path": [
+        3,
+        6,
+        3
+      ],
+      "post_lineages": 86,
+      "post_occurrences": 194
+    },
+    {
+      "contains_prior_pointer_material": false,
+      "developmental_lineages": 84,
+      "form_id": "L4|P3-3-6-3|A3|H3",
+      "path": [
+        3,
+        3,
+        6,
+        3
+      ],
+      "post_lineages": 85,
+      "post_occurrences": 316
+    },
+    {
+      "contains_prior_pointer_material": false,
+      "developmental_lineages": 55,
+      "form_id": "L5|P6-3-6-3-6|A9|H3",
+      "path": [
+        6,
+        3,
+        6,
+        3,
+        6
+      ],
+      "post_lineages": 85,
+      "post_occurrences": 301
+    },
+    {
+      "contains_prior_pointer_material": false,
+      "developmental_lineages": 84,
+      "form_id": "L5|P3-3-6-3-6|A3|H3",
+      "path": [
+        3,
+        3,
+        6,
+        3,
+        6
+      ],
+      "post_lineages": 85,
+      "post_occurrences": 253
+    },
+    {
+      "contains_prior_pointer_material": false,
+      "developmental_lineages": 88,
+      "form_id": "L3|P3-6-3|A8|H3",
+      "path": [
+        3,
+        6,
+        3
+      ],
+      "post_lineages": 85,
+      "post_occurrences": 237
+    },
+    {
+      "contains_prior_pointer_material": false,
+      "developmental_lineages": 76,
+      "form_id": "L3|P3-6-3|A2|H3",
+      "path": [
+        3,
+        6,
+        3
+      ],
+      "post_lineages": 85,
+      "post_occurrences": 220
+    },
+    {
+      "contains_prior_pointer_material": false,
+      "developmental_lineages": 87,
+      "form_id": "L4|P6-3-6-3|A8|H3",
+      "path": [
+        6,
+        3,
+        6,
+        3
+      ],
+      "post_lineages": 84,
+      "post_occurrences": 212
+    },
+    {
+      "contains_prior_pointer_material": false,
+      "developmental_lineages": 87,
+      "form_id": "L5|P3-6-3-6-3|A8|H3",
+      "path": [
+        3,
+        6,
+        3,
+        6,
+        3
+      ],
+      "post_lineages": 84,
+      "post_occurrences": 212
+    },
+    {
+      "contains_prior_pointer_material": false,
+      "developmental_lineages": 87,
+      "form_id": "L3|P6-3-6|A8|H3",
+      "path": [
+        6,
+        3,
+        6
+      ],
+      "post_lineages": 84,
+      "post_occurrences": 198
+    },
+    {
+      "contains_prior_pointer_material": false,
+      "developmental_lineages": 87,
+      "form_id": "L4|P3-6-3-6|A8|H3",
+      "path": [
+        3,
+        6,
+        3,
+        6
+      ],
+      "post_lineages": 84,
+      "post_occurrences": 198
+    },
+    {
+      "contains_prior_pointer_material": false,
+      "developmental_lineages": 87,
+      "form_id": "L3|P3-3-6|A3|H3",
+      "path": [
+        3,
+        3,
+        6
+      ],
+      "post_lineages": 83,
+      "post_occurrences": 319
+    },
+    {
+      "contains_prior_pointer_material": false,
+      "developmental_lineages": 70,
+      "form_id": "L4|P6-3-6-3|A2|H3",
+      "path": [
+        6,
+        3,
+        6,
+        3
+      ],
+      "post_lineages": 83,
+      "post_occurrences": 195
+    },
+    {
+      "contains_prior_pointer_material": false,
+      "developmental_lineages": 69,
+      "form_id": "L5|P3-6-3-6-3|A2|H3",
+      "path": [
+        3,
+        6,
+        3,
+        6,
+        3
+      ],
+      "post_lineages": 83,
+      "post_occurrences": 195
+    },
+    {
+      "contains_prior_pointer_material": false,
+      "developmental_lineages": 72,
+      "form_id": "L3|P6-3-6|A2|H3",
+      "path": [
+        6,
+        3,
+        6
+      ],
+      "post_lineages": 83,
+      "post_occurrences": 190
+    },
+    {
+      "contains_prior_pointer_material": false,
+      "developmental_lineages": 72,
+      "form_id": "L4|P3-6-3-6|A2|H3",
+      "path": [
+        3,
+        6,
+        3,
+        6
+      ],
+      "post_lineages": 83,
+      "post_occurrences": 190
+    },
+    {
+      "contains_prior_pointer_material": false,
+      "developmental_lineages": 57,
+      "form_id": "L3|P6-3-3|A6|H3",
+      "path": [
+        6,
+        3,
+        3
+      ],
+      "post_lineages": 82,
+      "post_occurrences": 200
+    },
+    {
+      "contains_prior_pointer_material": false,
+      "developmental_lineages": 57,
+      "form_id": "L4|P3-6-3-3|A6|H3",
+      "path": [
+        3,
+        6,
+        3,
+        3
+      ],
+      "post_lineages": 82,
+      "post_occurrences": 199
+    },
+    {
+      "contains_prior_pointer_material": false,
+      "developmental_lineages": 84,
+      "form_id": "L3|P6-3-6|A1|H3",
+      "path": [
+        6,
+        3,
+        6
+      ],
+      "post_lineages": 82,
+      "post_occurrences": 182
+    },
+    {
+      "contains_prior_pointer_material": false,
+      "developmental_lineages": 84,
+      "form_id": "L4|P3-6-3-6|A1|H3",
+      "path": [
+        3,
+        6,
+        3,
+        6
+      ],
+      "post_lineages": 82,
+      "post_occurrences": 181
+    },
+    {
+      "contains_prior_pointer_material": false,
+      "developmental_lineages": 73,
+      "form_id": "L3|P3-3-3|A3|H3",
+      "path": [
+        3,
+        3,
+        3
+      ],
+      "post_lineages": 81,
+      "post_occurrences": 486
+    },
+    {
+      "contains_prior_pointer_material": false,
+      "developmental_lineages": 55,
+      "form_id": "L5|P6-3-6-3-3|A6|H3",
+      "path": [
+        6,
+        3,
+        6,
+        3,
+        3
+      ],
+      "post_lineages": 81,
+      "post_occurrences": 176
+    },
+    {
+      "contains_prior_pointer_material": false,
+      "developmental_lineages": 83,
+      "form_id": "L4|P3-3-3-6|A3|H3",
+      "path": [
+        3,
+        3,
+        3,
+        6
+      ],
+      "post_lineages": 81,
+      "post_occurrences": 170
+    },
+    {
+      "contains_prior_pointer_material": false,
+      "developmental_lineages": 83,
+      "form_id": "L5|P3-3-3-6-3|A3|H3",
+      "path": [
+        3,
+        3,
+        3,
+        6,
+        3
+      ],
+      "post_lineages": 81,
+      "post_occurrences": 169
+    }
+  ],
+  "interpretation": "NO CONFIRMED NEW INGRESSING FORM UNDER P3.17. The exploratory discovery stage produced one or more novel post-development candidates, but none met the complete held-out history-dependence and non-echo confirmation rule. Candidate and return atlases remain descriptive.",
+  "primary": {
+    "candidate_count": 13,
+    "confirmation_developmental_repertoire_size": 2998,
+    "confirmed_count": 0,
+    "confirmed_form_ids": [],
+    "discovery_developmental_repertoire_size": 3131,
+    "held": false,
+    "outcome": "NO CONFIRMED NEW INGRESSING FORM UNDER P3.17"
+  },
+  "provenance": {
+    "atlas_json_sha256": "95f1a8ed5c766f94f1126e1575aca1979a7afc9341d1381ddd6fe08ac6d736c3",
+    "atlas_md_sha256": "08f45733879495269da56020ddcd751695c009b5240359e3e0a019bc3db8dc1e",
+    "controls_sha256": "44623d0c5d621026adfcb848547602085f25856e7b2eb58abdfe632383076ff7",
+    "dynamic_engine_sha256": "ac482882858c1e47f578523452eff0bc20aa82b5978299c9c8808ff6127c5cd6",
+    "full_numogram_sha256": "b6edbe76ab4929e93c01059fb56cef900effa9bca1cec78d0039eafb8fbebdf8",
+    "lineages_sha256": "5624c221f1949520fb15d2b92ee61751daf50eaf89018e0c7a990f66bd76547b",
+    "registration_sha256": "59f9fa864f1a48d75b36ca6cb69cdff17fbdbb25ef1cbfc0be0a40347262f55e",
+    "runner_sha256": "1a8fd1961b897ec970c7d6987bd9f3502c82221f13bace683563e4dafdb820c3"
+  },
+  "registration": {
+    "confirmation_lineages": 96,
+    "development_steps": 128,
+    "discovery_lineages": 96,
+    "discovery_min_lineages": 8,
+    "discovery_min_occurrences": 12,
+    "form_lengths": [
+      3,
+      4,
+      5
+    ],
+    "max_candidates": 20,
+    "post_steps": 128,
+    "rewired_controls": 24
+  },
+  "schema": "amelia-p317-ingression-canalization-v1"
+}
