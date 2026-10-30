@@ -6,7 +6,7 @@ change topology, gate selection, phase velocity, tick count, or dwell rules.
 """
 from __future__ import annotations
 
-from typing import Dict, object as _object  # type: ignore
+from typing import Dict
 
 from DynamicNumogram import IntegratedMemorySystem
 
