@@ -5,6 +5,7 @@ on:
     branches: ["main"]
     paths:
       - "Numogram.py"
+      - "FullNumogram.py"
       - "P314RExperiment.py"
       - "P314RExperimentBridge.kt"
       - "P314RMainActivity.kt"
@@ -46,6 +47,7 @@ jobs:
 
           for source in \
             Numogram.py \
+            FullNumogram.py \
             P314RExperiment.py \
             P314RExperimentBridge.kt \
             P314RMainActivity.kt \
@@ -157,6 +159,8 @@ jobs:
             app/src/main/res/values
 
           cp Numogram.py app/src/main/python/Numogram.py
+
+          cp FullNumogram.py app/src/main/python/FullNumogram.py
           cp P314RExperiment.py app/src/main/python/P314RExperiment.py
           cp P314RExperimentBridge.kt \
             app/src/main/java/com/amelia/exp1r/P314RExperimentBridge.kt
@@ -354,6 +358,7 @@ jobs:
 
           sha256sum \
             Numogram.py \
+            FullNumogram.py \
             P314RExperiment.py \
             P314RExperimentBridge.kt \
             P314RMainActivity.kt \
