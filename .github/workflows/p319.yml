@@ -1,0 +1,79 @@
+name: P3.19 Hysteretic Competence Deconfounding
+
+on:
+  push:
+    branches: ["p319-hysteretic-competence-20261030"]
+    paths:
+      - "FullNumogram.py"
+      - "experiments/p316/DynamicNumogram.py"
+      - "experiments/p317/run.py"
+      - "experiments/p319/**"
+      - ".github/workflows/p319.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: p319-hysteretic-competence
+  cancel-in-progress: false
+
+jobs:
+  assay:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: p319-hysteretic-competence-20261030
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Preflight
+        run: |
+          set -euo pipefail
+          test "$(sha256sum FullNumogram.py | cut -d' ' -f1)" = "b6edbe76ab4929e93c01059fb56cef900effa9bca1cec78d0039eafb8fbebdf8"
+          test "$(sha256sum experiments/p316/DynamicNumogram.py | cut -d' ' -f1)" = "ac482882858c1e47f578523452eff0bc20aa82b5978299c9c8808ff6127c5cd6"
+          python -m py_compile experiments/p319/run.py
+          python - <<'PY'
+          import sys
+          sys.path.insert(0,"experiments/p319")
+          import run
+          m=run.ClampMemory(.8)
+          r=m.read_memory_bias()
+          assert r.hysteresis_tension==.8 and r.bias_vector==[0.0]*10
+          m.append({"targetZone":3,"strainRelaxation":.025,"fluxDelta":.1,"phaseCoherence":.5})
+          r=m.read_memory_bias()
+          assert m.events==[] and m.zone_strain_history==[0.0]*10 and r.hysteresis_tension==.8
+          synthetic=[
+            {"zone":1,"top_activation":4},
+            {"zone":2,"top_activation":5},
+            {"zone":3,"top_activation":2},
+            {"zone":6,"top_activation":0},
+          ]
+          assert run.score(synthetic)["present"]
+          print("P3.19 preflight PASS")
+          PY
+      - name: Record provenance
+        run: |
+          mkdir -p experiments/p319/results
+          sha256sum FullNumogram.py experiments/p316/DynamicNumogram.py experiments/p317/run.py experiments/p319/REGISTRATION.md experiments/p319/run.py > experiments/p319/results/PRE_RUN_SHA256SUMS.txt
+      - name: Run first registered assay
+        run: python experiments/p319/run.py --out experiments/p319/results | tee experiments/p319/results/console-summary.json
+      - name: Display report
+        run: cat experiments/p319/results/REPORT.md
+      - name: Commit compact result
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add experiments/p319/results/REPORT.md experiments/p319/results/summary.json experiments/p319/results/PRE_RUN_SHA256SUMS.txt experiments/p319/results/console-summary.json
+          if ! git diff --cached --quiet; then
+            git commit -m "P3.19: archive first hysteresis deconfounding result [skip ci]"
+            git push origin HEAD:p319-hysteretic-competence-20261030
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: P3.19-hysteretic-competence-evidence
+          path: experiments/p319/results/
+          retention-days: 90
