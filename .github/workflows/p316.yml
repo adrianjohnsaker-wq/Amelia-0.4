@@ -1,0 +1,163 @@
+name: P3.16 Dynamic Numogram Process Morphospace Assay
+
+on:
+  push:
+    branches:
+      - "p316-dynamic-numogram-process-20261030"
+    paths:
+      - "FullNumogram.py"
+      - "src/core/fullNumogram.ts"
+      - "experiments/p316/REGISTRATION.md"
+      - "experiments/p316/DynamicNumogram.py"
+      - "experiments/p316/run.py"
+      - "experiments/p316/orange_reference/**"
+      - ".github/workflows/p316.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  assay:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout registered branch
+        uses: actions/checkout@v5
+        with:
+          ref: p316-dynamic-numogram-process-20261030
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Validate Python syntax
+        run: |
+          set -euo pipefail
+          python -m py_compile \
+            FullNumogram.py \
+            experiments/p316/DynamicNumogram.py \
+            experiments/p316/run.py
+
+      - name: Verify frozen Orange source blobs
+        run: |
+          set -euo pipefail
+          test "$(git hash-object src/core/fullNumogram.ts)" = "edf150c38385bc552fb30e2b6721fb832e47976c"
+          test "$(git hash-object experiments/p316/orange_reference/AmeliaQabbalaInterface.ts)" = "8ba01f679b570abc53fc06e392e795178ab9ee84"
+          test "$(git hash-object experiments/p316/orange_reference/IntegratedMemorySystem.ts)" = "0756536dd82fe0a64eadc21c47c67c41a3b72e0b"
+          test "$(git hash-object experiments/p316/orange_reference/TraitEvolution.ts)" = "5d11159614bab5bb6fc26840c7a232290292587b"
+          test "$(git hash-object experiments/p316/orange_reference/CognitiveGovernor.ts)" = "57b1387e23c7d36ddfac5a80802ed45fe6dc953e"
+          test "$(git hash-object experiments/p316/orange_reference/ameliaNumogramSubstrateRuntime.ts)" = "1578f9d7bf479c31f6c4ac4fea955c5377d8d48c"
+          echo "Frozen Orange source blobs: PASS"
+
+      - name: Verify dynamic-process and control invariants
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import sys
+          sys.path.insert(0, "experiments/p316")
+          from FullNumogram import FULL_NUMOGRAM_GATES
+          import DynamicNumogram as dyn
+          import run as assay
+
+          assert len(FULL_NUMOGRAM_GATES) == 29
+          assert dyn.self_loop_count(FULL_NUMOGRAM_GATES) == 4
+
+          canonical_degree = dyn.degree_signature(FULL_NUMOGRAM_GATES)
+          canonical_edges = dyn.edge_set(FULL_NUMOGRAM_GATES)
+
+          # Canonical Warp terminality: all exits from 3 and 6 remain inside {3,6}.
+          warp_exits = {
+              (int(g["source"]), int(g["target"]))
+              for g in FULL_NUMOGRAM_GATES
+              if int(g["source"]) in (3, 6)
+          }
+          assert warp_exits
+          assert all(target in (3, 6) for _, target in warp_exits)
+
+          warp_open = dyn.warp_open_gates()
+          assert dyn.degree_signature(warp_open) == canonical_degree
+          assert dyn.self_loop_count(warp_open) == 4
+          assert (3, 1) in dyn.edge_set(warp_open)
+          assert (4, 6) in dyn.edge_set(warp_open)
+
+          for i in range(8):
+              rewired = assay.rewired_gates(assay.REWIRE_SEED_BASE + i)
+              assert dyn.degree_signature(rewired) == canonical_degree
+              assert dyn.self_loop_count(rewired) == 4
+              assert dyn.edge_set(rewired) != canonical_edges
+
+          # Equation smoke-check only; no registered morphospace world is executed.
+          p = dyn.DynamicNumogramProcess(current_zone=0)
+          before_phase = float(p.zones[9]["phaseAngle"])
+          out = p.step(5)
+          assert out["from_zone"] == 0
+          assert len(p.memory.events) == 1
+          assert p.step_count == 1
+          assert float(p.zones[9]["phaseAngle"]) != before_phase
+          assert sum(p.zone_visit_counts) == 2
+
+          p_cut = dyn.DynamicNumogramProcess(current_zone=0, pfm_feedback=False)
+          first = p_cut.step(5)
+          assert all(value == 0.0 for value in first["memory_bias"])
+
+          print("P3.16 dynamic-process invariants: PASS")
+          print("Canonical degree signature:", canonical_degree)
+          print("Canonical Warp exits:", sorted(warp_exits))
+          PY
+
+      - name: Record pre-run provenance
+        run: |
+          set -euo pipefail
+          mkdir -p experiments/p316/results
+          sha256sum \
+            src/core/fullNumogram.ts \
+            FullNumogram.py \
+            experiments/p316/REGISTRATION.md \
+            experiments/p316/DynamicNumogram.py \
+            experiments/p316/run.py \
+            experiments/p316/orange_reference/AmeliaQabbalaInterface.ts \
+            experiments/p316/orange_reference/IntegratedMemorySystem.ts \
+            experiments/p316/orange_reference/TraitEvolution.ts \
+            experiments/p316/orange_reference/CognitiveGovernor.ts \
+            experiments/p316/orange_reference/ameliaNumogramSubstrateRuntime.ts \
+            > experiments/p316/results/PRE_RUN_SHA256SUMS.txt
+          cat experiments/p316/results/PRE_RUN_SHA256SUMS.txt
+
+      - name: Run registered P3.16 assay
+        run: |
+          set -euo pipefail
+          python experiments/p316/run.py --out experiments/p316/results \
+            | tee experiments/p316/results/console-summary.json
+
+      - name: Display P3.16 report
+        run: |
+          set -euo pipefail
+          cat experiments/p316/results/REPORT.md
+
+      - name: Commit compact P3.16 result
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            experiments/p316/results/REPORT.md \
+            experiments/p316/results/summary.json \
+            experiments/p316/results/SHA256SUMS.json \
+            experiments/p316/results/PRE_RUN_SHA256SUMS.txt \
+            experiments/p316/results/controls.json \
+            experiments/p316/results/console-summary.json
+          if git diff --cached --quiet; then
+            echo "No compact result changes to commit."
+          else
+            git commit -m "P3.16: archive registered dynamic-process assay result [skip ci]"
+            git push origin HEAD:p316-dynamic-numogram-process-20261030
+          fi
+
+      - name: Upload complete P3.16 evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: P3.16-dynamic-numogram-process-evidence
+          path: experiments/p316/results/
+          retention-days: 90
