@@ -45,7 +45,6 @@ jobs:
               FULL_NUMOGRAM_GATES,
               ORANGE_SOURCE_BLOB_SHA,
               ccru_edges,
-              degree_signature if False else digital_root,
           )
 
           assert ORANGE_SOURCE_BLOB_SHA == "edf150c38385bc552fb30e2b6721fb832e47976c"
