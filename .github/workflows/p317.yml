@@ -1,0 +1,118 @@
+name: P3.17 Ingression Developmental Canalization
+
+on:
+  push:
+    branches:
+      - "p317-ingression-canalization-20261030"
+    paths:
+      - "FullNumogram.py"
+      - "experiments/p316/DynamicNumogram.py"
+      - "experiments/p317/REGISTRATION.md"
+      - "experiments/p317/run.py"
+      - ".github/workflows/p317.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: p317-ingression-canalization
+  cancel-in-progress: false
+
+jobs:
+  assay:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout registered branch
+        uses: actions/checkout@v4
+        with:
+          ref: p317-ingression-canalization-20261030
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Verify frozen engine and syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(sha256sum FullNumogram.py | cut -d' ' -f1)" = "b6edbe76ab4929e93c01059fb56cef900effa9bca1cec78d0039eafb8fbebdf8"
+          test "$(sha256sum experiments/p316/DynamicNumogram.py | cut -d' ' -f1)" = "ac482882858c1e47f578523452eff0bc20aa82b5978299c9c8808ff6127c5cd6"
+          python -m py_compile             FullNumogram.py             experiments/p316/DynamicNumogram.py             experiments/p317/run.py
+          echo "Frozen P3.16 engine and P3.17 syntax: PASS"
+
+      - name: Preflight registered invariants without registered lineages
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import sys
+          sys.path.insert(0, "experiments/p317")
+          import run
+
+          # Non-registered seed only.
+          dev, post = run.make_tapes(999001)
+          assert len(dev) == run.DEV_STEPS
+          assert len(post) == run.POST_STEPS
+          assert not (run.ngrams(dev, 4) & run.ngrams(post, 4))
+
+          perm = run.fixed_derangement(96, 999002)
+          assert len(perm) == 96
+          assert all(i != perm[i] for i in range(96))
+
+          canonical_degree = run.degree_signature(run.FULL_NUMOGRAM_GATES)
+          canonical_loops = run.self_loop_count(run.FULL_NUMOGRAM_GATES)
+          for i in range(4):
+              gates = run.rewired_gates(999100 + i)
+              assert run.degree_signature(gates) == canonical_degree
+              assert run.self_loop_count(gates) == canonical_loops
+              assert run.edge_set(gates) != run.edge_set(run.FULL_NUMOGRAM_GATES)
+
+          # No seed 3170000..3170191 is executed here.
+          print("P3.17 preflight: PASS")
+          PY
+
+      - name: Record pre-run provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p experiments/p317/results
+          sha256sum             FullNumogram.py             experiments/p316/DynamicNumogram.py             experiments/p317/REGISTRATION.md             experiments/p317/run.py             > experiments/p317/results/PRE_RUN_SHA256SUMS.txt
+          cat experiments/p317/results/PRE_RUN_SHA256SUMS.txt
+
+      - name: Run first complete registered P3.17 assay
+        shell: bash
+        run: |
+          set -euo pipefail
+          python experiments/p317/run.py --out experiments/p317/results             | tee experiments/p317/results/console-summary.json
+
+      - name: Display result and atlas
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat experiments/p317/results/REPORT.md
+          echo
+          sed -n '1,320p' experiments/p317/results/ATLAS.md
+
+      - name: Commit compact sealed record
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add             experiments/p317/results/REPORT.md             experiments/p317/results/ATLAS.md             experiments/p317/results/atlas.json             experiments/p317/results/summary.json             experiments/p317/results/controls.json             experiments/p317/results/SHA256SUMS.json             experiments/p317/results/PRE_RUN_SHA256SUMS.txt             experiments/p317/results/console-summary.json
+          if git diff --cached --quiet; then
+            echo "No compact result changes to commit."
+          else
+            git commit -m "P3.17: archive first registered ingression result [skip ci]"
+            git push origin HEAD:p317-ingression-canalization-20261030
+          fi
+
+      - name: Upload complete P3.17 evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: P3.17-ingression-developmental-canalization-evidence
+          path: experiments/p317/results/
+          retention-days: 90
