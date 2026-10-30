@@ -60,7 +60,10 @@ jobs:
           mkdir -p experiments/warp_t2/results
           sha256sum FullNumogram.py experiments/p316/DynamicNumogram.py experiments/p317/run.py experiments/warp_t1/run.py experiments/warp_t2/REGISTRATION.md experiments/warp_t2/AMENDMENT_1.md experiments/warp_t2/AMENDMENT_2.md experiments/warp_t2/AMENDMENT_3.md experiments/warp_t2/run.py > experiments/warp_t2/results/PRE_RUN_SHA256SUMS.txt
       - name: Run first registered WARP-T2 assay
-        run: python experiments/warp_t2/run.py --out experiments/warp_t2/results | tee experiments/warp_t2/results/console-summary.json
+        shell: bash
+        run: |
+          set -euo pipefail
+          python experiments/warp_t2/run.py --out experiments/warp_t2/results | tee experiments/warp_t2/results/console-summary.json
       - name: Display report
         run: |
           cat experiments/warp_t2/results/REPORT.md
