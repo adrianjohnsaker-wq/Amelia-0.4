@@ -34,7 +34,7 @@ PROBE_BASE=3225000
 PERM_BASE=3227000
 DRAWS=50000
 WINDOW_KEYS=("zone_entropy","transition_entropy","distinct_zones","distinct_4grams","non_echo_breadth","warp_occupancy","bias_mag","activation_hhi","hysteresis","strain_mass")
-ARMS=("WARP_FULL_TRACE","WARP_PFM_TRACE","WARP_TENSOR_TRACE","WARP_TRACE_RESET","ENTRY_ONLY_TRACE","TOPOLOGY_ONLY_TRACE","NONWARP_FULL_TRACE")
+ARMS=("PRE_ENTRY_BASELINE_TRACE","WARP_FULL_TRACE","WARP_PFM_TRACE","WARP_TENSOR_TRACE","WARP_TRACE_RESET","ENTRY_ONLY_TRACE","TOPOLOGY_ONLY_TRACE","NONWARP_FULL_TRACE")
 NONWARP_ZONES=(0,1,2,4,5,7,8,9)
 
 def sha256_file(path):
@@ -69,8 +69,12 @@ def passage_real(pre,input_zone,target,rest4):
 def passage_forced(pre,inputs,targets,first_normal=False):
     p=copy.deepcopy(pre)
     for j,(sym,target) in enumerate(zip(inputs,targets)):
-        mode="normal" if first_normal and j==0 else "topology_only"
-        wt1.forced_step(p,int(sym),int(target),mode)
+        if first_normal and j==0:
+            wt1.forced_step(p,int(sym),int(target),"normal")
+        else:
+            memory_before=copy.deepcopy(p.memory)
+            wt1.forced_step(p,int(sym),int(target),"topology_only")
+            p.memory=memory_before
     return p
 
 def passage_nonwarp(pre,inputs):
@@ -205,3 +209,172 @@ def motif_atlas(rows):
         for m,starts in seen.items():counts[m].append((row["lineage"],starts))
     ranked=sorted(counts.items(),key=lambda kv:(-len(kv[1]),kv[0]))[:30]
     return [{"motif":"-".join(map(str,m)),"lineage_count":len(xs),"lineages":[{"lineage":li,"starts":st} for li,st in xs]} for m,xs in ranked]
+
+
+def build_lineage(index):
+    seed=SEED_BASE+index
+    e=wt1.first_entry(seed)
+    if e is None or len(e["remaining"])<4:
+        return {"lineage":"WT2-{:03d}".format(index),"seed":seed,"eligible":False}
+    inputs=[int(e["input"])]+[int(x) for x in e["remaining"][:4]]
+    real,targets=passage_real(e["pre"],inputs[0],e["target"],inputs[1:])
+    entry=passage_forced(e["pre"],inputs,targets,True)
+    topo=passage_forced(e["pre"],inputs,targets,False)
+    matched=None
+    try:
+        matched=passage_nonwarp(e["pre"],inputs)
+    except Exception:
+        matched=None
+
+    probe=release_probe(index,inputs)
+    pre=e["pre"]
+    blank=IntegratedMemorySystem()
+    baseline_tensor=list(pre.deformation_tensor)
+    arms={}
+
+    slow_specs={
+      "PRE_ENTRY_BASELINE_TRACE":(pre.memory,baseline_tensor),
+      "WARP_FULL_TRACE":(real.memory,real.deformation_tensor),
+      "WARP_PFM_TRACE":(real.memory,baseline_tensor),
+      "WARP_TENSOR_TRACE":(pre.memory,real.deformation_tensor),
+      "WARP_TRACE_RESET":(blank,[0.1]*10),
+      "ENTRY_ONLY_TRACE":(entry.memory,entry.deformation_tensor),
+      "TOPOLOGY_ONLY_TRACE":(topo.memory,topo.deformation_tensor),
+    }
+    if matched is not None:
+        slow_specs["NONWARP_FULL_TRACE"]=(matched.memory,matched.deformation_tensor)
+
+    for arm,(mem,tensor) in slow_specs.items():
+        shell=release_shell(pre,mem,tensor,seed)
+        arms[arm]=run_release(shell,probe)
+
+    return {
+      "lineage":"WT2-{:03d}".format(index),
+      "seed":seed,
+      "eligible":True,
+      "matched_eligible":matched is not None,
+      "entry_step":int(e["index"]),
+      "entry_source":int(pre.current_zone),
+      "entry_target":int(e["target"]),
+      "passage_inputs":inputs,
+      "passage_targets":targets,
+      "probe":probe,
+      "arms":arms,
+    }
+
+def select(rows,arm_a,arm_b,window="late",matched=False):
+    eligible=[r for r in rows if r["eligible"] and (not matched or r["matched_eligible"]) and arm_a in r["arms"] and arm_b in r["arms"]]
+    return eligible,[r["arms"][arm_a][window] for r in eligible],[r["arms"][arm_b][window] for r in eligible]
+
+def report(result):
+    p=result["portable"]; beyond=result["passage_beyond_entry"]; carr=result["carriage"]; valid=result["topology_validity"]
+    lines=[
+      "# WARP-T2 — Portable Passage Trace Result","",
+      "- eligible natural-entry lineages: {}/{}".format(result["eligible_lineages"],N),
+      "- eligible matched-nonWarp lineages: {}".format(result["matched_lineages"]),
+      "- portable Warp-passage transformation: **{}**".format("PASS" if p["held"] else "FAIL"),
+      "- passage contributes beyond entry: **{}**".format("PASS" if beyond["held"] else "FAIL"),
+      "- PFM carriage: **{}**".format("PASS" if carr["pfm"]["held"] else "FAIL"),
+      "- tensor carriage: **{}**".format("PASS" if carr["tensor"]["held"] else "FAIL"),
+      "- topology-only validity: **{}**".format("PASS" if valid["valid"] else "FAIL / INTERPRETATION INVALIDATED"),"",
+      "## Portable comparison","",
+      "- WARP_FULL vs NONWARP_FULL late multivariate p: {:.8g}".format(p["warp_vs_nonwarp"]["p"]),
+      "- WARP_FULL vs PRE_ENTRY_BASELINE late multivariate p: {:.8g}".format(p["warp_vs_baseline"]["p"]),"",
+      "## Passage beyond entry","",
+      "- WARP_FULL vs ENTRY_ONLY late multivariate p: {:.8g}".format(beyond["multivariate"]["p"]),"",
+      "## Carriage","",
+      "- PFM closeness advantage: {:.8f}, p={:.8g}".format(carr["pfm"]["mean_advantage"],carr["pfm"]["p_upper"]),
+      "- tensor closeness advantage: {:.8f}, p={:.8g}".format(carr["tensor"]["mean_advantage"],carr["tensor"]["p_upper"]),"",
+      "## Interpretation","",result["interpretation"],""
+    ]
+    return "\n".join(lines)
+
+def main():
+    ap=argparse.ArgumentParser(); ap.add_argument("--out",default="experiments/warp_t2/results"); args=ap.parse_args()
+    os.makedirs(args.out,exist_ok=True)
+    existing=os.path.join(args.out,"summary.json")
+    if os.path.exists(existing):
+        print(open(existing,encoding="utf-8").read()); return 0
+
+    rows=[build_lineage(i) for i in range(N)]
+    eligible=sum(1 for r in rows if r["eligible"])
+    matched=sum(1 for r in rows if r["eligible"] and r["matched_eligible"])
+
+    # Primary: Warp trace versus matched non-Warp trace on matched-eligible lineages.
+    r_m,wf_l,nw_l=select(rows,"WARP_FULL_TRACE","NONWARP_FULL_TRACE","late",True)
+    mv_nonwarp=multivar(wf_l,nw_l,PERM_BASE,PERM_BASE+100)
+    _,wf_e,nw_e=select(rows,"WARP_FULL_TRACE","NONWARP_FULL_TRACE","early",True)
+
+    # Necessity of incremental passage trace relative to pre-entry mature slow state.
+    r_b,wf_b,base_b=select(rows,"WARP_FULL_TRACE","PRE_ENTRY_BASELINE_TRACE","late",False)
+    mv_base=multivar(wf_b,base_b,PERM_BASE+1,PERM_BASE+120)
+
+    surviving=[k for k,v in mv_nonwarp["components"].items()
+               if v["holm_p"]<=.05 and
+               statistics.mean(a[k]-b[k] for a,b in zip(wf_e,nw_e))*v["mean_difference"]>0]
+    portable_pre=(mv_nonwarp["p"]<=.01 and bool(surviving) and mv_base["p"]<=.01)
+
+    # Passage beyond the entry event.
+    _,wf_entry,entry_l=select(rows,"WARP_FULL_TRACE","ENTRY_ONLY_TRACE","late",False)
+    mv_entry=multivar(wf_entry,entry_l,PERM_BASE+2,PERM_BASE+140)
+    beyond_survivors=[k for k,v in mv_entry["components"].items() if v["holm_p"]<=.05]
+    beyond=mv_entry["p"]<=.01 and bool(beyond_survivors)
+
+    # Topology-only passage must leave no portable slow trace beyond pre-entry baseline.
+    _,top_l,base_t=select(rows,"TOPOLOGY_ONLY_TRACE","PRE_ENTRY_BASELINE_TRACE","late",False)
+    mv_top=multivar(top_l,base_t,PERM_BASE+3,PERM_BASE+160)
+    invalid_top=(mv_top["p"]<=.01 or any(v["holm_p"]<=.05 for v in mv_top["components"].values()))
+
+    # Incremental PFM/tensor carriers.
+    _,full_c,base_c=select(rows,"WARP_FULL_TRACE","PRE_ENTRY_BASELINE_TRACE","late",False)
+    _,_,pfm_c=select(rows,"WARP_FULL_TRACE","WARP_PFM_TRACE","late",False)
+    _,_,tensor_c=select(rows,"WARP_FULL_TRACE","WARP_TENSOR_TRACE","late",False)
+    pfm_car=carriage(full_c,base_c,pfm_c,PERM_BASE+200)
+    tensor_car=carriage(full_c,base_c,tensor_c,PERM_BASE+201)
+    pfm_car["held"]=pfm_car["mean_advantage"]>0 and pfm_car["p_upper"]<=.01
+    tensor_car["held"]=tensor_car["mean_advantage"]>0 and tensor_car["p_upper"]<=.01
+
+    portable=portable_pre and not invalid_top
+
+    if portable:
+        interp="A finite canonical 3::6 passage leaves a downstream transformation that survives common-state release under nonterminal Warp-open dynamics."
+    else:
+        interp="WARP-T2 does not establish a portable Warp-passage transformation under the registered common-state release assay."
+    if beyond: interp+=" The finite passage contributes beyond the entry event alone."
+    else: interp+=" The finite passage was not shown to add a late effect beyond the entry event alone."
+    if pfm_car["held"]: interp+=" Incremental PFM carries a significant share of the portable response geometry."
+    if tensor_car["held"]: interp+=" Incremental tensor deformation carries a significant share of the portable response geometry."
+    if invalid_top: interp+=" The topology-only validity control changed downstream response, so the portable interpretation is invalidated."
+
+    atlas=motif_atlas(rows)
+    result={
+      "schema":"amelia-warp-t2-v1",
+      "eligible_lineages":eligible,
+      "matched_lineages":matched,
+      "portable":{"held":portable,"pre_validity_held":portable_pre,"surviving_components":surviving,"warp_vs_nonwarp":mv_nonwarp,"warp_vs_baseline":mv_base},
+      "passage_beyond_entry":{"held":beyond,"surviving_components":beyond_survivors,"multivariate":mv_entry},
+      "carriage":{"pfm":pfm_car,"tensor":tensor_car},
+      "topology_validity":{"valid":not invalid_top,"multivariate":mv_top},
+      "atlas":atlas,
+      "interpretation":interp,
+      "provenance":{
+        "registration_sha256":sha256_file("experiments/warp_t2/REGISTRATION.md"),
+        "amendment1_sha256":sha256_file("experiments/warp_t2/AMENDMENT_1.md"),
+        "amendment2_sha256":sha256_file("experiments/warp_t2/AMENDMENT_2.md"),
+        "amendment3_sha256":sha256_file("experiments/warp_t2/AMENDMENT_3.md"),
+        "runner_sha256":sha256_file("experiments/warp_t2/run.py"),
+        "engine_sha256":sha256_file("experiments/p316/DynamicNumogram.py")
+      }
+    }
+    with open(existing,"w",encoding="utf-8") as h:json.dump(result,h,indent=2,sort_keys=True)
+    with gzip.open(os.path.join(args.out,"lineages.jsonl.gz"),"wt",encoding="utf-8") as h:
+        for row in rows:h.write(json.dumps(row,sort_keys=True,separators=(",",":"))+"\n")
+    with open(os.path.join(args.out,"ATLAS.md"),"w",encoding="utf-8") as h:
+        h.write("# WARP-T2 — Post-release Non-echo Motif Atlas\n\n")
+        for x in atlas:
+            h.write("- {}: {} lineages\n".format(x["motif"],x["lineage_count"]))
+    with open(os.path.join(args.out,"REPORT.md"),"w",encoding="utf-8") as h:h.write(report(result))
+    print(json.dumps({k:result[k] for k in ("eligible_lineages","matched_lineages","portable","passage_beyond_entry","carriage","topology_validity","interpretation")},indent=2,sort_keys=True))
+    return 0
+
+if __name__=="__main__": raise SystemExit(main())
