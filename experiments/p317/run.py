@@ -1002,3 +1002,261 @@ def report_markdown(result: Dict[str, object]) -> str:
         "No secondary or return-form result rescues failure of the primary ingression criterion.",
         "",
     ])
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--out", default="experiments/p317/results")
+    args = parser.parse_args()
+    os.makedirs(args.out, exist_ok=True)
+
+    discovery_seeds = [
+        LINEAGE_SEED_BASE + i
+        for i in range(DISCOVERY_COUNT)
+    ]
+    confirm_seeds = [
+        LINEAGE_SEED_BASE + DISCOVERY_COUNT + i
+        for i in range(CONFIRM_COUNT)
+    ]
+
+    discovery_entries = develop_entries(discovery_seeds, "D")
+    run_focal_arms(
+        discovery_entries,
+        HISTORY_PERMUTATION_SEED,
+    )
+
+    candidates, discovery_dev_repertoire = discovery_candidates(
+        discovery_entries
+    )
+
+    confirm_entries = develop_entries(confirm_seeds, "C")
+    run_focal_arms(
+        confirm_entries,
+        HISTORY_PERMUTATION_SEED + 1,
+    )
+
+    candidate_rows = confirm_candidates(
+        candidates,
+        confirm_entries,
+    )
+
+    if candidates:
+        rewired = score_rewired_candidates(
+            candidates,
+            confirm_entries,
+        )
+    else:
+        rewired = {
+            "controllers": [],
+            "per_candidate_counts": {},
+        }
+    add_rewired_to_candidates(candidate_rows, rewired)
+
+    confirmed = [
+        row
+        for row in candidate_rows
+        if bool(row["confirmed_new_ingression_form"])
+    ]
+    primary_held = len(confirmed) > 0
+
+    confirmation_dev_repertoire = set()
+    for entry in confirm_entries:
+        confirmation_dev_repertoire.update(
+            entry["dev_forms"].keys()
+        )
+
+    return_rows = return_forms(confirm_entries)
+
+    lineage_archive_path = os.path.join(
+        args.out,
+        "lineages.jsonl.gz",
+    )
+    write_lineage_archive(
+        lineage_archive_path,
+        discovery_entries,
+        confirm_entries,
+    )
+
+    controls_path = os.path.join(args.out, "controls.json")
+    with open(controls_path, "w", encoding="utf-8") as handle:
+        json.dump({
+            "history_permutation_seed_discovery": HISTORY_PERMUTATION_SEED,
+            "history_permutation_seed_confirmation": HISTORY_PERMUTATION_SEED + 1,
+            "discovery_donor_map": [
+                {
+                    "lineage": entry["lineage"],
+                    "donor": entry["donor_lineage"],
+                }
+                for entry in discovery_entries
+            ],
+            "confirmation_donor_map": [
+                {
+                    "lineage": entry["lineage"],
+                    "donor": entry["donor_lineage"],
+                }
+                for entry in confirm_entries
+            ],
+            "rewired_controllers": rewired["controllers"],
+        }, handle, indent=2, sort_keys=True)
+
+    atlas_payload = {
+        "schema": "amelia-p317-ingression-atlas-v1",
+        "primary_outcome": (
+            "INGRESSION CONFIRMED"
+            if primary_held
+            else "NO CONFIRMED NEW INGRESSING FORM UNDER P3.17"
+        ),
+        "candidate_forms": candidate_rows,
+        "confirmed_form_ids": [
+            row["form_id"]
+            for row in confirmed
+        ],
+        "developmental_return_forms": return_rows,
+        "prior_pointer_paths": [
+            list(path)
+            for path in sorted(PRIOR_POINTER_PATHS)
+        ],
+    }
+    atlas_json_path = os.path.join(args.out, "atlas.json")
+    with open(atlas_json_path, "w", encoding="utf-8") as handle:
+        json.dump(atlas_payload, handle, indent=2, sort_keys=True)
+
+    atlas_md_path = os.path.join(args.out, "ATLAS.md")
+    with open(atlas_md_path, "w", encoding="utf-8") as handle:
+        handle.write(
+            atlas_markdown(
+                candidate_rows,
+                return_rows,
+                primary_held,
+            )
+        )
+
+    if primary_held:
+        interpretation = (
+            "INGRESSION CONFIRMED. At least one form was absent from both "
+            "developmental repertoires, emerged recurrently after perturbation, "
+            "replicated in held-out lineages, and exceeded both history-reset "
+            "and history-permuted controls at the registered familywise threshold. "
+            "This supports a history-conditioned computational ingression effect "
+            "under P3.17; it does not by itself identify an external source."
+        )
+    elif candidate_rows:
+        interpretation = (
+            "NO CONFIRMED NEW INGRESSING FORM UNDER P3.17. The exploratory "
+            "discovery stage produced one or more novel post-development candidates, "
+            "but none met the complete held-out history-dependence and non-echo "
+            "confirmation rule. Candidate and return atlases remain descriptive."
+        )
+    else:
+        interpretation = (
+            "NO CONFIRMED NEW INGRESSING FORM UNDER P3.17. No post-perturbation "
+            "form met the preregistered discovery threshold while remaining absent "
+            "from the discovery developmental repertoire and sufficiently independent "
+            "of the novel sensory tape."
+        )
+
+    result = {
+        "schema": "amelia-p317-ingression-canalization-v1",
+        "primary": {
+            "held": primary_held,
+            "outcome": atlas_payload["primary_outcome"],
+            "candidate_count": len(candidate_rows),
+            "confirmed_count": len(confirmed),
+            "confirmed_form_ids": [
+                row["form_id"]
+                for row in confirmed
+            ],
+            "discovery_developmental_repertoire_size": len(
+                discovery_dev_repertoire
+            ),
+            "confirmation_developmental_repertoire_size": len(
+                confirmation_dev_repertoire
+            ),
+        },
+        "registration": {
+            "discovery_lineages": DISCOVERY_COUNT,
+            "confirmation_lineages": CONFIRM_COUNT,
+            "development_steps": DEV_STEPS,
+            "post_steps": POST_STEPS,
+            "form_lengths": list(FORM_LENGTHS),
+            "discovery_min_lineages": DISCOVERY_MIN_LINEAGES,
+            "discovery_min_occurrences": DISCOVERY_MIN_OCCURRENCES,
+            "max_candidates": MAX_CANDIDATES,
+            "rewired_controls": REWIRE_COUNT,
+        },
+        "candidate_forms": candidate_rows,
+        "developmental_return_forms": return_rows,
+        "interpretation": interpretation,
+        "provenance": {
+            "full_numogram_sha256": sha256_file("FullNumogram.py"),
+            "dynamic_engine_sha256": sha256_file(
+                "experiments/p316/DynamicNumogram.py"
+            ),
+            "registration_sha256": sha256_file(
+                "experiments/p317/REGISTRATION.md"
+            ),
+            "runner_sha256": sha256_file(
+                "experiments/p317/run.py"
+            ),
+            "lineages_sha256": sha256_file(
+                lineage_archive_path
+            ),
+            "controls_sha256": sha256_file(
+                controls_path
+            ),
+            "atlas_json_sha256": sha256_file(
+                atlas_json_path
+            ),
+            "atlas_md_sha256": sha256_file(
+                atlas_md_path
+            ),
+        },
+    }
+
+    summary_path = os.path.join(args.out, "summary.json")
+    with open(summary_path, "w", encoding="utf-8") as handle:
+        json.dump(result, handle, indent=2, sort_keys=True)
+
+    report_path = os.path.join(args.out, "REPORT.md")
+    with open(report_path, "w", encoding="utf-8") as handle:
+        handle.write(report_markdown(result))
+
+    sums = {
+        "summary_sha256": sha256_file(summary_path),
+        "report_sha256": sha256_file(report_path),
+        "atlas_json_sha256": sha256_file(atlas_json_path),
+        "atlas_md_sha256": sha256_file(atlas_md_path),
+        "lineages_sha256": sha256_file(lineage_archive_path),
+        "controls_sha256": sha256_file(controls_path),
+    }
+    with open(
+        os.path.join(args.out, "SHA256SUMS.json"),
+        "w",
+        encoding="utf-8",
+    ) as handle:
+        json.dump(sums, handle, indent=2, sort_keys=True)
+
+    print(json.dumps({
+        "primary": result["primary"],
+        "interpretation": interpretation,
+        "candidates": [
+            {
+                "form_id": row["form_id"],
+                "confirmed": row["confirmed_new_ingression_form"],
+                "discovery_lineages": row["discovery_lineage_count"],
+                "confirm_retained": row["confirm_retained_lineages"],
+                "confirm_reset": row["confirm_reset_lineages"],
+                "confirm_permuted": row["confirm_permuted_lineages"],
+                "p_reset": row["reset_sign_test"]["p_upper"],
+                "p_permuted": row["permuted_sign_test"]["p_upper"],
+            }
+            for row in candidate_rows
+        ],
+        "provenance": result["provenance"],
+    }, indent=2, sort_keys=True))
+
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
