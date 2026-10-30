@@ -1,0 +1,82 @@
+name: WARP-T2 Portable Passage Trace
+
+on:
+  push:
+    branches: ["warp-t2-portable-passage-20261030"]
+    paths:
+      - "FullNumogram.py"
+      - "experiments/p316/DynamicNumogram.py"
+      - "experiments/p317/run.py"
+      - "experiments/warp_t1/run.py"
+      - "experiments/warp_t2/**"
+      - ".github/workflows/warp-t2.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: warp-t2-portable-passage
+  cancel-in-progress: false
+
+jobs:
+  assay:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: warp-t2-portable-passage-20261030
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Preflight
+        run: |
+          set -euo pipefail
+          test "$(sha256sum FullNumogram.py | cut -d' ' -f1)" = "b6edbe76ab4929e93c01059fb56cef900effa9bca1cec78d0039eafb8fbebdf8"
+          test "$(sha256sum experiments/p316/DynamicNumogram.py | cut -d' ' -f1)" = "ac482882858c1e47f578523452eff0bc20aa82b5978299c9c8808ff6127c5cd6"
+          python -m py_compile experiments/warp_t2/run.py
+          python - <<'PY'
+          import copy,sys
+          sys.path.insert(0,"experiments/warp_t2")
+          import run
+          from DynamicNumogram import DynamicNumogramProcess
+          p=DynamicNumogramProcess(current_zone=2)
+          inputs=[3,6,3,6,3]
+          real,targets=run.passage_real(p,inputs[0],3,inputs[1:])
+          assert len(targets)==5
+          entry=run.passage_forced(p,inputs,targets,True)
+          topo=run.passage_forced(p,inputs,targets,False)
+          # topology-only must leave PFM exactly at pre-passage value
+          assert topo.memory.zone_strain_history==p.memory.zone_strain_history
+          assert topo.memory.hysteresis_tension==p.memory.hysteresis_tension
+          shell=run.release_shell(p,p.memory,p.deformation_tensor,999322)
+          assert shell.current_zone not in (3,6)
+          assert any(int(g["source"])==3 and int(g["target"])==1 for g in shell.gates)
+          print("WARP-T2 preflight PASS")
+          PY
+      - name: Record provenance
+        run: |
+          mkdir -p experiments/warp_t2/results
+          sha256sum FullNumogram.py experiments/p316/DynamicNumogram.py experiments/p317/run.py experiments/warp_t1/run.py experiments/warp_t2/REGISTRATION.md experiments/warp_t2/AMENDMENT_1.md experiments/warp_t2/AMENDMENT_2.md experiments/warp_t2/AMENDMENT_3.md experiments/warp_t2/run.py > experiments/warp_t2/results/PRE_RUN_SHA256SUMS.txt
+      - name: Run first registered WARP-T2 assay
+        run: python experiments/warp_t2/run.py --out experiments/warp_t2/results | tee experiments/warp_t2/results/console-summary.json
+      - name: Display report
+        run: |
+          cat experiments/warp_t2/results/REPORT.md
+          cat experiments/warp_t2/results/ATLAS.md
+      - name: Commit compact result
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add experiments/warp_t2/results/REPORT.md experiments/warp_t2/results/ATLAS.md experiments/warp_t2/results/summary.json experiments/warp_t2/results/PRE_RUN_SHA256SUMS.txt experiments/warp_t2/results/console-summary.json
+          if ! git diff --cached --quiet; then
+            git commit -m "WARP-T2: archive first portable passage result [skip ci]"
+            git push origin HEAD:warp-t2-portable-passage-20261030
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: WARP-T2-portable-passage-evidence
+          path: experiments/warp_t2/results/
+          retention-days: 90
