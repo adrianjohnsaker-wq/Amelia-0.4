@@ -194,11 +194,9 @@ jobs:
             app/src/main/res/values
 
           cp Numogram.py \
-            FullNumogram.py \
             app/src/main/python/Numogram.py
 
           cp FullNumogram.py \
-            FullNumogram.py \
             app/src/main/python/FullNumogram.py
           cp ProcessFieldMemory.py \
             app/src/main/python/ProcessFieldMemory.py
