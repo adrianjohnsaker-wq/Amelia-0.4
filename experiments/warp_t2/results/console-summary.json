@@ -1,0 +1,261 @@
+{
+  "carriage": {
+    "pfm": {
+      "held": true,
+      "mean_advantage": 0.9366517479806642,
+      "p_upper": 1.999960000799984e-05
+    },
+    "tensor": {
+      "held": false,
+      "mean_advantage": 0.0,
+      "p_upper": 1.0
+    }
+  },
+  "eligible_lineages": 149,
+  "interpretation": "A finite canonical 3::6 passage leaves a downstream transformation that survives common-state release under nonterminal Warp-open dynamics. The finite passage contributes beyond the entry event alone. Incremental PFM carries a significant share of the portable response geometry.",
+  "matched_lineages": 149,
+  "passage_beyond_entry": {
+    "held": true,
+    "multivariate": {
+      "T": 26.633125471628006,
+      "components": {
+        "activation_hhi": {
+          "holm_p": 0.0001999960000799984,
+          "mean_difference": -0.0005965762000093322,
+          "p_two_sided": 1.999960000799984e-05
+        },
+        "bias_mag": {
+          "holm_p": 0.0001999960000799984,
+          "mean_difference": 0.0018758557046979864,
+          "p_two_sided": 1.999960000799984e-05
+        },
+        "distinct_4grams": {
+          "holm_p": 1.0,
+          "mean_difference": 0.006711409395973154,
+          "p_two_sided": 1.0
+        },
+        "distinct_zones": {
+          "holm_p": 1.0,
+          "mean_difference": -0.006711409395973154,
+          "p_two_sided": 1.0
+        },
+        "hysteresis": {
+          "holm_p": 0.8641027179456411,
+          "mean_difference": 0.0005448406040268462,
+          "p_two_sided": 0.14401711965760686
+        },
+        "non_echo_breadth": {
+          "holm_p": 1.0,
+          "mean_difference": 0.0,
+          "p_two_sided": 1.0
+        },
+        "strain_mass": {
+          "holm_p": 0.0001999960000799984,
+          "mean_difference": 0.2362570594208902,
+          "p_two_sided": 1.999960000799984e-05
+        },
+        "transition_entropy": {
+          "holm_p": 1.0,
+          "mean_difference": -0.001657480519545392,
+          "p_two_sided": 0.879842403151937
+        },
+        "warp_occupancy": {
+          "holm_p": 0.18269634607307852,
+          "mean_difference": 0.003355704697986577,
+          "p_two_sided": 0.02609947801043979
+        },
+        "zone_entropy": {
+          "holm_p": 1.0,
+          "mean_difference": 0.003404331024361856,
+          "p_two_sided": 0.6629867402651947
+        }
+      },
+      "p": 1.999960000799984e-05
+    },
+    "surviving_components": [
+      "bias_mag",
+      "activation_hhi",
+      "strain_mass"
+    ]
+  },
+  "portable": {
+    "held": true,
+    "pre_validity_held": true,
+    "surviving_components": [
+      "bias_mag",
+      "activation_hhi",
+      "strain_mass"
+    ],
+    "warp_vs_baseline": {
+      "T": 45.84233092381747,
+      "components": {
+        "activation_hhi": {
+          "holm_p": 0.0001999960000799984,
+          "mean_difference": -0.0008075129740022811,
+          "p_two_sided": 1.999960000799984e-05
+        },
+        "bias_mag": {
+          "holm_p": 0.0001999960000799984,
+          "mean_difference": 0.002489507130872483,
+          "p_two_sided": 1.999960000799984e-05
+        },
+        "distinct_4grams": {
+          "holm_p": 1.0,
+          "mean_difference": -0.020134228187919462,
+          "p_two_sided": 0.9010019799604008
+        },
+        "distinct_zones": {
+          "holm_p": 1.0,
+          "mean_difference": -0.006711409395973154,
+          "p_two_sided": 1.0
+        },
+        "hysteresis": {
+          "holm_p": 1.0,
+          "mean_difference": 0.00038221476510067154,
+          "p_two_sided": 0.2875742485150297
+        },
+        "non_echo_breadth": {
+          "holm_p": 1.0,
+          "mean_difference": -0.026845637583892617,
+          "p_two_sided": 0.8510629787404252
+        },
+        "strain_mass": {
+          "holm_p": 0.0001999960000799984,
+          "mean_difference": 0.3079331354827975,
+          "p_two_sided": 1.999960000799984e-05
+        },
+        "transition_entropy": {
+          "holm_p": 1.0,
+          "mean_difference": -0.003653429571654062,
+          "p_two_sided": 0.7342053158936821
+        },
+        "warp_occupancy": {
+          "holm_p": 0.07573848523029539,
+          "mean_difference": 0.003984899328859061,
+          "p_two_sided": 0.010819783604327914
+        },
+        "zone_entropy": {
+          "holm_p": 1.0,
+          "mean_difference": 0.003145310797837901,
+          "p_two_sided": 0.6868262634747305
+        }
+      },
+      "p": 1.999960000799984e-05
+    },
+    "warp_vs_nonwarp": {
+      "T": 1.8257999941705627,
+      "components": {
+        "activation_hhi": {
+          "holm_p": 0.0001999960000799984,
+          "mean_difference": -0.00037551790597632767,
+          "p_two_sided": 1.999960000799984e-05
+        },
+        "bias_mag": {
+          "holm_p": 0.0001999960000799984,
+          "mean_difference": 0.0006700020973154361,
+          "p_two_sided": 1.999960000799984e-05
+        },
+        "distinct_4grams": {
+          "holm_p": 1.0,
+          "mean_difference": 0.006711409395973154,
+          "p_two_sided": 1.0
+        },
+        "distinct_zones": {
+          "holm_p": 0.7959440811183776,
+          "mean_difference": -0.087248322147651,
+          "p_two_sided": 0.13265734685306294
+        },
+        "hysteresis": {
+          "holm_p": 1.0,
+          "mean_difference": 0.00019312080536913122,
+          "p_two_sided": 0.6354272914541709
+        },
+        "non_echo_breadth": {
+          "holm_p": 1.0,
+          "mean_difference": -0.006711409395973154,
+          "p_two_sided": 1.0
+        },
+        "strain_mass": {
+          "holm_p": 0.0001999960000799984,
+          "mean_difference": 0.10104888904237244,
+          "p_two_sided": 1.999960000799984e-05
+        },
+        "transition_entropy": {
+          "holm_p": 0.8623827523449532,
+          "mean_difference": -0.014373094010688793,
+          "p_two_sided": 0.17247655046899063
+        },
+        "warp_occupancy": {
+          "holm_p": 1.0,
+          "mean_difference": 0.0,
+          "p_two_sided": 1.0
+        },
+        "zone_entropy": {
+          "holm_p": 0.641047179056419,
+          "mean_difference": -0.0157763811680396,
+          "p_two_sided": 0.09157816843663127
+        }
+      },
+      "p": 1.999960000799984e-05
+    }
+  },
+  "topology_validity": {
+    "multivariate": {
+      "T": 0.0,
+      "components": {
+        "activation_hhi": {
+          "holm_p": 1.0,
+          "mean_difference": 0.0,
+          "p_two_sided": 1.0
+        },
+        "bias_mag": {
+          "holm_p": 1.0,
+          "mean_difference": 0.0,
+          "p_two_sided": 1.0
+        },
+        "distinct_4grams": {
+          "holm_p": 1.0,
+          "mean_difference": 0.0,
+          "p_two_sided": 1.0
+        },
+        "distinct_zones": {
+          "holm_p": 1.0,
+          "mean_difference": 0.0,
+          "p_two_sided": 1.0
+        },
+        "hysteresis": {
+          "holm_p": 1.0,
+          "mean_difference": 0.0,
+          "p_two_sided": 1.0
+        },
+        "non_echo_breadth": {
+          "holm_p": 1.0,
+          "mean_difference": 0.0,
+          "p_two_sided": 1.0
+        },
+        "strain_mass": {
+          "holm_p": 1.0,
+          "mean_difference": 0.0,
+          "p_two_sided": 1.0
+        },
+        "transition_entropy": {
+          "holm_p": 1.0,
+          "mean_difference": 0.0,
+          "p_two_sided": 1.0
+        },
+        "warp_occupancy": {
+          "holm_p": 1.0,
+          "mean_difference": 0.0,
+          "p_two_sided": 1.0
+        },
+        "zone_entropy": {
+          "holm_p": 1.0,
+          "mean_difference": 0.0,
+          "p_two_sided": 1.0
+        }
+      },
+      "p": 1.0
+    },
+    "valid": true
+  }
+}
