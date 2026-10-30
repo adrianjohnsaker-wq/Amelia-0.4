@@ -1,5 +1,4 @@
 {
-  "interpretation": "P3.18 confirms that the P3.17 competence phenotype is substantially PFM-mediated and does not require lineage-specific memory content: own mature PFM and donor mature PFM both outperform a blank PFM while retaining at least 75% of full-process prevalence. The registered component classification is GLOBAL_HYSTERETIC_MATURITY. The bounded Warp-development gain does not meet its registered promotion criterion, so it remains experimental and the canonical Warp is unchanged.",
   "mechanism": {
     "label": "GLOBAL_HYSTERETIC_MATURITY",
     "pfm_only_75pct_threshold_lineages": 18.75,
@@ -36,28 +35,7 @@
       "right_only": 1
     }
   },
-  "provenance": {
-    "dynamic_engine_sha256": "ac482882858c1e47f578523452eff0bc20aa82b5978299c9c8808ff6127c5cd6",
-    "lineages_sha256": "05ddc15e51b965655f29b4058e1b065a22fb6201d901b3bbbbe5d735ea095dae",
-    "p317_runner_sha256": "1a8fd1961b897ec970c7d6987bd9f3502c82221f13bace683563e4dafdb820c3",
-    "registration_sha256": "d7f0b62729ca8ee5ef68e177c6d729ab1b032ead380a38f698490ea48393b19e",
-    "runner_sha256": "752b174140b2c6d3c2e12030a89404bb255a1ad8da3fa244cb37aae98133390e",
-    "warp_operator_sha256": "7915789170f97819a8742c5f8cebdbed825cac6f92d9b343943b31a8b9fffa90"
-  },
-  "sentinel_counts": {
-    "BLANK": 1,
-    "DONOR_PFM": 26,
-    "FLAT_MAGNITUDE": 42,
-    "FULL_OWN": 25,
-    "HYSTERESIS_ONLY": 40,
-    "PFM_ONLY": 25,
-    "RECENT_EVENTS_ONLY": 2,
-    "SHUFFLED_STRAIN": 43,
-    "STRAIN_HYSTERESIS": 32,
-    "STRAIN_ONLY": 2,
-    "TENSOR_ONLY": 1,
-    "WARP_DEVELOPMENT_GAIN": 23
-  },
+  "status": "ALREADY_COMPLETED",
   "warp": {
     "absolute_mean_warp_transition_difference": 0.0,
     "event_budget": 8,
