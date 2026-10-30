@@ -11,6 +11,7 @@ on:
       - "P312PromptBuilder.kt"
       - "ProcessFieldMemory.py"
       - "Numogram.py"
+      - "FullNumogram.py"
       - "RenderTransport.kt"
       - ".github/workflows/p313.yml"
   workflow_dispatch:
@@ -49,6 +50,7 @@ jobs:
 
           for source in \
             Numogram.py \
+            FullNumogram.py \
             RenderTransport.kt \
             ProcessFieldMemory.py \
             P312AssayCore.py \
@@ -69,6 +71,7 @@ jobs:
           echo "P3.13 source fingerprints:"
           sha256sum \
             Numogram.py \
+            FullNumogram.py \
             RenderTransport.kt \
             ProcessFieldMemory.py \
             P312AssayCore.py \
@@ -119,6 +122,7 @@ jobs:
           python3.8 --version
           python3.8 -m py_compile \
             Numogram.py \
+            FullNumogram.py \
             ProcessFieldMemory.py \
             P312AssayCore.py
 
@@ -191,6 +195,9 @@ jobs:
 
           cp Numogram.py \
             app/src/main/python/Numogram.py
+
+          cp FullNumogram.py \
+            app/src/main/python/FullNumogram.py
           cp ProcessFieldMemory.py \
             app/src/main/python/ProcessFieldMemory.py
           cp P312AssayCore.py \
@@ -468,6 +475,7 @@ jobs:
 
           sha256sum \
             Numogram.py \
+            FullNumogram.py \
             RenderTransport.kt \
             ProcessFieldMemory.py \
             P312AssayCore.py \
