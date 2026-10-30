@@ -697,3 +697,308 @@ def confirm_candidates(
         })
 
     return confirmed_rows
+
+
+def score_rewired_candidates(
+    candidates: Sequence[Dict[str, object]],
+    confirm_entries: Sequence[Dict[str, object]],
+) -> Dict[str, object]:
+    candidate_ids = [str(item["form_id"]) for item in candidates]
+    per_candidate_counts = {
+        identifier: []
+        for identifier in candidate_ids
+    }
+    controllers: List[Dict[str, object]] = []
+
+    for controller_index in range(REWIRE_COUNT):
+        gates = rewired_gates(REWIRE_SEED_BASE + controller_index)
+        original_permeabilities = original_gate_permeability(gates)
+        counts = {identifier: 0 for identifier in candidate_ids}
+
+        for entry in confirm_entries:
+            seed = int(entry["seed"])
+            process = DynamicNumogramProcess(
+                gates=gates,
+                current_zone=seed % 10,
+            )
+            run_dynamic_tape(process, entry["dev_tape"])
+            shock_process(
+                process,
+                seed,
+                original_permeabilities,
+            )
+            post_records = run_dynamic_tape(process, entry["post_tape"])
+            forms = extract_forms(post_records)
+            for identifier in candidate_ids:
+                if identifier in forms:
+                    counts[identifier] += 1
+
+        controllers.append({
+            "controller": controller_index,
+            "seed": REWIRE_SEED_BASE + controller_index,
+            "edges": sorted(list(edge_set(gates))),
+            "candidate_lineage_counts": counts,
+        })
+        for identifier in candidate_ids:
+            per_candidate_counts[identifier].append(counts[identifier])
+
+    return {
+        "controllers": controllers,
+        "per_candidate_counts": per_candidate_counts,
+    }
+
+
+def return_forms(
+    entries: Sequence[Dict[str, object]],
+    minimum_lineages: int = 8,
+    limit: int = 40,
+) -> List[Dict[str, object]]:
+    developmental: Dict[str, set] = defaultdict(set)
+    post: Dict[str, set] = defaultdict(set)
+    post_occurrences: Dict[str, int] = defaultdict(int)
+
+    for entry in entries:
+        lineage = str(entry["lineage"])
+        for identifier in entry["dev_forms"]:
+            developmental[identifier].add(lineage)
+        for identifier, occurrences in entry["post_forms"]["retained"].items():
+            post[identifier].add(lineage)
+            post_occurrences[identifier] += len(occurrences)
+
+    rows: List[Dict[str, object]] = []
+    for identifier in set(developmental) & set(post):
+        if len(post[identifier]) < minimum_lineages:
+            continue
+        meta = parse_form_id(identifier)
+        rows.append({
+            "form_id": identifier,
+            "path": list(meta["path"]),
+            "developmental_lineages": len(developmental[identifier]),
+            "post_lineages": len(post[identifier]),
+            "post_occurrences": post_occurrences[identifier],
+            "contains_prior_pointer_material": path_has_prior_material(
+                meta["path"]
+            ),
+        })
+
+    rows.sort(
+        key=lambda item: (
+            -int(item["post_lineages"]),
+            -int(item["post_occurrences"]),
+            str(item["form_id"]),
+        )
+    )
+    return rows[:limit]
+
+
+def write_lineage_archive(
+    path: str,
+    discovery_entries: Sequence[Dict[str, object]],
+    confirm_entries: Sequence[Dict[str, object]],
+) -> None:
+    with gzip.open(path, "wt", encoding="utf-8") as handle:
+        for cohort, entries in (
+            ("discovery", discovery_entries),
+            ("confirmation", confirm_entries),
+        ):
+            for entry in entries:
+                row = {
+                    "cohort": cohort,
+                    "lineage": entry["lineage"],
+                    "seed": entry["seed"],
+                    "donor_lineage": entry["donor_lineage"],
+                    "shock_zone": entry["shock_zone"],
+                    "developmental_tape": entry["dev_tape"],
+                    "post_tape": entry["post_tape"],
+                    "developmental_records": entry["dev_records"],
+                    "post_records": entry["post"],
+                }
+                handle.write(canonical_json(row) + "\n")
+
+
+def add_rewired_to_candidates(
+    rows: List[Dict[str, object]],
+    rewired: Dict[str, object],
+) -> None:
+    counts = rewired["per_candidate_counts"]
+    for row in rows:
+        identifier = str(row["form_id"])
+        values = list(counts.get(identifier, []))
+        row["rewired_lineage_counts"] = values
+        row["rewired_mean_lineages"] = (
+            statistics.mean(values) if values else 0.0
+        )
+        row["rewired_max_lineages"] = max(values) if values else 0
+
+
+def atlas_markdown(
+    candidate_rows: Sequence[Dict[str, object]],
+    return_rows: Sequence[Dict[str, object]],
+    primary_held: bool,
+) -> str:
+    lines = [
+        "# P3.17 — Ingression / Developmental Canalization Atlas",
+        "",
+        "Primary outcome: **{}**".format(
+            "INGRESSION CONFIRMED"
+            if primary_held
+            else "NO CONFIRMED NEW INGRESSING FORM UNDER P3.17"
+        ),
+        "",
+        "Forms below were discovered algorithmically from the HISTORY_RETAINED discovery cohort. Candidate identities were not named in advance.",
+        "",
+        "## New-form candidates",
+        "",
+    ]
+
+    if not candidate_rows:
+        lines.append("No candidate met the preregistered discovery rule.")
+    else:
+        for row in candidate_rows:
+            lines.extend([
+                "### {}{}".format(
+                    row["form_id"],
+                    " — CONFIRMED" if row["confirmed_new_ingression_form"] else "",
+                ),
+                "",
+                "- path: {}".format("-".join(str(x) for x in row["path"])),
+                "- endpoint class: dominant activation zone {} / H{}".format(
+                    row["top_activation"], row["hbin"]
+                ),
+                "- discovery: {} lineages / {} occurrences / {:.3f} non-echo fraction".format(
+                    row["discovery_lineage_count"],
+                    row["discovery_occurrences"],
+                    row["discovery_non_echo_fraction"],
+                ),
+                "- confirmation HISTORY_RETAINED: {} lineages".format(
+                    row["confirm_retained_lineages"]
+                ),
+                "- HISTORY_RESET: {}; HISTORY_PERMUTED: {}; FRESH: {}; STATIC: {}; INPUT_REPLAY: {}".format(
+                    row["confirm_reset_lineages"],
+                    row["confirm_permuted_lineages"],
+                    row["confirm_fresh_lineages"],
+                    row["confirm_static_lineages"],
+                    row["confirm_replay_lineages"],
+                ),
+                "- reset paired sign p: {:.8f}; permuted paired sign p: {:.8f}; family alpha: {:.8f}".format(
+                    row["reset_sign_test"]["p_upper"],
+                    row["permuted_sign_test"]["p_upper"],
+                    row["confirm_family_alpha"],
+                ),
+                "- confirmation non-echo fraction: {:.3f}; absent from confirmation developmental repertoire: {}".format(
+                    row["confirm_non_echo_fraction"],
+                    row["confirm_developmental_absent"],
+                ),
+                "- canalization: {:.3f} of positive retained lineages recur after first appearance; median recurrence interval: {}".format(
+                    row["retained_recurrence_fraction"],
+                    row["median_recurrence_interval"],
+                ),
+                "- dynamic-rewired mean prevalence: {:.3f} lineages; max across rewires: {}".format(
+                    row.get("rewired_mean_lineages", 0.0),
+                    row.get("rewired_max_lineages", 0),
+                ),
+                "- contains shorter prior Pointer material: {}".format(
+                    row["contains_prior_pointer_material"]
+                ),
+                "",
+                "Confirmation retained lineage traces:",
+            ])
+
+            details = row["confirm_retained_details"]
+            if not details:
+                lines.append("- none")
+            else:
+                for detail in details:
+                    ranges = ", ".join(
+                        "{}–{}".format(a, b)
+                        for a, b in detail["step_ranges"]
+                    )
+                    lines.append(
+                        "- {} seed {}: {} occurrence(s), steps {}; input echo={}".format(
+                            detail["lineage"],
+                            detail["seed"],
+                            detail["count"],
+                            ranges,
+                            detail["input_echo"],
+                        )
+                    )
+            lines.append("")
+
+    lines.extend([
+        "## Developmental-return forms",
+        "",
+        "These forms existed during development and reappeared after shock. They are reported separately and never count as new ingression.",
+        "",
+    ])
+    if not return_rows:
+        lines.append("No return form met the atlas display threshold.")
+    else:
+        for row in return_rows:
+            lines.append(
+                "- {} — development {} lineages; post {} lineages; {} post occurrences; prior-material={}".format(
+                    row["form_id"],
+                    row["developmental_lineages"],
+                    row["post_lineages"],
+                    row["post_occurrences"],
+                    row["contains_prior_pointer_material"],
+                )
+            )
+
+    lines.extend([
+        "",
+        "## Epistemic boundary",
+        "",
+        "A confirmed P3.17 form would establish a recurrent, history-dependent computational form under this assay. It would not by itself identify an external entity or establish a metaphysical source.",
+        "",
+    ])
+    return "\n".join(lines)
+
+
+def report_markdown(result: Dict[str, object]) -> str:
+    p = result["primary"]
+    return "\n".join([
+        "# P3.17 — Ingression / Developmental Canalization Result",
+        "",
+        "## Primary result",
+        "",
+        "- outcome: **{}**".format(p["outcome"]),
+        "- discovery candidates entering confirmation: {}".format(
+            p["candidate_count"]
+        ),
+        "- confirmed new ingression forms: {}".format(
+            p["confirmed_count"]
+        ),
+        "- discovery developmental repertoire size: {}".format(
+            p["discovery_developmental_repertoire_size"]
+        ),
+        "- confirmation developmental repertoire size: {}".format(
+            p["confirmation_developmental_repertoire_size"]
+        ),
+        "",
+        "## Interpretation",
+        "",
+        result["interpretation"],
+        "",
+        "## Evidence",
+        "",
+        "- atlas: experiments/p317/results/ATLAS.md",
+        "- machine atlas: experiments/p317/results/atlas.json",
+        "- lineage archive SHA-256: {}".format(
+            result["provenance"]["lineages_sha256"]
+        ),
+        "- controls SHA-256: {}".format(
+            result["provenance"]["controls_sha256"]
+        ),
+        "- registration SHA-256: {}".format(
+            result["provenance"]["registration_sha256"]
+        ),
+        "- runner SHA-256: {}".format(
+            result["provenance"]["runner_sha256"]
+        ),
+        "- frozen P3.16 engine SHA-256: {}".format(
+            result["provenance"]["dynamic_engine_sha256"]
+        ),
+        "",
+        "No secondary or return-form result rescues failure of the primary ingression criterion.",
+        "",
+    ])
