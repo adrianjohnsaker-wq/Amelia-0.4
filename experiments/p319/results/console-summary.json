@@ -1,0 +1,55 @@
+{
+  "counts": {
+    "BLANK": 44,
+    "DONOR_PFM": 31,
+    "FULL_OWN": 32,
+    "H05": 48,
+    "H20": 48,
+    "H40": 48,
+    "H60": 48,
+    "H80": 48,
+    "H95": 48,
+    "PFM_ONLY": 32
+  },
+  "interpretation": "HYSTERETIC CAUSATION NOT SUPPORTED under the hysteresis-free trajectory endpoint. The broader transferable PFM competence effect does not satisfy its replication gate.",
+  "pfm_replication": {
+    "donor_vs_blank": {
+      "discordant": 15,
+      "left_only": 1,
+      "p_upper": 0.999969482421875,
+      "right_only": 14
+    },
+    "full_vs_blank": {
+      "discordant": 16,
+      "left_only": 2,
+      "p_upper": 0.9997406005859375,
+      "right_only": 14
+    },
+    "held": false,
+    "pfm_vs_blank": {
+      "discordant": 16,
+      "left_only": 2,
+      "p_upper": 0.9997406005859375,
+      "right_only": 14
+    }
+  },
+  "primary_hysteresis": {
+    "H95_vs_H05": {
+      "discordant": 0,
+      "left_only": 0,
+      "p_upper": 1.0,
+      "right_only": 0
+    },
+    "clamp_counts": {
+      "H05": 48,
+      "H20": 48,
+      "H40": 48,
+      "H60": 48,
+      "H80": 48,
+      "H95": 48
+    },
+    "held": false,
+    "spearman_rho": 0.0,
+    "trend_p": 1.0
+  }
+}
