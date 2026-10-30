@@ -1,0 +1,139 @@
+name: P3.18 Developmental Competence and Warp Gain
+
+on:
+  push:
+    branches:
+      - "p318-developmental-competence-warp-20261030"
+    paths:
+      - "FullNumogram.py"
+      - "experiments/p316/DynamicNumogram.py"
+      - "experiments/p317/run.py"
+      - "experiments/p318/REGISTRATION.md"
+      - "experiments/p318/WarpDevelopmentOperator.py"
+      - "experiments/p318/run.py"
+      - ".github/workflows/p318.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: p318-developmental-competence-warp
+  cancel-in-progress: false
+
+jobs:
+  assay:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout registered branch
+        uses: actions/checkout@v4
+        with:
+          ref: p318-developmental-competence-warp-20261030
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Verify frozen engines and syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(sha256sum FullNumogram.py | cut -d' ' -f1)" = "b6edbe76ab4929e93c01059fb56cef900effa9bca1cec78d0039eafb8fbebdf8"
+          test "$(sha256sum experiments/p316/DynamicNumogram.py | cut -d' ' -f1)" = "ac482882858c1e47f578523452eff0bc20aa82b5978299c9c8808ff6127c5cd6"
+          test "$(sha256sum experiments/p317/run.py | cut -d' ' -f1)" = "1a8fd1961b897ec970c7d6987bd9f3502c82221f13bace683563e4dafdb820c3"
+          python -m py_compile             experiments/p318/WarpDevelopmentOperator.py             experiments/p318/run.py
+          echo "P3.18 frozen engines and syntax: PASS"
+
+      - name: Preflight arm and Warp invariants on non-registered seed
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import copy
+          import sys
+          sys.path.insert(0, "experiments/p318")
+          import run
+          from DynamicNumogram import DynamicNumogramProcess
+          from WarpDevelopmentOperator import WarpDevelopmentMemory, install_warp_development_gain
+
+          seed = 999318
+          dev, post = run.p317.make_tapes(seed)
+          assert not (run.p317.ngrams(dev, 4) & run.p317.ngrams(post, 4))
+
+          base = DynamicNumogramProcess(current_zone=seed % 10)
+          run.p317.run_dynamic_tape(base, dev)
+          original = run.p317.original_gate_permeability(run.p317.FULL_NUMOGRAM_GATES)
+          shocked = copy.deepcopy(base)
+          run.p317.shock_process(shocked, seed, original)
+
+          donor = copy.deepcopy(base.memory)
+          for arm in run.ARMS:
+              if arm == "WARP_DEVELOPMENT_GAIN":
+                  continue
+              p = run.make_arm(shocked, arm, seed, donor)
+              assert len(p.deformation_tensor) == 10
+              assert len(p.memory.zone_strain_history) == 10
+
+          warp = DynamicNumogramProcess(current_zone=seed % 10)
+          install_warp_development_gain(warp, run.WARP_GAIN, run.WARP_BUDGET)
+          run.p317.run_dynamic_tape(warp, dev)
+          assert isinstance(warp.memory, WarpDevelopmentMemory)
+          assert 0 <= warp.memory.warp_gain_used <= run.WARP_BUDGET
+          assert all(
+              (not item["gainApplied"]) or item["touchesWarp"]
+              for item in warp.memory.warp_gain_log
+          )
+          assert all(
+              float(item["storedFluxDelta"]) <= 0.18 + 1e-12
+              for item in warp.memory.warp_gain_log
+          )
+
+          # The operator does not alter topology.
+          assert run.p317.edge_set(warp.gates) == run.p317.edge_set(run.p317.FULL_NUMOGRAM_GATES)
+
+          print("P3.18 non-registered preflight: PASS")
+          print("Warp gain uses:", warp.memory.warp_gain_used)
+          PY
+
+      - name: Record pre-run provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p experiments/p318/results
+          sha256sum             FullNumogram.py             experiments/p316/DynamicNumogram.py             experiments/p317/run.py             experiments/p318/REGISTRATION.md             experiments/p318/WarpDevelopmentOperator.py             experiments/p318/run.py             > experiments/p318/results/PRE_RUN_SHA256SUMS.txt
+          cat experiments/p318/results/PRE_RUN_SHA256SUMS.txt
+
+      - name: Run first complete registered P3.18 assay
+        shell: bash
+        run: |
+          set -euo pipefail
+          python experiments/p318/run.py --out experiments/p318/results             | tee experiments/p318/results/console-summary.json
+
+      - name: Display P3.18 report
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat experiments/p318/results/REPORT.md
+
+      - name: Commit compact sealed P3.18 record
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add             experiments/p318/results/REPORT.md             experiments/p318/results/summary.json             experiments/p318/results/lineage_scores.json             experiments/p318/results/SHA256SUMS.json             experiments/p318/results/PRE_RUN_SHA256SUMS.txt             experiments/p318/results/console-summary.json
+          if git diff --cached --quiet; then
+            echo "No compact result changes to commit."
+          else
+            git commit -m "P3.18: archive first competence decomposition result [skip ci]"
+            git push origin HEAD:p318-developmental-competence-warp-20261030
+          fi
+
+      - name: Upload complete P3.18 evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: P3.18-developmental-competence-warp-evidence
+          path: experiments/p318/results/
+          retention-days: 90
