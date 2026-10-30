@@ -197,3 +197,153 @@ def shuffled_phase_map(seed):
         rng.shuffle(permuted)
         if permuted != phases:
             return {z: permuted[z] for z in range(10)}
+
+
+def outgoing(gates):
+    result = {z: [] for z in range(10)}
+    for gate in gates:
+        if bool(gate["isOpen"]):
+            result[int(gate["source"])].append(dict(gate))
+    for zone in result:
+        result[zone].sort(key=lambda gate: (int(gate["target"]), str(gate["id"])))
+    return result
+
+
+def normalized_gate_strengths(gates):
+    values = [gate_strength(gate) for gate in gates]
+    lo, hi = min(values), max(values)
+    span = max(1e-12, hi - lo)
+    return {str(gate["id"]): (gate_strength(gate) - lo) / span for gate in gates}
+
+
+def capture_held(values):
+    streak = 0
+    for value in values[:PERTURB_STEP]:
+        if value >= CAPTURE_THRESHOLD:
+            streak += 1
+            if streak >= CAPTURE_STREAK:
+                return True
+        else:
+            streak = 0
+    return False
+
+
+def run_controller(world, gates, phase_map):
+    graph = outgoing(gates)
+    strengths = normalized_gate_strengths(gates)
+    current_zone = world.seed % 10
+    x, y = world.start
+    previous_dx = 0.0
+    previous_dy = 0.0
+    trajectory = []
+    values = []
+    improving_moves = 0
+    moving_steps = 0
+
+    for step in range(STEPS):
+        if step == PERTURB_STEP:
+            x = (x + world.perturb[0]) % 1.0
+            y = (y + world.perturb[1]) % 1.0
+
+        current_value = world.value(x, y)
+        candidates = graph[current_zone]
+        if not candidates:
+            raise RuntimeError("topology exposed a zone with no outgoing gate")
+
+        best = None
+        for gate in candidates:
+            target = int(gate["target"])
+            if target == current_zone:
+                nx, ny = x, y
+                dx, dy = 0.0, 0.0
+                momentum = 0.0
+            else:
+                angle = float(phase_map[target])
+                dx = STEP_SIZE * math.cos(angle)
+                dy = STEP_SIZE * math.sin(angle)
+                nx, ny = (x + dx) % 1.0, (y + dy) % 1.0
+                prev_norm = math.hypot(previous_dx, previous_dy)
+                if prev_norm > 1e-12:
+                    momentum = (dx * previous_dx + dy * previous_dy) / (STEP_SIZE * prev_norm)
+                else:
+                    momentum = 0.0
+
+            next_value = world.value(nx, ny)
+            local_gain = next_value - current_value
+            strength = strengths[str(gate["id"])]
+            score = LOCAL_GAIN_WEIGHT * local_gain + GATE_WEIGHT * strength + MOMENTUM_WEIGHT * momentum
+            key = (score, next_value, -target)
+            if best is None or key > best[0]:
+                best = (key, target, nx, ny, dx, dy, next_value)
+
+        _, target, nx, ny, dx, dy, next_value = best
+        if target != current_zone:
+            moving_steps += 1
+            if next_value > current_value:
+                improving_moves += 1
+
+        current_zone = target
+        x, y = nx, ny
+        previous_dx, previous_dy = dx, dy
+        values.append(next_value)
+        trajectory.append([step, current_zone, round(x, 8), round(y, 8), round(next_value, 8)])
+
+    pre_values = values[:PERTURB_STEP]
+    pre_peak = max(pre_values)
+    recovery_threshold = 0.95 * pre_peak
+    recovery = None
+    for index in range(PERTURB_STEP, STEPS):
+        if values[index] >= recovery_threshold:
+            recovery = index - PERTURB_STEP
+            break
+
+    return {
+        "primary": statistics.mean(values[PRIMARY_START:PRIMARY_STOP]),
+        "capture": capture_held(values),
+        "best_pre": pre_peak,
+        "improving_fraction": improving_moves / moving_steps if moving_steps else 0.0,
+        "post_mean": statistics.mean(values[60:STEPS]),
+        "recovery_steps": 35 if recovery is None else recovery,
+        "trajectory": trajectory,
+    }
+
+
+def aggregate(runs):
+    return {
+        "primary": statistics.mean(float(run["primary"]) for run in runs),
+        "capture_rate": statistics.mean(1.0 if run["capture"] else 0.0 for run in runs),
+        "best_pre": statistics.mean(float(run["best_pre"]) for run in runs),
+        "improving_fraction": statistics.mean(float(run["improving_fraction"]) for run in runs),
+        "post_mean": statistics.mean(float(run["post_mean"]) for run in runs),
+        "recovery_steps": statistics.mean(float(run["recovery_steps"]) for run in runs),
+    }
+
+
+def empirical_upper_p(observed, nulls):
+    return (1.0 + sum(1 for value in nulls if value >= observed)) / (1.0 + len(nulls))
+
+
+def percentile(observed, nulls):
+    below = sum(1 for value in nulls if value < observed)
+    equal = sum(1 for value in nulls if value == observed)
+    return 100.0 * (below + 0.5 * equal) / len(nulls)
+
+
+def quantile(values, q):
+    xs = sorted(float(value) for value in values)
+    position = (len(xs) - 1) * q
+    lo = int(math.floor(position))
+    hi = int(math.ceil(position))
+    if lo == hi:
+        return xs[lo]
+    weight = position - lo
+    return xs[lo] * (1.0 - weight) + xs[hi] * weight
+
+
+def bootstrap_ci(differences):
+    rng = random.Random(BOOTSTRAP_SEED)
+    n = len(differences)
+    boot = []
+    for _ in range(BOOTSTRAP_DRAWS):
+        boot.append(statistics.mean(differences[rng.randrange(n)] for _ in range(n)))
+    return quantile(boot, 0.025), quantile(boot, 0.975)
