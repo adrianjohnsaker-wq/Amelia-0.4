@@ -1,0 +1,85 @@
+name: WARP-T3 Passage-Trace Address Discrimination
+
+on:
+  push:
+    branches: ["warp-t3-address-discrimination-20261030"]
+    paths:
+      - "FullNumogram.py"
+      - "experiments/p316/DynamicNumogram.py"
+      - "experiments/p317/run.py"
+      - "experiments/warp_t1/run.py"
+      - "experiments/warp_t2/run.py"
+      - "experiments/warp_t3/**"
+      - ".github/workflows/warp-t3.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: warp-t3-address-discrimination
+  cancel-in-progress: false
+
+jobs:
+  assay:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: warp-t3-address-discrimination-20261030
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Preflight
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(sha256sum FullNumogram.py | cut -d' ' -f1)" = "b6edbe76ab4929e93c01059fb56cef900effa9bca1cec78d0039eafb8fbebdf8"
+          test "$(sha256sum experiments/p316/DynamicNumogram.py | cut -d' ' -f1)" = "ac482882858c1e47f578523452eff0bc20aa82b5978299c9c8808ff6127c5cd6"
+          python -m py_compile experiments/warp_t3/run.py
+          python - <<'PY'
+          import sys
+          sys.path.insert(0,"experiments/warp_t3")
+          import run
+          # Non-registered passage invariant and synthetic decoder checks only.
+          x=run.make_lineage(999999-3240000)
+          # make_lineage above deliberately uses a non-registered seed below range via index;
+          # it may be ineligible, which is acceptable. Check decoder machinery separately.
+          fake={i:[{"motifs":["1-7-8-9"],"positions":{"1-7-8-9":[0]},"transition_entropy":1.0} for _ in range(run.PROBES)] for i in range(10)}
+          train=[0,2,4,6,8]; test=[1,3,5,7,9]
+          vocab=run.build_vocab(fake,train)
+          model=run.train_model(fake,train,vocab)
+          dec=run.decode(fake,test,vocab,model)
+          assert dec["n"]==len(test)*run.PROBES
+          print("WARP-T3 preflight PASS")
+          PY
+      - name: Record provenance
+        run: |
+          mkdir -p experiments/warp_t3/results
+          sha256sum FullNumogram.py experiments/p316/DynamicNumogram.py experiments/p317/run.py experiments/warp_t1/run.py experiments/warp_t2/run.py experiments/warp_t3/REGISTRATION.md experiments/warp_t3/AMENDMENT_1.md experiments/warp_t3/run.py > experiments/warp_t3/results/PRE_RUN_SHA256SUMS.txt
+      - name: Run first registered WARP-T3 assay
+        shell: bash
+        run: |
+          set -euo pipefail
+          python experiments/warp_t3/run.py --out experiments/warp_t3/results | tee experiments/warp_t3/results/console-summary.json
+      - name: Display report
+        run: |
+          cat experiments/warp_t3/results/REPORT.md
+          sed -n '1,260p' experiments/warp_t3/results/ATLAS.md
+      - name: Commit compact result
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add experiments/warp_t3/results/REPORT.md experiments/warp_t3/results/ATLAS.md experiments/warp_t3/results/summary.json experiments/warp_t3/results/PRE_RUN_SHA256SUMS.txt experiments/warp_t3/results/console-summary.json
+          if ! git diff --cached --quiet; then
+            git commit -m "WARP-T3: archive first passage-trace communication result [skip ci]"
+            git push origin HEAD:warp-t3-address-discrimination-20261030
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: WARP-T3-address-discrimination-evidence
+          path: experiments/warp_t3/results/
+          retention-days: 90
