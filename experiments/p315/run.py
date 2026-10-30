@@ -10,8 +10,13 @@ import math
 import os
 import random
 import statistics
+import sys
 from dataclasses import dataclass
 from typing import Dict, List, Sequence, Tuple
+
+REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+if REPO_ROOT not in sys.path:
+    sys.path.insert(0, REPO_ROOT)
 
 from FullNumogram import CCRU_ZONES, FULL_NUMOGRAM_GATES, ORANGE_SOURCE_BLOB_SHA, gate_strength
 
