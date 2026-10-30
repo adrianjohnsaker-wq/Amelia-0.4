@@ -347,3 +347,239 @@ def bootstrap_ci(differences):
     for _ in range(BOOTSTRAP_DRAWS):
         boot.append(statistics.mean(differences[rng.randrange(n)] for _ in range(n)))
     return quantile(boot, 0.025), quantile(boot, 0.975)
+
+
+def write_report(path, result):
+    primary = result["primary"]
+    secondary = result["secondary"]
+    lines = [
+        "# P3.15 — Full Numogram Latent Morphospace Access Assay",
+        "",
+        "## Primary result",
+        "",
+        "- topology-access gate: **{}**".format("PASS" if primary["held"] else "FAIL"),
+        "- canonical mean primary score: {:.6f}".format(primary["canonical_score"]),
+        "- rewired-null mean: {:.6f}".format(primary["rewired_mean"]),
+        "- canonical percentile vs rewired topologies: {:.1f}".format(primary["percentile"]),
+        "- one-sided empirical rank p: {:.6f}".format(primary["rank_p"]),
+        "- paired canonical-minus-mean-rewired advantage: {:.6f}".format(primary["paired_advantage_mean"]),
+        "- bootstrap 95% CI: [{:.6f}, {:.6f}]".format(primary["bootstrap_ci"][0], primary["bootstrap_ci"][1]),
+        "- canonical capture rate: {:.4f}".format(primary["canonical_capture_rate"]),
+        "- mean rewired capture rate: {:.4f}".format(primary["rewired_capture_rate_mean"]),
+        "",
+        "## Secondary: canonical zone/phase labeling",
+        "",
+        "- canonical percentile vs label/phase shuffles: {:.1f}".format(secondary["label_shuffle_percentile"]),
+        "- one-sided empirical rank p: {:.6f}".format(secondary["label_shuffle_rank_p"]),
+        "",
+        "## Additional secondary measures",
+        "",
+        "- canonical best pre-perturbation field: {:.6f}".format(secondary["canonical_best_pre"]),
+        "- canonical improving-move fraction: {:.6f}".format(secondary["canonical_improving_fraction"]),
+        "- canonical post-perturbation mean field: {:.6f}".format(secondary["canonical_post_mean"]),
+        "- canonical mean recovery steps: {:.3f}".format(secondary["canonical_recovery_steps"]),
+        "",
+        "## Interpretation",
+        "",
+        result["interpretation"],
+        "",
+        "## Provenance",
+        "",
+        "- Orange fullNumogram source blob: {}".format(result["provenance"]["orange_source_blob_sha"]),
+        "- FullNumogram.py SHA-256: {}".format(result["provenance"]["full_numogram_py_sha256"]),
+        "- Numogram.py SHA-256: {}".format(result["provenance"]["numogram_py_sha256"]),
+        "- raw trajectories gzip SHA-256: {}".format(result["provenance"]["raw_trajectories_sha256"]),
+        "",
+        "No alternative endpoint is used to rescue a failed primary gate.",
+        "",
+    ]
+    with open(path, "w", encoding="utf-8") as handle:
+        handle.write("\n".join(lines))
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--out", default="experiments/p315/results")
+    args = parser.parse_args()
+    os.makedirs(args.out, exist_ok=True)
+
+    if len(FULL_NUMOGRAM_GATES) != 29:
+        raise RuntimeError("canonical Orange full Numogram must have 29 gates")
+    if not strongly_connected(FULL_NUMOGRAM_GATES):
+        raise RuntimeError("canonical full Numogram must be strongly connected")
+
+    worlds = [make_world(WORLD_SEED_BASE + index) for index in range(WORLD_COUNT)]
+    canonical_gates = clone_gates()
+    canonical_phases = canonical_phase_map()
+    rewired = [rewired_gates(REWIRE_SEED_BASE + index) for index in range(REWIRE_COUNT)]
+    label_maps = [shuffled_phase_map(LABEL_SEED_BASE + index) for index in range(LABEL_COUNT)]
+
+    raw_path = os.path.join(args.out, "trajectories.jsonl.gz")
+    canonical_runs = []
+    rewired_runs = [[] for _ in range(REWIRE_COUNT)]
+    label_runs = [[] for _ in range(LABEL_COUNT)]
+
+    with gzip.open(raw_path, "wt", encoding="utf-8") as raw:
+        for world_index, world in enumerate(worlds):
+            run = run_controller(world, canonical_gates, canonical_phases)
+            canonical_runs.append(run)
+            raw.write(canonical_json({
+                "arm": "canonical",
+                "controller": 0,
+                "world": world.seed,
+                "trajectory": run["trajectory"],
+            }) + "\n")
+
+            for controller_index, gates in enumerate(rewired):
+                run_r = run_controller(world, gates, canonical_phases)
+                rewired_runs[controller_index].append(run_r)
+                raw.write(canonical_json({
+                    "arm": "rewired",
+                    "controller": controller_index,
+                    "world": world.seed,
+                    "trajectory": run_r["trajectory"],
+                }) + "\n")
+
+            for controller_index, phases in enumerate(label_maps):
+                run_l = run_controller(world, canonical_gates, phases)
+                label_runs[controller_index].append(run_l)
+                raw.write(canonical_json({
+                    "arm": "label_shuffle",
+                    "controller": controller_index,
+                    "world": world.seed,
+                    "trajectory": run_l["trajectory"],
+                }) + "\n")
+
+    canonical_agg = aggregate(canonical_runs)
+    rewired_aggs = [aggregate(runs) for runs in rewired_runs]
+    label_aggs = [aggregate(runs) for runs in label_runs]
+    rewired_primary = [agg["primary"] for agg in rewired_aggs]
+    label_primary = [agg["primary"] for agg in label_aggs]
+
+    mean_rewired_per_world = [
+        statistics.mean(
+            float(rewired_runs[controller][world_index]["primary"])
+            for controller in range(REWIRE_COUNT)
+        )
+        for world_index in range(WORLD_COUNT)
+    ]
+    differences = [
+        float(canonical_runs[index]["primary"]) - mean_rewired_per_world[index]
+        for index in range(WORLD_COUNT)
+    ]
+    ci = bootstrap_ci(differences)
+    rank_p = empirical_upper_p(canonical_agg["primary"], rewired_primary)
+    capture_mean = statistics.mean(agg["capture_rate"] for agg in rewired_aggs)
+
+    primary_held = (
+        rank_p <= ALPHA
+        and ci[0] > 0.0
+        and canonical_agg["capture_rate"] >= capture_mean
+    )
+
+    if primary_held:
+        interpretation = (
+            "PASS. Under the registered local-information interface, the canonical full "
+            "Numogram outperformed the degree-preserving rewired topology ensemble on the "
+            "primary latent-morphospace measure. This supports a topology-specific access "
+            "effect for this morphospace family. It does not establish metaphysical or "
+            "supernatural access."
+        )
+    else:
+        interpretation = (
+            "FAIL. Under the registered local-information interface, the canonical full "
+            "Numogram did not satisfy the preregistered topology-access gate against "
+            "degree-preserving rewired controls. Secondary measures are retained "
+            "descriptively and do not rescue the primary claim."
+        )
+
+    result = {
+        "schema": "amelia-p315-full-numogram-morphospace-v1",
+        "registration": {
+            "world_count": WORLD_COUNT,
+            "steps": STEPS,
+            "primary_window": [PRIMARY_START, PRIMARY_STOP - 1],
+            "perturb_step": PERTURB_STEP,
+            "rewired_controls": REWIRE_COUNT,
+            "label_shuffle_controls": LABEL_COUNT,
+            "world_seed_base": WORLD_SEED_BASE,
+            "rewire_seed_base": REWIRE_SEED_BASE,
+            "label_seed_base": LABEL_SEED_BASE,
+            "bootstrap_seed": BOOTSTRAP_SEED,
+        },
+        "canonical_topology": {
+            "gate_count": len(canonical_gates),
+            "edge_set": sorted(list(edge_set(canonical_gates))),
+            "degree_signature": degree_signature(canonical_gates),
+            "self_loop_count": self_loop_count(canonical_gates),
+        },
+        "primary": {
+            "held": primary_held,
+            "canonical_score": canonical_agg["primary"],
+            "rewired_mean": statistics.mean(rewired_primary),
+            "percentile": percentile(canonical_agg["primary"], rewired_primary),
+            "rank_p": rank_p,
+            "paired_advantage_mean": statistics.mean(differences),
+            "bootstrap_ci": list(ci),
+            "canonical_capture_rate": canonical_agg["capture_rate"],
+            "rewired_capture_rate_mean": capture_mean,
+            "rewired_aggregate_scores": rewired_primary,
+        },
+        "secondary": {
+            "label_shuffle_percentile": percentile(canonical_agg["primary"], label_primary),
+            "label_shuffle_rank_p": empirical_upper_p(canonical_agg["primary"], label_primary),
+            "label_shuffle_aggregate_scores": label_primary,
+            "canonical_best_pre": canonical_agg["best_pre"],
+            "canonical_improving_fraction": canonical_agg["improving_fraction"],
+            "canonical_post_mean": canonical_agg["post_mean"],
+            "canonical_recovery_steps": canonical_agg["recovery_steps"],
+            "rewired_mean_best_pre": statistics.mean(agg["best_pre"] for agg in rewired_aggs),
+            "rewired_mean_improving_fraction": statistics.mean(agg["improving_fraction"] for agg in rewired_aggs),
+            "rewired_mean_post_mean": statistics.mean(agg["post_mean"] for agg in rewired_aggs),
+            "rewired_mean_recovery_steps": statistics.mean(agg["recovery_steps"] for agg in rewired_aggs),
+        },
+        "per_world": {
+            "canonical_primary": [float(run["primary"]) for run in canonical_runs],
+            "mean_rewired_primary": mean_rewired_per_world,
+            "paired_differences": differences,
+        },
+        "interpretation": interpretation,
+        "provenance": {
+            "orange_source_blob_sha": ORANGE_SOURCE_BLOB_SHA,
+            "full_numogram_py_sha256": sha256_file("FullNumogram.py"),
+            "numogram_py_sha256": sha256_file("Numogram.py"),
+            "raw_trajectories_sha256": sha256_file(raw_path),
+        },
+    }
+
+    summary_path = os.path.join(args.out, "summary.json")
+    with open(summary_path, "w", encoding="utf-8") as handle:
+        json.dump(result, handle, indent=2, sort_keys=True)
+
+    report_path = os.path.join(args.out, "REPORT.md")
+    write_report(report_path, result)
+
+    fingerprint = {
+        "summary_sha256": sha256_file(summary_path),
+        "report_sha256": sha256_file(report_path),
+        "raw_trajectories_sha256": sha256_file(raw_path),
+    }
+    with open(os.path.join(args.out, "SHA256SUMS.json"), "w", encoding="utf-8") as handle:
+        json.dump(fingerprint, handle, indent=2, sort_keys=True)
+
+    print(json.dumps({
+        "primary": result["primary"],
+        "secondary": {
+            "label_shuffle_percentile": result["secondary"]["label_shuffle_percentile"],
+            "label_shuffle_rank_p": result["secondary"]["label_shuffle_rank_p"],
+            "canonical_best_pre": result["secondary"]["canonical_best_pre"],
+            "canonical_post_mean": result["secondary"]["canonical_post_mean"],
+        },
+        "interpretation": interpretation,
+        "provenance": result["provenance"],
+    }, indent=2, sort_keys=True))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
