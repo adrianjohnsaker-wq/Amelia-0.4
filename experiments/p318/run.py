@@ -659,6 +659,19 @@ def main() -> int:
     args = parser.parse_args()
     os.makedirs(args.out, exist_ok=True)
 
+    existing_summary = os.path.join(args.out, "summary.json")
+    existing_report = os.path.join(args.out, "REPORT.md")
+    if os.path.exists(existing_summary) and os.path.exists(existing_report):
+        with open(existing_summary, encoding="utf-8") as handle:
+            existing = json.load(handle)
+        print(json.dumps({
+            "status": "ALREADY_COMPLETED",
+            "primary": existing.get("primary"),
+            "mechanism": existing.get("mechanism"),
+            "warp": existing.get("warp"),
+        }, indent=2, sort_keys=True))
+        return 0
+
     rows, donor_map = develop_all()
     results = run_all_arms(rows, donor_map)
     summaries = {arm: arm_summary(results, arm) for arm in ARMS}
