@@ -242,3 +242,246 @@ def score_post(records: Sequence[Dict[str, object]]) -> Dict[str, object]:
         "panel_present_ids": [identifier for identifier in PANEL if identifier in forms],
         "post_warp_occupancy": warp_stats(records)["warp_occupancy"],
     }
+
+
+def make_arm(
+    shocked: DynamicNumogramProcess,
+    arm: str,
+    seed: int,
+    donor_memory: IntegratedMemorySystem,
+) -> DynamicNumogramProcess:
+    process = copy.deepcopy(shocked)
+
+    if arm == "FULL_OWN":
+        return process
+    if arm == "BLANK":
+        process.memory = blank_memory()
+        process.deformation_tensor = [0.1] * 10
+    elif arm == "PFM_ONLY":
+        process.memory = copy_memory(shocked.memory)
+        process.deformation_tensor = [0.1] * 10
+    elif arm == "TENSOR_ONLY":
+        process.memory = blank_memory()
+        process.deformation_tensor = list(shocked.deformation_tensor)
+    elif arm == "DONOR_PFM":
+        process.memory = copy_memory(donor_memory)
+        process.deformation_tensor = [0.1] * 10
+    elif arm == "STRAIN_HYSTERESIS":
+        process.memory = component_memory(shocked.memory, "STRAIN_HYSTERESIS", seed)
+        process.deformation_tensor = [0.1] * 10
+    elif arm == "STRAIN_ONLY":
+        process.memory = component_memory(shocked.memory, "STRAIN_ONLY", seed)
+        process.deformation_tensor = [0.1] * 10
+    elif arm == "HYSTERESIS_ONLY":
+        process.memory = component_memory(shocked.memory, "HYSTERESIS_ONLY", seed)
+        process.deformation_tensor = [0.1] * 10
+    elif arm == "RECENT_EVENTS_ONLY":
+        process.memory = component_memory(shocked.memory, "RECENT_EVENTS_ONLY", seed)
+        process.deformation_tensor = [0.1] * 10
+    elif arm == "FLAT_MAGNITUDE":
+        process.memory = component_memory(shocked.memory, "FLAT_MAGNITUDE", seed)
+        process.deformation_tensor = [0.1] * 10
+    elif arm == "SHUFFLED_STRAIN":
+        process.memory = component_memory(shocked.memory, "SHUFFLED_STRAIN", seed)
+        process.deformation_tensor = [0.1] * 10
+    else:
+        raise ValueError("unsupported arm " + arm)
+
+    return process
+
+
+def develop_all() -> Tuple[List[Dict[str, object]], List[int]]:
+    donor_map = p317.fixed_derangement(LINEAGE_COUNT, DONOR_SEED)
+    rows: List[Dict[str, object]] = []
+
+    for index in range(LINEAGE_COUNT):
+        seed = LINEAGE_SEED_BASE + index
+        dev_tape, post_tape = p317.make_tapes(seed)
+
+        canonical = DynamicNumogramProcess(current_zone=seed % 10)
+        canonical_dev = p317.run_dynamic_tape(canonical, dev_tape)
+
+        warp_gain = DynamicNumogramProcess(current_zone=seed % 10)
+        install_warp_development_gain(
+            warp_gain,
+            gain=WARP_GAIN,
+            event_budget=WARP_BUDGET,
+        )
+        warp_dev = p317.run_dynamic_tape(warp_gain, dev_tape)
+        if not isinstance(warp_gain.memory, WarpDevelopmentMemory):
+            raise AssertionError("Warp gain memory installation failed")
+        gain_uses = int(warp_gain.memory.warp_gain_used)
+        warp_gain.memory.disable_warp_gain()
+
+        rows.append({
+            "index": index,
+            "seed": seed,
+            "dev_tape": dev_tape,
+            "post_tape": post_tape,
+            "canonical_mature": canonical,
+            "canonical_dev": canonical_dev,
+            "canonical_dev_warp": warp_stats(canonical_dev),
+            "warp_mature": warp_gain,
+            "warp_dev": warp_dev,
+            "warp_dev_warp": warp_stats(warp_dev),
+            "warp_gain_uses": gain_uses,
+            "warp_gain_log": list(warp_gain.memory.warp_gain_log),
+        })
+
+    return rows, donor_map
+
+
+def run_all_arms(
+    rows: List[Dict[str, object]],
+    donor_map: Sequence[int],
+) -> Dict[str, List[Dict[str, object]]]:
+    results: Dict[str, List[Dict[str, object]]] = {arm: [] for arm in ARMS}
+    canonical_permeabilities = p317.original_gate_permeability(p317.FULL_NUMOGRAM_GATES)
+
+    shocked_canonical: List[DynamicNumogramProcess] = []
+    shocked_warp: List[DynamicNumogramProcess] = []
+
+    for row in rows:
+        seed = int(row["seed"])
+
+        c = copy.deepcopy(row["canonical_mature"])
+        p317.shock_process(c, seed, canonical_permeabilities)
+        shocked_canonical.append(c)
+
+        w = copy.deepcopy(row["warp_mature"])
+        p317.shock_process(w, seed, canonical_permeabilities)
+        if isinstance(w.memory, WarpDevelopmentMemory):
+            w.memory.disable_warp_gain()
+        shocked_warp.append(w)
+
+    for index, row in enumerate(rows):
+        seed = int(row["seed"])
+        post_tape = row["post_tape"]
+        donor_memory = shocked_canonical[int(donor_map[index])].memory
+
+        for arm in ARMS:
+            if arm == "WARP_DEVELOPMENT_GAIN":
+                process = copy.deepcopy(shocked_warp[index])
+            else:
+                process = make_arm(
+                    shocked_canonical[index],
+                    arm,
+                    seed,
+                    donor_memory,
+                )
+
+            pre = arm_pre_metrics(process)
+            records = p317.run_dynamic_tape(process, post_tape)
+            score = score_post(records)
+
+            results[arm].append({
+                "lineage": "P318-{:03d}".format(index),
+                "seed": seed,
+                "donor_lineage": (
+                    "P318-{:03d}".format(donor_map[index])
+                    if arm == "DONOR_PFM"
+                    else None
+                ),
+                "pre": pre,
+                "score": score,
+                "post_records": records,
+                "development_warp": (
+                    row["warp_dev_warp"]
+                    if arm == "WARP_DEVELOPMENT_GAIN"
+                    else row["canonical_dev_warp"]
+                ),
+                "warp_gain_uses": (
+                    row["warp_gain_uses"]
+                    if arm == "WARP_DEVELOPMENT_GAIN"
+                    else 0
+                ),
+            })
+
+    return results
+
+
+def presence(results: Dict[str, List[Dict[str, object]]], arm: str) -> List[bool]:
+    return [bool(row["score"]["sentinel_present"]) for row in results[arm]]
+
+
+def prevalence(results: Dict[str, List[Dict[str, object]]], arm: str) -> int:
+    return sum(presence(results, arm))
+
+
+def arm_summary(results: Dict[str, List[Dict[str, object]]], arm: str) -> Dict[str, object]:
+    rows = results[arm]
+    present_rows = [row for row in rows if bool(row["score"]["sentinel_present"])]
+    first = [
+        int(row["score"]["first_appearance"])
+        for row in present_rows
+        if row["score"]["first_appearance"] is not None
+    ]
+    return {
+        "lineages": len(rows),
+        "sentinel_lineages": len(present_rows),
+        "sentinel_prevalence": len(present_rows) / len(rows),
+        "sentinel_occurrences": sum(int(row["score"]["sentinel_count"]) for row in rows),
+        "median_first_appearance": statistics.median(first) if first else None,
+        "recurrence_fraction": (
+            sum(1 for row in present_rows if bool(row["score"]["recurred"])) / len(present_rows)
+            if present_rows else 0.0
+        ),
+        "mean_panel_breadth": statistics.mean(float(row["score"]["panel_breadth"]) for row in rows),
+        "distinct_panel_forms_seen": sorted({
+            identifier
+            for row in rows
+            for identifier in row["score"]["panel_present_ids"]
+        }),
+        "mean_pre_hysteresis": statistics.mean(float(row["pre"]["hysteresis"]) for row in rows),
+        "mean_pre_strain_mass": statistics.mean(float(row["pre"]["strain_mass"]) for row in rows),
+        "mean_pre_strain_entropy": statistics.mean(float(row["pre"]["strain_entropy"]) for row in rows),
+        "mean_pre_memory_bias": statistics.mean(float(row["pre"]["memory_bias_magnitude"]) for row in rows),
+        "mean_pre_tensor_norm": statistics.mean(float(row["pre"]["tensor_norm"]) for row in rows),
+        "development_warp_entry_fraction": (
+            sum(1 for row in rows if float(row["development_warp"]["warp_entry_count"]) > 0) / len(rows)
+        ),
+        "mean_development_warp_transitions": statistics.mean(
+            float(row["development_warp"]["warp_transition_count"]) for row in rows
+        ),
+        "mean_development_warp_occupancy": statistics.mean(
+            float(row["development_warp"]["warp_occupancy"]) for row in rows
+        ),
+        "mean_post_warp_occupancy": statistics.mean(
+            float(row["score"]["post_warp_occupancy"]) for row in rows
+        ),
+        "mean_warp_gain_uses": statistics.mean(float(row["warp_gain_uses"]) for row in rows),
+    }
+
+
+def classify_mechanism(
+    summaries: Dict[str, Dict[str, object]],
+    component_adjusted: Dict[str, float],
+) -> Dict[str, object]:
+    pfm_count = int(summaries["PFM_ONLY"]["sentinel_lineages"])
+    threshold = 0.75 * pfm_count
+
+    sufficient: Dict[str, bool] = {}
+    for arm in COMPONENT_ARMS:
+        sufficient[arm] = (
+            component_adjusted[arm] <= ALPHA_COMPONENT
+            and int(summaries[arm]["sentinel_lineages"]) >= threshold
+        )
+
+    if sufficient["HYSTERESIS_ONLY"]:
+        label = "GLOBAL_HYSTERETIC_MATURITY"
+    elif sufficient["FLAT_MAGNITUDE"]:
+        label = "GENERIC_STRAIN_MAGNITUDE_PLUS_HYSTERESIS"
+    elif sufficient["SHUFFLED_STRAIN"] and not sufficient["FLAT_MAGNITUDE"]:
+        label = "STRAIN_HETEROGENEITY_WITHOUT_ZONE_IDENTITY"
+    elif sufficient["STRAIN_HYSTERESIS"] and not sufficient["SHUFFLED_STRAIN"]:
+        label = "ZONE_SPECIFIC_STRAIN_ARCHITECTURE"
+    elif sufficient["RECENT_EVENTS_ONLY"]:
+        label = "RECENT_EVENT_CONTENT"
+    else:
+        label = "DISTRIBUTED_COMBINATION_OR_UNRESOLVED"
+
+    return {
+        "label": label,
+        "pfm_only_75pct_threshold_lineages": threshold,
+        "sufficient": sufficient,
+    }
