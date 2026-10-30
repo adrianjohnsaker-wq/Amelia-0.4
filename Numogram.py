@@ -65,6 +65,13 @@ import math
 import random
 from typing import Any, Dict, List, Optional, Sequence, Tuple
 
+from FullNumogram import (
+    CCRU_ZONES,
+    FULL_NUMOGRAM_GATES,
+    FULL_NUMOGRAM_TOPOLOGY_MASK,
+    FULL_NUMOGRAM_TRANSITION_MATRIX,
+)
+
 try:
     import torch
 except ImportError:  # P3.5A deliberately reaches this condition only if imported.
@@ -77,13 +84,14 @@ ZONE_COUNT = 10
 class MinimalBaseNumogram:
     """Minimal non-persistent base topology used by the tensor layer."""
 
-    TRANSITION_MATRIX = tuple(
-        tuple(1.0 if destination in ((source + 1) % ZONE_COUNT, ZONE_COUNT - 1 - source) else 0.08
-              for destination in range(ZONE_COUNT))
-        for source in range(ZONE_COUNT)
-    )
+    # P3.15: Amelia 0.4 now uses the full Amelia—Orange CCRU Numogram.
+    # The Orange graph preserves its original 11 gates and adds every missing
+    # syzygy, current and digital-cumulation gate, for 29 directed gates total.
+    TRANSITION_MATRIX = FULL_NUMOGRAM_TRANSITION_MATRIX
+    TOPOLOGY_MASK = FULL_NUMOGRAM_TOPOLOGY_MASK
+    FULL_GATES = FULL_NUMOGRAM_GATES
     ZONE_DATA = {
-        index: {"zone": index, "syzygy": ZONE_COUNT - 1 - index}
+        index: dict(CCRU_ZONES[index])
         for index in range(ZONE_COUNT)
     }
 
@@ -145,6 +153,10 @@ class TensorBasedNumogramSystem:
             self.base.TRANSITION_MATRIX,
             dtype=torch.float32,
         )
+        self.topology_mask = torch.tensor(
+            self.base.TOPOLOGY_MASK,
+            dtype=torch.float32,
+        )
         self.zone_magnetism = self._initial_magnetism()
 
         # P3.7: retained baselines. These are never mutated after
@@ -164,7 +176,9 @@ class TensorBasedNumogramSystem:
         for origin in range(ZONE_COUNT):
             row = []
             for destination in range(ZONE_COUNT):
-                if (origin + destination) % 9 == 0:
+                if not self.base.TOPOLOGY_MASK[origin][destination]:
+                    row.append(0.0)
+                elif (origin + destination) % 9 == 0:
                     row.append(0.2)
                 elif origin == destination:
                     row.append(0.0)
@@ -232,6 +246,10 @@ class TensorBasedNumogramSystem:
         scores = active_transition_tensor[origin].clone()
         scores = scores + active_zone_magnetism[origin] + tensor_strength
         scores = scores + self._context_bias(context_data)
+        # Orange's runtime selects only from gates whose source is the current
+        # zone. Apply the same structural constraint after every additive
+        # channel so context or magnetism cannot fabricate a non-Numogram edge.
+        scores = scores * self.topology_mask[origin]
         scores = torch.clamp(scores, min=0.0)
         total = float(scores.sum().item())
         if total <= 0.0 or not math.isfinite(total):
@@ -241,6 +259,8 @@ class TensorBasedNumogramSystem:
     def update_transition_tensor(self, current_zone: int, next_zone: int, intensity: float = 1.0):
         origin = self._require_zone(current_zone)
         destination = self._require_zone(next_zone)
+        if not self.base.TOPOLOGY_MASK[origin][destination]:
+            raise ValueError("transition is not an edge of the full Orange Numogram")
         adjustment = max(-1.0, min(1.0, float(intensity))) * self.learning_rate
         self.transition_tensor[origin, destination] = torch.clamp(
             self.transition_tensor[origin, destination] + adjustment,
@@ -254,6 +274,8 @@ class TensorBasedNumogramSystem:
     def update_zone_magnetism(self, current_zone: int, next_zone: int):
         origin = self._require_zone(current_zone)
         destination = self._require_zone(next_zone)
+        if not self.base.TOPOLOGY_MASK[origin][destination]:
+            raise ValueError("transition is not an edge of the full Orange Numogram")
         self.zone_magnetism[origin, destination] = torch.clamp(
             self.zone_magnetism[origin, destination] + self.learning_rate,
             min=-1.0,
