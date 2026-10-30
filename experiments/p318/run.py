@@ -486,3 +486,168 @@ def classify_mechanism(
         "pfm_only_75pct_threshold_lineages": threshold,
         "sufficient": sufficient,
     }
+
+
+def write_lineage_archive(
+    path: str,
+    rows: Sequence[Dict[str, object]],
+    results: Dict[str, List[Dict[str, object]]],
+) -> None:
+    with gzip.open(path, "wt", encoding="utf-8") as handle:
+        for index, row in enumerate(rows):
+            payload = {
+                "lineage": "P318-{:03d}".format(index),
+                "seed": row["seed"],
+                "developmental_tape": row["dev_tape"],
+                "post_tape": row["post_tape"],
+                "canonical_development_records": row["canonical_dev"],
+                "warp_gain_development_records": row["warp_dev"],
+                "warp_gain_log": row["warp_gain_log"],
+                "arms": {
+                    arm: {
+                        "pre": results[arm][index]["pre"],
+                        "score": results[arm][index]["score"],
+                        "post_records": results[arm][index]["post_records"],
+                        "development_warp": results[arm][index]["development_warp"],
+                        "warp_gain_uses": results[arm][index]["warp_gain_uses"],
+                        "donor_lineage": results[arm][index]["donor_lineage"],
+                    }
+                    for arm in ARMS
+                },
+            }
+            handle.write(json.dumps(payload, sort_keys=True, separators=(",", ":")) + "\n")
+
+
+def report_markdown(result: Dict[str, object]) -> str:
+    p = result["primary"]
+    mech = result["mechanism"]
+    warp = result["warp"]
+    summaries = result["arms"]
+
+    lines = [
+        "# P3.18 — Developmental Competence Decomposition + Warp Developmental Gain",
+        "",
+        "## Primary competence result",
+        "",
+        "- PFM-mediated developmental competence gate: **{}**".format(
+            "PASS" if p["held"] else "FAIL"
+        ),
+        "- FULL_OWN sentinel prevalence: {}/{}".format(
+            summaries["FULL_OWN"]["sentinel_lineages"], LINEAGE_COUNT
+        ),
+        "- BLANK sentinel prevalence: {}/{}".format(
+            summaries["BLANK"]["sentinel_lineages"], LINEAGE_COUNT
+        ),
+        "- PFM_ONLY sentinel prevalence: {}/{}".format(
+            summaries["PFM_ONLY"]["sentinel_lineages"], LINEAGE_COUNT
+        ),
+        "- DONOR_PFM sentinel prevalence: {}/{}".format(
+            summaries["DONOR_PFM"]["sentinel_lineages"], LINEAGE_COUNT
+        ),
+        "- TENSOR_ONLY sentinel prevalence: {}/{}".format(
+            summaries["TENSOR_ONLY"]["sentinel_lineages"], LINEAGE_COUNT
+        ),
+        "- FULL_OWN > BLANK paired sign p: {:.8f}".format(
+            p["full_vs_blank"]["p_upper"]
+        ),
+        "- PFM_ONLY > BLANK paired sign p: {:.8f}".format(
+            p["pfm_vs_blank"]["p_upper"]
+        ),
+        "- DONOR_PFM > BLANK paired sign p: {:.8f}".format(
+            p["donor_vs_blank"]["p_upper"]
+        ),
+        "",
+        "## Developmental transformation",
+        "",
+        "- classification: **{}**".format(mech["label"]),
+        "",
+        "| arm | sentinel lineages | raw p vs BLANK | Holm p | sufficient |",
+        "|---|---:|---:|---:|---:|",
+    ]
+    for arm in COMPONENT_ARMS:
+        lines.append(
+            "| {} | {} | {:.8f} | {:.8f} | {} |".format(
+                arm,
+                summaries[arm]["sentinel_lineages"],
+                result["component_tests"][arm]["p_upper"],
+                result["component_holm"][arm],
+                mech["sufficient"][arm],
+            )
+        )
+
+    lines.extend([
+        "",
+        "## Warp developmental gain",
+        "",
+        "- promising for further development: **{}**".format(
+            "YES" if warp["promising"] else "NO"
+        ),
+        "- canonical sentinel prevalence: {}/{}".format(
+            summaries["FULL_OWN"]["sentinel_lineages"], LINEAGE_COUNT
+        ),
+        "- Warp-gain sentinel prevalence: {}/{}".format(
+            summaries["WARP_DEVELOPMENT_GAIN"]["sentinel_lineages"], LINEAGE_COUNT
+        ),
+        "- Warp-gain > canonical paired sign p: {:.8f}".format(
+            warp["gain_vs_full"]["p_upper"]
+        ),
+        "- canonical mean developmental Warp transitions: {:.4f}".format(
+            summaries["FULL_OWN"]["mean_development_warp_transitions"]
+        ),
+        "- Warp-gain mean developmental Warp transitions: {:.4f}".format(
+            summaries["WARP_DEVELOPMENT_GAIN"]["mean_development_warp_transitions"]
+        ),
+        "- absolute traffic difference: {:.4f}".format(
+            warp["absolute_mean_warp_transition_difference"]
+        ),
+        "- mean bounded gain uses: {:.4f} of {}".format(
+            summaries["WARP_DEVELOPMENT_GAIN"]["mean_warp_gain_uses"],
+            WARP_BUDGET,
+        ),
+        "- canonical mean frozen-panel breadth: {:.4f}".format(
+            summaries["FULL_OWN"]["mean_panel_breadth"]
+        ),
+        "- Warp-gain mean frozen-panel breadth: {:.4f}".format(
+            summaries["WARP_DEVELOPMENT_GAIN"]["mean_panel_breadth"]
+        ),
+        "",
+        "## Arm diagnostics",
+        "",
+        "| arm | sentinel | panel breadth | hysteresis | strain mass | strain entropy | |bias| | tensor norm | dev Warp occupancy | post Warp occupancy |",
+        "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
+    ])
+    for arm in ARMS:
+        s = summaries[arm]
+        lines.append(
+            "| {} | {} | {:.4f} | {:.4f} | {:.4f} | {:.4f} | {:.4f} | {:.4f} | {:.4f} | {:.4f} |".format(
+                arm,
+                s["sentinel_lineages"],
+                s["mean_panel_breadth"],
+                s["mean_pre_hysteresis"],
+                s["mean_pre_strain_mass"],
+                s["mean_pre_strain_entropy"],
+                s["mean_pre_memory_bias"],
+                s["mean_pre_tensor_norm"],
+                s["mean_development_warp_occupancy"],
+                s["mean_post_warp_occupancy"],
+            )
+        )
+
+    lines.extend([
+        "",
+        "## Interpretation",
+        "",
+        result["interpretation"],
+        "",
+        "## Provenance",
+        "",
+        "- registration SHA-256: {}".format(result["provenance"]["registration_sha256"]),
+        "- runner SHA-256: {}".format(result["provenance"]["runner_sha256"]),
+        "- Warp operator SHA-256: {}".format(result["provenance"]["warp_operator_sha256"]),
+        "- frozen dynamic engine SHA-256: {}".format(result["provenance"]["dynamic_engine_sha256"]),
+        "- lineage archive SHA-256: {}".format(result["provenance"]["lineages_sha256"]),
+        "",
+        "The Warp implementation remains experimental unless the registered Warp endpoint is satisfied.",
+        "",
+    ])
+    return "\n".join(lines)
