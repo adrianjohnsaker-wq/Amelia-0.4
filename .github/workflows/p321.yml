@@ -1,0 +1,83 @@
+name: P3.21 Repertoire-Controlled Communication Efficacy
+
+on:
+  push:
+    branches: ["p321-communication-efficacy-20261030"]
+    paths:
+      - "FullNumogram.py"
+      - "experiments/p316/DynamicNumogram.py"
+      - "experiments/p317/run.py"
+      - "experiments/p321/**"
+      - ".github/workflows/p321.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: p321-communication-efficacy
+  cancel-in-progress: false
+
+jobs:
+  assay:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: p321-communication-efficacy-20261030
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Preflight
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(sha256sum FullNumogram.py | cut -d' ' -f1)" = "b6edbe76ab4929e93c01059fb56cef900effa9bca1cec78d0039eafb8fbebdf8"
+          test "$(sha256sum experiments/p316/DynamicNumogram.py | cut -d' ' -f1)" = "ac482882858c1e47f578523452eff0bc20aa82b5978299c9c8808ff6127c5cd6"
+          python -m py_compile experiments/p321/run.py
+          python - <<'PY'
+          import sys
+          sys.path.insert(0,"experiments/p321")
+          import run
+          # Synthetic decoder sanity only.
+          fake=[[{"motifs":["1-2-3-4"],"positions":{"1-2-3-4":[0]},"transition_entropy":1.0} for _ in range(run.PROBES)] for _ in range(run.N)]
+          vocab=run.build_vocab(fake)
+          model=run.train_model(fake,vocab)
+          dec=run.decode(fake,vocab,model)
+          assert dec["n"]==run.TEST_N*run.PROBES
+          for i in range(run.REWIRES):
+              gates=run.p317.rewired_gates(999321+i)
+              assert run.p317.degree_signature(gates)==run.p317.degree_signature(run.p317.FULL_NUMOGRAM_GATES)
+              assert run.p317.self_loop_count(gates)==run.p317.self_loop_count(run.p317.FULL_NUMOGRAM_GATES)
+          print("P3.21 preflight PASS")
+          PY
+      - name: Record provenance
+        run: |
+          mkdir -p experiments/p321/results
+          sha256sum FullNumogram.py experiments/p316/DynamicNumogram.py experiments/p317/run.py experiments/p321/REGISTRATION.md experiments/p321/AMENDMENT_1.md experiments/p321/run.py > experiments/p321/results/PRE_RUN_SHA256SUMS.txt
+      - name: Run first registered P3.21 assay
+        shell: bash
+        run: |
+          set -euo pipefail
+          python experiments/p321/run.py --out experiments/p321/results | tee experiments/p321/results/console-summary.json
+      - name: Display report
+        run: |
+          cat experiments/p321/results/REPORT.md
+          sed -n '1,220p' experiments/p321/results/ATLAS.md
+      - name: Commit compact result
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add experiments/p321/results/REPORT.md experiments/p321/results/ATLAS.md experiments/p321/results/summary.json experiments/p321/results/PRE_RUN_SHA256SUMS.txt experiments/p321/results/console-summary.json
+          if ! git diff --cached --quiet; then
+            git commit -m "P3.21: archive first communication efficacy result [skip ci]"
+            git push origin HEAD:p321-communication-efficacy-20261030
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: P3.21-communication-efficacy-evidence
+          path: experiments/p321/results/
+          retention-days: 90
