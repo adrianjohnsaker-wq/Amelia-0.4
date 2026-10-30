@@ -651,3 +651,177 @@ def report_markdown(result: Dict[str, object]) -> str:
         "",
     ])
     return "\n".join(lines)
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--out", default="experiments/p318/results")
+    args = parser.parse_args()
+    os.makedirs(args.out, exist_ok=True)
+
+    rows, donor_map = develop_all()
+    results = run_all_arms(rows, donor_map)
+    summaries = {arm: arm_summary(results, arm) for arm in ARMS}
+
+    blank_presence = presence(results, "BLANK")
+    full_test = paired_presence_test(presence(results, "FULL_OWN"), blank_presence)
+    pfm_test = paired_presence_test(presence(results, "PFM_ONLY"), blank_presence)
+    donor_test = paired_presence_test(presence(results, "DONOR_PFM"), blank_presence)
+
+    full_count = int(summaries["FULL_OWN"]["sentinel_lineages"])
+    pfm_count = int(summaries["PFM_ONLY"]["sentinel_lineages"])
+    donor_count = int(summaries["DONOR_PFM"]["sentinel_lineages"])
+
+    primary_held = (
+        float(full_test["p_upper"]) <= ALPHA_PRIMARY
+        and float(pfm_test["p_upper"]) <= ALPHA_PRIMARY
+        and float(donor_test["p_upper"]) <= ALPHA_PRIMARY
+        and pfm_count >= 0.75 * full_count
+        and donor_count >= 0.75 * full_count
+    )
+
+    component_tests = {
+        arm: paired_presence_test(presence(results, arm), blank_presence)
+        for arm in COMPONENT_ARMS
+    }
+    component_raw = {
+        arm: float(component_tests[arm]["p_upper"])
+        for arm in COMPONENT_ARMS
+    }
+    component_holm = holm_adjust(component_raw)
+    mechanism = classify_mechanism(summaries, component_holm)
+
+    warp_test = paired_presence_test(
+        presence(results, "WARP_DEVELOPMENT_GAIN"),
+        presence(results, "FULL_OWN"),
+    )
+    traffic_diff = abs(
+        float(summaries["WARP_DEVELOPMENT_GAIN"]["mean_development_warp_transitions"])
+        - float(summaries["FULL_OWN"]["mean_development_warp_transitions"])
+    )
+    warp_promising = (
+        float(warp_test["p_upper"]) <= 0.05
+        and int(summaries["WARP_DEVELOPMENT_GAIN"]["sentinel_lineages"])
+            > int(summaries["FULL_OWN"]["sentinel_lineages"])
+        and traffic_diff < 1.0
+    )
+
+    if primary_held:
+        interpretation = (
+            "P3.18 confirms that the P3.17 competence phenotype is substantially "
+            "PFM-mediated and does not require lineage-specific memory content: own "
+            "mature PFM and donor mature PFM both outperform a blank PFM while retaining "
+            "at least 75% of full-process prevalence. The registered component "
+            "classification is {}.".format(mechanism["label"])
+        )
+    else:
+        interpretation = (
+            "P3.18 does not satisfy the registered PFM-mediated competence gate. "
+            "Component and Warp results remain mechanistic descriptions and cannot "
+            "rescue the primary competence claim."
+        )
+
+    if warp_promising:
+        interpretation += (
+            " The bounded Warp-development gain also increases the fixed competence "
+            "sentinel without materially increasing Warp traffic, supporting further "
+            "development of Warp as a slow-state developmental operator rather than as "
+            "an occupancy or trapping mechanism."
+        )
+    else:
+        interpretation += (
+            " The bounded Warp-development gain does not meet its registered promotion "
+            "criterion, so it remains experimental and the canonical Warp is unchanged."
+        )
+
+    lineage_path = os.path.join(args.out, "lineages.jsonl.gz")
+    write_lineage_archive(lineage_path, rows, results)
+
+    result = {
+        "schema": "amelia-p318-developmental-competence-v1",
+        "sentinel": SENTINEL,
+        "panel": list(PANEL),
+        "primary": {
+            "held": primary_held,
+            "full_vs_blank": full_test,
+            "pfm_vs_blank": pfm_test,
+            "donor_vs_blank": donor_test,
+            "full_count": full_count,
+            "pfm_count": pfm_count,
+            "donor_count": donor_count,
+        },
+        "component_tests": component_tests,
+        "component_holm": component_holm,
+        "mechanism": mechanism,
+        "warp": {
+            "promising": warp_promising,
+            "gain_vs_full": warp_test,
+            "absolute_mean_warp_transition_difference": traffic_diff,
+            "gain": WARP_GAIN,
+            "event_budget": WARP_BUDGET,
+        },
+        "arms": summaries,
+        "interpretation": interpretation,
+        "provenance": {
+            "registration_sha256": sha256_file("experiments/p318/REGISTRATION.md"),
+            "runner_sha256": sha256_file("experiments/p318/run.py"),
+            "warp_operator_sha256": sha256_file("experiments/p318/WarpDevelopmentOperator.py"),
+            "dynamic_engine_sha256": sha256_file("experiments/p316/DynamicNumogram.py"),
+            "p317_runner_sha256": sha256_file("experiments/p317/run.py"),
+            "lineages_sha256": sha256_file(lineage_path),
+        },
+    }
+
+    summary_path = os.path.join(args.out, "summary.json")
+    with open(summary_path, "w", encoding="utf-8") as handle:
+        json.dump(result, handle, indent=2, sort_keys=True)
+
+    report_path = os.path.join(args.out, "REPORT.md")
+    with open(report_path, "w", encoding="utf-8") as handle:
+        handle.write(report_markdown(result))
+
+    compact_rows = []
+    for index in range(LINEAGE_COUNT):
+        compact_rows.append({
+            "lineage": "P318-{:03d}".format(index),
+            "seed": LINEAGE_SEED_BASE + index,
+            "donor": "P318-{:03d}".format(donor_map[index]),
+            "arms": {
+                arm: {
+                    "present": bool(results[arm][index]["score"]["sentinel_present"]),
+                    "count": int(results[arm][index]["score"]["sentinel_count"]),
+                    "first": results[arm][index]["score"]["first_appearance"],
+                    "panel_breadth": int(results[arm][index]["score"]["panel_breadth"]),
+                }
+                for arm in ARMS
+            },
+        })
+    compact_path = os.path.join(args.out, "lineage_scores.json")
+    with open(compact_path, "w", encoding="utf-8") as handle:
+        json.dump(compact_rows, handle, indent=2, sort_keys=True)
+
+    sums = {
+        "report_sha256": sha256_file(report_path),
+        "summary_sha256": sha256_file(summary_path),
+        "lineage_scores_sha256": sha256_file(compact_path),
+        "lineages_sha256": sha256_file(lineage_path),
+    }
+    with open(os.path.join(args.out, "SHA256SUMS.json"), "w", encoding="utf-8") as handle:
+        json.dump(sums, handle, indent=2, sort_keys=True)
+
+    print(json.dumps({
+        "primary": result["primary"],
+        "mechanism": result["mechanism"],
+        "warp": result["warp"],
+        "sentinel_counts": {
+            arm: summaries[arm]["sentinel_lineages"]
+            for arm in ARMS
+        },
+        "interpretation": interpretation,
+        "provenance": result["provenance"],
+    }, indent=2, sort_keys=True))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
