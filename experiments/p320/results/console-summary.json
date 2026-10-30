@@ -1,0 +1,97 @@
+{
+  "canonical_efficacy": {
+    "canonical_score": 0.5594341016548463,
+    "held": false,
+    "rank_p": 1.0,
+    "rewire_scores": [
+      0.8861923758865249,
+      0.8285036199763594,
+      0.9149213209219859,
+      0.8256177969858156,
+      0.7995299571513003,
+      0.8415429225768322,
+      0.8830433658392435,
+      0.8606401447990544,
+      0.8268921764184397,
+      0.869389960106383,
+      0.9232786643026005,
+      0.9035119311465721,
+      0.8656499335106382,
+      0.7946171320921986,
+      0.8784953088061466,
+      0.8699671247044918,
+      0.7475759086879433,
+      0.8105191710992908,
+      0.9172392139479906,
+      0.7647200059101655,
+      0.8916777482269503,
+      0.8497709810874704,
+      0.9100823729314421,
+      0.7549035904255319
+    ]
+  },
+  "interpretation": "Development reconfigured the accessible transition geometry under independent probes. Mature donor PFM reproduced the geometry relationship across both probe halves. The canonical Numogram did not uniquely exceed all degree-preserving rewires on the registered addressability score.",
+  "pfm_transfer": {
+    "A": {
+      "mean_advantage": 0.27972834036271144,
+      "p_upper": 0.00021999560008799824
+    },
+    "B": {
+      "mean_advantage": 0.3188103119137063,
+      "p_upper": 1.999960000799984e-05
+    },
+    "held": true
+  },
+  "primary_geometry": {
+    "half_directions": {
+      "edge_breadth": {
+        "A": -0.90625,
+        "B": -0.17708333333333334
+      },
+      "motif_entropy": {
+        "A": -0.18933557210488855,
+        "B": -0.24379481691224547
+      },
+      "non_echo_breadth": {
+        "A": -4.989583333333333,
+        "B": -5.729166666666667
+      },
+      "probe_divergence": {
+        "A": -0.01821619301026566,
+        "B": -0.030169648248792244
+      }
+    },
+    "held": true,
+    "multivariate": {
+      "T": 0.3126279964364934,
+      "components": {
+        "edge_breadth": {
+          "holm_p": 0.6502469950600988,
+          "mean_difference": -0.11458333333333333,
+          "p_two_sided": 0.6502469950600988
+        },
+        "motif_entropy": {
+          "holm_p": 0.00011999760004799905,
+          "mean_difference": -0.22661863114686567,
+          "p_two_sided": 3.999920001599968e-05
+        },
+        "non_echo_breadth": {
+          "holm_p": 0.027239455210895783,
+          "mean_difference": -6.739583333333333,
+          "p_two_sided": 0.013619727605447891
+        },
+        "probe_divergence": {
+          "holm_p": 7.999840003199936e-05,
+          "mean_difference": -0.022830034260490475,
+          "p_two_sided": 1.999960000799984e-05
+        }
+      },
+      "p": 0.00015999680006399873
+    },
+    "surviving_components": [
+      "non_echo_breadth",
+      "motif_entropy",
+      "probe_divergence"
+    ]
+  }
+}

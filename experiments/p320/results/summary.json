@@ -1,0 +1,827 @@
+{
+  "canonical_efficacy": {
+    "canonical_score": 0.5594341016548463,
+    "held": false,
+    "rank_p": 1.0,
+    "rewire_scores": [
+      0.8861923758865249,
+      0.8285036199763594,
+      0.9149213209219859,
+      0.8256177969858156,
+      0.7995299571513003,
+      0.8415429225768322,
+      0.8830433658392435,
+      0.8606401447990544,
+      0.8268921764184397,
+      0.869389960106383,
+      0.9232786643026005,
+      0.9035119311465721,
+      0.8656499335106382,
+      0.7946171320921986,
+      0.8784953088061466,
+      0.8699671247044918,
+      0.7475759086879433,
+      0.8105191710992908,
+      0.9172392139479906,
+      0.7647200059101655,
+      0.8916777482269503,
+      0.8497709810874704,
+      0.9100823729314421,
+      0.7549035904255319
+    ]
+  },
+  "focal_geometry_means": {
+    "BLANK": {
+      "A": {
+        "edge_breadth": 22.34375,
+        "motif_entropy": 4.416732444198453,
+        "non_echo_breadth": 87.80208333333333,
+        "probe_divergence": 0.7048681876509661
+      },
+      "B": {
+        "edge_breadth": 21.96875,
+        "motif_entropy": 4.310694318895696,
+        "non_echo_breadth": 91.05208333333333,
+        "probe_divergence": 0.6917329502566425
+      },
+      "all": {
+        "edge_breadth": 23.1875,
+        "motif_entropy": 4.452846110828563,
+        "non_echo_breadth": 118.34375,
+        "probe_divergence": 0.7012041962174941
+      }
+    },
+    "DONOR_PFM": {
+      "A": {
+        "edge_breadth": 20.875,
+        "motif_entropy": 4.132080735981102,
+        "non_echo_breadth": 79.38541666666667,
+        "probe_divergence": 0.6777945255887682
+      },
+      "B": {
+        "edge_breadth": 21.635416666666668,
+        "motif_entropy": 3.9635667977114792,
+        "non_echo_breadth": 82.5625,
+        "probe_divergence": 0.654045657835145
+      },
+      "all": {
+        "edge_breadth": 22.8125,
+        "motif_entropy": 4.1240635453494265,
+        "non_echo_breadth": 107.59375,
+        "probe_divergence": 0.6706791149527187
+      }
+    },
+    "FRESH": {
+      "A": {
+        "edge_breadth": 22.302083333333332,
+        "motif_entropy": 4.737275632188858,
+        "non_echo_breadth": 89.63541666666667,
+        "probe_divergence": 0.6520099732035025
+      },
+      "B": {
+        "edge_breadth": 22.583333333333332,
+        "motif_entropy": 4.85332575883379,
+        "non_echo_breadth": 99.23958333333333,
+        "probe_divergence": 0.6612684461805556
+      },
+      "all": {
+        "edge_breadth": 22.864583333333332,
+        "motif_entropy": 4.876861961651761,
+        "non_echo_breadth": 121.28125,
+        "probe_divergence": 0.6563030991430261
+      }
+    },
+    "FULL_OWN": {
+      "A": {
+        "edge_breadth": 21.4375,
+        "motif_entropy": 4.227396872093564,
+        "non_echo_breadth": 82.8125,
+        "probe_divergence": 0.6866519946407005
+      },
+      "B": {
+        "edge_breadth": 21.791666666666668,
+        "motif_entropy": 4.066899501983451,
+        "non_echo_breadth": 85.32291666666667,
+        "probe_divergence": 0.6615633020078503
+      },
+      "all": {
+        "edge_breadth": 23.072916666666668,
+        "motif_entropy": 4.226227479681698,
+        "non_echo_breadth": 111.60416666666667,
+        "probe_divergence": 0.6783741619570036
+      }
+    },
+    "STATIC_CANONICAL": {
+      "A": {
+        "edge_breadth": 19.125,
+        "motif_entropy": 4.0354121872335895,
+        "non_echo_breadth": 68.53125,
+        "probe_divergence": 0.7112488677536233
+      },
+      "B": {
+        "edge_breadth": 19.96875,
+        "motif_entropy": 3.7936856514454207,
+        "non_echo_breadth": 66.59375,
+        "probe_divergence": 0.6883715938254831
+      },
+      "all": {
+        "edge_breadth": 20.5625,
+        "motif_entropy": 3.9823865776411633,
+        "non_echo_breadth": 88.27083333333333,
+        "probe_divergence": 0.7003292146867612
+      }
+    }
+  },
+  "gain_loss_vs_blank": {
+    "DONOR_PFM": {
+      "mean_gain": 5.4375,
+      "mean_loss": 16.1875
+    },
+    "FRESH": {
+      "mean_gain": 36.020833333333336,
+      "mean_loss": 33.083333333333336
+    },
+    "FULL_OWN": {
+      "mean_gain": 5.3125,
+      "mean_loss": 12.052083333333334
+    },
+    "STATIC_CANONICAL": {
+      "mean_gain": 15.71875,
+      "mean_loss": 45.791666666666664
+    }
+  },
+  "interpretation": "Development reconfigured the accessible transition geometry under independent probes. Mature donor PFM reproduced the geometry relationship across both probe halves. The canonical Numogram did not uniquely exceed all degree-preserving rewires on the registered addressability score.",
+  "pfm_transfer": {
+    "A": {
+      "mean_advantage": 0.27972834036271144,
+      "p_upper": 0.00021999560008799824
+    },
+    "B": {
+      "mean_advantage": 0.3188103119137063,
+      "p_upper": 1.999960000799984e-05
+    },
+    "held": true
+  },
+  "primary_geometry": {
+    "half_directions": {
+      "edge_breadth": {
+        "A": -0.90625,
+        "B": -0.17708333333333334
+      },
+      "motif_entropy": {
+        "A": -0.18933557210488855,
+        "B": -0.24379481691224547
+      },
+      "non_echo_breadth": {
+        "A": -4.989583333333333,
+        "B": -5.729166666666667
+      },
+      "probe_divergence": {
+        "A": -0.01821619301026566,
+        "B": -0.030169648248792244
+      }
+    },
+    "held": true,
+    "multivariate": {
+      "T": 0.3126279964364934,
+      "components": {
+        "edge_breadth": {
+          "holm_p": 0.6502469950600988,
+          "mean_difference": -0.11458333333333333,
+          "p_two_sided": 0.6502469950600988
+        },
+        "motif_entropy": {
+          "holm_p": 0.00011999760004799905,
+          "mean_difference": -0.22661863114686567,
+          "p_two_sided": 3.999920001599968e-05
+        },
+        "non_echo_breadth": {
+          "holm_p": 0.027239455210895783,
+          "mean_difference": -6.739583333333333,
+          "p_two_sided": 0.013619727605447891
+        },
+        "probe_divergence": {
+          "holm_p": 7.999840003199936e-05,
+          "mean_difference": -0.022830034260490475,
+          "p_two_sided": 1.999960000799984e-05
+        }
+      },
+      "p": 0.00015999680006399873
+    },
+    "surviving_components": [
+      "non_echo_breadth",
+      "motif_entropy",
+      "probe_divergence"
+    ]
+  },
+  "provenance": {
+    "amendment_sha256": "d0045bc6c6ac6b1c5757b6782abb5bf61153a9050b430d1aa1e40fb509d83d09",
+    "engine_sha256": "ac482882858c1e47f578523452eff0bc20aa82b5978299c9c8808ff6127c5cd6",
+    "raw_responses_sha256": "093fe35c4cbb38688e4116959852f4ce5f789cee6399f84fe69c7f4b3a54ce5d",
+    "registration_sha256": "776f0a98a1b83102389eccd57eba8eb6107cd9055b353e26e2392dc854c7a206",
+    "runner_sha256": "1a9fd4c751dfb0188149a6adf241a993ddad9bb70a0b97a7ebba1965fdf4cb26"
+  },
+  "rewired_controls": [
+    {
+      "addressability_score": 0.8861923758865249,
+      "controller": 0,
+      "geometry_means": {
+        "A": {
+          "edge_breadth": 28.09375,
+          "motif_entropy": 6.14955418536975,
+          "non_echo_breadth": 139.71875,
+          "probe_divergence": 0.7393568840579711
+        },
+        "B": {
+          "edge_breadth": 28.0625,
+          "motif_entropy": 5.982401056847996,
+          "non_echo_breadth": 136.125,
+          "probe_divergence": 0.7355272965730676
+        },
+        "all": {
+          "edge_breadth": 28.28125,
+          "motif_entropy": 6.158420120089805,
+          "non_echo_breadth": 166.95833333333334,
+          "probe_divergence": 0.740123270814864
+        }
+      },
+      "seed": 3216000
+    },
+    {
+      "addressability_score": 0.8285036199763594,
+      "controller": 1,
+      "geometry_means": {
+        "A": {
+          "edge_breadth": 28.71875,
+          "motif_entropy": 6.489787213773222,
+          "non_echo_breadth": 157.83333333333334,
+          "probe_divergence": 0.7484761850845411
+        },
+        "B": {
+          "edge_breadth": 28.854166666666668,
+          "motif_entropy": 6.48786821523447,
+          "non_echo_breadth": 170.21875,
+          "probe_divergence": 0.722287090504227
+        },
+        "all": {
+          "edge_breadth": 28.979166666666668,
+          "motif_entropy": 6.604227054812089,
+          "non_echo_breadth": 201.41666666666666,
+          "probe_divergence": 0.7353478109301123
+        }
+      },
+      "seed": 3216001
+    },
+    {
+      "addressability_score": 0.9149213209219859,
+      "controller": 2,
+      "geometry_means": {
+        "A": {
+          "edge_breadth": 27.09375,
+          "motif_entropy": 6.341137298424271,
+          "non_echo_breadth": 154.15625,
+          "probe_divergence": 0.6999700426479468
+        },
+        "B": {
+          "edge_breadth": 27.53125,
+          "motif_entropy": 6.27543802251122,
+          "non_echo_breadth": 143.72916666666666,
+          "probe_divergence": 0.6958609318387681
+        },
+        "all": {
+          "edge_breadth": 28.177083333333332,
+          "motif_entropy": 6.4189290993861325,
+          "non_echo_breadth": 184.20833333333334,
+          "probe_divergence": 0.7007649739583334
+        }
+      },
+      "seed": 3216002
+    },
+    {
+      "addressability_score": 0.8256177969858156,
+      "controller": 3,
+      "geometry_means": {
+        "A": {
+          "edge_breadth": 28.739583333333332,
+          "motif_entropy": 6.231959217200972,
+          "non_echo_breadth": 148.40625,
+          "probe_divergence": 0.7129814405948067
+        },
+        "B": {
+          "edge_breadth": 27.333333333333332,
+          "motif_entropy": 6.0182426771020605,
+          "non_echo_breadth": 127.89583333333333,
+          "probe_divergence": 0.7031014115338164
+        },
+        "all": {
+          "edge_breadth": 28.989583333333332,
+          "motif_entropy": 6.229287434941487,
+          "non_echo_breadth": 174.9375,
+          "probe_divergence": 0.7076447759677896
+        }
+      },
+      "seed": 3216003
+    },
+    {
+      "addressability_score": 0.7995299571513003,
+      "controller": 4,
+      "geometry_means": {
+        "A": {
+          "edge_breadth": 26.34375,
+          "motif_entropy": 4.868057193237041,
+          "non_echo_breadth": 97.4375,
+          "probe_divergence": 0.6505109261775363
+        },
+        "B": {
+          "edge_breadth": 28.145833333333332,
+          "motif_entropy": 5.58131529608862,
+          "non_echo_breadth": 132.07291666666666,
+          "probe_divergence": 0.6903424101751208
+        },
+        "all": {
+          "edge_breadth": 28.395833333333332,
+          "motif_entropy": 5.347452389184981,
+          "non_echo_breadth": 152.76041666666666,
+          "probe_divergence": 0.6708640962064125
+        }
+      },
+      "seed": 3216004
+    },
+    {
+      "addressability_score": 0.8415429225768322,
+      "controller": 5,
+      "geometry_means": {
+        "A": {
+          "edge_breadth": 22.71875,
+          "motif_entropy": 5.052549829829681,
+          "non_echo_breadth": 97.94791666666667,
+          "probe_divergence": 0.5838994565217391
+        },
+        "B": {
+          "edge_breadth": 22.552083333333332,
+          "motif_entropy": 4.996547844473507,
+          "non_echo_breadth": 102.6875,
+          "probe_divergence": 0.5801889907910629
+        },
+        "all": {
+          "edge_breadth": 24.6875,
+          "motif_entropy": 5.1079684719657275,
+          "non_echo_breadth": 125.17708333333333,
+          "probe_divergence": 0.5794308349032211
+        }
+      },
+      "seed": 3216005
+    },
+    {
+      "addressability_score": 0.8830433658392435,
+      "controller": 6,
+      "geometry_means": {
+        "A": {
+          "edge_breadth": 27.239583333333332,
+          "motif_entropy": 6.395871805039469,
+          "non_echo_breadth": 144.77083333333334,
+          "probe_divergence": 0.7618414100241546
+        },
+        "B": {
+          "edge_breadth": 27.614583333333332,
+          "motif_entropy": 6.313081714863129,
+          "non_echo_breadth": 141.53125,
+          "probe_divergence": 0.7625526022795894
+        },
+        "all": {
+          "edge_breadth": 28.1875,
+          "motif_entropy": 6.45296062064216,
+          "non_echo_breadth": 175.27083333333334,
+          "probe_divergence": 0.7604085863622931
+        }
+      },
+      "seed": 3216006
+    },
+    {
+      "addressability_score": 0.8606401447990544,
+      "controller": 7,
+      "geometry_means": {
+        "A": {
+          "edge_breadth": 27.666666666666668,
+          "motif_entropy": 6.318099684076861,
+          "non_echo_breadth": 148.51041666666666,
+          "probe_divergence": 0.7017733808876812
+        },
+        "B": {
+          "edge_breadth": 28.59375,
+          "motif_entropy": 6.336340297524009,
+          "non_echo_breadth": 158.53125,
+          "probe_divergence": 0.6960484601449275
+        },
+        "all": {
+          "edge_breadth": 28.90625,
+          "motif_entropy": 6.440720287469247,
+          "non_echo_breadth": 189.88541666666666,
+          "probe_divergence": 0.6972849600140366
+        }
+      },
+      "seed": 3216007
+    },
+    {
+      "addressability_score": 0.8268921764184397,
+      "controller": 8,
+      "geometry_means": {
+        "A": {
+          "edge_breadth": 27.25,
+          "motif_entropy": 5.976480130084851,
+          "non_echo_breadth": 131.20833333333334,
+          "probe_divergence": 0.7259716089221014
+        },
+        "B": {
+          "edge_breadth": 28.364583333333332,
+          "motif_entropy": 5.832964155438969,
+          "non_echo_breadth": 129.63541666666666,
+          "probe_divergence": 0.7216042044082126
+        },
+        "all": {
+          "edge_breadth": 28.520833333333332,
+          "motif_entropy": 6.002843230969427,
+          "non_echo_breadth": 164.80208333333334,
+          "probe_divergence": 0.7274879834330674
+        }
+      },
+      "seed": 3216008
+    },
+    {
+      "addressability_score": 0.869389960106383,
+      "controller": 9,
+      "geometry_means": {
+        "A": {
+          "edge_breadth": 28.78125,
+          "motif_entropy": 6.242127654627446,
+          "non_echo_breadth": 147.625,
+          "probe_divergence": 0.7649739583333334
+        },
+        "B": {
+          "edge_breadth": 28.989583333333332,
+          "motif_entropy": 6.261183056687087,
+          "non_echo_breadth": 148.67708333333334,
+          "probe_divergence": 0.7748964466334541
+        },
+        "all": {
+          "edge_breadth": 29.0,
+          "motif_entropy": 6.3687517886176925,
+          "non_echo_breadth": 188.25,
+          "probe_divergence": 0.770215767213357
+        }
+      },
+      "seed": 3216009
+    },
+    {
+      "addressability_score": 0.9232786643026005,
+      "controller": 10,
+      "geometry_means": {
+        "A": {
+          "edge_breadth": 28.885416666666668,
+          "motif_entropy": 6.464665154161327,
+          "non_echo_breadth": 164.69791666666666,
+          "probe_divergence": 0.745915657080314
+        },
+        "B": {
+          "edge_breadth": 27.520833333333332,
+          "motif_entropy": 6.468718494172631,
+          "non_echo_breadth": 165.61458333333334,
+          "probe_divergence": 0.719100288722826
+        },
+        "all": {
+          "edge_breadth": 28.96875,
+          "motif_entropy": 6.577327748032223,
+          "non_echo_breadth": 202.79166666666666,
+          "probe_divergence": 0.7331459279883273
+        }
+      },
+      "seed": 3216010
+    },
+    {
+      "addressability_score": 0.9035119311465721,
+      "controller": 11,
+      "geometry_means": {
+        "A": {
+          "edge_breadth": 27.885416666666668,
+          "motif_entropy": 6.058726695469575,
+          "non_echo_breadth": 147.91666666666666,
+          "probe_divergence": 0.6500580276268116
+        },
+        "B": {
+          "edge_breadth": 26.90625,
+          "motif_entropy": 5.708327728093755,
+          "non_echo_breadth": 123.86458333333333,
+          "probe_divergence": 0.6074053630736715
+        },
+        "all": {
+          "edge_breadth": 28.197916666666668,
+          "motif_entropy": 5.985419425223914,
+          "non_echo_breadth": 173.46875,
+          "probe_divergence": 0.6244629483414598
+        }
+      },
+      "seed": 3216011
+    },
+    {
+      "addressability_score": 0.8656499335106382,
+      "controller": 12,
+      "geometry_means": {
+        "A": {
+          "edge_breadth": 28.104166666666668,
+          "motif_entropy": 6.183663898179025,
+          "non_echo_breadth": 151.85416666666666,
+          "probe_divergence": 0.7046676856884058
+        },
+        "B": {
+          "edge_breadth": 27.552083333333332,
+          "motif_entropy": 6.179902487018387,
+          "non_echo_breadth": 144.95833333333334,
+          "probe_divergence": 0.6983660269474639
+        },
+        "all": {
+          "edge_breadth": 28.416666666666668,
+          "motif_entropy": 6.2823713421393315,
+          "non_echo_breadth": 181.45833333333334,
+          "probe_divergence": 0.7007854633015662
+        }
+      },
+      "seed": 3216012
+    },
+    {
+      "addressability_score": 0.7946171320921986,
+      "controller": 13,
+      "geometry_means": {
+        "A": {
+          "edge_breadth": 26.802083333333332,
+          "motif_entropy": 5.5866338611690285,
+          "non_echo_breadth": 114.125,
+          "probe_divergence": 0.7169195350241546
+        },
+        "B": {
+          "edge_breadth": 27.145833333333332,
+          "motif_entropy": 5.622039601768806,
+          "non_echo_breadth": 119.40625,
+          "probe_divergence": 0.7187606148097826
+        },
+        "all": {
+          "edge_breadth": 27.78125,
+          "motif_entropy": 5.691760570397249,
+          "non_echo_breadth": 145.73958333333334,
+          "probe_divergence": 0.7133832349844859
+        }
+      },
+      "seed": 3216013
+    },
+    {
+      "addressability_score": 0.8784953088061466,
+      "controller": 14,
+      "geometry_means": {
+        "A": {
+          "edge_breadth": 28.885416666666668,
+          "motif_entropy": 6.573446937196197,
+          "non_echo_breadth": 169.51041666666666,
+          "probe_divergence": 0.7092084654287439
+        },
+        "B": {
+          "edge_breadth": 28.302083333333332,
+          "motif_entropy": 6.316146760927833,
+          "non_echo_breadth": 150.52083333333334,
+          "probe_divergence": 0.6771599958484299
+        },
+        "all": {
+          "edge_breadth": 29.0,
+          "motif_entropy": 6.5772563629626415,
+          "non_echo_breadth": 198.88541666666666,
+          "probe_divergence": 0.6941988609079492
+        }
+      },
+      "seed": 3216014
+    },
+    {
+      "addressability_score": 0.8699671247044918,
+      "controller": 15,
+      "geometry_means": {
+        "A": {
+          "edge_breadth": 26.625,
+          "motif_entropy": 6.111638159811688,
+          "non_echo_breadth": 143.16666666666666,
+          "probe_divergence": 0.6617649833937198
+        },
+        "B": {
+          "edge_breadth": 26.166666666666668,
+          "motif_entropy": 6.150245429612165,
+          "non_echo_breadth": 145.39583333333334,
+          "probe_divergence": 0.6439155910326086
+        },
+        "all": {
+          "edge_breadth": 27.78125,
+          "motif_entropy": 6.242928844195558,
+          "non_echo_breadth": 177.98958333333334,
+          "probe_divergence": 0.6545055200022163
+        }
+      },
+      "seed": 3216015
+    },
+    {
+      "addressability_score": 0.7475759086879433,
+      "controller": 16,
+      "geometry_means": {
+        "A": {
+          "edge_breadth": 26.729166666666668,
+          "motif_entropy": 4.729786181767301,
+          "non_echo_breadth": 97.23958333333333,
+          "probe_divergence": 0.677701351147343
+        },
+        "B": {
+          "edge_breadth": 26.15625,
+          "motif_entropy": 4.828019655484886,
+          "non_echo_breadth": 98.48958333333333,
+          "probe_divergence": 0.6590983072916666
+        },
+        "all": {
+          "edge_breadth": 28.21875,
+          "motif_entropy": 4.857487927599545,
+          "non_echo_breadth": 128.65625,
+          "probe_divergence": 0.6679707700760935
+        }
+      },
+      "seed": 3216016
+    },
+    {
+      "addressability_score": 0.8105191710992908,
+      "controller": 17,
+      "geometry_means": {
+        "A": {
+          "edge_breadth": 28.96875,
+          "motif_entropy": 6.4350944877919565,
+          "non_echo_breadth": 149.6875,
+          "probe_divergence": 0.7408571105072463
+        },
+        "B": {
+          "edge_breadth": 28.979166666666668,
+          "motif_entropy": 6.453204524056357,
+          "non_echo_breadth": 153.58333333333334,
+          "probe_divergence": 0.7434247150513286
+        },
+        "all": {
+          "edge_breadth": 29.0,
+          "motif_entropy": 6.551149909623257,
+          "non_echo_breadth": 185.17708333333334,
+          "probe_divergence": 0.7432558316710992
+        }
+      },
+      "seed": 3216017
+    },
+    {
+      "addressability_score": 0.9172392139479906,
+      "controller": 18,
+      "geometry_means": {
+        "A": {
+          "edge_breadth": 28.604166666666668,
+          "motif_entropy": 6.59898779114795,
+          "non_echo_breadth": 167.5625,
+          "probe_divergence": 0.7509836390398551
+        },
+        "B": {
+          "edge_breadth": 28.21875,
+          "motif_entropy": 6.498613435550707,
+          "non_echo_breadth": 162.625,
+          "probe_divergence": 0.7190755208333334
+        },
+        "all": {
+          "edge_breadth": 28.729166666666668,
+          "motif_entropy": 6.665109664658744,
+          "non_echo_breadth": 203.39583333333334,
+          "probe_divergence": 0.7368954777999408
+        }
+      },
+      "seed": 3216018
+    },
+    {
+      "addressability_score": 0.7647200059101655,
+      "controller": 19,
+      "geometry_means": {
+        "A": {
+          "edge_breadth": 28.395833333333332,
+          "motif_entropy": 6.034181960834305,
+          "non_echo_breadth": 135.75,
+          "probe_divergence": 0.797218212182971
+        },
+        "B": {
+          "edge_breadth": 28.520833333333332,
+          "motif_entropy": 6.0901744874229315,
+          "non_echo_breadth": 141.34375,
+          "probe_divergence": 0.7867614451237923
+        },
+        "all": {
+          "edge_breadth": 28.979166666666668,
+          "motif_entropy": 6.166109796262966,
+          "non_echo_breadth": 173.54166666666666,
+          "probe_divergence": 0.7881488484411938
+        }
+      },
+      "seed": 3216019
+    },
+    {
+      "addressability_score": 0.8916777482269503,
+      "controller": 20,
+      "geometry_means": {
+        "A": {
+          "edge_breadth": 24.270833333333332,
+          "motif_entropy": 5.628328807669351,
+          "non_echo_breadth": 107.5625,
+          "probe_divergence": 0.6415036703653382
+        },
+        "B": {
+          "edge_breadth": 25.645833333333332,
+          "motif_entropy": 5.778120330909586,
+          "non_echo_breadth": 125.91666666666667,
+          "probe_divergence": 0.6475564707880435
+        },
+        "all": {
+          "edge_breadth": 25.96875,
+          "motif_entropy": 5.78570643468874,
+          "non_echo_breadth": 143.48958333333334,
+          "probe_divergence": 0.6456370973699764
+        }
+      },
+      "seed": 3216020
+    },
+    {
+      "addressability_score": 0.8497709810874704,
+      "controller": 21,
+      "geometry_means": {
+        "A": {
+          "edge_breadth": 28.8125,
+          "motif_entropy": 6.607320027221644,
+          "non_echo_breadth": 159.51041666666666,
+          "probe_divergence": 0.7159877906099034
+        },
+        "B": {
+          "edge_breadth": 28.40625,
+          "motif_entropy": 6.530822596339892,
+          "non_echo_breadth": 147.91666666666666,
+          "probe_divergence": 0.7078851524758454
+        },
+        "all": {
+          "edge_breadth": 29.0,
+          "motif_entropy": 6.68424659082356,
+          "non_echo_breadth": 187.71875,
+          "probe_divergence": 0.7120139119754728
+        }
+      },
+      "seed": 3216021
+    },
+    {
+      "addressability_score": 0.9100823729314421,
+      "controller": 22,
+      "geometry_means": {
+        "A": {
+          "edge_breadth": 20.8125,
+          "motif_entropy": 5.948118230875416,
+          "non_echo_breadth": 122.14583333333333,
+          "probe_divergence": 0.6756963315217391
+        },
+        "B": {
+          "edge_breadth": 23.395833333333332,
+          "motif_entropy": 5.881961898745675,
+          "non_echo_breadth": 120.04166666666667,
+          "probe_divergence": 0.6437929310084541
+        },
+        "all": {
+          "edge_breadth": 23.84375,
+          "motif_entropy": 6.004662776463207,
+          "non_echo_breadth": 144.5625,
+          "probe_divergence": 0.6568770893358451
+        }
+      },
+      "seed": 3216022
+    },
+    {
+      "addressability_score": 0.7549035904255319,
+      "controller": 23,
+      "geometry_means": {
+        "A": {
+          "edge_breadth": 26.65625,
+          "motif_entropy": 5.8137019354578054,
+          "non_echo_breadth": 119.94791666666667,
+          "probe_divergence": 0.7698355412137682
+        },
+        "B": {
+          "edge_breadth": 27.510416666666668,
+          "motif_entropy": 5.717381003704897,
+          "non_echo_breadth": 129.10416666666666,
+          "probe_divergence": 0.7523211050724637
+        },
+        "all": {
+          "edge_breadth": 27.989583333333332,
+          "motif_entropy": 5.8623012586604535,
+          "non_echo_breadth": 158.52083333333334,
+          "probe_divergence": 0.7583434914302599
+        }
+      },
+      "seed": 3216023
+    }
+  ],
+  "schema": "amelia-p320-accessibility-geometry-v1"
+}
