@@ -1,0 +1,129 @@
+name: P3.15 Full Numogram Latent Morphospace Assay
+
+on:
+  push:
+    branches:
+      - "p315-full-numogram-morphospace-20261030"
+    paths:
+      - "Numogram.py"
+      - "FullNumogram.py"
+      - "src/core/fullNumogram.ts"
+      - "experiments/p315/REGISTRATION.md"
+      - "experiments/p315/run.py"
+      - ".github/workflows/p315.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  assay:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout registered branch
+        uses: actions/checkout@v5
+        with:
+          ref: p315-full-numogram-morphospace-20261030
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Validate Python syntax
+        run: |
+          set -euo pipefail
+          python -m py_compile FullNumogram.py Numogram.py experiments/p315/run.py
+
+      - name: Verify Orange full Numogram migration and null invariants
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import importlib.util
+          from FullNumogram import (
+              FULL_NUMOGRAM_GATES,
+              ORANGE_SOURCE_BLOB_SHA,
+              ccru_edges,
+              degree_signature if False else digital_root,
+          )
+
+          assert ORANGE_SOURCE_BLOB_SHA == "edf150c38385bc552fb30e2b6721fb832e47976c"
+          assert len(FULL_NUMOGRAM_GATES) == 29
+          assert len(ccru_edges()) == 24
+
+          expected = {
+              (0,0),(0,9),
+              (1,1),(1,2),(1,7),(1,8),
+              (2,3),(2,4),(2,5),(2,7),
+              (3,3),(3,6),
+              (4,1),(4,5),(4,7),
+              (5,1),(5,4),(5,6),
+              (6,3),
+              (7,1),(7,2),(7,5),(7,8),
+              (8,1),(8,7),(8,9),
+              (9,0),(9,1),(9,9),
+          }
+          observed = {(int(g["source"]), int(g["target"])) for g in FULL_NUMOGRAM_GATES}
+          assert observed == expected, (sorted(observed), sorted(expected))
+
+          spec = importlib.util.spec_from_file_location("p315run", "experiments/p315/run.py")
+          mod = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(mod)
+
+          canonical_signature = mod.degree_signature(FULL_NUMOGRAM_GATES)
+          canonical_loops = mod.self_loop_count(FULL_NUMOGRAM_GATES)
+          assert mod.strongly_connected(FULL_NUMOGRAM_GATES)
+          for i in range(8):
+              rewired = mod.rewired_gates(mod.REWIRE_SEED_BASE + i)
+              assert mod.degree_signature(rewired) == canonical_signature
+              assert mod.self_loop_count(rewired) == canonical_loops
+              assert mod.strongly_connected(rewired)
+              assert mod.edge_set(rewired) != mod.edge_set(FULL_NUMOGRAM_GATES)
+
+          source = open("Numogram.py", encoding="utf-8").read()
+          assert "FULL_NUMOGRAM_TOPOLOGY_MASK" in source
+          assert "transition is not an edge of the full Orange Numogram" in source
+
+          print("P3.15 migration and control invariants: PASS")
+          print("Full directed gate count:", len(FULL_NUMOGRAM_GATES))
+          print("Canonical degree signature:", canonical_signature)
+          print("Canonical self loops:", canonical_loops)
+          PY
+
+      - name: Record pre-run provenance
+        run: |
+          set -euo pipefail
+          mkdir -p experiments/p315/results
+          sha256sum             src/core/fullNumogram.ts             FullNumogram.py             Numogram.py             experiments/p315/REGISTRATION.md             experiments/p315/run.py             > experiments/p315/results/PRE_RUN_SHA256SUMS.txt
+          cat experiments/p315/results/PRE_RUN_SHA256SUMS.txt
+
+      - name: Run registered P3.15 assay
+        run: |
+          set -euo pipefail
+          python experiments/p315/run.py --out experiments/p315/results | tee experiments/p315/results/console-summary.json
+
+      - name: Display report
+        run: |
+          set -euo pipefail
+          cat experiments/p315/results/REPORT.md
+
+      - name: Commit compact result record
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add             experiments/p315/results/REPORT.md             experiments/p315/results/summary.json             experiments/p315/results/SHA256SUMS.json             experiments/p315/results/PRE_RUN_SHA256SUMS.txt             experiments/p315/results/console-summary.json
+          if git diff --cached --quiet; then
+            echo "No compact result changes to commit."
+          else
+            git commit -m "P3.15: archive registered morphospace assay result [skip ci]"
+            git push origin HEAD:p315-full-numogram-morphospace-20261030
+          fi
+
+      - name: Upload complete evidence including raw trajectories
+        uses: actions/upload-artifact@v4
+        with:
+          name: P3.15-full-numogram-morphospace-evidence
+          path: experiments/p315/results/
+          retention-days: 90
