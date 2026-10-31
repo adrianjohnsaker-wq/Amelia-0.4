@@ -1,6 +1,6 @@
 # P3.26 — Numogram-mediated morphogenetic uptake
 
-**Status:** implementation branch; design is not sealed. No beacon rounds have been acquired and no exploratory assay has been run.
+**Status:** registration sealed at commit 26593461d370d7f02df381ca2dc670ba2bb356a0. Execution was explicitly authorized on 31 October 2026; the first run will start from the workflow commit after preflight.
 
 ## Question
 
@@ -52,16 +52,6 @@ Exploratory summaries will describe:
 
 The atlas may provisionally name recurring signatures from the project's Numogram vocabulary. Such names remain annotations over recorded patterns; whether a signature is agentic or mind-like is an open question for subsequent discrimination.
 
-## Lock required before execution
+## Sealed protocol and execution
 
-Before any registered source is queried or any substrate assay is run, a sealed registration must fix:
-
-- the independent input source and prospective selection rule;
-- lineage count, seeds, development and call schedule;
-- field depth, conductance equation, amplitude, clipping, duration, and withdrawal;
-- control seeds and shared random variates;
-- primary and secondary readouts and inferential method;
-- integrity, refusal, and stop rules;
-- raw-record and build digests.
-
-This branch contains implementation mechanics and a design draft only. It does not authorize or trigger the exploratory run.
+The exact source, prospective round rule, field equation, lineages, controller arms, descriptive analysis, archive schema, and stop conditions are locked in REGISTRATION.md. The workflow verifies the seal and frozen dependencies before requesting any beacon round. No per-zone target map or candidate signature is supplied.
