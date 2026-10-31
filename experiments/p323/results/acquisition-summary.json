@@ -1,0 +1,9 @@
+{
+  "sealed_registration_sha": "de10c3ab2ac39841ba01abeb321be3b1dbd04b8c",
+  "seal_unix": 1793446819,
+  "not_before_unix": 1793446909,
+  "start_round": 6600530,
+  "start_round_scheduled_unix": 1793446920,
+  "end_round": 6600545,
+  "windows": 16
+}

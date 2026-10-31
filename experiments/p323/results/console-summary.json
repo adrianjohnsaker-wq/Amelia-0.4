@@ -1,0 +1,72 @@
+{
+  "beacon": {
+    "beacon_sha256": "b77ab31f7d733edeb699145c4e48f7e088fb0d6814cc2630f069c5abf4463cc8",
+    "end_round": 6600545,
+    "sealed_registration_sha": "de10c3ab2ac39841ba01abeb321be3b1dbd04b8c",
+    "start_round": 6600530
+  },
+  "development": {
+    "blank_accuracy": 0.06640625,
+    "full_accuracy": 0.08854166666666667,
+    "held": false,
+    "mean_difference": 0.022135416666666664,
+    "p_upper": 0.4371312573748525
+  },
+  "interpretation": "P3.23 does not satisfy the full registered independent-signal relational-transduction gate. The canonical relation basis nevertheless carries held-out information about which fresh external signal was presented. Canonical held-out signal identification is not uniquely above the rewired controls. The registered temporal-order controls do not establish an order-specific relational fingerprint. Mature development does not satisfy the registered positive contribution gate.",
+  "primary": {
+    "canonical_accuracy": 0.08854166666666667,
+    "canonical_correct": 68,
+    "chance_p": 0.0028069937728087847,
+    "held": false,
+    "n": 768,
+    "profile_multivariate": {
+      "T": 0.8391811218583063,
+      "component_mean_differences": {
+        "C": -0.013671874999999991,
+        "CC": -0.011718750000000003,
+        "CG": -0.003472222222222222,
+        "CS": -0.0009548611111111112,
+        "G": 0.00146484375,
+        "GC": -0.003385416666666666,
+        "GG": -0.0029513888888888875,
+        "GS": -0.0053819444444444435,
+        "S": 0.002034505208333334,
+        "SC": -0.0033854166666666668,
+        "SG": 0.005121527777777775,
+        "SS": -0.0020833333333333333
+      },
+      "p": 0.38213235735285295
+    },
+    "rank_p": 0.48,
+    "real_to_shuffled_accuracy": 0.09114583333333333,
+    "rewire_accuracies": [
+      0.109375,
+      0.07291666666666667,
+      0.07421875,
+      0.06380208333333333,
+      0.07421875,
+      0.08072916666666667,
+      0.08854166666666667,
+      0.08984375,
+      0.10026041666666667,
+      0.07161458333333333,
+      0.11848958333333333,
+      0.0703125,
+      0.06640625,
+      0.0625,
+      0.09505208333333333,
+      0.09114583333333333,
+      0.08984375,
+      0.0625,
+      0.08854166666666667,
+      0.07552083333333333,
+      0.06901041666666667,
+      0.08984375,
+      0.0625,
+      0.1015625
+    ],
+    "shuffled_self_accuracy": 0.08984375,
+    "temporal_order_mean_difference": -0.0026041666666666713,
+    "temporal_order_p": 1.0
+  }
+}
