@@ -1,0 +1,6 @@
+registration_commit=980e12933a8de67e351a3838fb4ad4e7195acab4
+registration_commit_unix=1793468134
+workflow_head=a6262bbafdaddda6757432b86a389353917c9df6
+node=v22.23.4
+python=Python 3.12.15
+drand_client=1.4.2
