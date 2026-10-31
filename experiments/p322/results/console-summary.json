@@ -1,0 +1,83 @@
+{
+  "development": {
+    "blank_lift": 0.0061848958333333365,
+    "full_lift": 0.0006510416666666691,
+    "held": false,
+    "mean_difference": -0.005533854166666669,
+    "p_upper": 0.749765004699906
+  },
+  "interpretation": "P3.22 does not satisfy the registered history-sensitive relational-generalization gate. Independently, the canonical process shows privileged autonomous access to its own composed relations without demonstration. Mature developmental state does not satisfy the registered positive contribution gate for analogical lift.",
+  "primary": {
+    "canonical_congruent": 0.2503255208333333,
+    "canonical_lift": 0.0006510416666666691,
+    "canonical_query_gain": 1.734723475976807e-18,
+    "canonical_shuffled": 0.24967447916666666,
+    "family_lifts": {
+      "CS": 0.001302083333333334,
+      "GS": 0.0013020833333333426,
+      "SC": 0.0,
+      "SG": 0.0
+    },
+    "held": false,
+    "lift_p": 0.25229495410091796,
+    "query_gain_p": 0.6883062338753225,
+    "rank_p": 0.08,
+    "rewire_lifts": [
+      0.0009765625000000035,
+      0.0,
+      -0.0013020833333333333,
+      0.0,
+      -0.001953125,
+      0.0,
+      0.0,
+      -0.0029296875,
+      0.0003255208333333322,
+      0.0,
+      0.0006510416666666678,
+      0.0,
+      -0.00390625,
+      0.0,
+      0.0,
+      0.0003255208333333333,
+      0.0,
+      -0.0009765625,
+      0.0,
+      0.0,
+      0.0006510416666666661,
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "structural": {
+    "canonical_query_only": 0.2503255208333333,
+    "held": true,
+    "rank_p": 0.04,
+    "rewire_query_only": [
+      0.09016927083333333,
+      0.0,
+      0.048177083333333336,
+      0.0625,
+      0.004557291666666667,
+      0.0,
+      0.0,
+      0.020833333333333332,
+      0.026041666666666668,
+      0.0,
+      0.019205729166666668,
+      0.0,
+      0.057291666666666664,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.057291666666666664,
+      0.0,
+      0.0009765625,
+      0.087890625,
+      0.0,
+      0.0,
+      0.029296875
+    ]
+  }
+}
