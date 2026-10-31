@@ -1,10 +1,11 @@
-"""Create-only JSONL hash-chain archive for P3.26 encounters."""
+"""Create-only gzip JSONL SHA-256 chain archive for P3.26 encounters."""
 from __future__ import annotations
 
+import gzip
 import hashlib
 import json
 from pathlib import Path
-from typing import Dict, Iterable, Optional
+from typing import Dict
 
 GENESIS = "0" * 64
 
@@ -13,12 +14,18 @@ def canonical_json(value: object) -> str:
     return json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False)
 
 
+def _open_read(path: Path):
+    if path.suffix == ".gz":
+        return gzip.open(path, "rt", encoding="utf-8")
+    return path.open("r", encoding="utf-8")
+
+
 def verify(path: str) -> str:
     previous = GENESIS
     file_path = Path(path)
     if not file_path.exists():
         return previous
-    with file_path.open("r", encoding="utf-8") as handle:
+    with _open_read(file_path) as handle:
         for line_number, line in enumerate(handle, start=1):
             record = json.loads(line)
             stated_previous = record.pop("previous_digest", None)
@@ -37,8 +44,12 @@ def verify(path: str) -> str:
 class CreateOnlyAtlas:
     def __init__(self, path: str) -> None:
         self.path = Path(path)
+        self.path.parent.mkdir(parents=True, exist_ok=True)
         self.previous_digest = verify(path)
-        self.handle = self.path.open("x", encoding="utf-8")
+        if self.path.suffix == ".gz":
+            self.handle = gzip.open(self.path, "xt", encoding="utf-8", compresslevel=6)
+        else:
+            self.handle = self.path.open("x", encoding="utf-8")
 
     def append(self, record: Dict[str, object]) -> str:
         body = dict(record)
