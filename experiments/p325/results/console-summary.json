@@ -1,0 +1,52 @@
+{
+  "canonical_mean_test_delta": [
+    -0.0019248188405797102,
+    -0.0017361111111111112,
+    -0.001849335748792271,
+    -0.004038345410628019
+  ],
+  "development": {
+    "blank_mean_Q": 0.0004940245287229574,
+    "full_mean_Q": 0.0015060039141811946,
+    "held": false,
+    "mean_difference": 0.001011979385458237,
+    "p_upper": 0.0743585128297434
+  },
+  "interpretation": "P3.25 does not satisfy the full registered gate for canonical-specific causal relational susceptibility to the two-position external-order perturbation. Mature developmental/PFM state does not satisfy the registered positive contribution gate.",
+  "nontrivial_windows": 23,
+  "primary": {
+    "canonical_mean_Q": 0.0015060039141811946,
+    "half1_mean_Q": 0.002388383480361269,
+    "half1_p": 0.0628187436251275,
+    "half2_mean_Q": 0.0006236243480011202,
+    "half2_p": 0.123597528049439,
+    "held": false,
+    "rank_p": 0.04,
+    "rewire_mean_Q": [
+      0.00016535856656514736,
+      1.8118676923615487e-06,
+      0.0,
+      -6.83723657494924e-08,
+      0.0,
+      0.0,
+      0.0,
+      5.538161625708885e-06,
+      0.0,
+      5.674906357207869e-06,
+      0.0,
+      0.0,
+      5.264672162710915e-06,
+      1.7469139448995308e-05,
+      6.0851405517048235e-06,
+      2.2699625428831477e-05,
+      0.00036292051739830565,
+      6.83723657494924e-08,
+      0.0,
+      2.088775773646993e-05,
+      9.572131204928936e-07,
+      0.0,
+      0.0,
+      0.0
+    ]
+  }
+}

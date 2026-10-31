@@ -1,0 +1,124 @@
+name: P3.25 Causal Relational Susceptibility
+
+on:
+  push:
+    branches: ["p325-causal-relational-susceptibility-20261031"]
+    paths:
+      - "FullNumogram.py"
+      - "experiments/p316/DynamicNumogram.py"
+      - "experiments/p317/run.py"
+      - "experiments/p325/**"
+      - ".github/workflows/p325.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: p325-causal-relational-susceptibility
+  cancel-in-progress: false
+
+jobs:
+  acquire-and-assay:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 110
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: p325-causal-relational-susceptibility-20261031
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Preflight sealed registration and code
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(sha256sum FullNumogram.py | cut -d' ' -f1)" = "b6edbe76ab4929e93c01059fb56cef900effa9bca1cec78d0039eafb8fbebdf8"
+          test "$(sha256sum experiments/p316/DynamicNumogram.py | cut -d' ' -f1)" = "ac482882858c1e47f578523452eff0bc20aa82b5978299c9c8808ff6127c5cd6"
+          REG_SHA="$(cat experiments/p325/SEALED_REGISTRATION_SHA.txt)"
+          test "$REG_SHA" = "f74605f730b7352ddf612dff83db5c2b1e69b3a2"
+          REG_UNIX="$(git show -s --format=%ct "$REG_SHA")"
+          AMEND_UNIX="$(git log -1 --format=%ct -- experiments/p325/AMENDMENT_1.md)"
+          test "$AMEND_UNIX" -lt "$((REG_UNIX+90))"
+          node --check experiments/p325/acquire.mjs
+          python -m py_compile experiments/p325/run.py
+          python - <<'PY'
+          import sys
+          sys.path.insert(0,"experiments/p325")
+          import run
+          x=list(range(10))*3
+          xp=x[:]
+          xp[7],xp[22]=xp[22],xp[7]
+          assert len(x)==30 and sorted(x)==sorted(xp)
+          p=run.DynamicNumogramProcess(current_zone=4)
+          rx,px=run.encounter(p,x)
+          rp,pp=run.encounter(p,xp)
+          assert len(rx["primary"])==4 and len(px)==25 and len(pp)==25
+          for i in range(run.REWIRES):
+              g=run.p317.rewired_gates(999325+i)
+              assert run.p317.degree_signature(g)==run.p317.degree_signature(run.p317.FULL_NUMOGRAM_GATES)
+              assert run.p317.self_loop_count(g)==run.p317.self_loop_count(run.p317.FULL_NUMOGRAM_GATES)
+          print("P3.25 preflight PASS")
+          PY
+
+      - name: Install pinned drand verification client
+        run: npm install --no-save --package-lock=false drand-client@1.4.2
+
+      - name: Record pre-reveal provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p experiments/p325/results
+          sha256sum FullNumogram.py experiments/p316/DynamicNumogram.py experiments/p317/run.py experiments/p325/REGISTRATION.md experiments/p325/AMENDMENT_1.md experiments/p325/SEALED_REGISTRATION_SHA.txt experiments/p325/acquire.mjs experiments/p325/run.py > experiments/p325/results/PRE_RUN_SHA256SUMS.txt
+          {
+            echo "registration_commit=$(cat experiments/p325/SEALED_REGISTRATION_SHA.txt)"
+            echo "registration_commit_unix=$(git show -s --format=%ct $(cat experiments/p325/SEALED_REGISTRATION_SHA.txt))"
+            echo "workflow_head=$GITHUB_SHA"
+            echo "node=$(node --version)"
+            echo "python=$(python --version 2>&1)"
+            echo "drand_client=1.4.2"
+            echo "swap_positions_one_indexed=8,23"
+          } > experiments/p325/results/PRE_REVEAL_PROVENANCE.txt
+
+      - name: Acquire prospectively fixed verified drand rounds
+        shell: bash
+        run: |
+          set -euo pipefail
+          export SEAL_UNIX="$(git show -s --format=%ct $(cat experiments/p325/SEALED_REGISTRATION_SHA.txt))"
+          node experiments/p325/acquire.mjs | tee experiments/p325/results/acquisition-summary.json
+
+      - name: Run first registered P3.25 assay
+        shell: bash
+        run: |
+          set -euo pipefail
+          python experiments/p325/run.py --out experiments/p325/results | tee experiments/p325/results/console-summary.json
+
+      - name: Display report
+        run: |
+          cat experiments/p325/results/REPORT.md
+          sed -n '1,260p' experiments/p325/results/ATLAS.md
+
+      - name: Commit compact first result
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add             experiments/p325/results/BEACON.json             experiments/p325/results/REPORT.md             experiments/p325/results/ATLAS.md             experiments/p325/results/summary.json             experiments/p325/results/PRE_RUN_SHA256SUMS.txt             experiments/p325/results/PRE_REVEAL_PROVENANCE.txt             experiments/p325/results/acquisition-summary.json             experiments/p325/results/console-summary.json
+          if ! git diff --cached --quiet; then
+            git commit -m "P3.25: archive first causal relational susceptibility result [skip ci]"
+            git push origin HEAD:p325-causal-relational-susceptibility-20261031
+          fi
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: P3.25-causal-relational-susceptibility-evidence
+          path: experiments/p325/results/
+          retention-days: 90
