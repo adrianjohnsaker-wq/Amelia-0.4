@@ -201,7 +201,8 @@ def apply_one_transition(
         "field_sha256": hashlib.sha256(
             ",".join("{:.17g}".format(v) for v in field).encode("ascii")
         ).hexdigest(),
-        "log_flux_l2": math.sqrt(sum(v * v for v in deltas)) if apply_field else 0.0,
+        "requested_log_flux_l2": math.sqrt(sum(v * v for v in deltas)),
+        "applied": apply_field,
     }
     try:
         if apply_field:
