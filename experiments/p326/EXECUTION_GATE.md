@@ -1,13 +1,5 @@
 # P3.26 execution gate
 
-This branch is an implementation review artifact. It is not a sealed registration.
+P3.26 registration is sealed at commit 26593461d370d7f02df381ca2dc670ba2bb356a0. The user authorized execution on 31 October 2026.
 
-No experiment workflow is configured to run on push. Before calling any external source or running the substrate assay, the following must be completed in a later reviewed commit:
-
-1. seal the input source and prospective selection rule;
-2. freeze field equations, arm seeds, dose, lineage count, and stopping rules;
-3. bind the implementation and frozen P3.16/P3.17 dependencies by digest;
-4. specify the primary analysis and exploratory atlas summaries;
-5. record explicit authorization to execute the exploratory assay.
-
-Until those conditions are met, this branch must not acquire beacon rounds or generate an assay result.
+The workflow is push-triggered only on the dedicated P3.26 branch. It verifies the registration ancestor, frozen P3.16/P3.17 source hashes, field packet mapping, temporary flux restoration, and degree-preserving rewires before querying drand. Beacon selection begins no earlier than 90 seconds after the sealed registration commit. A post-acquisition failure is preserved and cannot be silently rerun under this registration.
