@@ -10,7 +10,7 @@ This protocol is exploratory and has no confirmatory pass/fail threshold.
 
 The canonical live graph-field arm changed withdrawal transition distributions relative to NO_FIELD by a mean total-variation distance of 0.006746 (lineage-bootstrap 95% interval 0.002405–0.012334). The canonical fixed arm was 0.006782, and relation-shuffled was 0.006637. The 24 rewired mappings ranged from 0.002369 to 0.007234; R05 exceeded the canonical live mean.
 
-The field therefore produced a small operational change in paths, but the observed change did not distinguish the canonical Numogram mapping from fixed or relation-shuffled mappings. A degree-preserving rewire also produced a larger mean change. This run does not support canonical-relation-specific morphogenetic uptake under the registered mechanics.
+The field produced a small operational change in paths. The canonical live mean was higher than 23 of 24 rewire summaries (rewire mean 0.004264), but its bootstrap interval is broad, and R05 was higher at 0.007234. Canonical fixed (0.006782) and relation-shuffled (0.006637) were nearly identical to canonical live (0.006746). The observed response therefore does not isolate canonical Numogram relations as its cause. Under this exploratory protocol, canonical-relation-specific morphogenetic uptake remains unresolved.
 
 The PFM_FEEDBACK_MUTED diagnostic differed strongly from NO_FIELD (mean transition TV 0.580693; 95% interval 0.516240–0.641258). This shows that disabling PFM feedback changes the sequential dynamics substantially. Because feedback remains disabled across the whole arm, this is a system-level sensitivity result, not an isolated estimate of field coupling.
 
