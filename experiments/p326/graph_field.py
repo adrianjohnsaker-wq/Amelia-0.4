@@ -99,8 +99,8 @@ def propagate_field(
     if not gates:
         raise ValueError("graph field requires at least one gate")
     current = _normalize(packet)
-    accumulated = list(current)
-    decay = LAYER_DECAY
+    accumulated = [0.0] * 10
+    decay = 1.0
 
     for _ in range(FIELD_LAYERS):
         numerators = [0.0] * 10
@@ -141,7 +141,10 @@ def edge_log_deltas(
     if budget < 0:
         raise ValueError("budget must be nonnegative")
     gradients = [
-        float(field[int(g["target"])]) - float(field[int(g["source"])])
+        (
+            float(field[int(g["target"])]) - float(field[int(g["source"])])
+            if bool(g["isOpen"]) else 0.0
+        )
         for g in candidate_gates
     ]
     norm = math.sqrt(sum(v * v for v in gradients))
