@@ -1,0 +1,2213 @@
+{
+  "arm_family_means": {
+    "B": {
+      "CS": 0.0,
+      "GS": 0.0,
+      "SC": -0.000992063492063492,
+      "SG": -0.000992063492063492
+    },
+    "E": {
+      "CS": 0.0,
+      "GS": 0.0,
+      "SC": -0.000992063492063492,
+      "SG": 0.0
+    },
+    "N": {
+      "CS": 0.0,
+      "GS": -0.000992063492063492,
+      "SC": 0.000992063492063492,
+      "SG": -0.00496031746031746
+    },
+    "P": {
+      "CS": 0.000992063492063492,
+      "GS": 0.0,
+      "SC": -0.000992063492063492,
+      "SG": -0.000992063492063492
+    },
+    "T": {
+      "CS": 0.0,
+      "GS": 0.0,
+      "SC": -0.000992063492063492,
+      "SG": -0.000992063492063492
+    },
+    "W": {
+      "CS": 0.000992063492063492,
+      "GS": 0.0,
+      "SC": -0.000992063492063492,
+      "SG": -0.000992063492063492
+    }
+  },
+  "atlas": [
+    {
+      "demo_mid": 8,
+      "demo_source": 1,
+      "demo_terminal": 7,
+      "family": "SC",
+      "first": "S",
+      "query_mid": 7,
+      "query_source": 2,
+      "query_terminal": 5,
+      "second": "C",
+      "successful_lineages": [],
+      "trial_id": 0
+    },
+    {
+      "demo_mid": 8,
+      "demo_source": 1,
+      "demo_terminal": 7,
+      "family": "SC",
+      "first": "S",
+      "query_mid": 2,
+      "query_source": 7,
+      "query_terminal": 5,
+      "second": "C",
+      "successful_lineages": [
+        {
+          "lineage": "WT4-071",
+          "path": [
+            2,
+            5
+          ]
+        }
+      ],
+      "trial_id": 1
+    },
+    {
+      "demo_mid": 7,
+      "demo_source": 2,
+      "demo_terminal": 5,
+      "family": "SC",
+      "first": "S",
+      "query_mid": 5,
+      "query_source": 4,
+      "query_terminal": 1,
+      "second": "C",
+      "successful_lineages": [
+        {
+          "lineage": "WT4-010",
+          "path": [
+            5,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-120",
+          "path": [
+            5,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-122",
+          "path": [
+            5,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-127",
+          "path": [
+            5,
+            1
+          ]
+        }
+      ],
+      "trial_id": 2
+    },
+    {
+      "demo_mid": 7,
+      "demo_source": 2,
+      "demo_terminal": 5,
+      "family": "SC",
+      "first": "S",
+      "query_mid": 4,
+      "query_source": 5,
+      "query_terminal": 1,
+      "second": "C",
+      "successful_lineages": [],
+      "trial_id": 3
+    },
+    {
+      "demo_mid": 5,
+      "demo_source": 4,
+      "demo_terminal": 1,
+      "family": "SC",
+      "first": "S",
+      "query_mid": 8,
+      "query_source": 1,
+      "query_terminal": 7,
+      "second": "C",
+      "successful_lineages": [],
+      "trial_id": 4
+    },
+    {
+      "demo_mid": 5,
+      "demo_source": 4,
+      "demo_terminal": 1,
+      "family": "SC",
+      "first": "S",
+      "query_mid": 1,
+      "query_source": 8,
+      "query_terminal": 7,
+      "second": "C",
+      "successful_lineages": [],
+      "trial_id": 5
+    },
+    {
+      "demo_mid": 4,
+      "demo_source": 5,
+      "demo_terminal": 1,
+      "family": "SC",
+      "first": "S",
+      "query_mid": 8,
+      "query_source": 1,
+      "query_terminal": 7,
+      "second": "C",
+      "successful_lineages": [],
+      "trial_id": 6
+    },
+    {
+      "demo_mid": 4,
+      "demo_source": 5,
+      "demo_terminal": 1,
+      "family": "SC",
+      "first": "S",
+      "query_mid": 1,
+      "query_source": 8,
+      "query_terminal": 7,
+      "second": "C",
+      "successful_lineages": [],
+      "trial_id": 7
+    },
+    {
+      "demo_mid": 7,
+      "demo_source": 1,
+      "demo_terminal": 2,
+      "family": "CS",
+      "first": "C",
+      "query_mid": 5,
+      "query_source": 2,
+      "query_terminal": 4,
+      "second": "S",
+      "successful_lineages": [
+        {
+          "lineage": "WT4-002",
+          "path": [
+            5,
+            4
+          ]
+        },
+        {
+          "lineage": "WT4-012",
+          "path": [
+            5,
+            4
+          ]
+        },
+        {
+          "lineage": "WT4-022",
+          "path": [
+            5,
+            4
+          ]
+        },
+        {
+          "lineage": "WT4-032",
+          "path": [
+            5,
+            4
+          ]
+        },
+        {
+          "lineage": "WT4-042",
+          "path": [
+            5,
+            4
+          ]
+        },
+        {
+          "lineage": "WT4-052",
+          "path": [
+            5,
+            4
+          ]
+        },
+        {
+          "lineage": "WT4-057",
+          "path": [
+            5,
+            4
+          ]
+        },
+        {
+          "lineage": "WT4-059",
+          "path": [
+            5,
+            4
+          ]
+        },
+        {
+          "lineage": "WT4-062",
+          "path": [
+            5,
+            4
+          ]
+        },
+        {
+          "lineage": "WT4-072",
+          "path": [
+            5,
+            4
+          ]
+        },
+        {
+          "lineage": "WT4-082",
+          "path": [
+            5,
+            4
+          ]
+        },
+        {
+          "lineage": "WT4-092",
+          "path": [
+            5,
+            4
+          ]
+        },
+        {
+          "lineage": "WT4-112",
+          "path": [
+            5,
+            4
+          ]
+        },
+        {
+          "lineage": "WT4-132",
+          "path": [
+            5,
+            4
+          ]
+        },
+        {
+          "lineage": "WT4-142",
+          "path": [
+            5,
+            4
+          ]
+        }
+      ],
+      "trial_id": 8
+    },
+    {
+      "demo_mid": 7,
+      "demo_source": 1,
+      "demo_terminal": 2,
+      "family": "CS",
+      "first": "C",
+      "query_mid": 1,
+      "query_source": 4,
+      "query_terminal": 8,
+      "second": "S",
+      "successful_lineages": [],
+      "trial_id": 9
+    },
+    {
+      "demo_mid": 7,
+      "demo_source": 1,
+      "demo_terminal": 2,
+      "family": "CS",
+      "first": "C",
+      "query_mid": 1,
+      "query_source": 5,
+      "query_terminal": 8,
+      "second": "S",
+      "successful_lineages": [
+        {
+          "lineage": "WT4-000",
+          "path": [
+            1,
+            8
+          ]
+        },
+        {
+          "lineage": "WT4-001",
+          "path": [
+            1,
+            8
+          ]
+        },
+        {
+          "lineage": "WT4-015",
+          "path": [
+            1,
+            8
+          ]
+        },
+        {
+          "lineage": "WT4-120",
+          "path": [
+            1,
+            8
+          ]
+        },
+        {
+          "lineage": "WT4-122",
+          "path": [
+            1,
+            8
+          ]
+        },
+        {
+          "lineage": "WT4-147",
+          "path": [
+            1,
+            8
+          ]
+        }
+      ],
+      "trial_id": 10
+    },
+    {
+      "demo_mid": 7,
+      "demo_source": 1,
+      "demo_terminal": 2,
+      "family": "CS",
+      "first": "C",
+      "query_mid": 5,
+      "query_source": 7,
+      "query_terminal": 4,
+      "second": "S",
+      "successful_lineages": [
+        {
+          "lineage": "WT4-002",
+          "path": [
+            5,
+            4
+          ]
+        },
+        {
+          "lineage": "WT4-012",
+          "path": [
+            5,
+            4
+          ]
+        },
+        {
+          "lineage": "WT4-022",
+          "path": [
+            5,
+            4
+          ]
+        },
+        {
+          "lineage": "WT4-032",
+          "path": [
+            5,
+            4
+          ]
+        },
+        {
+          "lineage": "WT4-042",
+          "path": [
+            5,
+            4
+          ]
+        },
+        {
+          "lineage": "WT4-052",
+          "path": [
+            5,
+            4
+          ]
+        },
+        {
+          "lineage": "WT4-072",
+          "path": [
+            5,
+            4
+          ]
+        },
+        {
+          "lineage": "WT4-092",
+          "path": [
+            5,
+            4
+          ]
+        },
+        {
+          "lineage": "WT4-112",
+          "path": [
+            5,
+            4
+          ]
+        },
+        {
+          "lineage": "WT4-132",
+          "path": [
+            5,
+            4
+          ]
+        },
+        {
+          "lineage": "WT4-142",
+          "path": [
+            5,
+            4
+          ]
+        }
+      ],
+      "trial_id": 11
+    },
+    {
+      "demo_mid": 5,
+      "demo_source": 2,
+      "demo_terminal": 4,
+      "family": "CS",
+      "first": "C",
+      "query_mid": 1,
+      "query_source": 4,
+      "query_terminal": 8,
+      "second": "S",
+      "successful_lineages": [],
+      "trial_id": 12
+    },
+    {
+      "demo_mid": 5,
+      "demo_source": 2,
+      "demo_terminal": 4,
+      "family": "CS",
+      "first": "C",
+      "query_mid": 1,
+      "query_source": 5,
+      "query_terminal": 8,
+      "second": "S",
+      "successful_lineages": [
+        {
+          "lineage": "WT4-000",
+          "path": [
+            1,
+            8
+          ]
+        },
+        {
+          "lineage": "WT4-001",
+          "path": [
+            1,
+            8
+          ]
+        },
+        {
+          "lineage": "WT4-015",
+          "path": [
+            1,
+            8
+          ]
+        },
+        {
+          "lineage": "WT4-120",
+          "path": [
+            1,
+            8
+          ]
+        },
+        {
+          "lineage": "WT4-122",
+          "path": [
+            1,
+            8
+          ]
+        },
+        {
+          "lineage": "WT4-147",
+          "path": [
+            1,
+            8
+          ]
+        }
+      ],
+      "trial_id": 13
+    },
+    {
+      "demo_mid": 1,
+      "demo_source": 4,
+      "demo_terminal": 8,
+      "family": "CS",
+      "first": "C",
+      "query_mid": 7,
+      "query_source": 1,
+      "query_terminal": 2,
+      "second": "S",
+      "successful_lineages": [
+        {
+          "lineage": "WT4-009",
+          "path": [
+            7,
+            2
+          ]
+        },
+        {
+          "lineage": "WT4-011",
+          "path": [
+            7,
+            2
+          ]
+        },
+        {
+          "lineage": "WT4-014",
+          "path": [
+            7,
+            2
+          ]
+        },
+        {
+          "lineage": "WT4-017",
+          "path": [
+            7,
+            2
+          ]
+        },
+        {
+          "lineage": "WT4-035",
+          "path": [
+            7,
+            2
+          ]
+        },
+        {
+          "lineage": "WT4-040",
+          "path": [
+            7,
+            2
+          ]
+        },
+        {
+          "lineage": "WT4-044",
+          "path": [
+            7,
+            2
+          ]
+        },
+        {
+          "lineage": "WT4-049",
+          "path": [
+            7,
+            2
+          ]
+        },
+        {
+          "lineage": "WT4-061",
+          "path": [
+            7,
+            2
+          ]
+        },
+        {
+          "lineage": "WT4-097",
+          "path": [
+            7,
+            2
+          ]
+        },
+        {
+          "lineage": "WT4-098",
+          "path": [
+            7,
+            2
+          ]
+        },
+        {
+          "lineage": "WT4-099",
+          "path": [
+            7,
+            2
+          ]
+        },
+        {
+          "lineage": "WT4-130",
+          "path": [
+            7,
+            2
+          ]
+        },
+        {
+          "lineage": "WT4-144",
+          "path": [
+            7,
+            2
+          ]
+        }
+      ],
+      "trial_id": 14
+    },
+    {
+      "demo_mid": 1,
+      "demo_source": 4,
+      "demo_terminal": 8,
+      "family": "CS",
+      "first": "C",
+      "query_mid": 7,
+      "query_source": 8,
+      "query_terminal": 2,
+      "second": "S",
+      "successful_lineages": [],
+      "trial_id": 15
+    },
+    {
+      "demo_mid": 8,
+      "demo_source": 1,
+      "demo_terminal": 9,
+      "family": "SG",
+      "first": "S",
+      "query_mid": 5,
+      "query_source": 4,
+      "query_terminal": 6,
+      "second": "G",
+      "successful_lineages": [],
+      "trial_id": 16
+    },
+    {
+      "demo_mid": 8,
+      "demo_source": 1,
+      "demo_terminal": 9,
+      "family": "SG",
+      "first": "S",
+      "query_mid": 2,
+      "query_source": 7,
+      "query_terminal": 3,
+      "second": "G",
+      "successful_lineages": [
+        {
+          "lineage": "WT4-011",
+          "path": [
+            2,
+            3
+          ]
+        },
+        {
+          "lineage": "WT4-017",
+          "path": [
+            2,
+            3
+          ]
+        },
+        {
+          "lineage": "WT4-035",
+          "path": [
+            2,
+            3
+          ]
+        },
+        {
+          "lineage": "WT4-049",
+          "path": [
+            2,
+            3
+          ]
+        },
+        {
+          "lineage": "WT4-061",
+          "path": [
+            2,
+            3
+          ]
+        },
+        {
+          "lineage": "WT4-097",
+          "path": [
+            2,
+            3
+          ]
+        },
+        {
+          "lineage": "WT4-098",
+          "path": [
+            2,
+            3
+          ]
+        },
+        {
+          "lineage": "WT4-144",
+          "path": [
+            2,
+            3
+          ]
+        },
+        {
+          "lineage": "WT4-155",
+          "path": [
+            2,
+            3
+          ]
+        }
+      ],
+      "trial_id": 17
+    },
+    {
+      "demo_mid": 7,
+      "demo_source": 2,
+      "demo_terminal": 1,
+      "family": "SG",
+      "first": "S",
+      "query_mid": 8,
+      "query_source": 1,
+      "query_terminal": 9,
+      "second": "G",
+      "successful_lineages": [
+        {
+          "lineage": "WT4-000",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-001",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-002",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-005",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-012",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-015",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-022",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-029",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-032",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-038",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-042",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-047",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-051",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-052",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-057",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-059",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-062",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-064",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-071",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-072",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-082",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-092",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-108",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-112",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-114",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-132",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-139",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-142",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-147",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-149",
+          "path": [
+            8,
+            9
+          ]
+        }
+      ],
+      "trial_id": 18
+    },
+    {
+      "demo_mid": 7,
+      "demo_source": 2,
+      "demo_terminal": 1,
+      "family": "SG",
+      "first": "S",
+      "query_mid": 5,
+      "query_source": 4,
+      "query_terminal": 6,
+      "second": "G",
+      "successful_lineages": [],
+      "trial_id": 19
+    },
+    {
+      "demo_mid": 7,
+      "demo_source": 2,
+      "demo_terminal": 1,
+      "family": "SG",
+      "first": "S",
+      "query_mid": 2,
+      "query_source": 7,
+      "query_terminal": 3,
+      "second": "G",
+      "successful_lineages": [
+        {
+          "lineage": "WT4-009",
+          "path": [
+            2,
+            3
+          ]
+        },
+        {
+          "lineage": "WT4-011",
+          "path": [
+            2,
+            3
+          ]
+        },
+        {
+          "lineage": "WT4-017",
+          "path": [
+            2,
+            3
+          ]
+        },
+        {
+          "lineage": "WT4-035",
+          "path": [
+            2,
+            3
+          ]
+        },
+        {
+          "lineage": "WT4-049",
+          "path": [
+            2,
+            3
+          ]
+        },
+        {
+          "lineage": "WT4-061",
+          "path": [
+            2,
+            3
+          ]
+        },
+        {
+          "lineage": "WT4-097",
+          "path": [
+            2,
+            3
+          ]
+        },
+        {
+          "lineage": "WT4-098",
+          "path": [
+            2,
+            3
+          ]
+        },
+        {
+          "lineage": "WT4-102",
+          "path": [
+            2,
+            3
+          ]
+        },
+        {
+          "lineage": "WT4-144",
+          "path": [
+            2,
+            3
+          ]
+        },
+        {
+          "lineage": "WT4-155",
+          "path": [
+            2,
+            3
+          ]
+        }
+      ],
+      "trial_id": 20
+    },
+    {
+      "demo_mid": 5,
+      "demo_source": 4,
+      "demo_terminal": 6,
+      "family": "SG",
+      "first": "S",
+      "query_mid": 8,
+      "query_source": 1,
+      "query_terminal": 9,
+      "second": "G",
+      "successful_lineages": [
+        {
+          "lineage": "WT4-000",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-001",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-002",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-005",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-012",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-015",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-022",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-029",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-032",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-038",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-042",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-047",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-051",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-052",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-057",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-059",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-062",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-064",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-071",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-072",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-082",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-092",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-108",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-112",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-114",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-120",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-132",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-139",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-142",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-147",
+          "path": [
+            8,
+            9
+          ]
+        },
+        {
+          "lineage": "WT4-149",
+          "path": [
+            8,
+            9
+          ]
+        }
+      ],
+      "trial_id": 21
+    },
+    {
+      "demo_mid": 5,
+      "demo_source": 4,
+      "demo_terminal": 6,
+      "family": "SG",
+      "first": "S",
+      "query_mid": 7,
+      "query_source": 2,
+      "query_terminal": 1,
+      "second": "G",
+      "successful_lineages": [
+        {
+          "lineage": "WT4-004",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-007",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-008",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-019",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-020",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-021",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-024",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-025",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-027",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-028",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-030",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-031",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-034",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-039",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-041",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-045",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-048",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-050",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-054",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-055",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-058",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-060",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-065",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-067",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-068",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-069",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-074",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-075",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-077",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-079",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-080",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-081",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-084",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-085",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-087",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-088",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-089",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-090",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-091",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-094",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-095",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-100",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-101",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-104",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-105",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-107",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-109",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-110",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-115",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-117",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-118",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-119",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-121",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-124",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-128",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-131",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-134",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-137",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-140",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-141",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-145",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-148",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-151",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-157",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-158",
+          "path": [
+            7,
+            1
+          ]
+        },
+        {
+          "lineage": "WT4-159",
+          "path": [
+            7,
+            1
+          ]
+        }
+      ],
+      "trial_id": 22
+    },
+    {
+      "demo_mid": 5,
+      "demo_source": 4,
+      "demo_terminal": 6,
+      "family": "SG",
+      "first": "S",
+      "query_mid": 4,
+      "query_source": 5,
+      "query_terminal": 1,
+      "second": "G",
+      "successful_lineages": [],
+      "trial_id": 23
+    },
+    {
+      "demo_mid": 3,
+      "demo_source": 2,
+      "demo_terminal": 6,
+      "family": "GS",
+      "first": "G",
+      "query_mid": 1,
+      "query_source": 4,
+      "query_terminal": 8,
+      "second": "S",
+      "successful_lineages": [],
+      "trial_id": 24
+    },
+    {
+      "demo_mid": 3,
+      "demo_source": 2,
+      "demo_terminal": 6,
+      "family": "GS",
+      "first": "G",
+      "query_mid": 1,
+      "query_source": 7,
+      "query_terminal": 8,
+      "second": "S",
+      "successful_lineages": [],
+      "trial_id": 25
+    },
+    {
+      "demo_mid": 3,
+      "demo_source": 2,
+      "demo_terminal": 6,
+      "family": "GS",
+      "first": "G",
+      "query_mid": 9,
+      "query_source": 8,
+      "query_terminal": 0,
+      "second": "S",
+      "successful_lineages": [
+        {
+          "lineage": "WT4-059",
+          "path": [
+            9,
+            0
+          ]
+        }
+      ],
+      "trial_id": 26
+    },
+    {
+      "demo_mid": 1,
+      "demo_source": 4,
+      "demo_terminal": 8,
+      "family": "GS",
+      "first": "G",
+      "query_mid": 3,
+      "query_source": 2,
+      "query_terminal": 6,
+      "second": "S",
+      "successful_lineages": [],
+      "trial_id": 27
+    },
+    {
+      "demo_mid": 1,
+      "demo_source": 4,
+      "demo_terminal": 8,
+      "family": "GS",
+      "first": "G",
+      "query_mid": 6,
+      "query_source": 5,
+      "query_terminal": 3,
+      "second": "S",
+      "successful_lineages": [
+        {
+          "lineage": "WT4-009",
+          "path": [
+            6,
+            3
+          ]
+        },
+        {
+          "lineage": "WT4-011",
+          "path": [
+            6,
+            3
+          ]
+        },
+        {
+          "lineage": "WT4-014",
+          "path": [
+            6,
+            3
+          ]
+        },
+        {
+          "lineage": "WT4-017",
+          "path": [
+            6,
+            3
+          ]
+        },
+        {
+          "lineage": "WT4-035",
+          "path": [
+            6,
+            3
+          ]
+        },
+        {
+          "lineage": "WT4-038",
+          "path": [
+            6,
+            3
+          ]
+        },
+        {
+          "lineage": "WT4-040",
+          "path": [
+            6,
+            3
+          ]
+        },
+        {
+          "lineage": "WT4-044",
+          "path": [
+            6,
+            3
+          ]
+        },
+        {
+          "lineage": "WT4-047",
+          "path": [
+            6,
+            3
+          ]
+        },
+        {
+          "lineage": "WT4-049",
+          "path": [
+            6,
+            3
+          ]
+        },
+        {
+          "lineage": "WT4-051",
+          "path": [
+            6,
+            3
+          ]
+        },
+        {
+          "lineage": "WT4-061",
+          "path": [
+            6,
+            3
+          ]
+        },
+        {
+          "lineage": "WT4-071",
+          "path": [
+            6,
+            3
+          ]
+        },
+        {
+          "lineage": "WT4-097",
+          "path": [
+            6,
+            3
+          ]
+        },
+        {
+          "lineage": "WT4-098",
+          "path": [
+            6,
+            3
+          ]
+        },
+        {
+          "lineage": "WT4-099",
+          "path": [
+            6,
+            3
+          ]
+        },
+        {
+          "lineage": "WT4-102",
+          "path": [
+            6,
+            3
+          ]
+        },
+        {
+          "lineage": "WT4-130",
+          "path": [
+            6,
+            3
+          ]
+        },
+        {
+          "lineage": "WT4-144",
+          "path": [
+            6,
+            3
+          ]
+        },
+        {
+          "lineage": "WT4-149",
+          "path": [
+            6,
+            3
+          ]
+        },
+        {
+          "lineage": "WT4-155",
+          "path": [
+            6,
+            3
+          ]
+        }
+      ],
+      "trial_id": 28
+    },
+    {
+      "demo_mid": 1,
+      "demo_source": 4,
+      "demo_terminal": 8,
+      "family": "GS",
+      "first": "G",
+      "query_mid": 9,
+      "query_source": 8,
+      "query_terminal": 0,
+      "second": "S",
+      "successful_lineages": [
+        {
+          "lineage": "WT4-059",
+          "path": [
+            9,
+            0
+          ]
+        }
+      ],
+      "trial_id": 29
+    },
+    {
+      "demo_mid": 6,
+      "demo_source": 5,
+      "demo_terminal": 3,
+      "family": "GS",
+      "first": "G",
+      "query_mid": 1,
+      "query_source": 4,
+      "query_terminal": 8,
+      "second": "S",
+      "successful_lineages": [],
+      "trial_id": 30
+    },
+    {
+      "demo_mid": 6,
+      "demo_source": 5,
+      "demo_terminal": 3,
+      "family": "GS",
+      "first": "G",
+      "query_mid": 1,
+      "query_source": 7,
+      "query_terminal": 8,
+      "second": "S",
+      "successful_lineages": [],
+      "trial_id": 31
+    }
+  ],
+  "eligible": 126,
+  "interpretation": "WARP-T4 does not satisfy the registered claim that the portable Warp trace changes which composed Numogrammatic relations the released process can enter. Passage beyond entry does not satisfy its registered relational-profile gate. The incremental PFM trace is sufficient within the registered \u00b10.05 family-profile margins.",
+  "passage_beyond_entry": {
+    "held": false,
+    "multivariate": {
+      "T": 0.015873015873015872,
+      "components": {
+        "CS": {
+          "holm_p": 1.0,
+          "mean_difference": 0.000992063492063492,
+          "p_two_sided": 1.0
+        },
+        "GS": {
+          "holm_p": 1.0,
+          "mean_difference": 0.0,
+          "p_two_sided": 1.0
+        },
+        "SC": {
+          "holm_p": 1.0,
+          "mean_difference": 0.0,
+          "p_two_sided": 1.0
+        },
+        "SG": {
+          "holm_p": 1.0,
+          "mean_difference": -0.000992063492063492,
+          "p_two_sided": 1.0
+        }
+      },
+      "p": 1.0
+    }
+  },
+  "pfm_sufficiency": {
+    "families": {
+      "CS": {
+        "hi": 0.0,
+        "lo": 0.0,
+        "mean": 0.0
+      },
+      "GS": {
+        "hi": 0.0,
+        "lo": 0.0,
+        "mean": 0.0
+      },
+      "SC": {
+        "hi": 0.0,
+        "lo": 0.0,
+        "mean": 0.0
+      },
+      "SG": {
+        "hi": 0.0,
+        "lo": 0.0,
+        "mean": 0.0
+      }
+    },
+    "held": true
+  },
+  "pointer_hits": [],
+  "primary": {
+    "W_vs_B": {
+      "T": 0.007936507936507936,
+      "components": {
+        "CS": {
+          "holm_p": 1.0,
+          "mean_difference": 0.000992063492063492,
+          "p_two_sided": 1.0
+        },
+        "GS": {
+          "holm_p": 1.0,
+          "mean_difference": 0.0,
+          "p_two_sided": 1.0
+        },
+        "SC": {
+          "holm_p": 1.0,
+          "mean_difference": 0.0,
+          "p_two_sided": 1.0
+        },
+        "SG": {
+          "holm_p": 1.0,
+          "mean_difference": 0.0,
+          "p_two_sided": 1.0
+        }
+      },
+      "p": 1.0
+    },
+    "held": false,
+    "multivariate": {
+      "T": 0.05332406138857752,
+      "components": {
+        "CS": {
+          "holm_p": 1.0,
+          "mean_difference": 0.000992063492063492,
+          "p_two_sided": 1.0
+        },
+        "GS": {
+          "holm_p": 1.0,
+          "mean_difference": 0.000992063492063492,
+          "p_two_sided": 1.0
+        },
+        "SC": {
+          "holm_p": 1.0,
+          "mean_difference": -0.001984126984126984,
+          "p_two_sided": 0.499490010199796
+        },
+        "SG": {
+          "holm_p": 0.872062558748825,
+          "mean_difference": 0.003968253968253968,
+          "p_two_sided": 0.21801563968720625
+        }
+      },
+      "p": 0.12713745725085498
+    },
+    "shared_significant_families": []
+  },
+  "provenance": {
+    "amendment_sha256": "514fc93822ed460611afc0e61c7503f91550373ef8e397f40efaa19c5806b4d5",
+    "raw_sha256": "827e7f162d8263ef08d2828daed72659c9ce4958b29f33789aea784d21bdc0ac",
+    "registration_sha256": "b7fc392248bdc420cb8d1e913e57eeeaff483ffac7dc40852a999dc9ceae3a3f",
+    "runner_sha256": "243b28d7f4eb49c9a5f70de45b05754ff2414d77a2b1d7aa305ca11128202452",
+    "trials_sha256": "7477472b0a606c965afcded55a2f9cbcf8389fac57ca1a70744bda07b630b9be"
+  },
+  "schema": "amelia-warp-t4-v1",
+  "topology_validity": {
+    "multivariate": {
+      "T": 0.0,
+      "components": {
+        "CS": {
+          "holm_p": 1.0,
+          "mean_difference": 0.0,
+          "p_two_sided": 1.0
+        },
+        "GS": {
+          "holm_p": 1.0,
+          "mean_difference": 0.0,
+          "p_two_sided": 1.0
+        },
+        "SC": {
+          "holm_p": 1.0,
+          "mean_difference": 0.0,
+          "p_two_sided": 1.0
+        },
+        "SG": {
+          "holm_p": 1.0,
+          "mean_difference": 0.0,
+          "p_two_sided": 1.0
+        }
+      },
+      "p": 1.0
+    },
+    "valid": true
+  },
+  "valid": true
+}
