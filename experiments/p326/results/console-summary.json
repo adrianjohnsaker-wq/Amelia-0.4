@@ -1,0 +1,385 @@
+{
+  "atlas_head_sha256": "8f95392cf167ccc013aa32a261057a4ccc67ca0410fdecf23a59261bacdad5ed",
+  "candidate_motifs": 163,
+  "controllers": {
+    "CANONICAL_FIXED": {
+      "held_out_mean_TV": 0.003255208333333333,
+      "lineage_bootstrap_95pct_CI": [
+        0.0023148148148148147,
+        0.012604890046296295
+      ],
+      "mean_PFM_hysteresis_delta": -0.003994531249999999,
+      "mean_PFM_strain_L1_delta": 0.0964862344468232,
+      "mean_novel_transition_fraction": 0.39691550612774573,
+      "mean_transition_TV_vs_no_field": 0.006781684027777777,
+      "records": 2304,
+      "train_mean_TV": 0.010308159722222222
+    },
+    "CANONICAL_LIVE": {
+      "held_out_mean_TV": 0.003255208333333333,
+      "lineage_bootstrap_95pct_CI": [
+        0.0024052372685185184,
+        0.012333622685185185
+      ],
+      "mean_PFM_hysteresis_delta": -0.003995789930555555,
+      "mean_PFM_strain_L1_delta": 0.09647819459684698,
+      "mean_novel_transition_fraction": 0.39687417014890974,
+      "mean_transition_TV_vs_no_field": 0.006745515046296296,
+      "records": 2304,
+      "train_mean_TV": 0.010235821759259259
+    },
+    "NO_FIELD": {
+      "held_out_mean_TV": 0.0,
+      "lineage_bootstrap_95pct_CI": [
+        0.0,
+        0.0
+      ],
+      "mean_PFM_hysteresis_delta": -0.004200868055555555,
+      "mean_PFM_strain_L1_delta": 0.09587335381505227,
+      "mean_novel_transition_fraction": 0.39556330292007374,
+      "mean_transition_TV_vs_no_field": 0.0,
+      "records": 2304,
+      "train_mean_TV": 0.0
+    },
+    "PFM_FEEDBACK_MUTED": {
+      "held_out_mean_TV": 0.5750506365740741,
+      "lineage_bootstrap_95pct_CI": [
+        0.5162398726851852,
+        0.6412579571759259
+      ],
+      "mean_PFM_hysteresis_delta": -0.00920056423611111,
+      "mean_PFM_strain_L1_delta": 0.09909947396540371,
+      "mean_novel_transition_fraction": 0.11667592751577127,
+      "mean_transition_TV_vs_no_field": 0.5806929976851852,
+      "records": 2304,
+      "train_mean_TV": 0.5863353587962963
+    },
+    "R00": {
+      "held_out_mean_TV": 0.002785011574074074,
+      "lineage_bootstrap_95pct_CI": [
+        0.0021701388888888886,
+        0.005551938657407407
+      ],
+      "mean_PFM_hysteresis_delta": -0.0042014756944444434,
+      "mean_PFM_strain_L1_delta": 0.09618733055913503,
+      "mean_novel_transition_fraction": 0.3954914816568462,
+      "mean_transition_TV_vs_no_field": 0.0035807291666666665,
+      "records": 2304,
+      "train_mean_TV": 0.004376446759259259
+    },
+    "R01": {
+      "held_out_mean_TV": 0.0026041666666666665,
+      "lineage_bootstrap_95pct_CI": [
+        0.0018988715277777778,
+        0.008807146990740741
+      ],
+      "mean_PFM_hysteresis_delta": -0.00409743923611111,
+      "mean_PFM_strain_L1_delta": 0.09619982168355824,
+      "mean_novel_transition_fraction": 0.39630252800825716,
+      "mean_transition_TV_vs_no_field": 0.004448784722222222,
+      "records": 2304,
+      "train_mean_TV": 0.006293402777777778
+    },
+    "R02": {
+      "held_out_mean_TV": 0.00441261574074074,
+      "lineage_bootstrap_95pct_CI": [
+        0.0020978009259259257,
+        0.00978370949074074
+      ],
+      "mean_PFM_hysteresis_delta": -0.004098394097222221,
+      "mean_PFM_strain_L1_delta": 0.09616749746603422,
+      "mean_novel_transition_fraction": 0.39663046010702263,
+      "mean_transition_TV_vs_no_field": 0.005280671296296296,
+      "records": 2304,
+      "train_mean_TV": 0.006148726851851852
+    },
+    "R03": {
+      "held_out_mean_TV": 0.004701967592592592,
+      "lineage_bootstrap_95pct_CI": [
+        0.003273292824074074,
+        0.007161458333333333
+      ],
+      "mean_PFM_hysteresis_delta": -0.004183289930555554,
+      "mean_PFM_strain_L1_delta": 0.09647440572818208,
+      "mean_novel_transition_fraction": 0.3958788342251884,
+      "mean_transition_TV_vs_no_field": 0.004991319444444444,
+      "records": 2304,
+      "train_mean_TV": 0.005280671296296296
+    },
+    "R04": {
+      "held_out_mean_TV": 0.0031467013888888886,
+      "lineage_bootstrap_95pct_CI": [
+        0.001030815972222222,
+        0.004647714120370371
+      ],
+      "mean_PFM_hysteresis_delta": -0.0041879340277777765,
+      "mean_PFM_strain_L1_delta": 0.09587880136073226,
+      "mean_novel_transition_fraction": 0.396012831689915,
+      "mean_transition_TV_vs_no_field": 0.0023690682870370367,
+      "records": 2304,
+      "train_mean_TV": 0.001591435185185185
+    },
+    "R05": {
+      "held_out_mean_TV": 0.005063657407407407,
+      "lineage_bootstrap_95pct_CI": [
+        0.0025499131944444445,
+        0.013292100694444444
+      ],
+      "mean_PFM_hysteresis_delta": -0.0039947482638888875,
+      "mean_PFM_strain_L1_delta": 0.09634074513000437,
+      "mean_novel_transition_fraction": 0.39685575684924645,
+      "mean_transition_TV_vs_no_field": 0.007233796296296296,
+      "records": 2304,
+      "train_mean_TV": 0.009403935185185185
+    },
+    "R06": {
+      "held_out_mean_TV": 0.002785011574074074,
+      "lineage_bootstrap_95pct_CI": [
+        0.0016637731481481482,
+        0.005497685185185185
+      ],
+      "mean_PFM_hysteresis_delta": -0.004193359374999999,
+      "mean_PFM_strain_L1_delta": 0.09638213779984767,
+      "mean_novel_transition_fraction": 0.3958929573512907,
+      "mean_transition_TV_vs_no_field": 0.0033456307870370367,
+      "records": 2304,
+      "train_mean_TV": 0.00390625
+    },
+    "R07": {
+      "held_out_mean_TV": 0.0038700810185185184,
+      "lineage_bootstrap_95pct_CI": [
+        0.0017541956018518518,
+        0.004864728009259259
+      ],
+      "mean_PFM_hysteresis_delta": -0.004201605902777777,
+      "mean_PFM_strain_L1_delta": 0.09638592592974032,
+      "mean_novel_transition_fraction": 0.3958399095117845,
+      "mean_transition_TV_vs_no_field": 0.0030924479166666665,
+      "records": 2304,
+      "train_mean_TV": 0.0023148148148148147
+    },
+    "R08": {
+      "held_out_mean_TV": 0.006727430555555555,
+      "lineage_bootstrap_95pct_CI": [
+        0.002965856481481481,
+        0.007685908564814815
+      ],
+      "mean_PFM_hysteresis_delta": -0.004191927083333332,
+      "mean_PFM_strain_L1_delta": 0.09606895696599019,
+      "mean_novel_transition_fraction": 0.39591310864097323,
+      "mean_transition_TV_vs_no_field": 0.0050094039351851844,
+      "records": 2304,
+      "train_mean_TV": 0.0032913773148148147
+    },
+    "R09": {
+      "held_out_mean_TV": 0.006438078703703703,
+      "lineage_bootstrap_95pct_CI": [
+        0.0032371238425925922,
+        0.008029513888888888
+      ],
+      "mean_PFM_hysteresis_delta": -0.004189973958333332,
+      "mean_PFM_strain_L1_delta": 0.0961311797490329,
+      "mean_novel_transition_fraction": 0.39572124080587623,
+      "mean_transition_TV_vs_no_field": 0.005262586805555555,
+      "records": 2304,
+      "train_mean_TV": 0.004087094907407407
+    },
+    "R10": {
+      "held_out_mean_TV": 0.0025318287037037032,
+      "lineage_bootstrap_95pct_CI": [
+        0.0018627025462962961,
+        0.0034360532407407404
+      ],
+      "mean_PFM_hysteresis_delta": -0.004196223958333332,
+      "mean_PFM_strain_L1_delta": 0.0960993754260016,
+      "mean_novel_transition_fraction": 0.3956890331890332,
+      "mean_transition_TV_vs_no_field": 0.0026041666666666665,
+      "records": 2304,
+      "train_mean_TV": 0.0026765046296296294
+    },
+    "R11": {
+      "held_out_mean_TV": 0.0031828703703703698,
+      "lineage_bootstrap_95pct_CI": [
+        0.0022063078703703698,
+        0.0039062499999999996
+      ],
+      "mean_PFM_hysteresis_delta": -0.004192491319444443,
+      "mean_PFM_strain_L1_delta": 0.09597551676880663,
+      "mean_novel_transition_fraction": 0.39583767047959756,
+      "mean_transition_TV_vs_no_field": 0.0030201099537037032,
+      "records": 2304,
+      "train_mean_TV": 0.0028573495370370367
+    },
+    "R12": {
+      "held_out_mean_TV": 0.005063657407407407,
+      "lineage_bootstrap_95pct_CI": [
+        0.001609519675925926,
+        0.006401909722222222
+      ],
+      "mean_PFM_hysteresis_delta": -0.004203342013888888,
+      "mean_PFM_strain_L1_delta": 0.09615128943677198,
+      "mean_novel_transition_fraction": 0.39606019583233126,
+      "mean_transition_TV_vs_no_field": 0.003634982638888889,
+      "records": 2304,
+      "train_mean_TV": 0.0022063078703703706
+    },
+    "R13": {
+      "held_out_mean_TV": 0.0036168981481481477,
+      "lineage_bootstrap_95pct_CI": [
+        0.0020435474537037037,
+        0.004828559027777777
+      ],
+      "mean_PFM_hysteresis_delta": -0.004180295138888888,
+      "mean_PFM_strain_L1_delta": 0.09639618750813239,
+      "mean_novel_transition_fraction": 0.39589777988215485,
+      "mean_transition_TV_vs_no_field": 0.0032371238425925922,
+      "records": 2304,
+      "train_mean_TV": 0.0028573495370370367
+    },
+    "R14": {
+      "held_out_mean_TV": 0.006763599537037037,
+      "lineage_bootstrap_95pct_CI": [
+        0.0038700810185185184,
+        0.008590133101851851
+      ],
+      "mean_PFM_hysteresis_delta": -0.004177951388888887,
+      "mean_PFM_strain_L1_delta": 0.09668202802273411,
+      "mean_novel_transition_fraction": 0.3954795975629309,
+      "mean_transition_TV_vs_no_field": 0.005949797453703704,
+      "records": 2304,
+      "train_mean_TV": 0.00513599537037037
+    },
+    "R15": {
+      "held_out_mean_TV": 0.004050925925925926,
+      "lineage_bootstrap_95pct_CI": [
+        0.0025860821759259257,
+        0.005298755787037037
+      ],
+      "mean_PFM_hysteresis_delta": -0.004184331597222221,
+      "mean_PFM_strain_L1_delta": 0.09638081813270662,
+      "mean_novel_transition_fraction": 0.3961790367714847,
+      "mean_transition_TV_vs_no_field": 0.003743489583333333,
+      "records": 2304,
+      "train_mean_TV": 0.0034360532407407404
+    },
+    "R16": {
+      "held_out_mean_TV": 0.00632957175925926,
+      "lineage_bootstrap_95pct_CI": [
+        0.0015190972222222222,
+        0.007016782407407407
+      ],
+      "mean_PFM_hysteresis_delta": -0.004194574652777777,
+      "mean_PFM_strain_L1_delta": 0.09645134113546357,
+      "mean_novel_transition_fraction": 0.39574881378266796,
+      "mean_transition_TV_vs_no_field": 0.00390625,
+      "records": 2304,
+      "train_mean_TV": 0.0014829282407407406
+    },
+    "R17": {
+      "held_out_mean_TV": 0.002242476851851852,
+      "lineage_bootstrap_95pct_CI": [
+        0.0013020833333333333,
+        0.004195601851851851
+      ],
+      "mean_PFM_hysteresis_delta": -0.004201215277777777,
+      "mean_PFM_strain_L1_delta": 0.09619257670062584,
+      "mean_novel_transition_fraction": 0.3961011873446769,
+      "mean_transition_TV_vs_no_field": 0.002495659722222222,
+      "records": 2304,
+      "train_mean_TV": 0.0027488425925925927
+    },
+    "R18": {
+      "held_out_mean_TV": 0.003472222222222222,
+      "lineage_bootstrap_95pct_CI": [
+        0.0014286747685185184,
+        0.004322193287037037
+      ],
+      "mean_PFM_hysteresis_delta": -0.004180859374999999,
+      "mean_PFM_strain_L1_delta": 0.09614556768615763,
+      "mean_novel_transition_fraction": 0.39577514981160816,
+      "mean_transition_TV_vs_no_field": 0.002658420138888889,
+      "records": 2304,
+      "train_mean_TV": 0.0018446180555555555
+    },
+    "R19": {
+      "held_out_mean_TV": 0.00415943287037037,
+      "lineage_bootstrap_95pct_CI": [
+        0.001736111111111111,
+        0.00562427662037037
+      ],
+      "mean_PFM_hysteresis_delta": -0.004202560763888888,
+      "mean_PFM_strain_L1_delta": 0.09612545679729953,
+      "mean_novel_transition_fraction": 0.39607810808982685,
+      "mean_transition_TV_vs_no_field": 0.003255208333333333,
+      "records": 2304,
+      "train_mean_TV": 0.0023509837962962963
+    },
+    "R20": {
+      "held_out_mean_TV": 0.008282696759259259,
+      "lineage_bootstrap_95pct_CI": [
+        0.0039062499999999996,
+        0.009259259259259259
+      ],
+      "mean_PFM_hysteresis_delta": -0.004184895833333332,
+      "mean_PFM_strain_L1_delta": 0.09638679444825565,
+      "mean_novel_transition_fraction": 0.3960769024571108,
+      "mean_transition_TV_vs_no_field": 0.0062572337962962955,
+      "records": 2304,
+      "train_mean_TV": 0.004231770833333333
+    },
+    "R21": {
+      "held_out_mean_TV": 0.00437644675925926,
+      "lineage_bootstrap_95pct_CI": [
+        0.003002025462962963,
+        0.01077835648148148
+      ],
+      "mean_PFM_hysteresis_delta": -0.004099305555555555,
+      "mean_PFM_strain_L1_delta": 0.0965178913645448,
+      "mean_novel_transition_fraction": 0.39641275728515313,
+      "mean_transition_TV_vs_no_field": 0.006202980324074074,
+      "records": 2304,
+      "train_mean_TV": 0.008029513888888888
+    },
+    "R22": {
+      "held_out_mean_TV": 0.007776331018518518,
+      "lineage_bootstrap_95pct_CI": [
+        0.0023148148148148143,
+        0.00808376736111111
+      ],
+      "mean_PFM_hysteresis_delta": -0.004191362847222221,
+      "mean_PFM_strain_L1_delta": 0.0961991133538646,
+      "mean_novel_transition_fraction": 0.39584698673240337,
+      "mean_transition_TV_vs_no_field": 0.00490089699074074,
+      "records": 2304,
+      "train_mean_TV": 0.0020254629629629624
+    },
+    "R23": {
+      "held_out_mean_TV": 0.00853587962962963,
+      "lineage_bootstrap_95pct_CI": [
+        0.0034360532407407404,
+        0.008951822916666666
+      ],
+      "mean_PFM_hysteresis_delta": -0.004199696180555555,
+      "mean_PFM_strain_L1_delta": 0.09656971609481446,
+      "mean_novel_transition_fraction": 0.3959167411966891,
+      "mean_transition_TV_vs_no_field": 0.005859375,
+      "records": 2304,
+      "train_mean_TV": 0.00318287037037037
+    },
+    "RELATION_SHUFFLED": {
+      "held_out_mean_TV": 0.00954861111111111,
+      "lineage_bootstrap_95pct_CI": [
+        0.003743489583333333,
+        0.010941116898148147
+      ],
+      "mean_PFM_hysteresis_delta": -0.004301692708333332,
+      "mean_PFM_strain_L1_delta": 0.09638539430400672,
+      "mean_novel_transition_fraction": 0.3947343443111672,
+      "mean_transition_TV_vs_no_field": 0.006637008101851851,
+      "records": 2304,
+      "train_mean_TV": 0.0037254050925925922
+    }
+  },
+  "interpretation": "exploratory mapping; no pass/fail",
+  "records": 66816
+}
