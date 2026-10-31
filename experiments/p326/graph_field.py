@@ -24,15 +24,17 @@ LAYER_DECAY = 0.5
 LOG_FLUX_BUDGET = 0.05
 
 
-def _normalize(values: Sequence[float]) -> List[float]:
+def _normalize(values: Sequence[float], allow_zero: bool = False) -> List[float]:
     if len(values) != 10:
-        raise ValueError("P3.26 field packets must contain ten zone values")
+        raise ValueError("P3.26 fields must contain ten zone values")
     centered = [float(v) for v in values]
     mean = sum(centered) / len(centered)
     centered = [v - mean for v in centered]
     norm = math.sqrt(sum(v * v for v in centered))
     if norm <= 1e-12:
-        raise ValueError("P3.26 field packet has zero centered magnitude")
+        if allow_zero:
+            return [0.0] * 10
+        raise ValueError("P3.26 input field has zero centered magnitude")
     return [v / norm for v in centered]
 
 
@@ -116,7 +118,7 @@ def propagate_field(
             numerators[z] / denominators[z] if denominators[z] else current[z]
             for z in range(10)
         ]
-        pushed = _normalize(pushed)
+        pushed = _normalize(pushed, allow_zero=True)
         accumulated = [a + decay * b for a, b in zip(accumulated, pushed)]
         current = pushed
         decay *= LAYER_DECAY
