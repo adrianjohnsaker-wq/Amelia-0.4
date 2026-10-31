@@ -60,10 +60,15 @@ def run_encounters(
             "zone_phase_angle": [float(working.zones[z]["phaseAngle"]) for z in range(10)],
             "deformation_tensor": [float(v) for v in working.deformation_tensor],
         }
+        effective_mapping_gates = (
+            working.gates
+            if mode in {"canonical_live", "no_field", "pfm_feedback_muted", "relation_shuffled"}
+            else mapping_gates
+        )
         transition, audit = apply_one_transition(
             working,
             packet,
-            mapping_gates,
+            effective_mapping_gates,
             mode,
             relation_permutation=relation_permutation,
         )
