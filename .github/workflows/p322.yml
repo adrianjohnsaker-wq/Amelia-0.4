@@ -1,0 +1,84 @@
+name: P3.22 Relational Analogy Completion
+
+on:
+  push:
+    branches: ["p322-relational-generalization-20261031"]
+    paths:
+      - "FullNumogram.py"
+      - "experiments/p316/DynamicNumogram.py"
+      - "experiments/p317/run.py"
+      - "experiments/p322/**"
+      - ".github/workflows/p322.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: p322-relational-generalization
+  cancel-in-progress: false
+
+jobs:
+  assay:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: p322-relational-generalization-20261031
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Preflight
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(sha256sum FullNumogram.py | cut -d' ' -f1)" = "b6edbe76ab4929e93c01059fb56cef900effa9bca1cec78d0039eafb8fbebdf8"
+          test "$(sha256sum experiments/p316/DynamicNumogram.py | cut -d' ' -f1)" = "ac482882858c1e47f578523452eff0bc20aa82b5978299c9c8808ff6127c5cd6"
+          python -m py_compile experiments/p322/run.py
+          python - <<'PY'
+          import sys
+          sys.path.insert(0,"experiments/p322")
+          import run
+          trials=run.load_trials()
+          run.validate_trials(trials)
+          assert len(trials)==32
+          # Non-registered synthetic process sanity only.
+          p=run.DynamicNumogramProcess(current_zone=1)
+          r=run.run_trial(p,trials[0],"CONGRUENT")
+          assert len(r["path"])==2
+          for i in range(run.REWIRES):
+              g=run.p317.rewired_gates(999322+i)
+              assert run.p317.degree_signature(g)==run.p317.degree_signature(run.p317.FULL_NUMOGRAM_GATES)
+              assert run.p317.self_loop_count(g)==run.p317.self_loop_count(run.p317.FULL_NUMOGRAM_GATES)
+          print("P3.22 preflight PASS")
+          PY
+      - name: Record provenance
+        run: |
+          mkdir -p experiments/p322/results
+          sha256sum FullNumogram.py experiments/p316/DynamicNumogram.py experiments/p317/run.py experiments/p322/REGISTRATION.md experiments/p322/AMENDMENT_1.md experiments/p322/TRIALS.json experiments/p322/run.py > experiments/p322/results/PRE_RUN_SHA256SUMS.txt
+      - name: Run first registered P3.22 assay
+        shell: bash
+        run: |
+          set -euo pipefail
+          python experiments/p322/run.py --out experiments/p322/results | tee experiments/p322/results/console-summary.json
+      - name: Display report
+        run: |
+          cat experiments/p322/results/REPORT.md
+          sed -n '1,260p' experiments/p322/results/ATLAS.md
+      - name: Commit compact result
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add experiments/p322/results/REPORT.md experiments/p322/results/ATLAS.md experiments/p322/results/summary.json experiments/p322/results/PRE_RUN_SHA256SUMS.txt experiments/p322/results/console-summary.json
+          if ! git diff --cached --quiet; then
+            git commit -m "P3.22: archive first relational analogy result [skip ci]"
+            git push origin HEAD:p322-relational-generalization-20261031
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: P3.22-relational-analogy-evidence
+          path: experiments/p322/results/
+          retention-days: 90
