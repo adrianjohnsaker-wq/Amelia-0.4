@@ -1,0 +1,83 @@
+name: WARP-T4 Portable Trace Relational Entry
+
+on:
+  push:
+    branches: ["warp-t4-relational-entry-20261031"]
+    paths:
+      - "FullNumogram.py"
+      - "experiments/p316/DynamicNumogram.py"
+      - "experiments/p317/run.py"
+      - "experiments/warp_t1/run.py"
+      - "experiments/warp_t2/run.py"
+      - "experiments/warp_t4/**"
+      - ".github/workflows/warp-t4.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: warp-t4-relational-entry
+  cancel-in-progress: false
+
+jobs:
+  assay:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: warp-t4-relational-entry-20261031
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Preflight
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(sha256sum FullNumogram.py | cut -d' ' -f1)" = "b6edbe76ab4929e93c01059fb56cef900effa9bca1cec78d0039eafb8fbebdf8"
+          test "$(sha256sum experiments/p316/DynamicNumogram.py | cut -d' ' -f1)" = "ac482882858c1e47f578523452eff0bc20aa82b5978299c9c8808ff6127c5cd6"
+          python -m py_compile experiments/warp_t4/run.py
+          python - <<'PY'
+          import sys
+          sys.path.insert(0,"experiments/warp_t4")
+          import run
+          trials=run.load_trials()
+          run.validate_trials(trials)
+          assert len(trials)==32
+          # Non-registered lineage and analogy sanity only.
+          row=run.make_lineage(999999-3260000)
+          if row["eligible"]:
+              r=run.run_trial(row["shells"]["W"],trials[0],"CONGRUENT")
+              assert len(r["path"])==2
+          print("WARP-T4 preflight PASS")
+          PY
+      - name: Record provenance
+        run: |
+          mkdir -p experiments/warp_t4/results
+          sha256sum FullNumogram.py experiments/p316/DynamicNumogram.py experiments/p317/run.py experiments/warp_t1/run.py experiments/warp_t2/run.py experiments/warp_t4/REGISTRATION.md experiments/warp_t4/AMENDMENT_1.md experiments/warp_t4/TRIALS.json experiments/warp_t4/run.py > experiments/warp_t4/results/PRE_RUN_SHA256SUMS.txt
+      - name: Run first registered WARP-T4 assay
+        shell: bash
+        run: |
+          set -euo pipefail
+          python experiments/warp_t4/run.py --out experiments/warp_t4/results | tee experiments/warp_t4/results/console-summary.json
+      - name: Display report
+        run: |
+          cat experiments/warp_t4/results/REPORT.md
+          sed -n '1,260p' experiments/warp_t4/results/ATLAS.md
+      - name: Commit compact result
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add experiments/warp_t4/results/REPORT.md experiments/warp_t4/results/ATLAS.md experiments/warp_t4/results/summary.json experiments/warp_t4/results/PRE_RUN_SHA256SUMS.txt experiments/warp_t4/results/console-summary.json
+          if ! git diff --cached --quiet; then
+            git commit -m "WARP-T4: archive first relational-entry result [skip ci]"
+            git push origin HEAD:warp-t4-relational-entry-20261031
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: WARP-T4-relational-entry-evidence
+          path: experiments/warp_t4/results/
+          retention-days: 90
