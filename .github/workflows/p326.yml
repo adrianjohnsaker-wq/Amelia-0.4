@@ -1,0 +1,146 @@
+name: P3.26 Numogram Graph Field Assay
+on:
+  push:
+    branches: ["p326-numogram-morphogenetic-graph-field-20261031"]
+    paths:
+      - "FullNumogram.py"
+      - "experiments/p316/DynamicNumogram.py"
+      - "experiments/p317/run.py"
+      - "experiments/p326/**"
+      - ".github/workflows/p326.yml"
+permissions:
+  contents: write
+concurrency:
+  group: p326-numogram-graph-field
+  cancel-in-progress: false
+jobs:
+  preflight:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: p326-numogram-morphogenetic-graph-field-20261031
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify sealed registration and frozen inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(sha256sum FullNumogram.py | cut -d' ' -f1)" = "b6edbe76ab4929e93c01059fb56cef900effa9bca1cec78d0039eafb8fbebdf8"
+          test "$(sha256sum experiments/p316/DynamicNumogram.py | cut -d' ' -f1)" = "ac482882858c1e47f578523452eff0bc20aa82b5978299c9c8808ff6127c5cd6"
+          test "$(sha256sum experiments/p317/run.py | cut -d' ' -f1)" = "1a8fd1961b897ec970c7d6987bd9f3502c82221f13bace683563e4dafdb820c3"
+          REG_SHA="$(cat experiments/p326/SEALED_REGISTRATION_SHA.txt)"
+          test "$REG_SHA" = "26593461d370d7f02df381ca2dc670ba2bb356a0"
+          git merge-base --is-ancestor "$REG_SHA" HEAD
+          test -z "$(git diff "$REG_SHA" HEAD -- experiments/p326/REGISTRATION.md)"
+          REG_UNIX="$(git show -s --format=%ct "$REG_SHA")"
+          test "$REG_UNIX" -gt 0
+          node --check experiments/p326/acquire.mjs
+          python -m py_compile experiments/p326/graph_field.py experiments/p326/atlas.py experiments/p326/runner.py experiments/p326/run.py
+          python - <<'PY'
+          import copy,sys,math
+          sys.path[:0]=["experiments/p326","experiments/p316","."]
+          import run as assay
+          from graph_field import apply_one_transition,packet_from_randomness
+          from DynamicNumogram import DynamicNumogramProcess
+          p=DynamicNumogramProcess(current_zone=4)
+          original=[g["flux"] for g in p.gates]
+          packet=packet_from_randomness("00"*32,0)
+          _,audit=apply_one_transition(p,packet,p.gates,"canonical_live")
+          assert audit["flux_restored"] and original==[g["flux"] for g in p.gates]
+          assert math.isclose(math.sqrt(sum(x*x for x in packet)),1.0,rel_tol=1e-12)
+          m=assay.load_p317()
+          sig=m.degree_signature(m.FULL_NUMOGRAM_GATES); loops=m.self_loop_count(m.FULL_NUMOGRAM_GATES)
+          for i in range(24):
+              g=m.rewired_gates(3263000+i)
+              assert m.degree_signature(g)==sig and m.self_loop_count(g)==loops
+          print("P3.26 preflight PASS")
+          PY
+  registered-assay:
+    if: github.event_name == 'push' && contains(github.event.head_commit.message, '[P3.26-EXECUTE]')
+    needs: preflight
+    runs-on: ubuntu-22.04
+    timeout-minutes: 110
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: p326-numogram-morphogenetic-graph-field-20261031
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pinned drand verifier
+        run: npm install --no-save --package-lock=false drand-client@1.4.2
+      - name: Record pre-reveal provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p experiments/p326/results
+          sha256sum FullNumogram.py experiments/p316/DynamicNumogram.py experiments/p317/run.py experiments/p326/REGISTRATION.md experiments/p326/SEALED_REGISTRATION_SHA.txt experiments/p326/graph_field.py experiments/p326/atlas.py experiments/p326/runner.py experiments/p326/run.py experiments/p326/acquire.mjs > experiments/p326/results/PRE_RUN_SHA256SUMS.txt
+          REG_SHA="$(cat experiments/p326/SEALED_REGISTRATION_SHA.txt)"
+          {
+            echo "registration_commit=$REG_SHA"
+            echo "registration_commit_unix=$(git show -s --format=%ct "$REG_SHA")"
+            echo "workflow_head=$GITHUB_SHA"
+            echo "node=$(node --version)"
+            echo "python=$(python --version 2>&1)"
+            echo "drand_client=1.4.2"
+          } > experiments/p326/results/PRE_REVEAL_PROVENANCE.txt
+      - name: Acquire prospective verified drand rounds
+        shell: bash
+        run: |
+          set -euo pipefail
+          export SEAL_UNIX="$(git show -s --format=%ct "$(cat experiments/p326/SEALED_REGISTRATION_SHA.txt)")"
+          node experiments/p326/acquire.mjs | tee experiments/p326/results/acquisition-summary.json
+      - name: Verify durable beacon acquisition chain
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib,json
+          p="experiments/p326/results/ACQUISITION.jsonl"
+          prev="0"*64; rows=[]
+          with open(p,encoding="utf-8") as f:
+              for no,line in enumerate(f,1):
+                  outer=json.loads(line)
+                  if outer["previous_digest"]!=prev: raise SystemExit("acquisition chain link mismatch at line "+str(no))
+                  digest=hashlib.sha256((prev+outer["payload_json"]).encode()).hexdigest()
+                  if digest!=outer["record_digest"]: raise SystemExit("acquisition digest mismatch at line "+str(no))
+                  row=json.loads(outer["payload_json"])
+                  if row["packet_index"]!=no-1: raise SystemExit("packet index mismatch")
+                  rows.append(row); prev=digest
+          beacon=json.load(open("experiments/p326/results/BEACON.json",encoding="utf-8"))
+          if len(rows)!=24 or rows!=beacon["rounds"] or prev!=beacon["acquisition_log_head_sha256"]:
+              raise SystemExit("beacon/acquisition log mismatch")
+          if any(rows[i]["round"]+1!=rows[i+1]["round"] for i in range(23)):
+              raise SystemExit("drand rounds are not consecutive")
+          print("P3.26 beacon acquisition chain PASS")
+          PY
+      - name: Run the registered graph-field assay
+        shell: bash
+        run: python experiments/p326/run.py 2>&1 | tee experiments/p326/results/console-summary.json
+      - name: Upload complete or partial evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: P3.26-numogram-graph-field-evidence
+          path: experiments/p326/results/
+          retention-days: 90
+      - name: Archive complete or partial results on the branch
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A experiments/p326/results
+          if ! git diff --cached --quiet; then
+            git commit -m "P3.26: archive complete or partial assay evidence [skip ci]"
+            git push origin HEAD:p326-numogram-morphogenetic-graph-field-20261031
+          fi
