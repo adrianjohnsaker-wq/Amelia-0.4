@@ -1,0 +1,11 @@
+{
+  "classification": "pre-render-only amendment after the first provider attempt returned 401; no provider answers observed",
+  "prior_plan": "libfile_a40b83a9ddd481918d76d6d2b2d3dcbc",
+  "created_at_utc_unverified": "2026-11-27T09:59:00.564427+00:00",
+  "files": {
+    "headless_p313/experiments/communication_20261127/prepare_offline.py": "34b4747503a65aa4391d9f1e4ad660a0ffc055b43bb2eaaf8e5abd483697e825",
+    "offline-p312.yml": "e0b0fd57894bee6d14ea8a00618cb9ac15ba0a6ea77eeb0e7548d0e05d91720c",
+    "headless_p313/experiments/communication_20261127/run.py": "8fc39657548b097d556c6bbee91cdc10755657dac7bae366f6b23e3f07f3f8fc",
+    "headless_p313/experiments/communication_20261127/bank.json": "5f3e62accc6a9981100e98d1b367e79d6e6ecf16897229e4dc7a306a0644908f"
+  }
+}
