@@ -1,0 +1,98 @@
+[
+  {
+    "trial_id": "COMM-01",
+    "family": "independent_units",
+    "conditioning_prompt": "A test has 30 response records. They come from three texts, each paired with ten founder histories.",
+    "critical_prompt": "Which statement correctly describes the number of distinct texts?\nA. There are 30 distinct texts\nB. There are 3 distinct texts\nC. The number of texts cannot be determined\nD. There are 10 distinct texts\nReply with the option letter alone on the first line, then one short explanatory sentence.",
+    "expected_letter": "B",
+    "expected_answer": "There are 3 distinct texts"
+  },
+  {
+    "trial_id": "COMM-02",
+    "family": "update",
+    "conditioning_prompt": "A field note says the marker was BLUE at 09:00. At 10:00 the operator changed it to GREEN. There were no later changes.",
+    "critical_prompt": "According to the note, what is the current marker?\nA. The note does not say\nB. RED\nC. BLUE\nD. GREEN\nReply with the option letter alone on the first line, then one short explanatory sentence.",
+    "expected_letter": "D",
+    "expected_answer": "GREEN"
+  },
+  {
+    "trial_id": "COMM-03",
+    "family": "constraint",
+    "conditioning_prompt": "Three routes are available: Cedar takes 8 minutes and has stairs; Ash takes 12 minutes and is step-free; Elm takes 18 minutes and is step-free. The traveller needs step-free access and a trip under 15 minutes.",
+    "critical_prompt": "Which route satisfies both requirements?\nA. Ash\nB. None of the routes\nC. Cedar\nD. Elm\nReply with the option letter alone on the first line, then one short explanatory sentence.",
+    "expected_letter": "A",
+    "expected_answer": "Ash"
+  },
+  {
+    "trial_id": "COMM-04",
+    "family": "preference_update",
+    "conditioning_prompt": "The plan initially scheduled the meeting for Friday. A later confirmed message moved it to Thursday, and no subsequent changes are recorded.",
+    "critical_prompt": "Which day is the meeting currently scheduled for?\nA. Wednesday\nB. The day is unknown\nC. Friday\nD. Thursday\nReply with the option letter alone on the first line, then one short explanatory sentence.",
+    "expected_letter": "D",
+    "expected_answer": "Thursday"
+  },
+  {
+    "trial_id": "COMM-05",
+    "family": "comparison",
+    "conditioning_prompt": "A specimen needs a container that holds at least 5 litres. Container A holds 4 litres, B holds 7 litres and C holds 9 litres. Choose the smallest adequate container.",
+    "critical_prompt": "Which container should be selected?\nA. Container B\nB. Container C\nC. Container A\nD. None is adequate\nReply with the option letter alone on the first line, then one short explanatory sentence.",
+    "expected_letter": "A",
+    "expected_answer": "Container B"
+  },
+  {
+    "trial_id": "COMM-06",
+    "family": "bounded_inference",
+    "conditioning_prompt": "A research note says 289 of 2,400 paired first-gate choices differed after adding Mesh. It says the experiment did not test an external source.",
+    "critical_prompt": "Which conclusion is supported by the note?\nA. No gate choice differed\nB. An independent intelligence was proven\nC. Some first-gate choices differed, and external agency was untested\nD. Every gate choice differed\nReply with the option letter alone on the first line, then one short explanatory sentence.",
+    "expected_letter": "C",
+    "expected_answer": "Some first-gate choices differed, and external agency was untested"
+  },
+  {
+    "trial_id": "COMM-07",
+    "family": "contradiction",
+    "conditioning_prompt": "One entry in the same inspection log says the valve was OPEN at 14:00. Another says the valve was CLOSED at 14:00. There is no correction or explanation.",
+    "critical_prompt": "What can be concluded about the valve at that time?\nA. The entries conflict and do not settle its state\nB. It was removed\nC. It was definitely closed\nD. It was definitely open\nReply with the option letter alone on the first line, then one short explanatory sentence.",
+    "expected_letter": "A",
+    "expected_answer": "The entries conflict and do not settle its state"
+  },
+  {
+    "trial_id": "COMM-08",
+    "family": "counting",
+    "conditioning_prompt": "A team had 12 labelled samples, used 3 for a test, and then received 4 more. No other samples were added or removed.",
+    "critical_prompt": "How many labelled samples did the team have afterward?\nA. 9\nB. 19\nC. 13\nD. 12\nReply with the option letter alone on the first line, then one short explanatory sentence.",
+    "expected_letter": "C",
+    "expected_answer": "13"
+  },
+  {
+    "trial_id": "COMM-09",
+    "family": "retrieval",
+    "conditioning_prompt": "A storage record lists 4 filter cartridges in the north box, 7 in the east box, and 5 in the west box.",
+    "critical_prompt": "Which box has the most cartridges?\nA. The note does not say\nB. East\nC. West\nD. North\nReply with the option letter alone on the first line, then one short explanatory sentence.",
+    "expected_letter": "B",
+    "expected_answer": "East"
+  },
+  {
+    "trial_id": "COMM-10",
+    "family": "evidence_limit",
+    "conditioning_prompt": "A sentiment study compared two systems. Its 95% interval for their score difference included both negative and positive values.",
+    "critical_prompt": "Which interpretation is supported?\nA. The two scores were necessarily identical\nB. The study does not establish a clear direction of difference\nC. The study decisively proves the first is better\nD. The study decisively proves the first is worse\nReply with the option letter alone on the first line, then one short explanatory sentence.",
+    "expected_letter": "B",
+    "expected_answer": "The study does not establish a clear direction of difference"
+  },
+  {
+    "trial_id": "COMM-11",
+    "family": "relay_leakage",
+    "conditioning_prompt": "In a memory experiment, both treatment and control language prompts include the original earlier sentence in plain text.",
+    "critical_prompt": "What does a correct recall response establish by itself?\nA. That the process memory necessarily supplied the sentence\nB. That an external intelligence supplied the sentence\nC. It does not distinguish recall from reading the supplied sentence\nD. That the earlier sentence was hidden\nReply with the option letter alone on the first line, then one short explanatory sentence.",
+    "expected_letter": "C",
+    "expected_answer": "It does not distinguish recall from reading the supplied sentence"
+  },
+  {
+    "trial_id": "COMM-12",
+    "family": "missing_information",
+    "conditioning_prompt": "The log says the water sample was collected on Tuesday. It does not mention the collection time.",
+    "critical_prompt": "At what time was the sample collected?\nA. 12:00\nB. 15:00\nC. 09:00\nD. The time is not stated\nReply with the option letter alone on the first line, then one short explanatory sentence.",
+    "expected_letter": "D",
+    "expected_answer": "The time is not stated"
+  }
+]

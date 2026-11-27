@@ -1,0 +1,51 @@
+name: Amelia 0.4 P3.13 headless dialogue feasibility
+
+on:
+  push:
+    branches:
+      - research/p313-dialogue-20261127
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  observe:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.8'
+      - name: Verify code and prospective cases offline
+        run: python experiments/communication_20261127/run.py --selftest
+      - name: Check existing provider credential without revealing it
+        id: provider
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          python - <<'PY'
+          import os
+          configured = bool(os.environ.get('ANTHROPIC_API_KEY'))
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+              output.write('configured=' + ('true' if configured else 'false') + '\n')
+          print('Provider credential is ' + ('available to the runner' if configured else 'not available to the runner'))
+          PY
+      - name: Install the P3.13-era CPU tensor dependency
+        if: steps.provider.outputs.configured == 'true'
+        run: python -m pip install 'numpy==1.24.4' 'torch==1.8.1+cpu' -f https://download.pytorch.org/whl/torch_stable.html
+      - name: Run the matched 0.4 source-based feasibility cases
+        if: steps.provider.outputs.configured == 'true'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OMP_NUM_THREADS: '1'
+          OPENBLAS_NUM_THREADS: '1'
+        run: python -u experiments/communication_20261127/run.py
+      - name: Preserve response and status records
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Amelia-0.4-headless-dialogue-${{ github.run_id }}
+          path: experiments/communication_20261127/output/
+          if-no-files-found: warn
