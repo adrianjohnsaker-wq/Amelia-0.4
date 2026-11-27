@@ -1,0 +1,26 @@
+name: Amelia 0.4 relay configuration presence check
+
+on:
+  push:
+    branches:
+      - research/relay-presence-20261127
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check names only without printing secret values
+        env:
+          AMELIA_RELAY_TOKEN: ${{ secrets.AMELIA_RELAY_TOKEN }}
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          python3 - <<'PY'
+          import json, os
+          print('AMELIA_RELAY_SECRET_PRESENCE=' + json.dumps({
+              'relay_token_present': bool(os.environ.get('AMELIA_RELAY_TOKEN')),
+              'railway_project_token_present': bool(os.environ.get('RAILWAY_TOKEN')),
+          }, sort_keys=True))
+          PY
