@@ -1,0 +1,14 @@
+[
+  {"id":"Q01","question":"Which operating priority did the source report?","options":["maintain the present setting","move to a new position","inspect the current condition","return to the starting position"]},
+  {"id":"Q02","question":"Which instrument observation did the source report?","options":["flow is falling","temperature is rising","pressure is stable","the signal is intermittent"]},
+  {"id":"Q03","question":"Which location did the source identify?","options":["the north ridge","the east basin","the south hollow","the west edge"]},
+  {"id":"Q04","question":"Which action did the source request?","options":["hold position","inspect the channel","reduce the load","return to the origin"]},
+  {"id":"Q05","question":"What change did the source say occurred?","options":["the level increased","the level decreased","the level stayed constant","the level could not be measured"]},
+  {"id":"Q06","question":"Which resource did the source identify as limited?","options":["time","energy","space","information"]},
+  {"id":"Q07","question":"Which condition did the source select for the next check?","options":["the initial state","the latest state","the previous state","the alternative state"]},
+  {"id":"Q08","question":"What did the source report about the route?","options":["the route is open","the route is obstructed","the route has changed","the route is unverified"]},
+  {"id":"Q09","question":"Which item did the source identify for inspection?","options":["the sensor","the motor","the boundary","the memory"]},
+  {"id":"Q10","question":"What timing did the source report?","options":["immediately","after a short delay","after the next cycle","at an unknown time"]},
+  {"id":"Q11","question":"Which pattern did the source report?","options":["a steady pattern","a repeating pattern","a changing pattern","an absent pattern"]},
+  {"id":"Q12","question":"How did the source classify the observation?","options":["expected","unexpected","ambiguous","unavailable"]}
+]
